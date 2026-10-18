@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-Markdown-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.0.3-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -22,11 +22,13 @@
 
 ---
 
+> **Estado de segurança (safety e security):** este ecossistema não é um sistema de segurança certificado. Ainda não existe um caminho de E-STOP por hardware, nem limites ou interlocks impostos pelo firmware, nem um comando de movimento verificado; as imagens de firmware são verificadas com CRC32 e um HMAC-SHA256 de chave partilhada, não com uma assinatura assimétrica; TLS e TLS mútuo são opcionais e estão desativados por defeito; nenhuma placa própria foi ainda montada ou testada. Leia a [base de segurança](docs/SECURITY_BASELINE.md) e o [modelo de ameaças](docs/THREAT_MODEL.md) antes de confiar em qualquer afirmação aqui para a segurança de uma pessoa.
+
 ## 📋 Num relance
 
 | | |
 |---|---|
-| Versão | `0.0.2` |
+| Versão | `0.0.3` |
 | Maturidade | Estrutura inicial |
 | Tecnologia | Markdown / Mermaid / Python / SVG |
 | Destino | O PC de quem o usa |
@@ -46,7 +48,7 @@ A imagem abaixo mostra as famílias de repositórios e os fluxos que os seus doc
 * [Base de segurança](docs/SECURITY_BASELINE.md): o que o código impõe e o que ainda falta; e o [modelo de ameaças](docs/THREAT_MODEL.md).
 * [Primeiro corte vertical](docs/FIRST_VERTICAL_SLICE.md): o caminho de ponta a ponta mais pequeno que existe hoje.
 * [Catálogo de projetos](docs/PROJECT_CATALOG.md): cada repositório da família, escrito a partir do seu próprio manifesto.
-* **Ferramentas:** `make_catalog.py` escreve o catálogo, `make_brand.py` o banner, o ícone e o mapa das famílias, `make_readmes.py` os oito README deste repositório, `publication_check.py` procura qualquer coisa privada antes de uma publicação e `check_all.sh` executa as verificações próprias de cada repositório da família e imprime uma linha PASS, FAIL ou SKIP por cada um. `make_glance.py` escreve a tabela Num relance de cada repositório a partir do seu manifesto e de `data/glance.json` (`--check` compara, `--apply` escreve); depois de subir uma versão, `python tools/make_glance.py --apply --repo NOME` atualiza a tabela desse repositório.
+* **Ferramentas:** `make_catalog.py` escreve o catálogo, `make_brand.py` o banner, o ícone e o mapa das famílias, `make_readmes.py` os oito README deste repositório, `publication_check.py` procura qualquer coisa privada antes de uma publicação e `check_all.sh` executa as verificações próprias de cada repositório da família e imprime uma linha PASS, FAIL ou SKIP por cada um. `make_glance.py` escreve a tabela Num relance de cada repositório a partir do seu manifesto e de `data/glance.json` (`--check` compara, `--apply` escreve); depois de subir uma versão, `python tools/make_glance.py --apply --repo NOME` atualiza a tabela desse repositório. `check_claims.py` lê o README em inglês de cada repositório da família e falha quando uma frase tem uma palavra de risco (E-STOP, interlock, tempo real, assinado, mTLS, FDCAN, YOLO, orientado por IA, autónomo, certificado, ...) sem uma marca de estado ao lado (previsto, não implementado, opcional, desativado por defeito, simulado, testado, ...), a menos que uma pessoa tenha lido essa linha junto ao código e a tenha registado em `data/claims_reviewed.json`.
 
 ## 🧩 Papel no HYDRA-UMC
 
@@ -71,13 +73,14 @@ HYDRA-UMC-DOCS/
 **Requisitos:** Python 3.10 ou superior; pytest para os testes
 
 ```bash
-python tools/make_catalog.py --check  # o catálogo está atualizado (precisa dos repositórios ao lado deste)
-python tools/make_brand.py --check    # o banner, o ícone e o mapa estão atualizados
-python tools/make_readmes.py --check  # os oito README estão atualizados
-python tools/make_glance.py --check   # as tabelas Num relance da família estão atualizadas (precisa dos repositórios ao lado deste)
-python tools/publication_check.py     # nada privado sairia com uma publicação
-bash tools/check_all.sh               # as verificações de cada repositório, uma linha por cada um
-python -m pytest tests -q             # os testes unitários das ferramentas
+python tools/make_catalog.py --check             # o catálogo está atualizado (precisa dos repositórios ao lado deste)
+python tools/make_brand.py --check               # o banner, o ícone e o mapa estão atualizados
+python tools/make_readmes.py --check             # os oito README estão atualizados
+python tools/make_glance.py --check              # as tabelas Num relance da família estão atualizadas (precisa dos repositórios ao lado deste)
+python tools/publication_check.py                # nada privado sairia com uma publicação
+python tools/check_claims.py --require-siblings  # nenhum README afirma uma capacidade de risco sem o seu estado (precisa dos repositórios ao lado deste)
+bash tools/check_all.sh                          # as verificações de cada repositório, uma linha por cada um
+python -m pytest tests -q                        # os testes unitários das ferramentas
 ```
 
 `build.sh` / `build.bat` sobem a versão um passo (o conta-quilómetros do ecossistema), instalam o pacote e executam os testes; `build-test.sh` / `build-test.bat` verificam sem alterar nenhuma versão.

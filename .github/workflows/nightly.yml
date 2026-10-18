@@ -12,6 +12,8 @@
 # The "At a glance" table of every README (version, maturity, stack, target, hardware) is compared with the
 # manifest of its repository, so a version bump that did not refresh it is caught here.
 #
+# Every README is also scanned for risky claims (E-STOP, interlock, signed, mTLS, ...) that carry no status marker.
+#
 # The catalogue is compared in two ways: its structure (which repositories exist and of
 # what kind) must be current or the night fails; its versions and maturity move with
 # almost every release, so a stale table is only reported and does not fail the night.
@@ -63,7 +65,7 @@ jobs:
         working-directory: HYDRA-UMC-DOCS
         run: |
           status=0
-          for check in "tools/make_readmes.py --check" "tools/make_brand.py --check" "tools/make_catalog.py --check-structure --require-siblings" "tools/make_glance.py --check --require-siblings"; do
+          for check in "tools/make_readmes.py --check" "tools/make_brand.py --check" "tools/make_catalog.py --check-structure --require-siblings" "tools/make_glance.py --check --require-siblings" "tools/check_claims.py --require-siblings"; do
             echo "== python ${check}"
             python ${check} || status=1
           done

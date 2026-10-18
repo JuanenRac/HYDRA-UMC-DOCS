@@ -71,6 +71,25 @@ Out of scope here: a determined attacker with long physical access (secrets in f
 | Denial of service on the server | Rate limits, bounded buffers and queues in the services | No measured load test is documented |
 | A stuck or compromised dashboard stops the machine from stopping | The server keeps answering stop commands from other clients when a UI hangs; the stop is never blocked by a reservation | The stop acts on the server's state. Until the firmware has an E-STOP path, a physical stop has to be a physical device |
 
+## External review of this ecosystem
+
+A reader from outside the project read the READMEs of the family and concluded that the platform has capabilities that do not exist. The cause was documentation, not code: capabilities that are planned were written in the present tense, some badges promised more than the code does, and some sections contradicted the status box of their own page. The table puts each claim next to what the repositories actually contain.
+
+| Claim that was read | Reality |
+|---|---|
+| A wired hardware E-STOP stops the machines | No E-STOP path exists in the firmware. `POST /api/stop-all` changes the state held by the server and the zone logic only *requests* a stop through a requester that sends nothing. A physical stop has to be a physical device |
+| The firmware enforces kinematic limits and torque limits | It does not. Limits exist only as software checks (server, kinematics validation, hardware-in-the-loop interlock), and no part of the family senses or controls torque |
+| Firmware updates are signed | Images are checked with a CRC32 and a symmetric HMAC-SHA256 whose key is shared by all boards of a type; the URTC release images are signed with the published development key. An asymmetric signature is planned, and the update manifest carries a hash, not a signature |
+| Nodes authenticate each other with mutual TLS | TLS and mutual TLS are optional, off by default and only offered by the broker and the gateway. There is no node-to-node mutual TLS |
+| The bus is FDCAN | The silicon has FDCAN peripherals, used in classic CAN mode: frames of at most eight bytes, no CAN FD |
+| A real-time motion engine with S-curve profiles and PID loops runs on the motion controller | It is not written. The motion core runs a smoke test; the CM4 core polls the slave boards and relays frames |
+| Object detection runs on the Hailo accelerators | No detector runs. The repositories hold a model registry and a safe-load check, and the zone logic takes object positions from a file |
+| Predictive maintenance is AI-driven | The anomaly detector uses a Fourier transform and a statistical baseline. No machine-learning model is trained or used, and no failure is predicted |
+| The digital twin is a physics replica of the factory | Today it checks whether its children are ready. No physics engine exists |
+| Most repositories are `established` | The word means recorded real use. Where the README or changelog does not record a run on the real target, the manifest now says `functional` |
+
+What changed: every README states what is planned and what has only been tested against fakes, emulators or fixtures, carries a short safety and security status note in the eight languages, and is scanned by `tools/check_claims.py`, which fails when a sentence with a risk word has no status marker next to it and has not been read and put in `data/claims_reviewed.json` by a person. The check runs in the nightly family run and in `tools/check_all.sh`.
+
 ## What to do first
 
 1. Finish the physical safety path before anything else: an E-STOP that does not depend on the CM5, the server or a network, and software limits and interlocks in the firmware, tested on a board. No document in this repository should be read as saying the ecosystem is safe to run a machine that can hurt someone without one.

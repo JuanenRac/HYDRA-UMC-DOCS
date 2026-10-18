@@ -1,0 +1,193 @@
+{
+ "reviewed": {
+  "*": {
+   "0447539cee13": "Production Build",
+   "0a28eafebde8": "— iOS/iPadOS control app (Flutter) with real-time WebSocket sync.",
+   "0d114bbf5ed3": "✅ Real shared safety gate: every observed job is re-evaluated through from 's , the same gate every sibling br",
+   "19df42ee4a6f": "how to report a vulnerability, and this project's own real security focus areas.",
+   "21c5810d1c26": "— web control dashboard with real-time multi-robot 3D visualization.",
+   "5b10e71477f5": "— real forward kinematics and joint-limit validation over a real URDF subset.",
+   "667ee408d2dc": "SECURITY.md",
+   "69381d120c8a": "Maturity | Established",
+   "8a91cfb19016": "— the real headless backend (REST/WebSocket) every control client actually talks to; the authenticated ecosyst",
+   "cfe823251d84": "✅ Real shared safety gate: every job dispatched through is evaluated by from 's , the same gate every sibling ",
+   "d116963177fe": "Fails Closed Safety Fails Closed red.svg",
+   "ecd0a62c2932": "— real procedural 2D scene generator with YOLO/COCO annotation export."
+  },
+  "ELECTRO-HOBBY-3D-UPDATER": {
+   "f6727cb58501": "(perimeter security and home automation)."
+  },
+  "HYDRA-UMC": {
+   "1ac4d0d4c921": "— the documentation and tooling hub of the ecosystem: architecture, interfaces, security baseline, capability ",
+   "bc0c419a6fdf": "🎛️ MCU: STMicroelectronics STM32G474RET6 (Cortex-M4 @ 170 MHz, LQFP-64, 512 KB flash), using 2 of its 3 onboar",
+   "d0eaaba184aa": "👁️ Octal Camera Vision & Inspection Matrix: Integrated dual USB 3.0 controllers driving 8x dedicated USB camer",
+   "e6cf5a266725": "Identical connector definition on the Kinematic Brain's own port and every Robot Controller Board's pair of po"
+  },
+  "HYDRA-UMC-ANDROID-CONTROL": {
+   "4c02b8991167": "Every control command (Jog, Play and the server's global stop) is validated by the server using signed tokens,",
+   "87e72ccd6be2": "— iOS/iPadOS control app (Flutter) with real-time WebSocket sync; this app's direct iOS/iPadOS counterpart, sa",
+   "902c960672f0": "— web control dashboard with real-time multi-robot 3D visualization; its own 3D viewport is embedded directly ",
+   "9209ec6774ac": "System Health Monitor ( ) - Real-time metrics for the connected Compute Module 5, including Hostname, Formatte",
+   "bbf77ca60c53": "Real-time Octal Vision ( , ) - Native MJPEG Streamer.",
+   "e41e9c4cd1de": "Industrial Telemetry Terminal ( ) - A dedicated real-time log viewer with a terminal-style interface."
+  },
+  "HYDRA-UMC-ANOMALY-DETECTOR": {
+   "a024622a6823": "🔍 Signature Analysis: FFT (Fast Fourier Transform) of motor current samples to detect mechanical imbalance."
+  },
+  "HYDRA-UMC-BRIDGE-AMR": {
+   "8f11f1484e2f": "is the bidirectional, high-level coordination boundary between HYDRA-UMC and an AGV/AMR (autonomous mobile rob"
+  },
+  "HYDRA-UMC-BRIDGE-CNC": {
+   "d3567bdd0683": "✅ Real fail-safe cell snapshot: 's checks E-STOP and door state *before* looking at anything the controller re",
+   "ef864466b3de": "✅ Real GRBL serial transport: 's opens a real serial connection and queries GRBL's real-time status byte ( ); "
+  },
+  "HYDRA-UMC-BRIDGE-DROIDS": {
+   "aad0029f0f8c": "✅ Real shared safety gate: every job dispatched through is evaluated by from 's , the same gate every sibling "
+  },
+  "HYDRA-UMC-BRIDGE-LASER": {
+   "c9dbf8b552b5": "Stack | Python / Laser controller / G-code / Safety evidence / GPIO interlock reading"
+  },
+  "HYDRA-UMC-BRIDGE-OPENPNP": {
+   "9b8147b84cde": "Integration boundary: OpenPnP retains placement kinematics, feeder control and raw motion at all times; this b",
+   "aec75a94ccce": "✅ Real traceable board-flow core: 's rejects any job whose is empty or has leading/trailing whitespace *before",
+   "dc29c82c031f": "✅ Real shared safety gate: every valid job is evaluated through from 's , the same gate every sibling bridge u"
+  },
+  "HYDRA-UMC-BRIDGE-PRINTER3D": {
+   "2bbf5338c7ad": "Keeping the dependency surface to the Python standard library keeps the safety-relevant parsing minimal, audit"
+  },
+  "HYDRA-UMC-BRIDGE-UAV": {
+   "fb9e4aaaed34": "It belongs to the Mobile & Autonomous Bridges family alongside and , and shares the same job-and-safety contra"
+  },
+  "HYDRA-UMC-COGNITIVE-NODE": {
+   "4c65c09deee1": "— web control dashboard with real-time multi-robot 3D visualization; one of this node's own voice-control surf"
+  },
+  "HYDRA-UMC-CONNECTOR-HUB": {
+   "61123612ffeb": "Delivery 3's own real safety-gate integration and its one named simplification.",
+   "630977b87ac2": "fixtures, read-only catalog, SDK safety gate, certification records)."
+  },
+  "HYDRA-UMC-DASHBOARD-AI": {
+   "95bec08958b7": "how to report a vulnerability; see instead for this project's own external-content and deployment safety contr"
+  },
+  "HYDRA-UMC-DATALAKE": {
+   "6a8b224088fc": "To bring up this project together with its three children (Telemetry-Collector, Anomaly-Detector, Production-R",
+   "8f008e355f27": "🔍 Deterministic Queries: Raw results are ordered by timestamp and stable tie-breakers; bounded reads reject no"
+  },
+  "HYDRA-UMC-DETECTION-HEF": {
+   "b0717cd9f583": "The real ONNX export step from trained PyTorch/YOLO models."
+  },
+  "HYDRA-UMC-DEV-SERVER": {
+   "2788d20ed33f": "safety contract ( ) - only the deterministic",
+   "58b4483a1e2b": "authenticated incident transport for the round trip with",
+   "6a2ea2fd0f77": "a file drop: an unregistered identity, a bad signature, a node"
+  },
+  "HYDRA-UMC-DSI": {
+   "34b43b6beb3f": "Atomic command sync ( 's own ) - every write (play/pause/stop/jog/valve/pump/speed/vision) uses the real endpo",
+   "ab32386fc0e3": "— iOS/iPadOS control app (Flutter) with real-time WebSocket sync; speaks the exact same contract as this panel"
+  },
+  "HYDRA-UMC-EDITOR-STL": {
+   "1cb6f37a914e": "Assembled view - robots, CNC, PnP and laser models open already assembled at their home pose (read from 's own",
+   "65f9bab8dced": "— sibling desktop editor for the same model catalog's own URDF/kinematics side, rather than the raw STL geomet"
+  },
+  "HYDRA-UMC-EDITOR-URDF": {
+   "083d918ea6e3": "This app automates that entire pass - pull the source files from a GitHub URL or an already-downloaded local f",
+   "340acb167399": "Current version: 0.1.4 ( - see the Production Build section below for how this number moves)",
+   "a885b988f1c6": "Every real robot model in STUDIO's catalog got there the same way in the past: find a description repo on GitH",
+   "e0ccbc10b518": "— sibling desktop editor for the same model catalog's own raw STL geometry, rather than the URDF/kinematics si",
+   "e25b674d0681": "Retype and re-limit a joint - change a joint's type (any of the 6 the URDF spec defines) and its lower/upper l"
+  },
+  "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
+   "0a02b239d56b": "Production Build Bundles the server into a single deployable file with esbuild:"
+  },
+  "HYDRA-UMC-IOS-CONTROL": {
+   "902c960672f0": "— web control dashboard with real-time multi-robot 3D visualization; its own 3D viewport is embedded directly "
+  },
+  "HYDRA-UMC-JOB-DISPATCHER": {
+   "a10bddc29c34": "It ensures that high-priority tasks (e.g., \"Emergency Defect Fix\") bypass the normal production flow, and coor"
+  },
+  "HYDRA-UMC-MQTT-BROKER": {
+   "395671b28729": "Production Build Bundles the broker into a single deployable file with esbuild:"
+  },
+  "HYDRA-UMC-MTCONNECT-ADAPTER": {
+   "f75dd0415c09": "Production Build Bundles the adapter into a single deployable file with esbuild:"
+  },
+  "HYDRA-UMC-OPCUA-SERVER": {
+   "0a02b239d56b": "Production Build Bundles the server into a single deployable file with esbuild:"
+  },
+  "HYDRA-UMC-OPS-AGENT": {
+   "384fa1954593": "Delivery 2's own real contract, providers, credentials and safety boundary."
+  },
+  "HYDRA-UMC-OS": {
+   "d9cdfe793512": "— the real headless backend (REST/WebSocket) every control client actually talks to; the authenticated service"
+  },
+  "HYDRA-UMC-PHYSICS-REPLICA": {
+   "094a60cb9b61": "Stack | Rust / roxmltree / URDF forward kinematics",
+   "289cb4abdebe": "📐 URDF Forward Kinematics & Joint-Limit Validation"
+  },
+  "HYDRA-UMC-PRODUCTION-REPORTS": {
+   "d0d4d740d2e3": "It processes raw data from the Datalake to generate automated, high-level reports on production efficiency, qu",
+   "f52f698783cc": "It calculates the OEE (Overall Equipment Effectiveness) of the entire swarm, identifying bottlenecks in the pr"
+  },
+  "HYDRA-UMC-SDK": {
+   "1ac4d0d4c921": "— the documentation and tooling hub of the ecosystem: architecture, interfaces, security baseline, capability ",
+   "20ee4d7a4604": "— reproducible Raspberry Pi OS product layer for the CM5: read-only agent, validated config/profiles, WiFi fir",
+   "2181f78316fe": "an authenticated API producer and consumer governed by this SDK's own contracts."
+  },
+  "HYDRA-UMC-SERVER": {
+   "026edee922d7": "Then start the production server with:",
+   "0f8f5e39b57b": "Only failed logins count towards the login limit above.",
+   "2ec1d884e3ac": "Every route, the WebSocket message contract, authentication, and the per-client remote-access model are docume",
+   "436aef625d16": "You own a domain pointing at this server - use Let's Encrypt (e.g. via Certbot) for a real, browser-trusted ce",
+   "6c9adaf43d5e": "See \"TLS / HTTPS\" below.",
+   "9d08fe9b47f1": "JWT bearer-token authentication on every write; two account roles ( , ) gate settings/user-management writes v",
+   "bc0b19bbbf96": "exposes process uptime, connected WebSocket clients, write latency, atomic robot commands by type, authenticat",
+   "cbc59d583480": "TLS / HTTPS",
+   "d185bdc9bcde": "In production the server also refuses to start with an example /bootstrap password from a deployment template,",
+   "dc54efc9a372": "is the global stop: one call, open to every signed-in account, stops every robot and switches every valve and "
+  },
+  "HYDRA-UMC-STUDIO": {
+   "018b23a49041": "🏭 Kinova - Gen3 Lite, Gen2 (BSD-3-Clause meshes, official ros2_kortex geometry/kinematics)",
+   "0d4a51c19b7e": "🏭 Comau - e.DO (BSD-3-Clause meshes, official eDO_description geometry/kinematics)",
+   "15c303b8105d": "In production the first administrator comes from the deployment's bootstrap settings and the server refuses ex",
+   "33ce905fa741": "🏭 Kinematic Brain Stage",
+   "4645cd24dc1d": "🏭 Universal Robots - UR3e, UR5e, UR10e, UR16e, UR20 - official geometry, joint limits, and link kinematics pul",
+   "48e043e5be7b": "🏭 UFACTORY - xArm6, Lite 6 (BSD-3-Clause meshes, official xarm_ros2 geometry/kinematics)",
+   "4d4604dbed06": "Manage multiple independent 6-DOF robots simultaneously, each with its own real 3D model, kinematics, and jog/",
+   "7f7a1073ca33": "🏭 Trossen Robotics - ViperX 300, WidowX 250 (BSD-3-Clause meshes, official interbotix_ros_manipulators geometr",
+   "93b30bca7718": "🏭 AgileX - PiPER (Apache-2.0 meshes, official agilex_piper_arm_description geometry/kinematics)",
+   "b99214c8635a": "🏭 FANUC - M-710iC (BSD-3-Clause meshes, official fanuc_m710ic_description geometry/kinematics)",
+   "fa01582b9b21": "Preview the production build locally with:"
+  },
+  "HYDRA-UMC-SUITE": {
+   "661bc473eaa6": "Math: NumPy (4x4 homogeneous transforms for forward kinematics)",
+   "a23fc703e659": "how to report a vulnerability, and this app's own real security focus areas."
+  },
+  "HYDRA-UMC-SYNTHETIC-DATA-GEN": {
+   "1a01b3374cb8": "Format Format YOLO %2F COCO FF6F00.svg",
+   "2874329958dc": "Renders training datasets (with automatic YOLO/COCO annotation) through 's own engine, for and to train agains",
+   "52518243e90e": "Stack | Python / procedural scene generation / YOLO/COCO annotation export",
+   "cd2e7c39e4d1": "Writes real BMP images to , real YOLO labels to + , and/or a real in COCO format, depending on ."
+  },
+  "HYDRA-UMC-TELEMETRY-COLLECTOR": {
+   "a1daf833d6cf": "The buffer ( ) is still bounded, though - an outage that outlasts its capacity does drop the oldest excess, a "
+  },
+  "HYDRA-UMC-UPDATER": {
+   "327c4d86725f": "sequential batch actions built from the same live state and safety path."
+  },
+  "HYDRA-UMC-VISION-NODE": {
+   "db5e464672ce": "API limits: refuses frames above 8192x8192x4 or 64 MiB (and non-positive sizes) before reading the body, and m"
+  },
+  "HYDRA-UMC-VISUAL-SERVOING-API": {
+   "6b13702f107a": "A safety fault must win over everything else, even a perfectly fresh and confident detection - so (safety_stat",
+   "a0c76cde8c92": "Real example - request a safety-gated correction (accepted, inhibited, and rejected):",
+   "d0fb2262f75c": "Who sets the safety limits: the limits (minimum confidence, maximum data age, maximum gain, maximum linear and"
+  },
+  "HYDRA-UMC-VOICE-UI": {
+   "3a2c4dc0d6c4": "— web control dashboard with real-time multi-robot 3D visualization; another voice-control surface for the eco"
+  },
+  "HYDRA-UMC-WATCH": {
+   "1a9007c73fa3": "Still ahead: validation of pairing, radio transport, microphone/speaker and end-to-end status on a real Wear O",
+   "46fe86790863": "Integration boundary: the paired Android app retains the encrypted Server JWT;",
+   "4b37d23f778f": "The official Wear OS channel enforces the same package name and signing certificate on Watch and phone, then c"
+  }
+ }
+}
