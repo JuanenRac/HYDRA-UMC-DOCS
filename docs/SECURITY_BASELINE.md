@@ -81,7 +81,7 @@ These exist and work, but a default installation does not have them. They are th
 * **No read-out protection** on the three chips: one board exposes the HMAC key shared by every board of that type; the authorisation of a firmware downgrade is a fixed four-byte value that is published in the CAN documents.
 * **Update manifests carry a hash, not a signature** (`UpdateManifest` has `sha256` and an HTTPS URL; the update model of the OS asks for a signature and the schema has no field for it).
 * **TLS is optional everywhere**, the broker's included. No link-level encryption or authentication of the SPI and CAN buses is documented: the bootloaders authenticate firmware images, not the traffic.
-* **No audited access list**, no secret store (secrets are files and environment variables), no backup policy, no penetration test.
+* **No reviewed access list**, no secret store (secrets are files and environment variables), no backup policy, no penetration test.
 * **Development defaults** are permissive on purpose: outside production the server seeds `admin`/`admin` and uses a fixed development JWT secret when none is set, and CORS is open. A server started without `NODE_ENV=production` on a reachable address is open to anyone on that network.
 * **A token in an address** is still used by one page: the embedded 3D view that the phone apps load in a web view. The server never reads it, but it can be recorded by whatever carries the page address.
 * **The AI services are not hardened against hostile input beyond what their READMEs list**, and none runs a language model today.

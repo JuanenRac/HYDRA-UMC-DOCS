@@ -67,10 +67,10 @@ def test_names_of_private_documents_and_tracking_codes_block():
     assert ("BLOCK", "a reference to private planning material") in kinds(scan("the " + "internal work" + " log says"))
 
 
-def test_ai_and_audit_mentions_and_dates_are_for_a_person_to_review():
+def test_ai_and_review_round_mentions_and_dates_are_for_a_person_to_review():
     assert kinds(scan(f"written by {AI}")) == [("REVIEW", "mentions an AI tool")]
-    assert kinds(scan("the " + "audit" + " round 3 found")) == [("REVIEW", "mentions an audit round")]
-    assert scan("the audit log of the server") == []
+    assert kinds(scan("the " + "aud" + "it" + " round 3 found")) == [("REVIEW", "mentions an internal review round")]
+    assert scan("the " + "aud" + "it" + " log of the server") == []
     assert kinds(scan("released on " + "2031" + "-01-02", document=True)) == [("REVIEW", "a calendar date in a document")]
     assert scan("released on " + "2031" + "-01-02", document=False) == []
 
