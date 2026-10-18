@@ -12,7 +12,7 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-Markdown-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Version-0.0.1-0f6cbd.svg" alt="Version">
+  <img src="https://img.shields.io/badge/Version-0.0.2-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
 
@@ -26,11 +26,11 @@
 
 | | |
 |---|---|
-| Version | `0.0.1` |
+| Version | `0.0.2` |
 | Maturity | Scaffolding |
-| Stack | Markdown and Python 3.10+ (standard library only) |
-| Target | A development PC (no service, no port) |
-| On real hardware | Not applicable: it is documentation and tooling; it records what the other repositories have run on hardware |
+| Stack | Markdown / Mermaid / Python / SVG |
+| Target | The PC of the person using it |
+| On real hardware | Not applicable: nothing here runs on hardware |
 
 ## 🎯 Overview
 
@@ -46,7 +46,7 @@ The picture below shows the families of repositories and the flows that their do
 * [Security baseline](docs/SECURITY_BASELINE.md): what the code enforces and what is still missing; and the [threat model](docs/THREAT_MODEL.md).
 * [First vertical slice](docs/FIRST_VERTICAL_SLICE.md): the smallest end-to-end path that exists today.
 * [Project catalogue](docs/PROJECT_CATALOG.md): every repository of the family, written from its own manifest.
-* **Tools:** `make_catalog.py` writes the catalogue, `make_brand.py` the banner, icon and family map, `make_readmes.py` the eight READMEs of this repository, `publication_check.py` looks for anything private before a publication, and `check_all.sh` runs the own checks of every repository of the family and prints one PASS, FAIL or SKIP line each.
+* **Tools:** `make_catalog.py` writes the catalogue, `make_brand.py` the banner, icon and family map, `make_readmes.py` the eight READMEs of this repository, `publication_check.py` looks for anything private before a publication, and `check_all.sh` runs the own checks of every repository of the family and prints one PASS, FAIL or SKIP line each. `make_glance.py` writes the At a glance table of every repository from its manifest and from `data/glance.json` (`--check` compares, `--apply` writes); after a version bump, `python tools/make_glance.py --apply --repo NAME` refreshes the table of that repository.
 
 ## 🧩 Role in HYDRA-UMC
 
@@ -74,6 +74,7 @@ HYDRA-UMC-DOCS/
 python tools/make_catalog.py --check  # the catalogue is current (needs the repositories next to this one)
 python tools/make_brand.py --check    # the banner, icon and map are current
 python tools/make_readmes.py --check  # the eight READMEs are current
+python tools/make_glance.py --check   # the At a glance tables of the family are current (needs the repositories next to this one)
 python tools/publication_check.py     # nothing private would leave with a publication
 bash tools/check_all.sh               # the checks of every repository, one line each
 python -m pytest tests -q             # the unit tests of the tools

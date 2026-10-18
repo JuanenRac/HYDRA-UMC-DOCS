@@ -22,17 +22,6 @@ LANGUAGES: dict[str, tuple[str, str]] = {
     "pt": ("README_por.md", "🇵🇹 Português"),
 }
 
-MATURITY: dict[str, dict[str, str]] = {
-    "en": {"scaffolding": "Scaffolding", "functional": "Functional", "established": "Established", "production": "Production"},
-    "es": {"scaffolding": "Andamiaje", "functional": "Funcional", "established": "Consolidado", "production": "Producción"},
-    "fr": {"scaffolding": "Échafaudage", "functional": "Fonctionnel", "established": "Établi", "production": "Production"},
-    "it": {"scaffolding": "Impalcatura", "functional": "Funzionale", "established": "Consolidato", "production": "Produzione"},
-    "de": {"scaffolding": "Gerüst", "functional": "Funktional", "established": "Etabliert", "production": "Produktion"},
-    "zh": {"scaffolding": "脚手架", "functional": "可用", "established": "成熟", "production": "生产"},
-    "ja": {"scaffolding": "足場段階", "functional": "機能的", "established": "確立済み", "production": "本番"},
-    "pt": {"scaffolding": "Andaime", "functional": "Funcional", "established": "Consolidado", "production": "Produção"},
-}
-
 TEXT: dict[str, dict[str, object]] = {
     "en": {
         "subtitle": "Architecture, interfaces, security baseline and the truth about what is proven",
@@ -43,10 +32,6 @@ TEXT: dict[str, dict[str, object]] = {
             "and a statement that could not be traced to a repository is marked as such. Nothing here is a hardware test: the capability matrix says, for each capability, whether it was only simulated, tested on a computer or run on real hardware, "
             "and the firmware repository states that no populated board exists yet."
         ),
-        "h_glance": "At a glance",
-        "g_version": "Version", "g_maturity": "Maturity", "g_stack": "Stack", "g_target": "Target", "g_hardware": "On real hardware",
-        "g_stack_value": "Markdown and Python 3.10+ (standard library only)", "g_target_value": "A development PC (no service, no port)",
-        "g_hardware_value": "Not applicable: it is documentation and tooling; it records what the other repositories have run on hardware",
         "h_overview": "Overview",
         "overview_intro": "The picture below shows the families of repositories and the flows that their documents state.",
         "overview": [
@@ -58,7 +43,7 @@ TEXT: dict[str, dict[str, object]] = {
             ("Project catalogue", "docs/PROJECT_CATALOG.md", "every repository of the family, written from its own manifest."),
         ],
         "tools_label": "Tools:",
-        "tools": "`make_catalog.py` writes the catalogue, `make_brand.py` the banner, icon and family map, `make_readmes.py` the eight READMEs of this repository, `publication_check.py` looks for anything private before a publication, and `check_all.sh` runs the own checks of every repository of the family and prints one PASS, FAIL or SKIP line each.",
+        "tools": "`make_catalog.py` writes the catalogue, `make_brand.py` the banner, icon and family map, `make_readmes.py` the eight READMEs of this repository, `publication_check.py` looks for anything private before a publication, and `check_all.sh` runs the own checks of every repository of the family and prints one PASS, FAIL or SKIP line each. `make_glance.py` writes the At a glance table of every repository from its manifest and from `data/glance.json` (`--check` compares, `--apply` writes); after a version bump, `python tools/make_glance.py --apply --repo NAME` refreshes the table of that repository.",
         "h_role": "Role in HYDRA-UMC",
         "role": "HYDRA-UMC-DOCS is the memory of the ecosystem: the place where the architecture, the interfaces, the security baseline and the capability matrix live, and where the tools that compare all the repositories side by side are kept. Each repository keeps its own README, tests and contract; this one says how they fit together and what has really been proven.",
         "h_structure": "Repository Structure",
@@ -72,14 +57,7 @@ TEXT: dict[str, dict[str, object]] = {
         },
         "h_dev": "BUILD & RUN",
         "dev_requirements": "**Requirements:** Python 3.10 or newer; pytest for the tests",
-        "dev_comments": [
-            "the catalogue is current (needs the repositories next to this one)",
-            "the banner, icon and map are current",
-            "the eight READMEs are current",
-            "nothing private would leave with a publication",
-            "the checks of every repository, one line each",
-            "the unit tests of the tools",
-        ],
+        "dev_comments": ["the catalogue is current (needs the repositories next to this one)", "the banner, icon and map are current", "the eight READMEs are current", 'the At a glance tables of the family are current (needs the repositories next to this one)', "nothing private would leave with a publication", "the checks of every repository, one line each", "the unit tests of the tools"],
         "dev_note": "`build.sh` / `build.bat` raise the version by one step (the ecosystem's odometer), install the package and run the tests; `build-test.sh` / `build-test.bat` check without changing any version.",
         "h_related": "Related Projects",
         "related_intro": "HYDRA-UMC is made of independent repositories, each with its own version, tests and README. This is the family, by group:",
@@ -112,10 +90,6 @@ TEXT: dict[str, dict[str, object]] = {
             "y una afirmación que no se pudo rastrear hasta un repositorio queda señalada como tal. Nada de esto es una prueba de hardware: la matriz de capacidades dice, para cada capacidad, si solo se simuló, se probó en un ordenador o se ejecutó en hardware real, "
             "y el repositorio del firmware indica que todavía no existe ninguna placa montada."
         ),
-        "h_glance": "De un vistazo",
-        "g_version": "Versión", "g_maturity": "Madurez", "g_stack": "Pila", "g_target": "Destino", "g_hardware": "En hardware real",
-        "g_stack_value": "Markdown y Python 3.10+ (solo biblioteca estándar)", "g_target_value": "Un PC de desarrollo (sin servicio ni puerto)",
-        "g_hardware_value": "No aplica: es documentación y herramientas; registra lo que los demás repositorios han ejecutado en hardware",
         "h_overview": "Descripción general",
         "overview_intro": "La imagen siguiente muestra las familias de repositorios y los flujos que afirman sus documentos.",
         "overview": [
@@ -127,7 +101,7 @@ TEXT: dict[str, dict[str, object]] = {
             ("Catálogo de proyectos", "docs/PROJECT_CATALOG.md", "cada repositorio de la familia, escrito a partir de su propio manifiesto."),
         ],
         "tools_label": "Herramientas:",
-        "tools": "`make_catalog.py` escribe el catálogo, `make_brand.py` el banner, el icono y el mapa de familias, `make_readmes.py` los ocho README de este repositorio, `publication_check.py` busca cualquier cosa privada antes de una publicación y `check_all.sh` ejecuta las comprobaciones propias de cada repositorio de la familia e imprime una línea PASS, FAIL o SKIP por cada uno.",
+        "tools": "`make_catalog.py` escribe el catálogo, `make_brand.py` el banner, el icono y el mapa de familias, `make_readmes.py` los ocho README de este repositorio, `publication_check.py` busca cualquier cosa privada antes de una publicación y `check_all.sh` ejecuta las comprobaciones propias de cada repositorio de la familia e imprime una línea PASS, FAIL o SKIP por cada uno. `make_glance.py` escribe la tabla De un vistazo de cada repositorio a partir de su manifiesto y de `data/glance.json` (`--check` compara, `--apply` escribe); tras subir una versión, `python tools/make_glance.py --apply --repo NOMBRE` actualiza la tabla de ese repositorio.",
         "h_role": "Papel en HYDRA-UMC",
         "role": "HYDRA-UMC-DOCS es la memoria del ecosistema: el lugar donde viven la arquitectura, las interfaces, la base de seguridad y la matriz de capacidades, y donde se guardan las herramientas que comparan todos los repositorios entre sí. Cada repositorio conserva su propio README, sus pruebas y su contrato; este explica cómo encajan y qué se ha probado de verdad.",
         "h_structure": "Estructura del repositorio",
@@ -141,14 +115,7 @@ TEXT: dict[str, dict[str, object]] = {
         },
         "h_dev": "COMPILACIÓN Y EJECUCIÓN",
         "dev_requirements": "**Requisitos:** Python 3.10 o superior; pytest para las pruebas",
-        "dev_comments": [
-            "el catálogo está al día (necesita los repositorios junto a este)",
-            "el banner, el icono y el mapa están al día",
-            "los ocho README están al día",
-            "nada privado saldría con una publicación",
-            "las comprobaciones de cada repositorio, una línea por cada uno",
-            "las pruebas unitarias de las herramientas",
-        ],
+        "dev_comments": ["el catálogo está al día (necesita los repositorios junto a este)", "el banner, el icono y el mapa están al día", "los ocho README están al día", 'las tablas De un vistazo de la familia están al día (necesita los repositorios junto a este)', "nada privado saldría con una publicación", "las comprobaciones de cada repositorio, una línea por cada uno", "las pruebas unitarias de las herramientas"],
         "dev_note": "`build.sh` / `build.bat` suben la versión un paso (el cuentakilómetros del ecosistema), instalan el paquete y ejecutan las pruebas; `build-test.sh` / `build-test.bat` comprueban sin cambiar ninguna versión.",
         "h_related": "Proyectos relacionados",
         "related_intro": "HYDRA-UMC se compone de repositorios independientes, cada uno con su versión, sus pruebas y su README. Esta es la familia, por grupos:",
@@ -181,10 +148,6 @@ TEXT: dict[str, dict[str, object]] = {
             "et une affirmation qui n'a pu être reliée à un dépôt est signalée comme telle. Rien ici n'est un test matériel : la matrice des capacités indique, pour chaque capacité, si elle a seulement été simulée, testée sur un ordinateur ou exécutée sur du matériel réel, "
             "et le dépôt du firmware indique qu'aucune carte assemblée n'existe encore."
         ),
-        "h_glance": "En un coup d'œil",
-        "g_version": "Version", "g_maturity": "Maturité", "g_stack": "Pile", "g_target": "Cible", "g_hardware": "Sur matériel réel",
-        "g_stack_value": "Markdown et Python 3.10+ (bibliothèque standard uniquement)", "g_target_value": "Un PC de développement (ni service ni port)",
-        "g_hardware_value": "Sans objet : ce sont de la documentation et des outils ; il consigne ce que les autres dépôts ont exécuté sur du matériel",
         "h_overview": "Vue d'ensemble",
         "overview_intro": "L'image ci-dessous montre les familles de dépôts et les flux qu'affirment leurs documents.",
         "overview": [
@@ -196,7 +159,7 @@ TEXT: dict[str, dict[str, object]] = {
             ("Catalogue des projets", "docs/PROJECT_CATALOG.md", "chaque dépôt de la famille, écrit à partir de son propre manifeste."),
         ],
         "tools_label": "Outils :",
-        "tools": "`make_catalog.py` écrit le catalogue, `make_brand.py` la bannière, l'icône et la carte des familles, `make_readmes.py` les huit README de ce dépôt, `publication_check.py` cherche tout ce qui serait privé avant une publication, et `check_all.sh` lance les vérifications propres à chaque dépôt de la famille et affiche une ligne PASS, FAIL ou SKIP pour chacun.",
+        "tools": "`make_catalog.py` écrit le catalogue, `make_brand.py` la bannière, l'icône et la carte des familles, `make_readmes.py` les huit README de ce dépôt, `publication_check.py` cherche tout ce qui serait privé avant une publication, et `check_all.sh` lance les vérifications propres à chaque dépôt de la famille et affiche une ligne PASS, FAIL ou SKIP pour chacun. `make_glance.py` écrit le tableau En un coup d'œil de chaque dépôt à partir de son manifeste et de `data/glance.json` (`--check` compare, `--apply` écrit) ; après un changement de version, `python tools/make_glance.py --apply --repo NOM` met à jour le tableau de ce dépôt.",
         "h_role": "Rôle dans HYDRA-UMC",
         "role": "HYDRA-UMC-DOCS est la mémoire de l'écosystème : l'endroit où vivent l'architecture, les interfaces, le socle de sécurité et la matrice des capacités, et où sont gardés les outils qui comparent tous les dépôts côte à côte. Chaque dépôt garde son propre README, ses tests et son contrat ; celui-ci dit comment ils s'assemblent et ce qui a réellement été prouvé.",
         "h_structure": "Structure du dépôt",
@@ -210,14 +173,7 @@ TEXT: dict[str, dict[str, object]] = {
         },
         "h_dev": "COMPILATION ET EXÉCUTION",
         "dev_requirements": "**Prérequis :** Python 3.10 ou plus récent ; pytest pour les tests",
-        "dev_comments": [
-            "le catalogue est à jour (nécessite les dépôts à côté de celui-ci)",
-            "la bannière, l'icône et la carte sont à jour",
-            "les huit README sont à jour",
-            "rien de privé ne partirait avec une publication",
-            "les vérifications de chaque dépôt, une ligne chacun",
-            "les tests unitaires des outils",
-        ],
+        "dev_comments": ["le catalogue est à jour (nécessite les dépôts à côté de celui-ci)", "la bannière, l'icône et la carte sont à jour", "les huit README sont à jour", "les tableaux En un coup d'œil de la famille sont à jour (nécessite les dépôts à côté de celui-ci)", "rien de privé ne partirait avec une publication", "les vérifications de chaque dépôt, une ligne chacun", "les tests unitaires des outils"],
         "dev_note": "`build.sh` / `build.bat` avancent la version d'un cran (le compteur kilométrique de l'écosystème), installent le paquet et lancent les tests ; `build-test.sh` / `build-test.bat` vérifient sans changer aucune version.",
         "h_related": "Projets liés",
         "related_intro": "HYDRA-UMC est fait de dépôts indépendants, chacun avec sa version, ses tests et son README. Voici la famille, par groupes :",
@@ -250,10 +206,6 @@ TEXT: dict[str, dict[str, object]] = {
             "e un'affermazione che non si è potuta ricondurre a un repository è segnalata come tale. Nulla qui è un test hardware: la matrice delle capacità dice, per ogni capacità, se è stata solo simulata, provata su un computer o eseguita su hardware reale, "
             "e il repository del firmware dichiara che non esiste ancora alcuna scheda assemblata."
         ),
-        "h_glance": "In breve",
-        "g_version": "Versione", "g_maturity": "Maturità", "g_stack": "Stack", "g_target": "Destinazione", "g_hardware": "Su hardware reale",
-        "g_stack_value": "Markdown e Python 3.10+ (solo libreria standard)", "g_target_value": "Un PC di sviluppo (nessun servizio, nessuna porta)",
-        "g_hardware_value": "Non applicabile: è documentazione e strumenti; registra ciò che gli altri repository hanno eseguito su hardware",
         "h_overview": "Panoramica",
         "overview_intro": "L'immagine qui sotto mostra le famiglie di repository e i flussi che i loro documenti affermano.",
         "overview": [
@@ -265,7 +217,7 @@ TEXT: dict[str, dict[str, object]] = {
             ("Catalogo dei progetti", "docs/PROJECT_CATALOG.md", "ogni repository della famiglia, scritto a partire dal proprio manifesto."),
         ],
         "tools_label": "Strumenti:",
-        "tools": "`make_catalog.py` scrive il catalogo, `make_brand.py` il banner, l'icona e la mappa delle famiglie, `make_readmes.py` gli otto README di questo repository, `publication_check.py` cerca qualsiasi cosa privata prima di una pubblicazione e `check_all.sh` esegue i controlli propri di ogni repository della famiglia e stampa una riga PASS, FAIL o SKIP per ciascuno.",
+        "tools": "`make_catalog.py` scrive il catalogo, `make_brand.py` il banner, l'icona e la mappa delle famiglie, `make_readmes.py` gli otto README di questo repository, `publication_check.py` cerca qualsiasi cosa privata prima di una pubblicazione e `check_all.sh` esegue i controlli propri di ogni repository della famiglia e stampa una riga PASS, FAIL o SKIP per ciascuno. `make_glance.py` scrive la tabella In breve di ogni repository dal suo manifesto e da `data/glance.json` (`--check` confronta, `--apply` scrive); dopo un aumento di versione, `python tools/make_glance.py --apply --repo NOME` aggiorna la tabella di quel repository.",
         "h_role": "Ruolo in HYDRA-UMC",
         "role": "HYDRA-UMC-DOCS è la memoria dell'ecosistema: il luogo in cui vivono l'architettura, le interfacce, la base di sicurezza e la matrice delle capacità, e dove si conservano gli strumenti che confrontano tutti i repository fianco a fianco. Ogni repository conserva il proprio README, i propri test e il proprio contratto; questo dice come si incastrano e cosa è stato davvero provato.",
         "h_structure": "Struttura del repository",
@@ -279,14 +231,7 @@ TEXT: dict[str, dict[str, object]] = {
         },
         "h_dev": "COMPILAZIONE ED ESECUZIONE",
         "dev_requirements": "**Requisiti:** Python 3.10 o successivo; pytest per i test",
-        "dev_comments": [
-            "il catalogo è aggiornato (servono i repository accanto a questo)",
-            "il banner, l'icona e la mappa sono aggiornati",
-            "gli otto README sono aggiornati",
-            "nulla di privato uscirebbe con una pubblicazione",
-            "i controlli di ogni repository, una riga ciascuno",
-            "i test unitari degli strumenti",
-        ],
+        "dev_comments": ["il catalogo è aggiornato (servono i repository accanto a questo)", "il banner, l'icona e la mappa sono aggiornati", "gli otto README sono aggiornati", 'le tabelle In breve della famiglia sono aggiornate (servono i repository accanto a questo)', "nulla di privato uscirebbe con una pubblicazione", "i controlli di ogni repository, una riga ciascuno", "i test unitari degli strumenti"],
         "dev_note": "`build.sh` / `build.bat` alzano la versione di un passo (il contachilometri dell'ecosistema), installano il pacchetto ed eseguono i test; `build-test.sh` / `build-test.bat` controllano senza cambiare alcuna versione.",
         "h_related": "Progetti correlati",
         "related_intro": "HYDRA-UMC è fatto di repository indipendenti, ciascuno con la propria versione, i propri test e il proprio README. Ecco la famiglia, per gruppi:",
@@ -319,10 +264,6 @@ TEXT: dict[str, dict[str, object]] = {
             "und eine Aussage, die sich nicht auf ein Repository zurückführen ließ, ist als solche gekennzeichnet. Nichts davon ist ein Hardwaretest: Die Fähigkeitenmatrix sagt für jede Fähigkeit, ob sie nur simuliert, auf einem Computer getestet oder auf echter Hardware ausgeführt wurde, "
             "und das Firmware-Repository gibt an, dass noch keine bestückte Platine existiert."
         ),
-        "h_glance": "Auf einen Blick",
-        "g_version": "Version", "g_maturity": "Reifegrad", "g_stack": "Stack", "g_target": "Ziel", "g_hardware": "Auf echter Hardware",
-        "g_stack_value": "Markdown und Python 3.10+ (nur Standardbibliothek)", "g_target_value": "Ein Entwicklungs-PC (kein Dienst, kein Port)",
-        "g_hardware_value": "Nicht zutreffend: es sind Dokumentation und Werkzeuge; es hält fest, was die anderen Repositories auf Hardware ausgeführt haben",
         "h_overview": "Überblick",
         "overview_intro": "Das Bild unten zeigt die Familien von Repositories und die Datenflüsse, die ihre Dokumente behaupten.",
         "overview": [
@@ -334,7 +275,7 @@ TEXT: dict[str, dict[str, object]] = {
             ("Projektkatalog", "docs/PROJECT_CATALOG.md", "jedes Repository der Familie, aus seinem eigenen Manifest geschrieben."),
         ],
         "tools_label": "Werkzeuge:",
-        "tools": "`make_catalog.py` schreibt den Katalog, `make_brand.py` das Banner, das Symbol und die Familienkarte, `make_readmes.py` die acht READMEs dieses Repositorys, `publication_check.py` sucht vor einer Veröffentlichung nach allem Privaten, und `check_all.sh` führt die eigenen Prüfungen jedes Repositorys der Familie aus und gibt je eine Zeile PASS, FAIL oder SKIP aus.",
+        "tools": "`make_catalog.py` schreibt den Katalog, `make_brand.py` das Banner, das Symbol und die Familienkarte, `make_readmes.py` die acht READMEs dieses Repositorys, `publication_check.py` sucht vor einer Veröffentlichung nach allem Privaten, und `check_all.sh` führt die eigenen Prüfungen jedes Repositorys der Familie aus und gibt je eine Zeile PASS, FAIL oder SKIP aus. `make_glance.py` schreibt die Tabelle Auf einen Blick jedes Repositorys aus dessen Manifest und aus `data/glance.json` (`--check` vergleicht, `--apply` schreibt); nach einer Versionserhöhung aktualisiert `python tools/make_glance.py --apply --repo NAME` die Tabelle dieses Repositorys.",
         "h_role": "Rolle in HYDRA-UMC",
         "role": "HYDRA-UMC-DOCS ist das Gedächtnis des Ökosystems: der Ort, an dem Architektur, Schnittstellen, Sicherheitsbasis und Fähigkeitenmatrix liegen und an dem die Werkzeuge aufbewahrt werden, die alle Repositories nebeneinander vergleichen. Jedes Repository behält sein eigenes README, seine Tests und seinen Vertrag; dieses sagt, wie sie zusammenpassen und was wirklich belegt wurde.",
         "h_structure": "Repository-Struktur",
@@ -348,14 +289,7 @@ TEXT: dict[str, dict[str, object]] = {
         },
         "h_dev": "BUILD & AUSFÜHRUNG",
         "dev_requirements": "**Voraussetzungen:** Python 3.10 oder neuer; pytest für die Tests",
-        "dev_comments": [
-            "der Katalog ist aktuell (braucht die Repositories neben diesem)",
-            "Banner, Symbol und Karte sind aktuell",
-            "die acht READMEs sind aktuell",
-            "nichts Privates würde mit einer Veröffentlichung hinausgehen",
-            "die Prüfungen jedes Repositorys, eine Zeile je Repository",
-            "die Unit-Tests der Werkzeuge",
-        ],
+        "dev_comments": ["der Katalog ist aktuell (braucht die Repositories neben diesem)", "Banner, Symbol und Karte sind aktuell", "die acht READMEs sind aktuell", 'die Tabellen Auf einen Blick der Familie sind aktuell (braucht die Repositories neben diesem)', "nichts Privates würde mit einer Veröffentlichung hinausgehen", "die Prüfungen jedes Repositorys, eine Zeile je Repository", "die Unit-Tests der Werkzeuge"],
         "dev_note": "`build.sh` / `build.bat` erhöhen die Version um einen Schritt (der Kilometerzähler des Ökosystems), installieren das Paket und führen die Tests aus; `build-test.sh` / `build-test.bat` prüfen, ohne eine Version zu ändern.",
         "h_related": "Verwandte Projekte",
         "related_intro": "HYDRA-UMC besteht aus unabhängigen Repositories mit jeweils eigener Version, eigenen Tests und eigenem README. Das ist die Familie, nach Gruppen:",
@@ -388,10 +322,6 @@ TEXT: dict[str, dict[str, object]] = {
             "无法追溯到某个仓库的说法会被如实标明。这里的任何内容都不是硬件测试：能力矩阵会对每项能力说明它只是被模拟、在计算机上测试过，还是在真实硬件上运行过，"
             "固件仓库也说明目前尚不存在已焊装的电路板。"
         ),
-        "h_glance": "概览",
-        "g_version": "版本", "g_maturity": "成熟度", "g_stack": "技术栈", "g_target": "目标", "g_hardware": "真实硬件",
-        "g_stack_value": "Markdown 和 Python 3.10+（仅标准库）", "g_target_value": "开发用 PC（无服务、无端口）",
-        "g_hardware_value": "不适用：这是文档和工具；它记录其他仓库已在硬件上运行过的内容",
         "h_overview": "简介",
         "overview_intro": "下图显示各仓库家族，以及它们的文档所陈述的数据流。",
         "overview": [
@@ -403,7 +333,7 @@ TEXT: dict[str, dict[str, object]] = {
             ("项目目录", "docs/PROJECT_CATALOG.md", "家族中的每个仓库，依据其自身清单生成。"),
         ],
         "tools_label": "工具：",
-        "tools": "`make_catalog.py` 生成目录，`make_brand.py` 生成横幅、图标和家族图，`make_readmes.py` 生成本仓库的八份 README，`publication_check.py` 在发布前查找任何私有内容，`check_all.sh` 运行家族中每个仓库自己的检查，并为每个仓库输出一行 PASS、FAIL 或 SKIP。",
+        "tools": "`make_catalog.py` 生成目录，`make_brand.py` 生成横幅、图标和家族图，`make_readmes.py` 生成本仓库的八份 README，`publication_check.py` 在发布前查找任何私有内容，`check_all.sh` 运行家族中每个仓库自己的检查，并为每个仓库输出一行 PASS、FAIL 或 SKIP。`make_glance.py` 根据每个仓库的清单和 `data/glance.json` 生成其“速览”表（`--check` 比较，`--apply` 写入）；提升版本后，运行 `python tools/make_glance.py --apply --repo NAME` 即可刷新该仓库的表。",
         "h_role": "在 HYDRA-UMC 中的角色",
         "role": "HYDRA-UMC-DOCS 是整个生态的记忆：架构、接口、安全基线和能力矩阵都放在这里，同时也保存着把所有仓库并排比较的工具。每个仓库保留自己的 README、测试和契约；本仓库说明它们如何配合，以及真正证实了什么。",
         "h_structure": "仓库结构",
@@ -417,14 +347,7 @@ TEXT: dict[str, dict[str, object]] = {
         },
         "h_dev": "构建与运行",
         "dev_requirements": "**要求：** Python 3.10 或更新版本；测试需要 pytest",
-        "dev_comments": [
-            "目录是最新的（需要本仓库旁边有其他仓库）",
-            "横幅、图标和家族图是最新的",
-            "八份 README 是最新的",
-            "发布时不会带出任何私有内容",
-            "每个仓库的检查，每个一行",
-            "工具的单元测试",
-        ],
+        "dev_comments": ["目录是最新的（需要本仓库旁边有其他仓库）", "横幅、图标和家族图是最新的", "八份 README 是最新的", '家族的“速览”表是最新的（需要本仓库旁边有其他仓库）', "发布时不会带出任何私有内容", "每个仓库的检查，每个一行", "工具的单元测试"],
         "dev_note": "`build.sh` / `build.bat` 将版本提升一步（生态的里程表规则），安装包并运行测试；`build-test.sh` / `build-test.bat` 在不改变任何版本的情况下进行检查。",
         "h_related": "相关项目",
         "related_intro": "HYDRA-UMC 由相互独立的仓库组成，每个仓库都有自己的版本、测试和 README。以下是按组划分的家族：",
@@ -457,10 +380,6 @@ TEXT: dict[str, dict[str, object]] = {
             "リポジトリまでたどれなかった記述はその旨を明記しています。ここにあるものはハードウェアテストではありません。能力マトリクスは各能力について、シミュレーションのみか、コンピュータ上でテスト済みか、実機で動作したかを示します。"
             "ファームウェアのリポジトリは、実装済みの基板がまだ存在しないと述べています。"
         ),
-        "h_glance": "概要一覧",
-        "g_version": "バージョン", "g_maturity": "成熟度", "g_stack": "スタック", "g_target": "対象", "g_hardware": "実機での動作",
-        "g_stack_value": "Markdown と Python 3.10+（標準ライブラリのみ）", "g_target_value": "開発用 PC（サービスもポートもなし）",
-        "g_hardware_value": "対象外：ドキュメントとツールであり、他のリポジトリが実機で動かした内容を記録します",
         "h_overview": "概要",
         "overview_intro": "下の図は、リポジトリのファミリーと、各ドキュメントが述べるデータの流れを示します。",
         "overview": [
@@ -472,7 +391,7 @@ TEXT: dict[str, dict[str, object]] = {
             ("プロジェクトカタログ", "docs/PROJECT_CATALOG.md", "ファミリーの全リポジトリを、それぞれのマニフェストから生成。"),
         ],
         "tools_label": "ツール：",
-        "tools": "`make_catalog.py` はカタログを、`make_brand.py` はバナー・アイコン・ファミリーマップを、`make_readmes.py` はこのリポジトリの 8 つの README を書きます。`publication_check.py` は公開前に非公開のものを探し、`check_all.sh` はファミリーの各リポジトリ自身のチェックを実行して、1 件ごとに PASS、FAIL、SKIP の 1 行を出力します。",
+        "tools": "`make_catalog.py` はカタログを、`make_brand.py` はバナー・アイコン・ファミリーマップを、`make_readmes.py` はこのリポジトリの 8 つの README を書きます。`publication_check.py` は公開前に非公開のものを探し、`check_all.sh` はファミリーの各リポジトリ自身のチェックを実行して、1 件ごとに PASS、FAIL、SKIP の 1 行を出力します。 `make_glance.py` は各リポジトリのマニフェストと `data/glance.json` から「ひと目で」の表を書きます（`--check` は比較、`--apply` は書き込み）。バージョンを上げた後は `python tools/make_glance.py --apply --repo NAME` でそのリポジトリの表を更新します。",
         "h_role": "HYDRA-UMC での役割",
         "role": "HYDRA-UMC-DOCS はエコシステムの記憶です。アーキテクチャ、インターフェース、セキュリティ基準、能力マトリクスがここにあり、すべてのリポジトリを並べて比較するツールもここに置かれています。各リポジトリは自分の README、テスト、契約を持ち続けます。このリポジトリは、それらがどう組み合わさるか、そして実際に何が実証されたかを述べます。",
         "h_structure": "リポジトリ構成",
@@ -486,14 +405,7 @@ TEXT: dict[str, dict[str, object]] = {
         },
         "h_dev": "ビルドと実行",
         "dev_requirements": "**必要なもの：** Python 3.10 以降、テスト用に pytest",
-        "dev_comments": [
-            "カタログが最新（このリポジトリの隣に他のリポジトリが必要）",
-            "バナー、アイコン、マップが最新",
-            "8 つの README が最新",
-            "公開で非公開のものが外に出ない",
-            "各リポジトリのチェックを 1 行ずつ",
-            "ツールの単体テスト",
-        ],
+        "dev_comments": ["カタログが最新（このリポジトリの隣に他のリポジトリが必要）", "バナー、アイコン、マップが最新", "8 つの README が最新", 'ファミリー全体の「ひと目で」の表が最新（このリポジトリの隣に他のリポジトリが必要）', "公開で非公開のものが外に出ない", "各リポジトリのチェックを 1 行ずつ", "ツールの単体テスト"],
         "dev_note": "`build.sh` / `build.bat` はバージョンを 1 段階上げ（エコシステムのオドメーター方式）、パッケージをインストールしてテストを実行します。`build-test.sh` / `build-test.bat` はバージョンを変えずに確認します。",
         "h_related": "関連プロジェクト",
         "related_intro": "HYDRA-UMC は独立したリポジトリで構成され、それぞれに固有のバージョン、テスト、README があります。グループ別のファミリーは次のとおりです：",
@@ -526,10 +438,6 @@ TEXT: dict[str, dict[str, object]] = {
             "e uma afirmação que não se conseguiu rastrear até um repositório fica assinalada como tal. Nada aqui é um teste de hardware: a matriz de capacidades diz, para cada capacidade, se foi apenas simulada, testada num computador ou executada em hardware real, "
             "e o repositório do firmware indica que ainda não existe nenhuma placa montada."
         ),
-        "h_glance": "Num relance",
-        "g_version": "Versão", "g_maturity": "Maturidade", "g_stack": "Stack", "g_target": "Destino", "g_hardware": "Em hardware real",
-        "g_stack_value": "Markdown e Python 3.10+ (só a biblioteca padrão)", "g_target_value": "Um PC de desenvolvimento (sem serviço nem porta)",
-        "g_hardware_value": "Não aplicável: é documentação e ferramentas; regista o que os restantes repositórios executaram em hardware",
         "h_overview": "Visão geral",
         "overview_intro": "A imagem abaixo mostra as famílias de repositórios e os fluxos que os seus documentos afirmam.",
         "overview": [
@@ -541,7 +449,7 @@ TEXT: dict[str, dict[str, object]] = {
             ("Catálogo de projetos", "docs/PROJECT_CATALOG.md", "cada repositório da família, escrito a partir do seu próprio manifesto."),
         ],
         "tools_label": "Ferramentas:",
-        "tools": "`make_catalog.py` escreve o catálogo, `make_brand.py` o banner, o ícone e o mapa das famílias, `make_readmes.py` os oito README deste repositório, `publication_check.py` procura qualquer coisa privada antes de uma publicação e `check_all.sh` executa as verificações próprias de cada repositório da família e imprime uma linha PASS, FAIL ou SKIP por cada um.",
+        "tools": "`make_catalog.py` escreve o catálogo, `make_brand.py` o banner, o ícone e o mapa das famílias, `make_readmes.py` os oito README deste repositório, `publication_check.py` procura qualquer coisa privada antes de uma publicação e `check_all.sh` executa as verificações próprias de cada repositório da família e imprime uma linha PASS, FAIL ou SKIP por cada um. `make_glance.py` escreve a tabela Num relance de cada repositório a partir do seu manifesto e de `data/glance.json` (`--check` compara, `--apply` escreve); depois de subir uma versão, `python tools/make_glance.py --apply --repo NOME` atualiza a tabela desse repositório.",
         "h_role": "Papel no HYDRA-UMC",
         "role": "O HYDRA-UMC-DOCS é a memória do ecossistema: o lugar onde vivem a arquitetura, as interfaces, a base de segurança e a matriz de capacidades, e onde se guardam as ferramentas que comparam todos os repositórios lado a lado. Cada repositório mantém o seu próprio README, os seus testes e o seu contrato; este explica como encaixam e o que foi realmente comprovado.",
         "h_structure": "Estrutura do repositório",
@@ -555,14 +463,7 @@ TEXT: dict[str, dict[str, object]] = {
         },
         "h_dev": "COMPILAÇÃO E EXECUÇÃO",
         "dev_requirements": "**Requisitos:** Python 3.10 ou superior; pytest para os testes",
-        "dev_comments": [
-            "o catálogo está atualizado (precisa dos repositórios ao lado deste)",
-            "o banner, o ícone e o mapa estão atualizados",
-            "os oito README estão atualizados",
-            "nada privado sairia com uma publicação",
-            "as verificações de cada repositório, uma linha por cada um",
-            "os testes unitários das ferramentas",
-        ],
+        "dev_comments": ["o catálogo está atualizado (precisa dos repositórios ao lado deste)", "o banner, o ícone e o mapa estão atualizados", "os oito README estão atualizados", 'as tabelas Num relance da família estão atualizadas (precisa dos repositórios ao lado deste)', "nada privado sairia com uma publicação", "as verificações de cada repositório, uma linha por cada um", "os testes unitários das ferramentas"],
         "dev_note": "`build.sh` / `build.bat` sobem a versão um passo (o conta-quilómetros do ecossistema), instalam o pacote e executam os testes; `build-test.sh` / `build-test.bat` verificam sem alterar nenhuma versão.",
         "h_related": "Projetos relacionados",
         "related_intro": "O HYDRA-UMC é feito de repositórios independentes, cada um com a sua versão, os seus testes e o seu README. Esta é a família, por grupos:",

@@ -1,0 +1,328 @@
+{
+  "repos": {
+    "HYDRA-UMC": {
+      "hardware": "not_run",
+      "target": "board"
+    },
+    "HYDRA-UMC-ANDROID-CONTROL": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 98,
+        "command": "./gradlew testDebugUnitTest"
+      },
+      "target": "android"
+    },
+    "HYDRA-UMC-ANOMALY-DETECTOR": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 73,
+        "command": "pytest tests/"
+      }
+    },
+    "HYDRA-UMC-BRIDGE-AMR": {
+      "hardware": "simulated",
+      "tests": {
+        "count": 83,
+        "command": "python tools/build_test.py"
+      }
+    },
+    "HYDRA-UMC-BRIDGE-CNC": {
+      "hardware": "simulated",
+      "tests": {
+        "count": 123,
+        "command": "python tools/build_test.py"
+      }
+    },
+    "HYDRA-UMC-BRIDGE-DROIDS": {
+      "hardware": "simulated",
+      "tests": {
+        "count": 57,
+        "command": "python tools/build_test.py"
+      }
+    },
+    "HYDRA-UMC-BRIDGE-LASER": {
+      "hardware": "simulated",
+      "tests": {
+        "count": 96,
+        "command": "python tools/build_test.py"
+      }
+    },
+    "HYDRA-UMC-BRIDGE-OPENPNP": {
+      "hardware": "simulated",
+      "tests": {
+        "count": 68,
+        "command": "python tools/build_test.py"
+      }
+    },
+    "HYDRA-UMC-BRIDGE-PRINTER3D": {
+      "hardware": "simulated",
+      "tests": {
+        "count": 103,
+        "command": "python tools/build_test.py"
+      }
+    },
+    "HYDRA-UMC-BRIDGE-ROS2": {
+      "hardware": "simulated",
+      "tests": {
+        "count": 64,
+        "command": "python tools/build_test.py"
+      }
+    },
+    "HYDRA-UMC-BRIDGE-UAV": {
+      "hardware": "simulated",
+      "tests": {
+        "count": 84,
+        "command": "python tools/build_test.py"
+      }
+    },
+    "HYDRA-UMC-COGNITIVE-NODE": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 35,
+        "command": "pytest tests/"
+      }
+    },
+    "HYDRA-UMC-CONNECTOR-HUB": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 165,
+        "command": "pytest tests/"
+      }
+    },
+    "HYDRA-UMC-DASHBOARD-AI": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 70,
+        "command": "npm test"
+      }
+    },
+    "HYDRA-UMC-DATALAKE": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 94
+      }
+    },
+    "HYDRA-UMC-DETECTION-HEF": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 70
+      }
+    },
+    "HYDRA-UMC-DEV-SERVER": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 306
+      }
+    },
+    "HYDRA-UMC-DOCS": {
+      "hardware": "not_applicable"
+    },
+    "HYDRA-UMC-DOCS-QA": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 74
+      }
+    },
+    "HYDRA-UMC-DSI": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 72
+      }
+    },
+    "HYDRA-UMC-EDITOR-STL": {
+      "hardware": "not_applicable"
+    },
+    "HYDRA-UMC-EDITOR-URDF": {
+      "hardware": "not_applicable",
+      "tests": {
+        "count": 202
+      }
+    },
+    "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
+      "hardware": "not_run"
+    },
+    "HYDRA-UMC-HIL-BRIDGE": {
+      "hardware": "simulated"
+    },
+    "HYDRA-UMC-IOS-CONTROL": {
+      "hardware": "not_run",
+      "target": "ios"
+    },
+    "HYDRA-UMC-JOB-DISPATCHER": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 98
+      }
+    },
+    "HYDRA-UMC-LOCAL-TECHNICIAN": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 255
+      }
+    },
+    "HYDRA-UMC-MQTT-BROKER": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 96
+      }
+    },
+    "HYDRA-UMC-MTCONNECT-ADAPTER": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 100
+      }
+    },
+    "HYDRA-UMC-NODE-HEALING": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 59
+      }
+    },
+    "HYDRA-UMC-OPCUA-SERVER": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 37
+      }
+    },
+    "HYDRA-UMC-OPS-AGENT": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 319
+      }
+    },
+    "HYDRA-UMC-ORCHESTRATOR": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 111,
+        "command": "cargo test"
+      }
+    },
+    "HYDRA-UMC-OS": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 13,
+        "command": "python -m unittest"
+      }
+    },
+    "HYDRA-UMC-OS-REBUILDER": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 132,
+        "command": "pytest"
+      }
+    },
+    "HYDRA-UMC-PATH-PLANNER-3D": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 66,
+        "command": "cargo test"
+      }
+    },
+    "HYDRA-UMC-PHYSICS-REPLICA": {
+      "hardware": "not_run"
+    },
+    "HYDRA-UMC-PRODUCTION-REPORTS": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 122,
+        "command": "pytest"
+      }
+    },
+    "HYDRA-UMC-SAFETY-ZONES": {
+      "hardware": "not_run"
+    },
+    "HYDRA-UMC-SDK": {
+      "hardware": "not_run"
+    },
+    "HYDRA-UMC-SEMANTIC-PLANNER": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 71,
+        "command": "pytest"
+      }
+    },
+    "HYDRA-UMC-SERVER": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 130,
+        "command": "npm run test:unit"
+      }
+    },
+    "HYDRA-UMC-STUDIO": {
+      "hardware": "not_run"
+    },
+    "HYDRA-UMC-SUITE": {
+      "hardware": "not_run"
+    },
+    "HYDRA-UMC-SWARM-SYNC": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 70,
+        "command": "cargo test"
+      }
+    },
+    "HYDRA-UMC-SYNTHETIC-DATA-GEN": {
+      "hardware": "not_applicable",
+      "tests": {
+        "count": 58,
+        "command": "pytest"
+      }
+    },
+    "HYDRA-UMC-TELEMETRY-COLLECTOR": {
+      "hardware": "not_run"
+    },
+    "HYDRA-UMC-TOOL-CLI": {
+      "hardware": "simulated",
+      "tests": {
+        "count": 83,
+        "command": "go test ./..."
+      }
+    },
+    "HYDRA-UMC-TWIN": {
+      "hardware": "not_run"
+    },
+    "HYDRA-UMC-UPDATER": {
+      "hardware": "not_applicable",
+      "tests": {
+        "count": 140,
+        "command": "pytest tests/"
+      }
+    },
+    "HYDRA-UMC-VISION-NODE": {
+      "hardware": "not_run"
+    },
+    "HYDRA-UMC-VISION-STREAMER": {
+      "hardware": "bench",
+      "tests": {
+        "count": 105
+      }
+    },
+    "HYDRA-UMC-VISUAL-SERVOING-API": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 128,
+        "command": "pytest tests/"
+      }
+    },
+    "HYDRA-UMC-VLA-ENGINE": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 98,
+        "command": "pytest tests/"
+      }
+    },
+    "HYDRA-UMC-VOICE-UI": {
+      "hardware": "not_run",
+      "tests": {
+        "count": 85,
+        "command": "pytest tests/"
+      }
+    },
+    "HYDRA-UMC-WATCH": {
+      "hardware": "not_run"
+    },
+    "ELECTRO-HOBBY-3D-UPDATER": {
+      "hardware": "not_applicable"
+    }
+  }
+}
