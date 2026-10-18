@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+# =============================================================================
+# HYDRA-UMC-DOCS - tools/publication_check.py
+# Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
+# GPL-3.0-or-later - see LICENSE
+# =============================================================================
+"""Thin script: the work is done by hydra_umc_docs.cli.publication_check (run it with --help)."""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from hydra_umc_docs import cli  # noqa: E402
+
+if __name__ == "__main__":
+    raise SystemExit(cli.publication_check())
