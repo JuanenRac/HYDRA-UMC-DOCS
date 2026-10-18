@@ -60,6 +60,33 @@ def test_a_version_number_with_four_parts_is_not_an_address():
     assert scan("v93.184.216.34") == []
 
 
+def test_four_small_numbers_are_a_review_not_a_block():
+    assert kinds(scan('manifest("X", "1.8.0.3")')) == [("REVIEW", "four numbers that may be a version or an address")]
+
+
+def test_a_key_header_or_an_address_in_a_test_fixture_is_only_for_review():
+    found: list = []
+    scan_text("R", "tests/test_x.py", "-----BEGIN " + "RSA PRIVATE KEY-----", found, fixture=True)
+    scan_text("R", "tests/test_x.py", "host " + ".".join(["93", "184", "216", "34"]), found, fixture=True)
+    assert kinds(found) == [("REVIEW", "private key (in a test fixture)"), ("REVIEW", "public IP address 93.x.x.x (in a test fixture)")]
+    # a personal e-mail address is still a block, wherever it is
+    blocked: list = []
+    scan_text("R", "tests/test_x.py", "someone" + "@gmail.com", blocked, fixture=True)
+    assert [item[0] for item in blocked] == ["BLOCK"]
+
+
+def test_check_repo_treats_files_under_tests_as_fixtures(repo):
+    (repo / "tests").mkdir()
+    line = 'KEY = "-----BEGIN ' + 'RSA PRIVATE KEY-----"\n'
+    (repo / "tests" / "test_keys.py").write_text(line, encoding="utf-8")
+    (repo / "src.py").write_text(line, encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-q", "-m", "Add keys")
+    found = publication.check_repo(repo)
+    assert ("REVIEW", "HYDRA-UMC-FAKE", "tests/test_keys.py:1", "private key (in a test fixture)") in found
+    assert ("BLOCK", "HYDRA-UMC-FAKE", "src.py:1", "private key") in found
+
+
 def test_names_of_private_documents_and_tracking_codes_block():
     assert ("BLOCK", "the name of a private document") in kinds(scan(f"see {PRIVATE}/notes"))
     assert ("BLOCK", "an internal tracking code") in kinds(scan("fixed as " + "REV" + "-123"))
@@ -126,6 +153,15 @@ def test_a_commit_by_someone_else_or_with_a_trailer_blocks(repo):
     whats = [item[3] for item in publication.check_repo(repo) if item[0] == "BLOCK"]
     assert any("author or committer" in what for what in whats)
     assert sum("trailer" in what for what in whats) == 2
+
+
+def test_naming_an_ai_provider_in_a_commit_message_is_a_review_not_a_block(repo):
+    (repo / "d.txt").write_text("d", encoding="utf-8")
+    git(repo, "add", ".")
+    git(repo, "commit", "-q", "-m", "Do not pass the " + "ANTHRO" + "PIC_API_KEY variable to the child process")
+    found = publication.check_repo(repo)
+    assert [item for item in found if item[0] == "BLOCK"] == []
+    assert any(item[0] == "REVIEW" and item[3] == "the message mentions an AI tool" for item in found)
 
 
 def test_a_tracked_env_file_and_a_leaked_line_block(repo):

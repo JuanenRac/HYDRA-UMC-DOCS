@@ -41,7 +41,8 @@ PUBLIC_EMAILS = {"electrohobby3d@gmail.com"}   # the project's own public addres
 # Written in pieces so that this very file is never flagged by the check it implements.
 PRIVATE_MARKERS = ("SON" + "NET", "BIB" + "LIA")
 PRIVATE_PHRASES = ("private development" + " plan", "internal work" + " log", "plan de desarrollo" + " privado")
-AI_NAMES = ("cla" + "ude", "anthro" + "pic")
+AI_ASSISTANT = "cla" + "ude"   # the assistant that must never be named in a commit
+AI_NAMES = (AI_ASSISTANT, "anthro" + "pic")
 TRACKING_CODE = re.compile(
     r"(V07-[0-9]{3}|REV-[0-9]{3}|PROM-[A-Z]+-[A-Z]?[0-9]+|(DOC|CODE)-BUG-[0-9]+|\[\[(project|feedback|reference|user)_[a-z0-9_]+\]\])"
 )
@@ -82,14 +83,21 @@ def public_ip(text: str) -> bool:
     return address.is_global and not address.is_multicast and not text.startswith(("0.", "255."))
 
 
-def scan_text(name: str, where: str, text: str, findings: list[Finding], *, document: bool = False) -> None:
-    """Scan the lines of one text. `document` is true for Markdown and plain-text files (where a date is a finding)."""
+def scan_text(name: str, where: str, text: str, findings: list[Finding], *, document: bool = False, fixture: bool = False) -> None:
+    """Scan the lines of one text.
+
+    `document` is true for Markdown and plain-text files (where a date is a finding). `fixture` is true for test
+    and conformance files, where a key header or an address is data made up for the test: it is then only a
+    thing to review, never a block.
+    """
+    kind_of_fixture = "REVIEW" if fixture else "BLOCK"
+    suffix = " (in a test fixture)" if fixture else ""
     for number, line in enumerate(text.splitlines(), 1):
         if len(line) > 2000:
             continue
         ref = f"{where}:{number}"
         if PRIVATE_KEY.search(line):
-            findings.append(("BLOCK", name, ref, "private key"))
+            findings.append((kind_of_fixture, name, ref, "private key" + suffix))
         for match in EMAIL.finditer(line):
             if match.group(0).lower() not in PUBLIC_EMAILS:
                 findings.append(("BLOCK", name, ref, f"personal e-mail {match.group(0)[:4]}..."))
@@ -102,7 +110,12 @@ def scan_text(name: str, where: str, text: str, findings: list[Finding], *, docu
                 and public_ip(candidate)
                 and not re.search(r"(?i)version|v\d+\.\d+\.\d+\.\d+|\d+\.\d+\.\d+\.\d+-", around)
             ):
-                findings.append(("BLOCK", name, ref, f"public IP address {candidate.split('.')[0]}.x.x.x"))
+                octets = [int(part) for part in candidate.split(".")]
+                looks_like_a_version = octets[0] <= 9 and max(octets[1:]) <= 99
+                if looks_like_a_version:
+                    findings.append(("REVIEW", name, ref, "four numbers that may be a version or an address"))
+                else:
+                    findings.append((kind_of_fixture, name, ref, f"public IP address {candidate.split('.')[0]}.x.x.x" + suffix))
         for match in LITERAL.finditer(line):
             value = match.group(2)
             if not HARMLESS.search(value) and not HARMLESS.search(line) and len(set(value)) > 3:
@@ -134,8 +147,11 @@ def check_commits(repo: Path, ref: str | None, findings: list[Finding]) -> None:
         if author not in ALLOWED_AUTHORS or committer not in ALLOWED_AUTHORS:
             findings.append(("BLOCK", repo.name, f"commit {sha}", f"author or committer is not the project's ({author.split('<')[0].strip()})"))
         lowered = message.lower()
-        if re.search(r"(?im)^(co-authored-by|generated with|signed-off-by)\b", message) or any(ai in lowered for ai in AI_NAMES):
+        if re.search(r"(?im)^(co-authored-by|generated with|signed-off-by)\b", message) or AI_ASSISTANT in lowered:
             findings.append(("BLOCK", repo.name, f"commit {sha}", "the message has a co-author, AI or sign-off trailer"))
+        elif any(ai in lowered for ai in AI_NAMES):
+            # the name of an AI provider is often legitimate in a technical message (an environment variable, a client class)
+            findings.append(("REVIEW", repo.name, f"commit {sha}", "the message mentions an AI tool"))
         if any(marker in message for marker in PRIVATE_MARKERS):
             findings.append(("BLOCK", repo.name, f"commit {sha}", "the message names a private document"))
 
@@ -183,7 +199,7 @@ def check_repo(repo: Path, history: bool = False, ref: str | None = None) -> lis
             text = (repo / path).read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
             continue
-        scan_text(name, path, text, findings, document=suffix in {".md", ".txt"})
+        scan_text(name, path, text, findings, document=suffix in {".md", ".txt"}, fixture=bool(FIXTURE_PATH.search(path)))
     check_commits(repo, ref, findings)
     if history:
         check_history(repo, ref, findings)
