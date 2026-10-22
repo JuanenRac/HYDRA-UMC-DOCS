@@ -8,7 +8,7 @@
 # to this one, and the checks of this repository, and prints one PASS, FAIL or SKIP line each.
 #
 #   tools/check_all.sh            # every repository next to this one, then the checks of this one
-#   tools/check_all.sh --sync     # also the three sync scripts of HYDRA-UMC-SDK in --check mode
+#   tools/check_all.sh --sync     # also the sync scripts and the SDK pin check of HYDRA-UMC-SDK in --check mode
 #
 # A check that cannot run here (no python, no tools/ci_validate.py in that repository, no sibling
 # repository at all) is reported as SKIP with the reason, never as PASS. The exit status is non-zero
@@ -108,7 +108,7 @@ fi
 # 3. optional: the sync scripts of HYDRA-UMC-SDK, which keep the shared checks identical everywhere
 if [[ "$SYNC" -eq 1 ]]; then
   if [[ -d "$ROOT/HYDRA-UMC-SDK/tools" ]]; then
-    for script in sync_doc_policy sync_readme_parity sync_version_tools; do
+    for script in sync_doc_policy sync_readme_parity sync_version_tools sync_repo_tools pin_sdk; do
       run "sdk: $script" "$ROOT/HYDRA-UMC-SDK" "$PYTHON" "tools/$script.py" --check
     done
   else

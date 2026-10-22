@@ -81,6 +81,18 @@ jobs:
         continue-on-error: true
         run: python tools/publication_check.py
 
+      - name: Compare the shared tooling of every repository with its canonical copy
+        working-directory: HYDRA-UMC-DOCS
+        run: |
+          python ../HYDRA-UMC-SDK/tools/sync_repo_tools.py --check --workspace ..
+
+      - name: Report consumers of the SDK that are not on its newest release tag (advisory)
+        working-directory: HYDRA-UMC-DOCS
+        continue-on-error: true
+        run: |
+          git -C ../HYDRA-UMC-SDK fetch --quiet --tags --depth=1 origin
+          python ../HYDRA-UMC-SDK/tools/pin_sdk.py --check --workspace ..
+
       - name: Run the own validation of every repository and the checks of this one
         working-directory: HYDRA-UMC-DOCS
         run: bash tools/check_all.sh

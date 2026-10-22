@@ -5,6 +5,11 @@ version number follows this ecosystem's "odometer" scheme: PATCH +1 on
 every real build, rolling into MINOR past 9 (`0.0.9` -> `0.1.0`); MAJOR is
 bumped manually only. See `bump_version.py`.
 
+## [Unreleased]
+
+- Added `tools/hydra_project_tool.py`: the same `validate`, `test`, `version`, `status` and `bump` commands in every repository. The checks run with `HYDRA_UMC_CI=1` and fail if the version changes; only `bump` changes it.
+- The nightly family check compares the shared tooling of every repository with its canonical copy (`sync_repo_tools.py --check`) and reports, as advisory, the consumers of the SDK that are not on its newest release tag; `check_all.sh --sync` runs the same two checks.
+
 ## [0.0.3]
 
 - New check `tools/check_claims.py` (module `claims`, 12 tests): it reads the English README of every repository of the family and fails when a sentence has a risk word (E-STOP, interlock, real-time, signed, mTLS, FDCAN, YOLO, AI-driven, autonomous, certified, ...) and no status marker next to it, unless the line is in `data/claims_reviewed.json`.
