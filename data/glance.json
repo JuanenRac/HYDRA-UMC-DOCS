@@ -175,7 +175,7 @@
     "HYDRA-UMC-NODE-HEALING": {
       "hardware": "not_run",
       "tests": {
-        "count": 59
+        "count": 78
       }
     },
     "HYDRA-UMC-OPCUA-SERVER": {
