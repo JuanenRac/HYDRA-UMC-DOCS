@@ -9,6 +9,7 @@ bumped manually only. See `bump_version.py`.
 
 - Added `tools/hydra_project_tool.py`: the same `validate`, `test`, `version`, `status` and `bump` commands in every repository. The checks run with `HYDRA_UMC_CI=1` and fail if the version changes; only `bump` changes it.
 - The nightly family check compares the shared tooling of every repository with its canonical copy (`sync_repo_tools.py --check`) and reports, as advisory, the consumers of the SDK that are not on its newest release tag; `check_all.sh --sync` runs the same two checks.
+- The test counts of the orchestrator (126) and of the server (178) in the at-a-glance data are the ones their READMEs state.
 
 ## [0.0.3]
 
