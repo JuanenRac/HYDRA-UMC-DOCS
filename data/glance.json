@@ -99,7 +99,7 @@
     "HYDRA-UMC-DATALAKE": {
       "hardware": "not_run",
       "tests": {
-        "count": 94
+        "count": 109
       }
     },
     "HYDRA-UMC-DETECTION-HEF": {
@@ -151,7 +151,7 @@
     "HYDRA-UMC-JOB-DISPATCHER": {
       "hardware": "not_run",
       "tests": {
-        "count": 121
+        "count": 143
       }
     },
     "HYDRA-UMC-LOCAL-TECHNICIAN": {
@@ -163,13 +163,13 @@
     "HYDRA-UMC-MQTT-BROKER": {
       "hardware": "not_run",
       "tests": {
-        "count": 96
+        "count": 155
       }
     },
     "HYDRA-UMC-MTCONNECT-ADAPTER": {
       "hardware": "not_run",
       "tests": {
-        "count": 100
+        "count": 115
       }
     },
     "HYDRA-UMC-NODE-HEALING": {
@@ -181,7 +181,7 @@
     "HYDRA-UMC-OPCUA-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 37
+        "count": 73
       }
     },
     "HYDRA-UMC-OPS-AGENT": {
@@ -193,7 +193,7 @@
     "HYDRA-UMC-ORCHESTRATOR": {
       "hardware": "not_run",
       "tests": {
-        "count": 126,
+        "count": 143,
         "command": "cargo test"
       }
     },
