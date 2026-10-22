@@ -149,7 +149,6 @@ def family_map(positions: dict[str, tuple[int, int]] | None = None) -> str:
 def outputs() -> dict[str, str]:
     """Published path (relative to the repository) -> content."""
     return {
-        "images/HYDRA_UMC_BANNER.svg": banner(),
         "images/HYDRA_UMC_FAMILY.svg": family_map(),
         "brand/HYDRA_UMC_ICON.svg": icon(),
     }

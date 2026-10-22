@@ -7,6 +7,7 @@ bumped manually only. See `bump_version.py`.
 
 ## [Unreleased]
 
+- The brand generator no longer writes the banner of this repository: it is made, like every project banner, by the profile's `tools/project_banner.py`, and the generator keeps the icon and the map of the families.
 - The banner follows the animated style of the ecosystem banners, with the name, the kind and the technologies of the project.
 - Added `tools/hydra_project_tool.py`: the same `validate`, `test`, `version`, `status` and `bump` commands in every repository. The checks run with `HYDRA_UMC_CI=1` and fail if the version changes; only `bump` changes it.
 - The nightly family check compares the shared tooling of every repository with its canonical copy (`sync_repo_tools.py --check`) and reports, as advisory, the consumers of the SDK that are not on its newest release tag; `check_all.sh --sync` runs the same two checks.
