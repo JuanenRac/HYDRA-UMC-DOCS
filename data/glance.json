@@ -151,7 +151,7 @@
     "HYDRA-UMC-JOB-DISPATCHER": {
       "hardware": "not_run",
       "tests": {
-        "count": 98
+        "count": 121
       }
     },
     "HYDRA-UMC-LOCAL-TECHNICIAN": {
