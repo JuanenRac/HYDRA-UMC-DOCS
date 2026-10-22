@@ -34,9 +34,9 @@ REM Runs HYDRA-UMC-DOCS's entry point. Run build.bat first. Forwards
 REM all arguments (e.g. "run.bat catalog --check").
 cd /d "%~dp0"
 
-if exist .venv\Scripts\activate.bat (
-    call .venv\Scripts\activate.bat
-)
+REM The python of the venv is used directly (no activate script); without a venv the python on the PATH is used.
+set "VPY=python"
+if exist .venv\Scripts\python.exe set "VPY=%CD%\.venv\Scripts\python.exe"
 
-python -m hydra_umc_docs.cli %*
+"%VPY%" -m hydra_umc_docs.cli %*
 %KEEP_OPEN%
