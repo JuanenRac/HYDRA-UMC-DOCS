@@ -207,7 +207,7 @@
     "HYDRA-UMC-OS-REBUILDER": {
       "hardware": "not_run",
       "tests": {
-        "count": 132,
+        "count": 158,
         "command": "pytest"
       }
     },
