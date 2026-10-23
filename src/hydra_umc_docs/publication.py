@@ -31,9 +31,12 @@ from .family import is_family_name
 
 Finding = tuple[str, str, str, str]   # (BLOCK or REVIEW, repository, where, what)
 
-FIXTURE_PATH = re.compile(r"(^|/)(tests?|conformance|fixtures)/|(^|/)test_[^/]*$")
+FIXTURE_PATH = re.compile(
+    r"(^|/)(tests?|conformance|fixtures|testdata)/|(^|/)(test_|verify_)[^/]*$|(^|/)contracts/redaction/|(^|/)vectors[^/]*\.json$"
+)
 ALLOWED_AUTHORS = {
     "JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>",
+    "JuanenRac <electrohobby3d@gmail.com>",
     "Electro Hobby 3D <electrohobby3d@gmail.com>",
 }
 PUBLIC_EMAILS = {"electrohobby3d@gmail.com"}   # the project's own public address
