@@ -294,7 +294,7 @@
     "HYDRA-UMC-VISION-STREAMER": {
       "hardware": "bench",
       "tests": {
-        "count": 105
+        "count": 109
       }
     },
     "HYDRA-UMC-VISUAL-SERVOING-API": {
