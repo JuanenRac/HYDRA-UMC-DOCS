@@ -111,7 +111,7 @@
     "HYDRA-UMC-DEV-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 306
+        "count": 339
       }
     },
     "HYDRA-UMC-DOCS": {
