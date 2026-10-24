@@ -177,6 +177,9 @@ def check_text(text: str, section: str) -> list[str]:
 
 
 def apply_repo(repo, entry: dict) -> list[str]:
+    """Write the eight sections; a repository whose entry says "status": "own" keeps the table its own README carries."""
+    if entry.get("status") == "own":
+        return []
     changed = []
     manifest = glance.load_manifest(repo)
     for code in glance.LANGUAGE_FILES:
@@ -190,6 +193,8 @@ def apply_repo(repo, entry: dict) -> list[str]:
 
 
 def check_repo(repo, entry: dict) -> list[str]:
+    if entry.get("status") == "own":
+        return []
     problems = []
     manifest = glance.load_manifest(repo)
     for code in glance.LANGUAGE_FILES:

@@ -322,7 +322,8 @@
       "hardware": "not_run"
     },
     "ELECTRO-HOBBY-3D-UPDATER": {
-      "hardware": "not_applicable"
+      "hardware": "not_applicable",
+      "status": "own"
     }
   }
 }
