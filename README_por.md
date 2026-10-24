@@ -28,7 +28,7 @@
 
 | | |
 |---|---|
-| Versão | `0.0.3` |
+| Versão | `0.0.4` |
 | Maturidade | Estrutura inicial |
 | Tecnologia | Markdown / Mermaid / Python / SVG |
 | Destino | O PC de quem o usa |

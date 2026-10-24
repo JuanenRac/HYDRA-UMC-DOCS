@@ -28,7 +28,7 @@
 
 | | |
 |---|---|
-| Versión | `0.0.3` |
+| Versión | `0.0.4` |
 | Madurez | Andamiaje |
 | Tecnología | Markdown / Mermaid / Python / SVG |
 | Destino | El PC de quien lo usa |

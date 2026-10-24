@@ -28,7 +28,7 @@
 
 | | |
 |---|---|
-| Version | `0.0.3` |
+| Version | `0.0.4` |
 | Maturity | Scaffolding |
 | Stack | Markdown / Mermaid / Python / SVG |
 | Target | The PC of the person using it |
