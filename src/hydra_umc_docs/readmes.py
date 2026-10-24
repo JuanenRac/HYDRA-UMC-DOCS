@@ -94,6 +94,7 @@ def render(code: str, manifest: dict, entry: dict) -> str:
     add("```text")
     add(f"{NAME}/")
     add(f"├── docs/     {tree['docs']}")
+    add(f"├── data/     {tree['data']}")
     add(f"├── src/      {tree['src']}")
     add(f"├── tools/    {tree['tools']}")
     add(f"├── tests/    {tree['tests']}")

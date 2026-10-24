@@ -49,6 +49,7 @@ TEXT: dict[str, dict[str, object]] = {
         "h_structure": "Repository Structure",
         "tree": {
             "docs": "architecture, interfaces, capability matrix, security baseline, threat model, first slice, generated catalogue",
+            "data": "the reviewed claims and the data of the At a glance tables",
             "src": "the tools as a package (catalogue, brand, READMEs, publication check)",
             "tools": "thin scripts over the package, check_all.sh, and the shared CI checks of the ecosystem",
             "tests": "unit tests of the tools",
@@ -107,6 +108,7 @@ TEXT: dict[str, dict[str, object]] = {
         "h_structure": "Estructura del repositorio",
         "tree": {
             "docs": "arquitectura, interfaces, matriz de capacidades, base de seguridad, modelo de amenazas, primer corte, catálogo generado",
+            "data": "las afirmaciones revisadas y los datos de las tablas De un vistazo",
             "src": "las herramientas como paquete (catálogo, marca, README, comprobación de publicación)",
             "tools": "scripts finos sobre el paquete, check_all.sh y las comprobaciones de CI compartidas del ecosistema",
             "tests": "pruebas unitarias de las herramientas",
@@ -165,6 +167,7 @@ TEXT: dict[str, dict[str, object]] = {
         "h_structure": "Structure du dépôt",
         "tree": {
             "docs": "architecture, interfaces, matrice des capacités, socle de sécurité, modèle de menaces, première tranche, catalogue généré",
+            "data": "les affirmations vérifiées et les données des tableaux En un coup d'œil",
             "src": "les outils sous forme de paquet (catalogue, marque, README, vérification de publication)",
             "tools": "scripts fins au-dessus du paquet, check_all.sh et les vérifications de CI partagées de l'écosystème",
             "tests": "tests unitaires des outils",
@@ -223,6 +226,7 @@ TEXT: dict[str, dict[str, object]] = {
         "h_structure": "Struttura del repository",
         "tree": {
             "docs": "architettura, interfacce, matrice delle capacità, base di sicurezza, modello delle minacce, prima fetta, catalogo generato",
+            "data": "le affermazioni verificate e i dati delle tabelle In breve",
             "src": "gli strumenti come pacchetto (catalogo, marchio, README, controllo di pubblicazione)",
             "tools": "script sottili sopra il pacchetto, check_all.sh e i controlli CI condivisi dell'ecosistema",
             "tests": "test unitari degli strumenti",
@@ -281,6 +285,7 @@ TEXT: dict[str, dict[str, object]] = {
         "h_structure": "Repository-Struktur",
         "tree": {
             "docs": "Architektur, Schnittstellen, Fähigkeitenmatrix, Sicherheitsbasis, Bedrohungsmodell, erster Schnitt, erzeugter Katalog",
+            "data": "die geprüften Aussagen und die Daten der Tabellen Auf einen Blick",
             "src": "die Werkzeuge als Paket (Katalog, Marke, READMEs, Veröffentlichungsprüfung)",
             "tools": "dünne Skripte über dem Paket, check_all.sh und die gemeinsamen CI-Prüfungen des Ökosystems",
             "tests": "Unit-Tests der Werkzeuge",
@@ -339,6 +344,7 @@ TEXT: dict[str, dict[str, object]] = {
         "h_structure": "仓库结构",
         "tree": {
             "docs": "架构、接口、能力矩阵、安全基线、威胁模型、第一个切片、生成的目录",
+            "data": "已核实的说法以及“速览”表的数据",
             "src": "以包形式提供的工具（目录、品牌素材、README、发布检查）",
             "tools": "包之上的薄脚本、check_all.sh，以及生态共享的 CI 检查",
             "tests": "工具的单元测试",
@@ -397,6 +403,7 @@ TEXT: dict[str, dict[str, object]] = {
         "h_structure": "リポジトリ構成",
         "tree": {
             "docs": "アーキテクチャ、インターフェース、能力マトリクス、セキュリティ基準、脅威モデル、最初のスライス、生成されたカタログ",
+            "data": "確認済みの記述と、「ひと目で」の表のデータ",
             "src": "パッケージとしてのツール（カタログ、ブランド、README、公開前チェック）",
             "tools": "パッケージの上の薄いスクリプト、check_all.sh、エコシステム共通の CI チェック",
             "tests": "ツールの単体テスト",
@@ -455,6 +462,7 @@ TEXT: dict[str, dict[str, object]] = {
         "h_structure": "Estrutura do repositório",
         "tree": {
             "docs": "arquitetura, interfaces, matriz de capacidades, base de segurança, modelo de ameaças, primeiro corte, catálogo gerado",
+            "data": "as afirmações revistas e os dados das tabelas Num relance",
             "src": "as ferramentas como pacote (catálogo, marca, README, verificação de publicação)",
             "tools": "scripts finos sobre o pacote, check_all.sh e as verificações de CI partilhadas do ecossistema",
             "tests": "testes unitários das ferramentas",

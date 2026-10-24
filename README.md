@@ -72,6 +72,7 @@ HYDRA-UMC-DOCS is the memory of the ecosystem: the place where the architecture,
 ```text
 HYDRA-UMC-DOCS/
 ├── docs/     architecture, interfaces, capability matrix, security baseline, threat model, first slice, generated catalogue
+├── data/     the reviewed claims and the data of the At a glance tables
 ├── src/      the tools as a package (catalogue, brand, READMEs, publication check)
 ├── tools/    thin scripts over the package, check_all.sh, and the shared CI checks of the ecosystem
 ├── tests/    unit tests of the tools
