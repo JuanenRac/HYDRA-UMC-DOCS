@@ -92,7 +92,7 @@
     "HYDRA-UMC-DASHBOARD-AI": {
       "hardware": "not_run",
       "tests": {
-        "count": 70,
+        "count": 164,
         "command": "npm test"
       }
     },
