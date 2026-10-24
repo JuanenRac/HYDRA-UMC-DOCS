@@ -10,7 +10,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import __version__, brand, catalog, claims, family, glance, publication, readmes
+from . import __version__, brand, catalog, claims, family, glance, publication, readmes, status
 
 REPO = Path(__file__).resolve().parents[2]
 CATALOG_FILE = REPO / "docs" / "PROJECT_CATALOG.md"
@@ -100,7 +100,7 @@ def make_readmes(argv: list[str] | None = None) -> int:
 
 
 def make_glance(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="make_glance.py", description="Write or check the 'At a glance' section of the eight READMEs of the repositories next to this one.")
+    parser = argparse.ArgumentParser(prog="make_glance.py", description="Write or check the 'At a glance' and 'Project status' sections of the eight READMEs of the repositories next to this one.")
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--apply", action="store_true", help="insert the section where it is missing and rewrite it where it is stale")
     mode.add_argument("--check", action="store_true", help="fail when a section is missing, misplaced or stale (the default)")
@@ -127,9 +127,9 @@ def make_glance(argv: list[str] | None = None) -> int:
                     problems.append(f"{name}: the repository is not next to this one")
                 continue
             if args.apply:
-                for changed in glance.apply_repo(repo, entries[name]):
+                for changed in glance.apply_repo(repo, entries[name]) + status.apply_repo(repo, entries[name]):
                     print(f"WRITTEN {name}/{changed}")
-            problems += glance.check_repo(repo, entries[name])
+            problems += glance.check_repo(repo, entries[name]) + status.check_repo(repo, entries[name])
             done += 1
     except (glance.GlanceError, OSError, ValueError) as error:
         print(f"GLANCE=FAIL {error}", file=sys.stderr)

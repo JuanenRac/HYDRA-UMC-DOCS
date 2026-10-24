@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- Added the "Project status" traffic-light table to the README generator: one row each for software, tests, real hardware and documentation, with the light taken only from the maturity, the test count and the hardware statement of the data file, in the eight languages and with only the light in the State column. `make_glance.py` writes and checks it together with the "At a glance" table.
 - The reviewed line of the claims check for the Electro Hobby 3D updater follows its README again (the sentence about the two ecosystems grew), so the nightly check passes.
 - The test counts of the "At a glance" data for the SERVER and the Android control app follow their READMEs again, so the nightly check of that section passes for them.
 - The validator is the shared copy of the repositories again (it also checks the documentation links and the README section parity).

@@ -15,7 +15,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from . import glance
+from . import glance, status
 from .readme_claims_text import COMMENT as CLAIMS_COMMENT, NOTE as CLAIMS_NOTE, TOOLS as CLAIMS_TOOLS
 from .readme_family import FAMILY_REPOS
 from .readme_text import LANGUAGES, TEXT
@@ -70,6 +70,8 @@ def render(code: str, manifest: dict, entry: dict) -> str:
     add(CLAIMS_NOTE[code])
     add("")
     add(glance.render_section(code, manifest, entry).rstrip(chr(10)))
+    add("")
+    add(status.render_section(code, manifest, entry).rstrip(chr(10)))
     add("")
     add(f"## 🎯 {text['h_overview']}")
     add("")
