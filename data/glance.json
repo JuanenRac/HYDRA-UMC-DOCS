@@ -135,7 +135,7 @@
     "HYDRA-UMC-EDITOR-URDF": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 202
+        "count": 355
       }
     },
     "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
