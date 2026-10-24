@@ -292,7 +292,7 @@
       "hardware": "not_run"
     },
     "HYDRA-UMC-VISION-STREAMER": {
-      "hardware": "bench",
+      "hardware": "not_run",
       "tests": {
         "count": 109
       }
