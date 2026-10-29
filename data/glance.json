@@ -299,7 +299,7 @@
     "HYDRA-UMC-STUDIO": {
       "hardware": "not_run",
       "tests": {
-        "count": 631,
+        "count": 637,
         "command": "npm test"
       }
     },
