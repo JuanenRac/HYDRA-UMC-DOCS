@@ -1,0 +1,1 @@
+🔊 Local Hardware-Accelerated Speech-to-Action Pipeline

@@ -1,0 +1,1 @@
+📐 Pose-Correction Law with Zone-Gated Authorisation (v0: no camera pose estimation yet)

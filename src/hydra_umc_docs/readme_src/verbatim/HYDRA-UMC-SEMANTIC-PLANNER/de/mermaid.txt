@@ -1,0 +1,10 @@
+```mermaid
+flowchart TB
+    GOAL["Hochgradiges Ziel"] --> LLM["Semantisches LLM (Hailo-10)"]
+    LLM --> SUB["Generierung von Unteraufgaben"]
+    SUB --> EXEC["Ausführung (Orchestrator)"]
+    EXEC -- Fehler --> FB["Fehlerkontext"]
+    FB --> LLM
+    LLM --> REC["Wiederherstellungsstrategie"]
+    REC --> EXEC
+```

@@ -1,0 +1,27 @@
+### Aktueller Status und nächste Schritte
+
+**Heute real:** das PBVS-Korrekturgesetz für Pose-Fehler und
+Geschwindigkeitsbefehl (`pose.py`, `servo.py`) - der Schritt
+"Fehlerberechnung (Pose-Delta)" im obigen Schleifendiagramm - mit einem
+echten `correct`-CLI-Befehl; die sicherheitsgesperrte
+Autorisierungs-Policy (`authorization.py`), die eine visuelle Erkennung
+nur dann in Bewegung umwandelt, wenn der vorgelagerte Sicherheitszustand
+`READY` ist und die Daten vertrauenswürdig/frisch genug sind, verfügbar
+über den `request`-CLI-Befehl; sowie eine echte HailoRT-Integrationsgrenze
+(`hailo_runtime.py`), bereit für einen echten Hailo-8-Pose-Schätzer, sobald
+dieser angeschlossen wird. Insgesamt {tests} Tests.
+
+**Noch offen, blockiert durch echte Hardware:** die
+6-Freiheitsgrad-Posen-*schätzung* tatsächlich über `hailo_runtime.py`
+laufen zu lassen, braucht ein echtes, kompiliertes Pose-Schätzungs-`.hef`
+(noch kein konkretes Modell gewählt) und eine angeschlossene physische
+Hailo-8-NPU, und die gRPC-Übertragung des resultierenden
+Geschwindigkeitsbefehls mit niedriger Latenz an den HYDRA-UMC-Kern ist
+separate zukünftige Arbeit.
+
+### FAHRPLAN
+
+* **Phase 1:** Multi-Kamera-Pipeline-Synchronisation und Kalibrierung für 8x USB 3.0-Feeds.
+* **Phase 2:** Migration zu YOLOv11 und Hailo-8L-Optimierung für die Erkennung industrieller Komponenten.
+* **Phase 3:** Echtzeit-3D-Rekonstruktion aus Stereo-Vision-Knoten und dynamische Kartierung von Sicherheitszonen.
+* **Phase 4:** Unterstützung für visuelles 9-DOF-Tracking (einschließlich Orientierungsredundanz) und submikrometrische Korrektur.

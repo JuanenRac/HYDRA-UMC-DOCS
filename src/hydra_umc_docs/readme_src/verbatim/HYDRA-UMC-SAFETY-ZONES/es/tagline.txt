@@ -1,0 +1,1 @@
+🚨 Lógica de invasión de zona y solicitud de E-STOP (v0: sin detector ni E-STOP físico todavía)

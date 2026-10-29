@@ -1,0 +1,59 @@
+Requiere Python 3.10+.
+
+```bash
+# Linux / macOS
+./build.sh   # crea .venv, instala el
+             # paquete en modo editable (con extras de dev), corre la
+             # suite de tests real, compile-check de todo src/
+./run.sh     # ejecuta el entry point desde .venv, imprime nombre + version + rol
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` nunca cambian la versión (solo `python tools/hydra_project_tool.py bump` la sube), hacen compile-check del código fuente con `python -m compileall` y luego corren la suite de tests real (`pytest tests/`).
+
+El subcomando real `generate` escribe un dataset real en disco:
+
+```bash
+./run.sh generate --out dataset/ --count 20 --components 6 --defect-rate 0.3 --seed 42 --format both
+
+# Windows
+run.bat generate --out dataset\ --count 20 --components 6 --defect-rate 0.3 --seed 42 --format both
+```
+
+`--jobs N` renderiza las escenas en N procesos (por defecto 1): cada escena tiene su propio generador aleatorio sembrado con la semilla y su índice, así que el dataset es el mismo sea cual sea N. El manifiesto ahora registra la lista de clases (`classes`) y su hash (`classes_sha256`, el sha256 de `classes.txt`) para que quien registre un modelo entrenado con el dataset pueda comprobar el orden de las clases. `verify --out dataset/` vuelve a leer una carpeta de dataset: las imágenes contra los checksums del manifiesto, las etiquetas YOLO (cinco campos, un id de clase conocido, todo dentro de [0, 1]), el fichero COCO (ids únicos, cajas dentro de la imagen) y el número de etiquetas contra el manifiesto; `generate` ejecuta la misma comprobación sobre su propia salida. El renderizador BMP pinta por rebanadas en vez de por píxel (los mismos bytes, mucho más rápido en imágenes grandes). Probado; la comprobación del lado de DETECTION-HEF que compararía el hash todavía no existe.
+
+Escribe imágenes BMP reales en `dataset/images/`, etiquetas YOLO reales en `dataset/labels/` + `dataset/classes.txt`, y/o un `dataset/annotations.json` real en formato COCO, según `--format`. Una `--seed` dada hace el dataset reproducible byte a byte.
+
+Los argumentos se comprueban por rango (`--count` 1..10000, `--width`/`--height` 16..4096, `--components` 1..1000, `--defect-rate` 0..1) y las imágenes de todo el dataset están limitadas a 4 GiB: un comando cuyo tamaño estimado supere ese límite se rechaza con código de salida 2 antes de escribir nada, de modo que una errata no pueda llenar el disco de la máquina donde se ejecuta.
+
+Cada ejecución también escribe un `dataset/manifest.json` real y valida su propia salida:
+
+```
+Generated 20 scene(s) -> dataset/images
+Total labeled components (incl. defects): 150
+Annotations exported as: both
+Reproducible seed: yes (seed=42)
+Manifest written -> dataset/manifest.json
+Validation: OK (scene bounds, BMP integrity, label distribution)
+```
+
+```json
+{
+  "seed": 42,
+  "reproducible": true,
+  "count": 20,
+  "scenes": [
+    { "image": "scene_0000.bmp", "num_components": 7,
+      "label_counts": {"bracket": 1, "bolt": 2, "gear": 2, "defect": 1, "connector": 1},
+      "sha256": "2301c6974673d9f6a408d7a4b746d236d0ec98b535064884b7a3929645a8f2eb" }
+  ],
+  "validation_issues": []
+}
+```
+
+Si la validación encuentra un problema real (un componente fuera de rango, un BMP truncado/corrupto, o una tasa de defectos que se desvía mucho de `--defect-rate`), `generate` sale con código `1` y lista cada problema en vez de entregar silenciosamente un dataset defectuoso.

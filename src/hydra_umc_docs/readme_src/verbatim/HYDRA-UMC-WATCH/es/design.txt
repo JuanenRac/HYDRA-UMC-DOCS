@@ -1,0 +1,48 @@
+### FLUJO DE SINCRONIZACIÓN DEL WEARABLE
+
+*Arquitectura objetivo una vez exista un WebSocket directo con el Server. El
+camino real y testeado hoy pasa por el teléfono emparejado: Watch -> Data
+Layer -> HYDRA-UMC-ANDROID-CONTROL -> HYDRA-UMC-SERVER/Voice UI autenticado,
+y de vuelta - ver Arquitectura más abajo y
+[docs/VOICE_AI_PROTOCOL.md](docs/VOICE_AI_PROTOCOL.md) para ese flujo real
+de extremo a extremo. El reloj nunca guarda una credencial del Server por sí
+mismo; un WebSocket directo Watch-Server y el botón de E-STOP inalámbrico
+siguen siendo trabajo futuro condicionado al hardware.*
+
+### ARQUITECTURA Y DECISIONES DE DISEÑO
+
+* **Por qué es una app Wear OS independiente, no una función de la app de teléfono.** Un reloj corre su propio proceso independiente en su propio sistema operativo - no puede ser simplemente un modo de interfaz de HYDRA-UMC-ANDROID-CONTROL, necesita su propio manifiesto, su propia compilación, y su propia interfaz (mucho más limitada) para estado de un vistazo/E-STOP rápido.
+* **Por qué `minSdk 30` (Wear OS 3), menor que el propio minSdk de la app de teléfono.** Esto apunta deliberadamente a la generación actual de hardware Wear OS 3+, no a dispositivos Wear OS 2 antiguos - a diferencia de HYDRA-UMC-ANDROID-CONTROL, que soporta teléfonos más viejos, una app de reloj complementaria tiene una base realista de hardware que soportar mucho más estrecha.
+* **Por qué los patrones hápticos y el protocolo de sincronización llegan antes que la conexión WebSocket.** Definir las formas de onda de vibración y las formas de los mensajes que ambos lados deben acordar es trabajo real en Kotlin puro - no necesita un socket abierto, un servidor emparejado ni un reloj físico para escribirse ni testearse. Abrir esa conexión de verdad es lo siguiente.
+* **Por qué la política de reconexión y la caché de último estado conocido son módulos puros propios, no código en línea dentro de `WatchRelayTransport`.** Ambas son clases Kotlin reales y desacopladas (`RelayRetryPolicy`, `LastKnownStateCache`) testeables en una JVM sencilla sin reloj, emulador ni teléfono emparejado - el mismo estándar que ya fijaron `HapticPatterns.kt`/`SyncMessage.kt`. `WatchRelayTransport` en sí sigue siendo la pieza delgada, necesariamente Android, que realmente programa un reintento o registra un mensaje recibido, no el lugar donde vive la lógica matemática de la política subyacente.
+* **Por qué un estado cacheado obsoleto se marca, no se oculta.** Ocultar por completo un estado antiguo dejaría la pantalla del reloj en blanco justo cuando la conexión con el teléfono es inestable - el verdadero momento de riesgo. Mostrarlo claramente marcado como "último conocido - puede estar desactualizado" mantiene al operario informado sin dejar que una lectura de minutos de antigüedad pase como una en vivo.
+* **Cómo encaja en el resto del ecosistema.** Hace pareja con HYDRA-UMC-ANDROID-CONTROL y HYDRA-UMC-IOS-CONTROL como complemento de un vistazo, en la muñeca - no un sustituto de ninguna de las dos, sino una superficie de estado rápido/E-STOP rápido.
+
+### ACTUALIZACIONES SIN GOOGLE PLAY
+
+Este proyecto no se distribuye a través de Google Play. El camino repetible
+de actualización es un APK de GitHub Release instalado por ADB:
+
+```bash
+# desde la raíz del proyecto, con el reloj emparejado y Wireless debugging activo
+update-from-github.bat    # Windows
+./update-from-github.sh   # Linux / macOS / WSL
+```
+
+El script lee `releases/latest` de GitHub, exige una etiqueta estable
+`vMAJOR.MINOR.PATCH`, comprueba la versión ya instalada, pide confirmación
+explícita del operario, y luego descarga e invoca `adb install -r`. Nunca
+toca la versión del repositorio, el manifiesto ni `CHANGELOG.md`. También se
+documenta una instalación manual, de mejor esfuerzo (abrir el APK descargado
+con el instalador de paquetes directamente en el reloj) para dispositivos
+sin un camino ADB utilizable. Ver
+[docs/GITHUB_ADB_UPDATES.md](docs/GITHUB_ADB_UPDATES.md) para el
+procedimiento completo, el nombre exigido del APK de release, y la
+configuración de firma de release.
+
+`HYDRA-UMC-ANDROID-CONTROL` puede avisar al operario de que existe una
+nueva versión del reloj una vez que el mensaje de estado de versión del
+companion esté conectado — es solo informativo y nunca puede instalar nada
+en el reloj por sí mismo. Ver
+[docs/COMPANION_VERSION_PROTOCOL.md](docs/COMPANION_VERSION_PROTOCOL.md)
+para esa forma de mensaje.

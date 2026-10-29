@@ -1,0 +1,54 @@
+需要 Python >= 3.10。
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # 创建 .venv，安装该包（可编辑模式），验证导入
+./run.sh     # 运行入口点
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升），并运行真实的测试套件（`pytest tests/`）。不带参数的
+`run.sh` 的预期输出：
+
+```text
+HYDRA-UMC-SEMANTIC-PLANNER v0.1.4
+Semantic Planner (Hailo-10) - decomposes high-level goals into robotic primitives and recovers from execution failures.
+```
+
+真实的子命令会分解一个目标，或提出一个恢复方案：
+
+```bash
+./run.sh decompose "assemble the pcb"
+./run.sh recover --component gripper --error-code GRIP_LOST_SEAL --detail "vacuum gripper lost seal"
+
+# Windows
+run.bat decompose "assemble the pcb"
+run.bat recover --component gripper --error-code GRIP_LOST_SEAL --detail "vacuum gripper lost seal"
+```
+
+每个真实的分解后计划在打印之前都会对照 `validation.py` 的真实前置条件进行检查。`decompose.py` 自身的模板总是能通过验证；而一个失败的计划则会被拒绝：
+
+```text
+Plan for: "broken" FAILED precondition validation:
+  step 1 (GRIP): missing required param 'target'
+```
+
+同样的 `decompose`/`recover` 逻辑也可以通过 HTTP 访问,供非 CLI 调用方使用:
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8109
+# 在另一个终端:
+curl -s -X POST http://127.0.0.1:8109/decompose -d '{"goal": "assemble the pcb"}'
+```
+
+完整的命令、参数和退出码参考请见 [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md),完整的公开恢复错误码词汇表请见 [`docs/RECOVERY_CONTRACT.md`](docs/RECOVERY_CONTRACT.md)。
+
+### 🩺 故障排查
+
+* **`python: command not found` / 构建在第 1 步失败。** 需要 `PATH` 中存在 Python >= 3.10。在 Windows 上，从 [python.org](https://python.org) 安装，并确保安装过程中勾选了"Add to PATH"；`python3` 是 Linux/macOS 上的常见命令名。
+* **`build.sh` 无法激活 venv。** `python3 -m venv .venv` 在不同平台上生成的激活脚本路径不同：Linux/macOS 上是 `.venv/bin/activate`，Windows（从 Git Bash 使用的 Windows Python venv 也是如此）上是 `.venv/Scripts/activate`。`build.sh` 已经检查了这两个路径——如果仍然失败，删除 `.venv/` 并重新运行 `./build.sh` 从头重建。
+* **`pip install -e .` 失败。** 通常是 `.venv/` 已过期。删除 `.venv/` 文件夹并重新运行 `./build.sh`/`build.bat` 重新创建它。
+* **`import OK` 从未打印。** 意味着 `python -c "import hydra_umc_semantic_planner"` 本身失败了——在激活 venv 的情况下重新运行以查看真实的回溯信息。

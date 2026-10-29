@@ -1,0 +1,52 @@
+HYDRA-UMC-UPDATER は、小さなツールです——デフォルトはウィンドウ付き
+GUI、`--cli` で完全な CLI が利用可能——実際の CM5 本体上、または開発者
+自身の Windows/Linux/macOS マシン（同じ方法でチェックアウトされた任意の
+ワークスペース）で実行されることを意図しており、各隣接チェックアウト
+自身の `hydra-umc.project.json` マニフェストを通じて発見する、他の
+すべての実在するプロジェクトそれぞれについて 3 つの問いに答えます
+——この数自体はエコシステムとともに増えていくため、ここでは決して
+固定値としてハードコードされていません：
+
+1. **ここに実際に何がインストールされていて、そのバージョンは何か？**
+2. **GitHub 上に公開されている最新バージョンは何か？**
+3. **GitHub の方が新しければ、1 つのプロジェクトまたは確認済みの順次一括操作を選ばせてほしい。**
+
+最後のポイントは意図的であり、譲れないものです：このツールが独自の判断
+でプロジェクトを変更することは決してありません。選択したプロジェクトの
+操作には常に明示的な確認が必要です。GUI は**不足分をすべてインストール**
+または**古い項目をすべて更新**も提供できますが、いずれも個別確認された
+順次一括操作で、同じマニフェスト・バージョン・安全ゲートを通ります。
+人の承認なしに夜間自動更新されることはありません。確認ダイアログには、一括操作の対象プロジェクトが実行順に正確に表示されます。
+
+発見されたプロジェクトのすべてが CM5 本体に属するわけでもありません。開発者が自分の PC から実行するツール（ファームウェアはセル上ではなくワークステーションからコンパイル/書き込みします）や、スマートフォン/ウォッチにインストールするアプリもあります。どれに当たるかは各プロジェクト自身のマニフェストに記録されており（第 3 節参照）、GUI のプロジェクト表はそれで絞り込めます。既定ではすべてのプロジェクトを表示するため、アップデーター自身も SDK も隠れません。
+
+実例（以下のプロジェクト数と各バージョン番号は出力の形を示すために
+作成したものであり、実際にキャプチャした実行結果ではありません——実際の
+数は常にその時点で `registry.py` が発見するものであり、この文書に
+固定された数値ではありません）：
+
+```
+$ hydra-umc-updater --cli status
+Workspace root: /home/pi/HYDRA-UMC
+PROJECT           MATURITY     ROLE      STACK       LOCAL     GITHUB    STATE
+-----------------------------------------------------------------------------
+HYDRA-UMC         functional   firmware  firmware-c  0.0.7     0.0.7     up to date
+HYDRA-UMC-SERVER  functional   service   node        0.0.5     0.0.9     OUTDATED
+HYDRA-UMC-STUDIO  functional   client    node        0.0.8     0.1.3     OUTDATED
+...
+59/59 installed, 2 outdated
+Run `hydra-umc-updater update <project>` to update one by hand - never automatic, see this tool's own README.
+
+$ hydra-umc-updater --cli update HYDRA-UMC-SERVER
+Updating HYDRA-UMC-SERVER into /home/pi/HYDRA-UMC ...
+OK  Updated /home/pi/HYDRA-UMC/HYDRA-UMC-SERVER to v0.0.9 (commit 1a2b3c4d5e6f) after a verified build; previous installation kept at /home/pi/HYDRA-UMC/HYDRA-UMC-SERVER.backup-9f3c2d1a
+```
+
+`hydra-umc-updater` を引数なしで実行する（またはダブルクリックする）
+と、同じ情報がウィンドウ内に表示されます——ソート可能なプロジェクト
+テーブル、デプロイターゲットフィルター、そして選択された行に対する
+インストール/更新ボタンです。
+
+<p align="center">
+  <img src="images/HYDRA_UMC_UPDATER_INTERFACE_1.png" alt="HYDRA-UMC-UPDATER の実際のデスクトップ概要" width="100%">
+</p>

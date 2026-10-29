@@ -1,0 +1,91 @@
+### ARCHITECTURE & DÉCISIONS DE CONCEPTION
+
+Ce dépôt est un **enfant** de la famille Cognitive AI Node - son parent,
+[HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+détient l'image HydraOS partagée et les poids de modèles quantifiés, et
+relie ce service dans son `docker-compose.yml` aux côtés de ses trois
+frères (VLA-Engine, Semantic-Planner, Docs-QA) :
+
+* **Pourquoi cet enfant n'a pas de matériel/firmware/`os/`/`models/`
+  propres.** Il fonctionne entièrement sur le module CM5 + Hailo-10 M.2
+  déjà détenu par le parent - centraliser les poids de modèles et
+  l'image HydraOS à un seul endroit évite quatre copies divergentes de
+  plusieurs gigaoctets au sein de la famille.
+* **Pourquoi une structure `src/`.** Sépare le paquet installable
+  (`hydra_umc_voice_ui`) de l'outillage à la racine du dépôt
+  (`bump_version.py`), conformément au reste des projets Python de
+  l'écosystème.
+* **Pourquoi l'invocation nue se contente d'afficher
+  identité/version/rôle.** Cela reste une vérification d'échafaudage
+  légère et inchangée ; le vrai travail v0 se trouve derrière ses
+  sous-commandes : `analyze-audio` (vrai chargement WAV + détection
+  d'activité vocale par seuil d'énergie, `audio.py`), `parse-intent`
+  (vraie analyse d'intention/entité basée sur des règles, `intent.py`),
+  et `serve` (la vraie passerelle authentifiée de tours de voix pour le
+  Watch, `http_service.py`/`gateway.py`). Rien de tout cela n'est le
+  pipeline Whisper STT / TTS neuronal que la feuille de route de ce
+  README décrit elle-même - cela nécessite encore une vraie dépendance de
+  modèle que cet environnement n'a pas.
+* **Comment cela s'intègre dans le reste de l'écosystème.** Ce service
+  est le point d'entrée mains libres de tout le Cognitive AI Node :
+  l'intention reconnue circule vers son frère
+  HYDRA-UMC-SEMANTIC-PLANNER, et il agit comme surface de contrôle vocal
+  aux côtés de HYDRA-UMC-STUDIO et HYDRA-UMC-DSI.
+* **Pourquoi `audio.py` utilise `wave`/`array` plutôt que numpy.** Le
+  décodage PCM 16 bits et une vraie VAD par seuil d'énergie ne
+  nécessitent rien au-delà de ce que la stdlib fournit déjà - garder v0
+  sans dépendance signifie que le vrai front-end audio fonctionne
+  partout où Python s'exécute, avant même qu'une dépendance STT
+  spécifique au Hailo-10 soit installée.
+* **Pourquoi `intent.py` est de vraies règles regex, pas un modèle NLU
+  entraîné.** Un petit vocabulaire réel de commandes
+  (start/stop/status/go home) est entièrement et honnêtement couvert
+  par des règles aujourd'hui - le même raisonnement que le vrai index
+  TF-IDF du frère HYDRA-UMC-DOCS-QA plutôt qu'un modèle d'embeddings :
+  un noyau réel et testable maintenant, qu'un futur classificateur basé
+  sur le ML pourra remplacer derrière le même contrat
+  `parse_intent()`, une fois que la parole reconnue devra couvrir plus
+  que ce vocabulaire v0.
+* **Pourquoi un audio/texte sans correspondance renvoie un échec
+  honnête, pas une supposition.** `detect_voice_segments()` renvoie une
+  liste vide pour le silence, et `parse_intent()` renvoie `None` pour un
+  texte hors de son jeu de règles - v0 n'a pas de modèle de repli, donc
+  il n'invente jamais un segment ou une intention qu'il n'a pas
+  réellement détecté.
+* **Pourquoi la passerelle Watch utilise `classify_intent()`, et non
+  l'ancien `parse_intent()`.** `parse_intent()` reste "la première
+  correspondance gagne" (inchangé, toujours testé tel quel) pour les
+  appelants existants, mais une transcription réelle qui correspond
+  réellement à plus d'une commande connue (par exemple contenant à la
+  fois "stop" et "status") est une ambiguïté réelle et pertinente pour
+  la sécurité dans une passerelle dont tout le rôle est de décider si
+  une commande de mouvement nécessite une confirmation -
+  `classify_intent()` vérifie chaque règle et signale un cas
+  d'ambiguïté réel et distinct au lieu de le résoudre silencieusement
+  vers la règle déclarée en premier.
+* **Pourquoi `normalize_text()` applique Unicode NFKC avant la mise en
+  correspondance.** Certains pipelines speech-to-text émettent des
+  lettres latines pleine chasse et d'autres formes Unicode de
+  compatibilité - des points de code distincts des caractères ASCII
+  ordinaires, et donc pas "le mot" du point de vue d'une expression
+  régulière `\b...\b`. NFKC les ramène d'abord à leur équivalent
+  ordinaire, afin qu'une commande sémantiquement identique à une règle
+  connue ne soit jamais traitée comme un échec honnête simplement à
+  cause de son encodage.
+
+### PASSERELLE VOCALE POUR WATCH (v0)
+
+`python -m hydra_umc_voice_ui.main serve` expose une passerelle HTTP locale volontairement limitée pour une intégration appairée avec HYDRA-UMC-WATCH : `GET /health`, `POST /v1/voice/turn` et `POST /v1/voice/confirm`. Elle valide le message typé `voice_turn`, utilise l'analyseur d'intentions déterministe existant et renvoie `assistant_reply` ; elle ne contrôle aucun matériel robotique.
+
+Le développement en loopback peut fonctionner sans jeton. Une écoute hors loopback exige `HYDRA_UMC_VOICE_UI_TOKEN` et un en-tête `Authorization: Bearer` correspondant. Cette API ne transporte jamais d'audio brut et les intentions liées au mouvement renvoient toujours `requiresConfirmation: true` avec un `confirmationToken` réel et borné : le client Watch le renvoie à `POST /v1/voice/confirm`, qui indique `confirmed`/`expired`/`invalid` (jamais un simple booléen) sans rien déclencher lui-même. Voir la section de confirmation de [WATCH_VOICE_GATEWAY.md](docs/WATCH_VOICE_GATEWAY.md) ci-dessous pour le contrat complet.
+
+Une transcription qui correspond réellement à plus d'une commande connue est rejetée avec une réponse réelle et distincte au lieu d'être résolue silencieusement vers une seule interprétation :
+
+```json
+// POST /v1/voice/turn
+{"type": "voice_turn", "requestId": "watch-voice-001", "transcript": "stop the status check", "locale": "en-US"}
+
+// -> {"type":"assistant_reply","requestId":"watch-voice-001","text":"That request matched more than one action (status, stop). Please rephrase it more specifically.","level":"ATTENTION","speak":true,"requiresConfirmation":false,"visualState":"clarification","interpretation":{"heardText":"stop the status check","normalizedText":"stop the status check","matchedRules":["status","stop"]}}
+```
+
+Consultez [WATCH_VOICE_GATEWAY.md](docs/WATCH_VOICE_GATEWAY.md) pour le contrat de requête complet et la limite de déploiement, et [CLI_REFERENCE.md](docs/CLI_REFERENCE.md) pour chaque exemple réel `analyze-audio`/`parse-intent`/`serve` capturé depuis le CLI installé.

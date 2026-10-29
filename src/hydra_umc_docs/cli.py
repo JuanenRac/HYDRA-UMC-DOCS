@@ -13,6 +13,7 @@ from pathlib import Path
 from . import __version__, brand, catalog, claims, family, glance, glance_jump, publication, readme_universal, readmes, status
 
 REPO = Path(__file__).resolve().parents[2]
+REPO_NAME = "HYDRA-UMC-DOCS"
 CATALOG_FILE = REPO / "docs" / "PROJECT_CATALOG.md"
 GLANCE_FILE = REPO / "data" / "glance.json"
 CLAIMS_FILE = REPO / "data" / "claims_reviewed.json"
@@ -87,15 +88,15 @@ def make_readmes(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     stale = []
     jobs: list[tuple[Path, dict[str, str]]] = []
-    if not args.repo:
-        jobs.append((REPO, readmes.outputs(REPO)))
     workspace = _workspace(args)
+    if not args.repo:
+        jobs.append((REPO, readme_universal.outputs(REPO, glance.load_data(GLANCE_FILE)[REPO_NAME])))
     sources = sorted(path.stem.replace("_", "-") for path in (Path(__file__).resolve().parent / "readme_src" / "repos").glob("HYDRA_UMC*.py"))
     entries = glance.load_data(GLANCE_FILE)
     done = 0
     for name in args.repo or sources:
         sibling = workspace / name
-        if not sibling.is_dir():
+        if not sibling.is_dir() or (not args.repo and sibling.resolve() == REPO.resolve()):
             continue
         if name not in entries:
             print(f"READMES=FAIL {name} is not in data/glance.json", file=sys.stderr)

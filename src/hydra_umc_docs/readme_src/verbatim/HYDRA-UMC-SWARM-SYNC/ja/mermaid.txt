@@ -1,0 +1,9 @@
+```mermaid
+flowchart TD
+    GM["Grandmaster Clock (Orchestrator Node)"] -.-> S1["HydraNode 1 (Slave)"]
+    GM -.-> S2["HydraNode 2 (Slave)"]
+    GM -.-> S3["HydraNode 3 (Slave)"]
+    S1 -.-> H745_1["STM32H745 Local Clock"]
+    S2 -.-> H745_2["STM32H745 Local Clock"]
+    S3 -.-> H745_3["STM32H745 Local Clock"]
+```

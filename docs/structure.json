@@ -1,0 +1,313 @@
+{
+  "repo": "HYDRA-UMC-DOCS",
+  "ecosystem": "hydra",
+  "svg": "en",
+  "exempt": [
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "SUPPORT.md",
+    "LICENSE",
+    "LICENSE.md",
+    "test.bat"
+  ],
+  "cards": [
+    {
+      "name": {
+        "en": "folders",
+        "es": "carpetas",
+        "de": "Ordner",
+        "fr": "dossiers",
+        "it": "cartelle",
+        "ja": "フォルダ",
+        "zh": "文件夹",
+        "pt": "pastas"
+      },
+      "kind": "group",
+      "span": 3,
+      "accent": "b",
+      "columns": 2,
+      "rows": [
+        {
+          "name": "docs/",
+          "desc": {
+            "en": "architecture, interfaces, capability",
+            "es": "arquitectura, interfaces, matriz de",
+            "de": "Architektur, Schnittstellen",
+            "fr": "architecture, interfaces, matrice des",
+            "it": "architettura, interfacce, matrice delle",
+            "ja": "アーキテクチャ、インターフェース、能力マトリ",
+            "zh": "架构、接口、能力矩阵、安全基线、威胁模型、第",
+            "pt": "arquitetura, interfaces, matriz de"
+          },
+          "tree_desc": {
+            "en": "architecture, interfaces, capability matrix, security baseline, threat model, first slice, generated catalogue",
+            "es": "arquitectura, interfaces, matriz de capacidades, base de seguridad, modelo de amenazas, primer corte, catálogo generado",
+            "de": "Architektur, Schnittstellen, Fähigkeitenmatrix, Sicherheitsbasis, Bedrohungsmodell, erster Schnitt, erzeugter Katalog",
+            "fr": "architecture, interfaces, matrice des capacités, socle de sécurité, modèle de menaces, première tranche, catalogue généré",
+            "it": "architettura, interfacce, matrice delle capacità, base di sicurezza, modello delle minacce, prima fetta, catalogo generato",
+            "ja": "アーキテクチャ、インターフェース、能力マトリクス、セキュリティ基準、脅威モデル、最初のスライス、生成されたカタログ",
+            "zh": "架构、接口、能力矩阵、安全基线、威胁模型、第一个切片、生成的目录",
+            "pt": "arquitetura, interfaces, matriz de capacidades, base de segurança, modelo de ameaças, primeiro corte, catálogo gerado"
+          }
+        },
+        {
+          "name": "data/",
+          "desc": {
+            "en": "the reviewed claims and the data",
+            "es": "las afirmaciones revisadas y los datos de",
+            "de": "die geprüften Aussagen und die Daten der",
+            "fr": "les affirmations vérifiées et les données",
+            "it": "le affermazioni verificate e i dati delle",
+            "ja": "確認済みの記述と、「ひと目で」の表のデータ",
+            "zh": "已核实的说法以及“速览”表的数据",
+            "pt": "as afirmações revistas e os dados das"
+          },
+          "tree_desc": {
+            "en": "the reviewed claims and the data of the At a glance tables",
+            "es": "las afirmaciones revisadas y los datos de las tablas De un vistazo",
+            "de": "die geprüften Aussagen und die Daten der Tabellen Auf einen Blick",
+            "fr": "les affirmations vérifiées et les données des tableaux En un coup d'œil",
+            "it": "le affermazioni verificate e i dati delle tabelle In breve",
+            "ja": "確認済みの記述と、「ひと目で」の表のデータ",
+            "zh": "已核实的说法以及“速览”表的数据",
+            "pt": "as afirmações revistas e os dados das tabelas Num relance"
+          }
+        },
+        {
+          "name": "src/",
+          "desc": {
+            "en": "the tools as a package",
+            "es": "las herramientas como paquete",
+            "de": "die Werkzeuge als Paket",
+            "fr": "les outils sous forme de paquet",
+            "it": "gli strumenti come pacchetto",
+            "ja": "パッケージとしてのツール（カタログ",
+            "zh": "以包形式提供的工具（目录、品牌素材、READ",
+            "pt": "as ferramentas como pacote"
+          },
+          "tree_desc": {
+            "en": "the tools as a package (catalogue, brand, READMEs, publication check)",
+            "es": "las herramientas como paquete (catálogo, marca, README, comprobación de publicación)",
+            "de": "die Werkzeuge als Paket (Katalog, Marke, READMEs, Veröffentlichungsprüfung)",
+            "fr": "les outils sous forme de paquet (catalogue, marque, README, vérification de publication)",
+            "it": "gli strumenti come pacchetto (catalogo, marchio, README, controllo di pubblicazione)",
+            "ja": "パッケージとしてのツール（カタログ、ブランド、README、公開前チェック）",
+            "zh": "以包形式提供的工具（目录、品牌素材、README、发布检查）",
+            "pt": "as ferramentas como pacote (catálogo, marca, README, verificação de publicação)"
+          }
+        },
+        {
+          "name": "tools/",
+          "desc": {
+            "en": "thin scripts over the package",
+            "es": "scripts finos sobre el paquete",
+            "de": "dünne Skripte über dem Paket",
+            "fr": "scripts fins au-dessus du paquet",
+            "it": "script sottili sopra il pacchetto",
+            "ja": "パッケージの上の薄いスクリプト",
+            "zh": "包之上的薄脚本、check_all.sh",
+            "pt": "scripts finos sobre o pacote"
+          },
+          "tree_desc": {
+            "en": "thin scripts over the package, check_all.sh, and the shared CI checks of the ecosystem",
+            "es": "scripts finos sobre el paquete, check_all.sh y las comprobaciones de CI compartidas del ecosistema",
+            "de": "dünne Skripte über dem Paket, check_all.sh und die gemeinsamen CI-Prüfungen des Ökosystems",
+            "fr": "scripts fins au-dessus du paquet, check_all.sh et les vérifications de CI partagées de l'écosystème",
+            "it": "script sottili sopra il pacchetto, check_all.sh e i controlli CI condivisi dell'ecosistema",
+            "ja": "パッケージの上の薄いスクリプト、check_all.sh、エコシステム共通の CI チェック",
+            "zh": "包之上的薄脚本、check_all.sh，以及生态共享的 CI 检查",
+            "pt": "scripts finos sobre o pacote, check_all.sh e as verificações de CI partilhadas do ecossistema"
+          }
+        },
+        {
+          "name": "tests/",
+          "desc": {
+            "en": "unit tests of the tools",
+            "es": "pruebas unitarias de las herramientas",
+            "de": "Unit-Tests der Werkzeuge",
+            "fr": "tests unitaires des outils",
+            "it": "test unitari degli strumenti",
+            "ja": "ツールの単体テスト",
+            "zh": "工具的单元测试",
+            "pt": "testes unitários das ferramentas"
+          },
+          "tree_desc": {
+            "en": "unit tests of the tools",
+            "es": "pruebas unitarias de las herramientas",
+            "de": "Unit-Tests der Werkzeuge",
+            "fr": "tests unitaires des outils",
+            "it": "test unitari degli strumenti",
+            "ja": "ツールの単体テスト",
+            "zh": "工具的单元测试",
+            "pt": "testes unitários das ferramentas"
+          }
+        },
+        {
+          "name": "images/",
+          "desc": {
+            "en": "banner and map of the families",
+            "es": "banner y mapa de familias",
+            "de": "Banner und Karte der Familien",
+            "fr": "bannière et carte des familles",
+            "it": "banner e mappa delle famiglie",
+            "ja": "バナーとファミリーマップ",
+            "zh": "横幅和家族图",
+            "pt": "banner e mapa das famílias"
+          },
+          "tree_desc": {
+            "en": "banner and map of the families",
+            "es": "banner y mapa de familias",
+            "de": "Banner und Karte der Familien",
+            "fr": "bannière et carte des familles",
+            "it": "banner e mappa delle famiglie",
+            "ja": "バナーとファミリーマップ",
+            "zh": "横幅和家族图",
+            "pt": "banner e mapa das famílias"
+          }
+        },
+        {
+          "name": "brand/",
+          "desc": {
+            "en": "the icon",
+            "es": "el icono",
+            "de": "das Symbol",
+            "fr": "l'icône",
+            "it": "l'icona",
+            "ja": "アイコン",
+            "zh": "图标",
+            "pt": "o ícone"
+          },
+          "tree_desc": {
+            "en": "the icon",
+            "es": "el icono",
+            "de": "das Symbol",
+            "fr": "l'icône",
+            "it": "l'icona",
+            "ja": "アイコン",
+            "zh": "图标",
+            "pt": "o ícone"
+          }
+        },
+        {
+          "name": ".github/",
+          "desc": {
+            "en": "CI workflow and issue templates",
+            "es": "flujo de CI y plantillas de incidencias",
+            "de": "CI-Workflow und Issue-Vorlagen",
+            "fr": "workflow de CI et modèles de tickets",
+            "it": "workflow di CI e modelli di segnalazione",
+            "ja": "CI ワークフローと Issue テンプレート",
+            "zh": "CI 工作流和 Issue 模板",
+            "pt": "fluxo de CI e modelos de problemas"
+          }
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "project files",
+        "es": "ficheros del proyecto",
+        "de": "Projektdateien",
+        "fr": "fichiers du projet",
+        "it": "file del progetto",
+        "ja": "プロジェクトのファイル",
+        "zh": "项目文件",
+        "pt": "ficheiros do projeto"
+      },
+      "kind": "group",
+      "span": 3,
+      "accent": "c",
+      "columns": 2,
+      "rows": [
+        {
+          "name": "build.sh ...",
+          "desc": {
+            "en": "builds and checks; never changes the version",
+            "es": "compila y comprueba; nunca cambia la versión",
+            "de": "baut und prüft; ändert nie die Version",
+            "fr": "construit et vérifie",
+            "it": "compila e controlla",
+            "ja": "ビルドと検査。バージョンは変更しない",
+            "zh": "构建并检查；从不改变版本",
+            "pt": "compila e verifica; nunca muda a versão"
+          },
+          "tree_desc": {
+            "en": "builds and checks; never changes the version",
+            "es": "compila y comprueba; nunca cambia la versión",
+            "de": "baut und prüft; ändert nie die Version",
+            "fr": "construit et vérifie ; ne change jamais la version",
+            "it": "compila e controlla; non cambia mai la versione",
+            "ja": "ビルドと検査。バージョンは変更しない",
+            "zh": "构建并检查；从不改变版本",
+            "pt": "compila e verifica; nunca muda a versão"
+          },
+          "tree_name": "build.sh / build.bat / build-test.sh / build-test.bat / run.sh / run.bat"
+        },
+        {
+          "name": "hydra-umc.project.json ...",
+          "desc": {
+            "en": "manifest: version, maturity, family",
+            "es": "manifiesto: versión, madurez, familia",
+            "de": "Manifest: Version, Reifegrad, Familie",
+            "fr": "manifeste : version, maturité, famille",
+            "it": "manifesto: versione, maturità, famiglia",
+            "ja": "マニフェスト：バージョン、成熟度、ファミリー",
+            "zh": "清单：版本、成熟度、系列",
+            "pt": "manifesto: versão, maturidade, família"
+          },
+          "tree_desc": {
+            "en": "manifest: version, maturity, family",
+            "es": "manifiesto: versión, madurez, familia",
+            "de": "Manifest: Version, Reifegrad, Familie",
+            "fr": "manifeste : version, maturité, famille",
+            "it": "manifesto: versione, maturità, famiglia",
+            "ja": "マニフェスト：バージョン、成熟度、ファミリー",
+            "zh": "清单：版本、成熟度、系列",
+            "pt": "manifesto: versão, maturidade, família"
+          },
+          "tree_name": "hydra-umc.project.json / pyproject.toml / CHANGELOG.md / LICENSE / LICENSE.md"
+        },
+        {
+          "name": "bump_manifest_version.py",
+          "desc": {
+            "en": "syncs the manifest version",
+            "es": "sincroniza la versión del manifiesto",
+            "de": "gleicht die Manifest-Version an",
+            "fr": "synchronise la version du manifeste",
+            "it": "sincronizza la versione del manifesto",
+            "ja": "マニフェストのバージョンを同期",
+            "zh": "同步清单版本",
+            "pt": "sincroniza a versão do manifesto"
+          }
+        },
+        {
+          "name": "bump_version.py",
+          "desc": {
+            "en": "explicit version bump",
+            "es": "subida de versión explícita",
+            "de": "ausdrückliche Versionserhöhung",
+            "fr": "montée de version explicite",
+            "it": "aumento di versione esplicito",
+            "ja": "明示的なバージョン更新",
+            "zh": "显式提升版本",
+            "pt": "subida de versão explícita"
+          }
+        },
+        {
+          "name": "test.sh",
+          "desc": {
+            "en": "runs the tests",
+            "es": "ejecuta las pruebas",
+            "de": "führt die Tests aus",
+            "fr": "lance les tests",
+            "it": "esegue i test",
+            "ja": "テストを実行",
+            "zh": "运行测试",
+            "pt": "executa os testes"
+          }
+        }
+      ]
+    }
+  ]
+}

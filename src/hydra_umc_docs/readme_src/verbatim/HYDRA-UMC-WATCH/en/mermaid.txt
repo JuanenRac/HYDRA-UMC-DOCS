@@ -1,0 +1,8 @@
+```mermaid
+flowchart LR
+    SERVER["HYDRA-UMC-SERVER"] --> WS["WebSocket Sync"]
+    WS --> WATCH["HYDRA-UMC-WATCH"]
+    WATCH -- E-STOP Command --> SERVER
+    SERVER -- Critical Alert --> WATCH
+    WATCH -- Haptic Feedback --> OPERATOR["Plant Operator"]
+```

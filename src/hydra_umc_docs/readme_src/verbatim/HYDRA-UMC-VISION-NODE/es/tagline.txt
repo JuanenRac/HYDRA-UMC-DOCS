@@ -1,0 +1,1 @@
+🧠 Nodo de IA de Borde para Percepción de Alta Velocidad (Hailo-8 + Raspberry Pi CM5)

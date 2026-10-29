@@ -1,0 +1,1 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** —— 各サブコマンド（`config validate`/`gst`/`mediamtx`、`stream simulate`/`serve`、実際の USB および RTSP IP カメラの例を含む）と、実際にキャプチャされた出力。

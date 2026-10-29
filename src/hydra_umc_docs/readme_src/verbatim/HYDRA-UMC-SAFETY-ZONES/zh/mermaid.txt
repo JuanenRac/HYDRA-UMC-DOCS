@@ -1,0 +1,14 @@
+```mermaid
+flowchart TB
+    DET["Object Detection (Hailo-8) - 计划中"] --> SEG["Spatial Segmentation - 计划中"]
+    SEG --> MAP["3D Occupancy Map - 计划中"]
+    MAP --> CAL{"Calibration Fresh? - 真实 v0"}
+    CAL -- No --> INHIBIT["INHIBITED - 真实 v0（故障安全）"]
+    CAL -- Yes --> OBS{"Observer Active & Fresh? - 真实 v0"}
+    OBS -- No --> INHIBIT
+    OBS -- Yes --> ZONE{"Zone Check - 真实 v0"}
+    ZONE -- Warning --> SLOW["Velocity Scaling Command - 计划中"]
+    ZONE -- Danger --> STOP["CAN E-STOP Request - 真实 v0（仅请求）"]
+    SLOW --> CAN["HYDRA CAN Bus - 计划中"]
+    STOP --> CAN
+```

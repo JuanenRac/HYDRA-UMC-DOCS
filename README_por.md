@@ -1,3 +1,9 @@
+<!-- =============================================================================
+HYDRA-UMC-DOCS - Architecture, interfaces, security baseline and what is proven
+Copyright (C) JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
+GPL-3.0-or-later - see LICENSE
+============================================================================= -->
+
 <p align="center">
   <img src="images/HYDRA_UMC_BANNER.svg" alt="HYDRA-UMC-DOCS banner" width="100%">
 </p>
@@ -12,6 +18,7 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-Markdown-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
+  <img src="https://img.shields.io/badge/Tests-153%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.4-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -24,15 +31,20 @@
 
 > **Estado de segurança (safety e security):** este ecossistema não é um sistema de segurança certificado. Ainda não existe um caminho de E-STOP por hardware, nem limites ou interlocks impostos pelo firmware, nem um comando de movimento verificado; as imagens de firmware são verificadas com CRC32 e um HMAC-SHA256 de chave partilhada, não com uma assinatura assimétrica; TLS e TLS mútuo são opcionais e estão desativados por defeito; nenhuma placa própria foi ainda montada ou testada. Leia a [base de segurança](docs/SECURITY_BASELINE.md) e o [modelo de ameaças](docs/THREAT_MODEL.md) antes de confiar em qualquer afirmação aqui para a segurança de uma pessoa.
 
+---
+
 ## 📋 Num relance
 
 | | |
 |---|---|
 | Versão | `0.0.4` |
 | Maturidade | Estrutura inicial |
+| Testes | 153 (`python -m pytest tests -q`) |
 | Tecnologia | Markdown / Mermaid / Python / SVG |
 | Destino | O PC de quem o usa |
 | Em hardware real | Não aplicável: nada aqui corre em hardware |
+
+**Ir para:** [Visão geral](#-visão-geral) · [Arquitetura](#-arquitetura) · [Segurança e proteção](#-segurança-e-proteção) · [Início rápido](#-início-rápido) · [Testes](#-testes) · [Estrutura do repositório](#-estrutura-do-repositório) · [Projetos relacionados](#-projetos-relacionados)
 
 ## 🚦 Estado do projeto
 
@@ -43,7 +55,7 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 | Área | Estado | O que significa aqui |
 |---|---|---|
 | Software | 🟠 | Só estrutura e as primeiras peças; falta a maior parte do trabalho |
-| Testes | 🟠 | Ainda não há registo do número de testes deste repositório |
+| Testes | 🟢 | 153 testes automáticos, executados a cada alteração |
 | Hardware real | 🟢 | Não aplicável: nada aqui corre em hardware |
 | Documentação | 🟢 | README em oito idiomas, verificado contra o manifesto a cada alteração |
 
@@ -67,22 +79,23 @@ A imagem abaixo mostra as famílias de repositórios e os fluxos que os seus doc
 
 O HYDRA-UMC-DOCS é a memória do ecossistema: o lugar onde vivem a arquitetura, as interfaces, a base de segurança e a matriz de capacidades, e onde se guardam as ferramentas que comparam todos os repositórios lado a lado. Cada repositório mantém o seu próprio README, os seus testes e o seu contrato; este explica como encaixam e o que foi realmente comprovado.
 
-## 📂 Estrutura do repositório
+## 🏛️ Arquitetura
 
-```text
-HYDRA-UMC-DOCS/
-├── docs/     arquitetura, interfaces, matriz de capacidades, base de segurança, modelo de ameaças, primeiro corte, catálogo gerado
-├── data/     as afirmações revistas e os dados das tabelas Num relance
-├── src/      as ferramentas como pacote (catálogo, marca, README, verificação de publicação)
-├── tools/    scripts finos sobre o pacote, check_all.sh e as verificações de CI partilhadas do ecossistema
-├── tests/    testes unitários das ferramentas
-├── images/   banner e mapa das famílias
-├── brand/    o ícone
-├── build.sh / build.bat, build-test.sh / build-test.bat, run.sh / run.bat
-└── hydra-umc.project.json, pyproject.toml, CHANGELOG.md, LICENSE, LICENSE.md
-```
+Os documentos descrevem cada família do ecossistema. A imagem abaixo é este próprio repositório: as ferramentas leem os manifestos e os README dos repositórios irmãos e escrevem o catálogo, as tabelas Num relance, o banner e os oito README, e duas verificações recusam o que não deve ser publicado.
 
-## 🛠️ COMPILAÇÃO E EXECUÇÃO
+<p align="center">
+  <img src="images/architecture.svg" alt="HYDRA-UMC-DOCS architecture" width="100%">
+</p>
+
+## 🔒 Segurança e proteção
+
+| Ameaça | Defesa | Onde |
+|---|---|---|
+| Um README que afirma uma capacidade de risco (uma paragem de emergência, um interbloqueio) sem dizer até onde está provada | `check_claims.py` lê o README em inglês de cada repositório e falha numa frase com uma palavra de risco sem marca de estado e sem revisão (`data/claims_reviewed.json`) | `tools/check_claims.py` |
+| Algo privado a sair com uma publicação | `publication_check.py` procura qualquer coisa privada nos ficheiros e no histórico antes de uma publicação | `tools/publication_check.py` |
+| Uma afirmação que ninguém consegue ligar a um repositório | Os documentos são escritos a partir dos README, manifestos, registos de alterações e documentos dos repositórios, e uma afirmação que não se conseguiu rastrear é marcada como tal | `docs/CAPABILITY_MATRIX.md` |
+
+## 🚀 Início rápido
 
 **Requisitos:** Python 3.10 ou superior; pytest para os testes
 
@@ -97,7 +110,53 @@ bash tools/check_all.sh                          # as verificações de cada rep
 python -m pytest tests -q                        # os testes unitários das ferramentas
 ```
 
-`build.sh` / `build.bat` sobem a versão um passo (o conta-quilómetros do ecossistema), instalam o pacote e executam os testes; `build-test.sh` / `build-test.bat` verificam sem alterar nenhuma versão.
+## 🧪 Testes
+
+153 testes automáticos correm com `python -m pytest tests -q`. Não precisam de hardware nem de nada fora desta máquina.
+
+A CI executa `HYDRA_UMC_CI=1 python tools/ci_validate.py`, que verifica o manifesto, os documentos, os oito README e as imagens.
+
+## 🏗️ Compilação e publicação
+
+`build.sh` / `build.bat` instalam o pacote e executam os testes; nunca mudam a versão. `build-test.sh` / `build-test.bat` verificam sem alterar nada.
+
+## 📂 Estrutura do repositório
+
+<p align="center">
+  <img src="images/repository-structure.svg" alt="Repository structure of HYDRA-UMC-DOCS" width="100%">
+</p>
+
+<details>
+<summary>Versão em texto da árvore</summary>
+
+```text
+HYDRA-UMC-DOCS/
+├── docs/                                                                           arquitetura, interfaces, matriz de capacidades, base de segurança, modelo de ameaças, primeiro corte, catálogo gerado
+├── data/                                                                           as afirmações revistas e os dados das tabelas Num relance
+├── src/                                                                            as ferramentas como pacote (catálogo, marca, README, verificação de publicação)
+├── tools/                                                                          scripts finos sobre o pacote, check_all.sh e as verificações de CI partilhadas do ecossistema
+├── tests/                                                                          testes unitários das ferramentas
+├── images/                                                                         banner e mapa das famílias
+├── brand/                                                                          o ícone
+├── .github/                                                                        fluxo de CI e modelos de problemas
+├── build.sh / build.bat / build-test.sh / build-test.bat / run.sh / run.bat        compila e verifica; nunca muda a versão
+├── hydra-umc.project.json / pyproject.toml / CHANGELOG.md / LICENSE / LICENSE.md   manifesto: versão, maturidade, família
+├── bump_manifest_version.py                                                        sincroniza a versão do manifesto
+├── bump_version.py                                                                 subida de versão explícita
+└── test.sh                                                                         executa os testes
+```
+
+</details>
+
+## 🗺️ Roteiro e limites conhecidos
+
+**Limites conhecidos hoje**
+
+Este repositório é feito de documentos e pequenas ferramentas. As verificações que leem os outros repositórios (o catálogo, as tabelas Num relance, as afirmações) precisam desses repositórios descarregados ao lado deste. Não prova nada sobre hardware: a matriz de capacidades diz, para cada capacidade, se foi apenas simulada ou testada a sério.
+
+## 🌍 Idiomas
+
+Este README e os documentos do repositório existem em oito idiomas: inglês, espanhol, alemão, francês, italiano, japonês, chinês e português (Portugal). São escritos em conjunto e a CI verifica que os oito ficheiros têm as mesmas secções e as mesmas ligações. Este repositório não tem ecrã nem catálogo de mensagens próprios, por isso não há textos de interface para traduzir.
 
 ## 🔗 Projetos relacionados
 
@@ -123,15 +182,23 @@ O HYDRA-UMC é feito de repositórios independentes, cada um com a sua versão, 
 * **[URTC](https://github.com/JuanenRac/URTC)** - o controlador universal de ferramenta de robô, um produto independente ligado através do SDK
 * **[JuanenRac](https://github.com/JuanenRac/JuanenRac)** - o perfil e o painel de estado de todos os ecossistemas
 
-## 📚 Documentação e comunidade
+## 📚 Documentação
 
 Onde ler mais:
 
 * [Matriz de capacidades: o que está comprovado e o que não está](docs/CAPABILITY_MATRIX.md)
 * [Catálogo de projetos: versões e tipos dos repositórios](docs/PROJECT_CATALOG.md)
+* [Base de segurança do ecossistema](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md)
+* [Modelo de ameaças do ecossistema](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md)
 * [Registo de alterações deste repositório](CHANGELOG.md)
-* [Licença (GPL-3.0-or-later)](LICENSE)
-* Perguntas, ideias e relatórios: electrohobby3d@gmail.com
+* [Licença deste repositório](LICENSE.md)
+
+## 🤝 Contribuir e comunidade
+
+* Antes de um pull request execute `HYDRA_UMC_CI=1 py -3 tools/ci_validate.py` (ou `HYDRA_UMC_CI=1 python3 tools/ci_validate.py`): tem de imprimir `CI_VALIDATION=PASS`. Não execute `build.sh` nem `build.bat` para esta verificação; compilar não é verificar.
+* Os oito README são escritos a partir de uma única fonte em HYDRA-UMC-DOCS; não os edite à mão. Altere a fonte e escreva-os de novo com `tools/make_readmes.py`.
+* Não afirme num README o que não foi executado: diga «simulado» ou «não testado em hardware» quando for a verdade.
+* Consulte [CONTRIBUTING.md](CONTRIBUTING.md), o [código de conduta](CODE_OF_CONDUCT.md), [SECURITY.md](SECURITY.md) e [SUPPORT.md](SUPPORT.md).
 
 ## 👤 AUTOR
 
@@ -139,4 +206,4 @@ Onde ler mais:
 
 ## 📜 LICENÇA
 
-Software: GPL-3.0-or-later - ver [LICENSE](LICENSE). Documentação: CC BY-SA 4.0 - ver [LICENSE.md](LICENSE.md).
+GPL-3.0-or-later - [LICENSE](LICENSE).

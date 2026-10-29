@@ -1,0 +1,1 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** —— 每个子命令（`config validate`/`gst`/`mediamtx`、`stream simulate`/`serve`，包含真实的 USB 与 RTSP IP 摄像头示例），附带真实捕获的输出。

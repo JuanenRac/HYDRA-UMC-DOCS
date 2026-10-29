@@ -1,0 +1,115 @@
+### Pré-requisitos
+
+* **Python 3.10 ou superior** no seu `PATH` (os scripts tentam `python3` e depois `python`).
+* Ainda não se exige nenhuma dependência de execução de segurança/visão - **zero dependências de execução de terceiros** nesta fase (`dependencies = []` no `pyproject.toml`); o `pytest` é um extra só de desenvolvimento usado apenas para a suite de testes real.
+* Algumas dezenas de MB de disco para um ambiente virtual local em `.venv/`.
+
+### Passo a passo
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **Leitura da versão** - lê e mostra a versão do projeto; compilar nunca a altera (só `python tools/hydra_project_tool.py bump` a sobe).
+2. **Ambiente virtual** - cria `.venv/` se faltar; reutiliza-o caso contrário.
+3. **Instalação editável (com extras de desenvolvimento)** - `pip install -e ".[dev]"` para que as edições em `src/` tenham efeito de imediato, instala o `pytest` e regista o ponto de entrada de consola `hydra-umc-safety-zones`.
+4. **Verificação de compilação** - `python -m compileall -q src` compila para bytecode cada ficheiro de `src/`, apanhando erros de sintaxe em todo o ecossistema.
+5. **Suite de testes real** - `pytest tests/` executa os {tests} testes.
+
+O `set -euo pipefail` pára o script no primeiro passo que falhe; a janela fica aberta (`Press Enter to close...`) se foi aberta com duplo clique em vez de executada a partir de um terminal já aberto.
+
+```bash
+./run.sh
+```
+
+Localiza o interpretador dentro de `.venv` (tratando as disposições `.venv` de POSIX e de Windows) e executa `python -m hydra_umc_safety_zones.main`, reencaminhando quaisquer argumentos.
+
+A invocação simples imprime nome + versão + função:
+
+```text
+HYDRA-UMC-SAFETY-ZONES v0.1.5
+Real-time 3D intrusion detection and E-STOP orchestration for robotic safe-working areas.
+```
+
+O subcomando real `check` precisa de um ficheiro de zonas e de um ficheiro de deteções, ambos JSON simples, mais um ficheiro opcional de estado de observação. A `calibration` é opcional no ficheiro de zonas, e `--observation` é opcional na linha de comandos - veja abaixo o que acontece sem qualquer deles:
+
+```json
+// zones.json
+{
+  "calibration": {"version": "cal-1", "source": "manual", "calibrated_at": "2024-01-15", "max_age_days": 30, "calibrated_by": "A. Operator"},
+  "zones": [
+    {"id": "warn1", "level": "warning", "min": {"x": 0, "y": 0, "z": 0}, "max": {"x": 5, "y": 5, "z": 5}},
+    {"id": "danger1", "level": "danger", "min": {"x": 0, "y": 0, "z": 0}, "max": {"x": 1, "y": 1, "z": 1}}
+  ]
+}
+```
+
+```json
+// detections.json
+{"objects": [{"id": "op1", "position": {"x": 0.5, "y": 0.5, "z": 0.5}}]}
+```
+
+```json
+// observation.json - evidência real de que as deteções acima vieram de facto
+// de um observador ativo e atualizado há pouco
+{"active": true, "observedAt": "2024-01-15T12:00:00Z", "maxAgeSeconds": 5}
+```
+
+As datas destes exemplos são apenas exemplos: `calibrated_at` tem de ser suficientemente recente para `max_age_days`, e `observedAt` tem de estar dentro de `maxAgeSeconds` de agora (com fuso horário, por exemplo um `Z` final); com as datas mostradas, o resultado hoje é `INHIBITED`, e não o `DANGER` abaixo.
+
+```bash
+./run.sh check --zones zones.json --detections detections.json --observation observation.json
+```
+
+```text
+SAFETY STATE: DANGER - object(s) ['op1'] breached a danger zone
+BREACH: object 'op1' inside warning zone 'warn1'
+BREACH: object 'op1' inside danger zone 'danger1'
+E-STOP REQUESTED: object 'op1' breached danger zone 'danger1' (not asserted - see estop.py)
+```
+
+Termina com `2` (Perigo, E-STOP pedido), `1` (violação só de Aviso), `0` (sem violação, calibração válida, observador ativo e atualizado) ou `3` (**Inibido** - calibração em falta/caducada, ou observador ausente/desativado/antigo/com erro, verificado antes de qualquer lógica de violação). Exemplo real do caminho de falha segura - as mesmas `detections.json` acima, mas com um `zones.json` sem a chave `"calibration"`:
+
+```bash
+./run.sh check --zones zones_no_calibration.json --detections detections.json --observation observation.json
+```
+
+```text
+SAFETY STATE: INHIBITED - no calibration metadata present - zone geometry cannot be trusted
+```
+
+Saída `3` - repare que não há qualquer saída `BREACH`/`E-STOP`, embora `op1` esteja dentro das duas zonas: um conjunto de zonas sem confiança nunca chega ao passo de verificação de violações. Omitir `--observation` falha de forma segura da mesma maneira, mesmo com uma calibração fresca e nenhum objeto junto a uma zona:
+
+```bash
+./run.sh check --zones zones.json --detections detections_clear.json
+```
+
+```text
+SAFETY STATE: INHIBITED - no observation status provided - cannot confirm the supplied detections reflect a real, active observer
+```
+
+```bat
+:: Windows - passos idênticos, sintaxe batch
+build.bat
+run.bat
+run.bat check --zones zones.json --detections detections.json --observation observation.json
+```
+
+A mesma lógica de `check` também está acessível por HTTP, para chamadores que não são a própria CLI - `zones`/`detections`/`observation` viajam no corpo JSON em vez de um caminho de ficheiro:
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8108
+# noutro terminal:
+curl -s -X POST http://127.0.0.1:8108/check -d '{"zones": {...}, "detections": {...}, "observation": {...}}'
+```
+
+Veja [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) para a referência completa de comandos/opções/códigos de saída, incluindo cada estado real (`READY`/`WARNING`/`DANGER`/`INHIBITED`) capturado de uma execução verdadeira.
+
+### Resolução de problemas
+
+* **`python`/`python3` não encontrado** - instale o Python 3.10+ e garanta que está no `PATH`.
+* **O `compileall` falha** - introduziu-se um erro de sintaxe real em `src/`; a compilação pára sem tocar na instalação, de propósito.
+* **"No `.venv` found" de `run.sh`/`run.bat`** - execute primeiro `build.sh`/`build.bat` pelo menos uma vez.
+* **Instalação editável antiga** - apague o `.venv/` e recompile; raramente é preciso.
+* **`check` termina com código diferente de zero** - é comportamento real e correto, não uma falha: `1` significa que se encontrou uma violação só de Aviso, `2` significa que uma violação de Perigo pediu um E-STOP, `3` significa que a calibração do conjunto de zonas falta/caducou ou que o estado do observador falta/está desativado/antigo/com erro (falha segura, verificada antes de qualquer lógica de violação). Só um traceback de Python ou um erro de JSON malformado é um erro a sério.

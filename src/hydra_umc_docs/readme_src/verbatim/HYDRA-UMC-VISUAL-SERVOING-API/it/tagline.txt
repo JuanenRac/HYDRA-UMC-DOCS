@@ -1,0 +1,1 @@
+📐 Legge di correzione di posa con autorizzazione condizionata alle zone (v0: ancora nessuna stima di posa da telecamera)

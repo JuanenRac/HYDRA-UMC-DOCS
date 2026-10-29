@@ -1,0 +1,63 @@
+A real, tested CRDT merge - not just a skeleton that compiles: it
+reconciles a multi-cell JSON scenario and prints the converged state.
+
+```bash
+# Windows
+build.bat
+run.bat scenarios/example.json
+
+# Linux / macOS
+./build.sh
+./run.sh scenarios/example.json
+```
+
+`build.sh`/`build.bat` never change the version (only `python tools/hydra_project_tool.py bump` raises it) and then run `cargo build --release`.
+`run.sh`/`run.bat` execute the resulting binary directly, forwarding any
+arguments (the scenario path) to it.
+
+A scenario is a JSON file with a `cells` array - each cell has an `id`
+(for readability), a `writer` ID, and a list of `writes`
+(`{key, value, time}`, `time` being an explicit Lamport timestamp,
+replayed rather than generated live - the same "explicit, deterministic
+input" pattern HYDRA-UMC-PATH-PLANNER-3D's `seed` uses). Each cell's writes are folded into its own map, then every cell's map is merged left to right with `merge_report()`, so every real conflict along the way is recorded in the result. That the merge gives the same state in any order is a property of the CRDT itself, pinned by the property tests in `src/crdt.rs`, not re-checked on every call.
+
+Running it against `scenarios/example.json` (where `cell-a` and `cell-b`
+both wrote to `cell-a-node-2`) shows the real conflict resolution, not
+just the final opaque result:
+
+```bash
+./run.sh scenarios/example.json
+```
+```json
+{
+  "cells_merged": 2,
+  "merged_state": { "...": "..." },
+  "conflicts_resolved": 1,
+  "conflicts": [
+    { "key": "cell-a-node-2",
+      "local_time": 2, "local_writer": 1, "local_value": "ok",
+      "remote_time": 3, "remote_writer": 2, "remote_value": "unhealthy",
+      "kept_remote": true }
+  ],
+  "next_local_time": 6
+}
+```
+
+```bash
+cargo test   # the Lamport clock, and the CRDT itself - including direct
+             # checks that merge is commutative, associative and
+             # idempotent (not just "looks right" on one example), a
+             # deterministic-tie-break test for truly concurrent writes,
+             # merge_report()'s own conflict-detection behavior, and a
+             # 4-cell simulation proving convergence across multiple
+             # rounds of partition and partial reconnection - {tests} tests total
+```
+
+The same `reconcile()` call is also reachable over a real JSON/HTTP API
+(`src/server.rs`, `tiny_http`, blocking, no async runtime) instead of a
+local scenario file - `run.sh serve [--addr ADDR] [--port PORT]` starts
+it (default `127.0.0.1:8112`), exposing `POST /reconcile` (scenario in
+the request body, same JSON shape) and `GET /stats`. This is what
+`systemd/hydra-umc-swarm-sync.service` runs unattended on the CM5. Full
+usage, exit codes, and the complete route reference are in
+[`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md).

@@ -1,0 +1,82 @@
+### Pré-requisitos
+
+* **Python 3.10 ou superior** no seu `PATH` (os scripts tentam `python3` e depois recorrem a `python`).
+* Ainda não é necessário GStreamer, ferramentas V4L2 nem outra dependência nativa - **zero dependências de execução de terceiros** nesta fase (`dependencies = []` no `pyproject.toml`).
+* Algumas dezenas de MB de espaço em disco para um ambiente virtual local em `.venv/`.
+
+### Passo a passo
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **Leitura da versão** - lê e mostra a versão do projeto; compilar nunca a altera (só `python tools/hydra_project_tool.py bump` a sobe).
+2. **Ambiente virtual** - cria o `.venv/` se não existir; reutiliza-o caso contrário.
+3. **Instalação editável** - `pip install -e ".[dev]"` para que as edições em `src/` tenham efeito de imediato, instala o `pytest` e regista o ponto de entrada de consola `hydra-umc-vision-streamer`.
+4. **Verificação de compilação** - `python -m compileall -q src` compila para bytecode todos os ficheiros de `src/`, apanhando erros de sintaxe em todo o ecossistema mesmo em ficheiros que o `main.py` nunca importa.
+5. **Suite de testes real** - `python -m pytest tests/ -q` ({tests} testes que cobrem a configuração (incluindo a análise de câmaras IP reais e a codificação percentual do `rtsp_url()`), o pipeline, a geração do MediaMTX, a política de memória intermédia/religação, a fronteira de integração com o HailoRT, o caminho de captura e serviço MJPEG e a CLI).
+
+O `set -euo pipefail` pára o script no primeiro passo que falhar; a compilação só reporta êxito se os 5 passarem.
+
+```bash
+./run.sh
+```
+
+Localiza o interpretador dentro do `.venv` (tratando as estruturas POSIX e Windows do `.venv`) e executa `python -m hydra_umc_vision_streamer.main`, reencaminhando quaisquer argumentos - a invocação simples imprime nome + versão + papel.
+
+Exemplo real - validar a configuração de uma câmara, gerar o seu pipeline GStreamer e gerar a configuração correspondente do relé MediaMTX:
+
+```bash
+./run.sh config validate --config cameras.json
+# 2 camera(s) in cameras.json
+#   cam0: /dev/video0 1920x1080@30 MJPG
+#   cam1: /dev/video1 640x480@15 YUYV
+# config OK
+
+./run.sh config gst --config cameras.json --camera cam0
+# v4l2src device=/dev/video0 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! tee name=t t. ! queue ! appsink name=cam0_hailo_sink t. ! queue ! rtspclientsink location=rtsp://localhost:8554/cam0
+
+./run.sh config mediamtx --config cameras.json
+# paths:
+#   cam0:
+#     source: publisher
+#   cam1:
+#     source: publisher
+```
+
+Exemplo real - captar e servir de facto uma câmara como MJPEG por HTTP (o único subcomando que abre um dispositivo real):
+
+```bash
+# Dispositivo USB/V4L2
+./run.sh stream serve --device 0 --port 8100
+
+# Câmara IP RTSP real (verificada contra hardware real - veja o CHANGELOG.md)
+CAMERA_URL="rtsp://admin:secret@192.168.0.211:554/11" ./run.sh stream serve --device-env CAMERA_URL --port 8100 --width 1920 --height 1080 --fps 15
+```
+
+Exemplo real - simular um consumidor lento contra uma memória intermédia limitada e uma ligação caída conduzida pela política real de religação:
+
+```bash
+./run.sh stream simulate --buffer-size 8 --frames 1000 --consumer-rate 1000
+# Pushed 1000 frame(s) through a buffer capped at 8
+# Max buffer size observed: 8 (must never exceed 8)
+# Frames dropped by backpressure: 972
+#
+# Simulated disconnect at frame 500
+# Reconnect backoff schedule (s): [0.5, 1.0, 2.0, 4.0]
+# Final connection state: given_up
+```
+
+```bat
+:: Windows - passos idênticos, sintaxe batch
+build.bat
+run.bat
+```
+
+### Resolução de problemas
+
+* **`python`/`python3` não encontrado** - instale o Python 3.10+ e confirme que está no `PATH`.
+* **O `compileall` falha** - foi introduzido um erro de sintaxe real em `src/`; a compilação pára sem tocar na instalação, de propósito.
+* **"No `.venv` found" do `run.sh`/`run.bat`** - execute primeiro o `build.sh`/`build.bat` pelo menos uma vez; o `run` nunca cria o ambiente.
+* **Instalação editável obsoleta** - apague o `.venv/` e recompile; raramente necessário, já que o `pip install -e .` normalmente apanha as alterações ao código em direto.

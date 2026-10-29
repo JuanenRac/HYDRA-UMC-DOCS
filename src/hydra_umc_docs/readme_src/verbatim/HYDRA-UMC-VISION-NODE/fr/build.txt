@@ -1,0 +1,110 @@
+### Prérequis
+
+* **Python 3.10 ou plus récent** sur le `PATH` (vérifié via `python3`/`python` - les scripts essaient les deux).
+* Aucun SDK Hailo système, GStreamer ou autre dépendance native n'est requis pour l'instant - le squelette a **zéro dépendance tierce à l'exécution** (`dependencies = []` dans `pyproject.toml`). Elles seront ajoutées au fur et à mesure que la logique réelle correspondante arrivera.
+* Suffisamment d'espace disque pour un environnement virtuel local (créé sous `.venv/`, quelques dizaines de Mo à ce stade).
+
+### Étape par étape - ce que fait vraiment chaque commande
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **Lecture de la version** - lit et affiche la version du projet ; compiler ne la change jamais (seule `python tools/hydra_project_tool.py bump` la fait monter).
+2. **Environnement virtuel** — crée `.venv/` s'il n'existe pas déjà (sûr à ré-exécuter ; un `.venv/` existant est réutilisé, pas recréé).
+3. **Installation éditable** — `pip install -e .` installe ce paquet dans `.venv` en mode « éditable », donc les modifications de code sous `src/` prennent effet immédiatement sans réinstallation, et enregistre le point d'entrée console `hydra-umc-vision-node` utilisé par `run.sh`.
+4. **Compile-check** — `python -m compileall -q src` compile en bytecode chaque fichier `.py` sous `src/`, détectant les erreurs de syntaxe dans tout le paquet, même dans des fichiers jamais réellement importés par `main.py`.
+5. **Vraie suite de tests** — `pytest tests/` exécute les {tests} tests.
+
+Le script utilise `set -euo pipefail` et s'arrête à la première étape en échec, n'affichant `Build complete.` (`build.sh`) / `== Build OK ==` (`build.bat`) que si les 5 étapes ont réussi.
+
+```bash
+./run.sh
+```
+
+Localise l'interpréteur Python à l'intérieur de `.venv` (gère à la fois la disposition POSIX `.venv/bin/python` et celle de Windows `.venv/Scripts/python.exe`, car ce dépôt est développé de façon multiplateforme) et exécute `python -m hydra_umc_vision_node.main`, qui transmet tous les arguments.
+
+L'invocation nue affiche le nom, la version et le rôle :
+
+```text
+HYDRA-UMC-VISION-NODE v0.1.6
+High-speed perception edge AI node (Hailo-8 + CM5) - integration parent of Vision-Streamer, Detection-HEF, Safety-Zones and Visual-Servoing-API.
+```
+
+La vraie sous-commande `family-status` vérifie le checkout local réel :
+
+```bash
+./run.sh family-status
+./run.sh family-status --workspace /path/to/some/other/checkout
+
+# Windows
+run.bat family-status
+```
+
+Utilise par défaut le répertoire parent de ce dépôt - la vraie disposition en checkouts frères déjà utilisée par cet écosystème. Se termine avec `1` si un vrai enfant manque.
+
+La vraie sous-commande `pipeline-status` sonde le matériel réel et rapporte le résultat réel, honnête :
+
+```bash
+./run.sh pipeline-status
+```
+```json
+{
+  "manifest": { "version": "0.1.0", "stages": [ "..." ] },
+  "camera_present": false,
+  "accelerator_present": false,
+  "mode": "degraded_no_hardware",
+  "runnable_stages": ["preprocess", "postprocess", "publish"],
+  "skipped_stages": ["capture", "inference"]
+}
+```
+
+Sur cette machine de développement (pas de CM5, pas de Hailo-8, pas de caméra) c'est la réponse réelle et honnête - code de sortie `1` (tout sauf le mode `full`). La vraie sous-commande `validate-frame` vérifie un fichier de buffer de frame brut à la recherche d'une corruption structurelle :
+
+```bash
+./run.sh validate-frame path/to/frame.raw --width 1920 --height 1080
+# Frame OK: path/to/frame.raw matches 1920x1080x3 (6220800 bytes)
+
+./run.sh validate-frame path/to/truncated.raw --width 1920 --height 1080
+# Frame INVALID: path/to/truncated.raw
+#   [size_mismatch] frame buffer is ... bytes, expected 6220800 bytes ... - likely truncated or corrupt
+```
+
+```bat
+:: Windows - mêmes étapes, syntaxe batch
+build.bat
+run.bat
+```
+
+### L'API JSON/HTTP
+
+La vraie sous-commande `serve` exécute `family-status`/`pipeline-status`/`validate-frame` en tant qu'API JSON/HTTP au lieu d'un appel CLI ponctuel - la même convention déjà utilisée par les autres `api.py` de cette famille, construite sur `http.server` de la bibliothèque standard (`ThreadingHTTPServer`), sans aucune dépendance d'exécution supplémentaire :
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8094
+```
+
+| Route | Méthode | Notes |
+|---|---|---|
+| `/family-status` | `GET` | Identique à la sous-commande `family-status`. Le paramètre optionnel `?workspace=CHEMIN` remplace le workspace par défaut du serveur pour cette seule requête. |
+| `/pipeline-status` | `GET` | Identique à la sous-commande `pipeline-status`. |
+| `/read-code` | `POST` | Les codes DataMatrix d'une image brute envoyée comme corps, avec `?width=W&height=H` et `channels` facultatif (3 par défaut) comme pour `/validate-frame` ; répond `{"codes": [...], "count": N}`, ou `503` si `pylibdmtx` n'est pas installé. |
+| `/validate-frame` | `POST` | Même vérification que la sous-commande `validate-frame`, mais les octets bruts du frame voyagent dans le corps de la requête au lieu d'un chemin de fichier local - un appelant distant n'a aucun chemin local sur le système de fichiers de ce serveur à lui transmettre. Nécessite les paramètres `?width=W&height=H` (`channels` optionnel, `3` par défaut). |
+| `/stats` | `GET` | Rapporte le chemin du workspace par défaut du serveur. |
+
+Exemple de `/validate-frame`, avec le même fixture varié de 48 octets que le parcours CLI ci-dessus :
+
+```bash
+curl -X POST "http://127.0.0.1:8094/validate-frame?width=4&height=4&channels=3" --data-binary @vn_good_frame.raw
+# {"valid": true, "expectedBytes": 48, "actualBytes": 48, "issues": []}
+```
+
+Chaque route répond avec un corps d'erreur honnête (`{"error": "..."}`) et le code HTTP correspondant - `400` pour des paramètres de requête invalides ou manquants, `404` pour une route inconnue - au lieu d'échouer silencieusement. Référence complète route par route : [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md).
+
+### Dépannage
+
+* **`python`/`python3` introuvable** — installez Python 3.10+ et assurez-vous qu'il est sur le `PATH` ; `build.sh` utilise `python3`, `build.bat` utilise `python`.
+* **`compileall` échoue** — cela signifie qu'une véritable erreur de syntaxe a été introduite sous `src/` ; le script de build se termine avec un code non nul sans créer/mettre à jour l'installation, volontairement, pour qu'un paquet cassé ne soit jamais présenté comme un « build réussi ».
+* **`run.sh`/`run.bat` indique « No `.venv` found »** — `build.sh`/`build.bat` doit être exécuté au moins une fois avant ; `run.sh`/`run.bat` ne crée jamais l'environnement lui-même, seuls les builds le font.
+* **Installation éditable obsolète après un pull** — supprimez `.venv/` et relancez `build.sh`/`build.bat` ; rarement nécessaire, car `pip install -e .` capte normalement les changements de code sans réinstallation.

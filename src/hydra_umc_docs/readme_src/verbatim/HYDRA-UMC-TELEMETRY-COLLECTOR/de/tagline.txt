@@ -1,0 +1,1 @@
+🚀 High-Throughput-Ingestion-Knoten für CAN- und WebSocket-Logs

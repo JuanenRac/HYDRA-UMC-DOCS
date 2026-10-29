@@ -1,0 +1,1 @@
+📡 Reconciliação de estado por CRDT e sincronização multinó

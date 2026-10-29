@@ -1,0 +1,1 @@
+📐 Lei de correção de pose com autorização condicionada às zonas (v0: ainda sem estimativa de pose por câmara)

@@ -1,0 +1,64 @@
+### ARQUITETURA E DECISÕES DE DESENHO
+
+Este repositório é um **filho** da família do Nó de IA Cognitiva - o seu pai,
+o [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+detém a imagem HydraOS partilhada e os pesos de modelos quantizados, e liga este
+serviço no `docker-compose.yml` a par dos seus três irmãos
+(VLA-Engine, Voice-UI, Docs-QA):
+
+* **Porque este filho não tem hardware/firmware/`os/`/`models/` próprios.**
+  Corre inteiramente no CM5 + módulo M.2 Hailo-10 já pertencentes ao pai -
+  manter os pesos dos modelos e a imagem HydraOS centralizados num só sítio evita quatro
+  cópias divergentes, de vários gigabytes, em toda a família.
+* **Porque uma estrutura `src/`.** Mantém o pacote instalável
+  (`hydra_umc_semantic_planner`) separado das ferramentas da raiz do repositório
+  (`bump_version.py`), de acordo com a estrutura usada por todos os outros projetos
+  Python do ecossistema.
+* **Porque o ponto de entrada começou por só imprimir a identidade/versão/papel.**
+  A fase de andaimes (scaffolding) provou que o pacote instala, compila
+  e importa limpo - na versão de Python de destino - antes de se acrescentar qualquer
+  lógica real de planeamento/recuperação baseada em LLM, mantendo esse trabalho posterior
+  isolado das questões de empacotamento. Entretanto o `main.py` ganhou
+  subcomandos reais `decompose`/`recover`/`serve` (veja COMPILAR E EXECUTAR abaixo) - o
+  `run.sh` simples, sem argumentos, continua a imprimir apenas a identidade/versão/papel,
+  o que é intencional (uma verificação rápida de "o pacote instalou-se bem"), e não um sinal de que a
+  própria CLI continue a ser um esboço.
+* **Como isto se encaixa no resto do ecossistema.** Este planeador é o
+  núcleo de decisão do Nó de IA Cognitiva: consome a intenção do seu irmão HYDRA-UMC-VOICE-UI
+  e os tokens de ação do seu irmão HYDRA-UMC-VLA-ENGINE, e envia as decisões de
+  missão resultantes a jusante para o HYDRA-UMC-ORCHESTRATOR para execução física.
+* **Porque o `decompose.py` são modelos reais de expressões regulares e não um LLM local.** Um
+  vocabulário pequeno e real de objetivos (montar/pick-and-place/inspecionar) é coberto por completo
+  e com honestidade por regras hoje - o mesmo raciocínio do irmão HYDRA-UMC-DOCS-QA
+  com o seu índice TF-IDF real em vez de um modelo de embeddings:
+  um núcleo real e testável agora que um futuro planeador baseado em LLM pode
+  substituir por detrás do mesmo contrato `decompose_goal()`.
+* **Porque os códigos de erro do `recovery.py` correspondem ao contrato público de recuperação.**
+  `INVALID_STATE`/
+  `OUT_OF_RANGE`/`ESTOP_ACTIVE`/`TOOL_INCOMPATIBLE`/`TIMEOUT`/
+  `UNSUPPORTED` são os erros estruturados reais que esse adaptador foi desenhado para
+  devolver - a lógica de recuperação construída hoje contra esse vocabulário real
+  continua válida quando o próprio adaptador existir, em vez de inventar uma
+  taxonomia de erros paralela que teria de ser reconciliada mais tarde.
+* **Porque `ESTOP_ACTIVE`/`UNSUPPORTED`/códigos desconhecidos escalam sempre para uma
+  pessoa.** Respeita a regra de segurança de todo o ecossistema de que as camadas de IA, interface e
+  nuvem nunca anulam uma condição de segurança física - este planeador
+  propõe uma ação de recuperação, nunca limpa um E-STOP nem adivinha um
+  erro que não reconhece.
+* **Porque o `validation.py` existe mesmo que os modelos reais do `decompose.py` nunca produzam
+  na prática um plano inválido.** Um modelo fixo pode garantir parâmetros bem
+  formados por construção - um futuro planeador baseado em LLM não pode. O `validate_plan()`
+  é o contrato real e explícito que esse planeador teria de satisfazer, verificado aqui
+  e agora contra o único planeador que existe hoje, para que o próprio contrato
+  fique provado correto antes de algo mais difícil ter de o cumprir. O seu argumento opcional `capabilities`
+  é deliberadamente a metade limitada de "este plano é realmente
+  executável" que se pode responder *antes* da execução - a verificação real de
+  PÓS-condições (a `GRIP` acabou mesmo a segurar o seu alvo) precisa de
+  retorno em direto de um executor real (HYDRA-UMC-ORCHESTRATOR) que este
+  projeto ainda não tem, pelo que não é tentada aqui.
+* **Porque o `decompose_goal()` é testado por fuzzing com uma semente aleatória fixa
+  em vez do `hypothesis`.** Este projeto (como o resto do
+  ecossistema) fica só com a biblioteca padrão - um ciclo reproduzível, com semente, de `random.Random`
+  sobre centenas de objetivos sintéticos obtém a mesma propriedade real
+  (nunca falha, nunca devolve um plano malformado) sem uma nova
+  dependência.

@@ -1,0 +1,47 @@
+Requiere Python 3.10+.
+
+```bash
+# Linux / macOS
+./build.sh   # crea .venv, instala el
+             # paquete en modo editable (con extras dev), compile-check de
+             # todo src/, y ejecuta la suite pytest real
+./run.sh     # ejecuta el entry point desde .venv, imprime nombre + version + rol
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` nunca cambian la versión (solo `python tools/hydra_project_tool.py bump` la sube), y
+luego hacen compile-check del código fuente con `python -m compileall`.
+
+Ejemplo real - calcular la corrección de una pose actual a una objetivo:
+
+```bash
+./run.sh correct --current "0,0,0.5,0,0,0" --target "0.02,-0.01,0.48,0,0,0.05" \
+  --gain 0.8 --max-linear-speed 0.05
+# pose error   : dx=0.020000 dy=-0.010000 dz=-0.020000  droll=0.000000 dpitch=0.000000 dyaw=0.050000
+# error norm   : linear=0.030000 m  angular=0.050000 rad
+# velocity cmd : vx=0.016000 vy=-0.008000 vz=-0.016000  wroll=0.000000 wpitch=0.000000 wyaw=0.040000
+# converged    : False
+```
+
+Ejemplo real - solicitar una corrección con verja de seguridad (aceptada, inhibida y rechazada):
+
+```bash
+./run.sh request --current "0,0,0,0,0,0" --target "1,0,0,0,0,0" \
+  --frame-id cam0-f42 --confidence 0.9 --data-age-ms 30 --safety-state READY
+# outcome : ACCEPTED - frame 'cam0-f42' authorized (confidence=0.9, data_age_ms=30.0)
+# pose error   : dx=1.000000 dy=0.000000 dz=0.000000  droll=0.000000 dpitch=0.000000 dyaw=0.000000
+# velocity cmd : vx=0.250000 vy=0.000000 vz=0.000000  wroll=0.000000 wpitch=0.000000 wyaw=0.000000
+
+./run.sh request --current "0,0,0,0,0,0" --target "1,0,0,0,0,0" \
+  --frame-id cam0-f42 --confidence 0.9 --data-age-ms 30 --safety-state FAULT
+# outcome : INHIBITED - safety_state is 'FAULT', not 'READY'   (código de salida 2)
+
+./run.sh request --current "0,0,0,0,0,0" --target "1,0,0,0,0,0" \
+  --frame-id cam0-f42 --confidence 0.2 --data-age-ms 30 --safety-state READY
+# outcome : REJECTED - confidence 0.2 is below the required minimum 0.6 for frame 'cam0-f42'   (código de salida 1)
+```

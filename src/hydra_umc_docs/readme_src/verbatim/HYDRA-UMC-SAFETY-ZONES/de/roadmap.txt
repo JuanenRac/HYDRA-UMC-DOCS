@@ -1,0 +1,8 @@
+**Was heute funktioniert:** echte Warning-/Danger-Zonendefinitionen und echte Verletzungsprüfung (`geometry.py`/`zones.py`/`breach.py`), echte Durchsetzung der Kalibrierungsfrische, die vor jeglicher Verletzungslogik sicher zu `INHIBITED` fehlschlägt (`calibration.py`/`safety_state.py`), eine echte E-STOP-*Anforderungs*-Pipeline, die die Erkennen-vs-Durchsetzen-Grenze konstruktionsbedingt respektiert (`estop.py`), ein echter CLI-Subbefehl `check` über JSON-Zonen-/Erkennungsdateien und {tests} bestandene Tests - siehe [`CHANGELOG.md`](CHANGELOG.md) für die vollständige echte Build-/Run-Ausgabe.
+
+**Was noch offen ist, ohne bestimmte Reihenfolge und ohne verbindlichen Zeitplan:**
+
+* Die echte 3D-Belegungskartierung aus der räumlichen Segmentierung von Hailo-8, um die erkannten Objektpositionen, die `check` heute als JSON-Eingabe erwartet, tatsächlich zu erzeugen.
+* Die dynamische Selbstverdeckungsmaskierung der eigenen Roboterstruktur.
+* Ein echter CAN-Transport, der `EStopRequester` implementiert, an [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) - `estop.py` definiert bereits die Schnittstelle, die eine echte Implementierung erfüllen müsste.
+* Jegliche echte Sicherheitszertifizierungsarbeit (das ISO-13849-1-Badge oben drückt eine Absicht aus, keine abgeschlossene Zertifizierung).

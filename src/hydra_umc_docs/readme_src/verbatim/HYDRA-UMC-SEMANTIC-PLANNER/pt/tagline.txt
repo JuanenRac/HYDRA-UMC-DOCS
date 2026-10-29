@@ -1,0 +1,1 @@
+🧠 Planeador de missões baseado em regras e sistema de recuperação lógica (LLM previsto)

@@ -1,0 +1,35 @@
+Go >= 1.24 が必要です。
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh version
+./run.sh status --server http://localhost:3000
+./run.sh robots --server http://localhost:3000
+./run.sh doctor --server http://localhost:3000
+./run.sh config validate --config ./hydra-cli.json
+./run.sh config apply --config ./hydra-cli.json --dry-run
+echo $?   # 0=正常 2=使用方法 3=設定 4=ネットワーク 5=サーバー 6=未実装 7=認証
+
+# Windows
+build.bat
+run.bat version
+run.bat status --server http://localhost:3000
+run.bat robots --server http://localhost:3000
+run.bat doctor --server http://localhost:3000
+run.bat config validate --config .\hydra-cli.json
+run.bat config apply --config .\hydra-cli.json --dry-run
+```
+
+`robots` と `doctor` は `/api/settings` を読み取りますが、HYDRA-UMC-SERVER はこれをログイン済みのアカウントにしか渡しません（管理者は完全な設定を、他のロールは秘密を伏せたコピーを見ます）。CLI への認証情報は環境変数で渡します。オプションでは渡しません（プロセス一覧やシェル履歴に残らないようにするため）。`HYDRA_CLI_TOKEN`（サーバーがすでに発行した Bearer トークン）、または `HYDRA_CLI_USER` と `HYDRA_CLI_PASSWORD`（CLI がその実行のために `POST /api/login` でログインします。両方ある場合はトークンが優先されます）。どちらもない場合、コマンドはコード `7` で終了し、設定すべき変数を示します。`status` と `doctor` の最初のリクエストは公開の `/api/hydra-info` を使い、認証情報を送ることはありません。レスポンスは 4 MiB まで読み取ります。
+
+`build` はバージョンを変更せず（`src/cmd/hydra-cli/version.go`）、
+実際のテストスイートを実行し（`go vet` + `go test`）、`src/` 内の Go
+モジュールを `build/hydra-cli(.exe)` としてコンパイルし、検証のために
+一度 `version` を実行します - その後、`linux/amd64`、`linux/arm64`
+（CM5自身のアーキテクチャ）、`windows/amd64`、`darwin/amd64`、
+`darwin/arm64` 向けに実際のリリースをクロスコンパイルし、
+`build/release/` に出力、実際の `SHA256SUMS` チェックサムファイルも
+添えます。`run` はコンパイル済みバイナリを再度実行
+し、すべての引数を転送します——実行中の `HYDRA-UMC-SERVER` インスタンス
+に対して `run doctor` を試してみてください。Doctor は安全な読み取り専用のエンドポイント契約チェックです。詳細は [docs/DOCTOR.md](docs/DOCTOR.md) を参照してください。

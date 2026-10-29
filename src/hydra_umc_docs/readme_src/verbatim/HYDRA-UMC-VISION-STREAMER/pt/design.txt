@@ -1,0 +1,22 @@
+### ARQUITETURA PREVISTA DO PIPELINE
+
+O diagrama abaixo é o fluxo de dados de destino para que este projeto está a ser construído - a *forma* dele (que elemento alimenta qual, a divisão `Tee`) está fixada pelo `pipeline.py` e é gerada hoje como sintaxe real de `gst-launch-1.0`, mas nada neste diagrama é executado ainda: isso precisa do ambiente de execução real V4L2/GStreamer/Hailo-8 e de câmaras USB físicas.
+
+### INFORMAÇÃO TÉCNICA AVANÇADA
+
+### Porque não há `hardware/`, `firmware/`, `os/` nem `models/` aqui
+
+O CM5 + Hailo-8 é hardware comercial sem placa própria para desenhar, ao contrário das placas STM32H745/STM32G474 à medida dentro do [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) - pelo que não existe pasta `hardware/`/`firmware/` em nenhum dos 5 projetos do Nó de IA de Visão. O `os/` (a imagem HydraOS partilhada) e o `models/` (os ficheiros `.hef` compilados realmente servidos à NPU) vivem apenas no pai de integração, [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE), já que é o processo que detém a imagem do anfitrião CM5 e o identificador do dispositivo Hailo-8 - levar cópias separadas para aqui seria apenas estado extra para manter sincronizado sem qualquer benefício.
+
+### Forma prevista do pipeline
+
+O elemento `Tee` do diagrama acima é a decisão de desenho fundamental já tomada antes da implementação: as tramas captadas/pré-processadas destinam-se a bifurcar-se para dois consumidores ao mesmo tempo - o caminho de inferência Hailo-8 (que alimenta o [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE)) e um ecrã local / fluxo RTSP-WebRTC opcional para monitorização humana - sem que o caminho de monitorização acrescente latência ao caminho de inferência.
+
+### Decisões de desenho já tomadas
+
+* **Versão lida dos metadados do pacote instalado, não fixada no código** - o `main.py` chama `importlib.metadata.version("hydra-umc-vision-streamer")` em vez de uma segunda cadeia `__version__`, para que o `bump_version.py` só tenha um sítio para editar e os dois nunca possam divergir.
+* **A subida ao estilo conta-quilómetros só toca automaticamente em `PATCH`/`MINOR`** - o `bump_version.py` transporta o `PATCH` para o `MINOR` depois de 9 e o `MINOR` para o `MAJOR` depois de 9, mas nunca sobe o próprio `MAJOR`; essa é uma decisão humana deliberada, a mesma convenção do `HYDRA-UMC-EDITOR-URDF/bump_version.py` e do `HYDRA-UMC-SUITE/bump_version.py`.
+* **O YAML do MediaMTX é escrito à mão, não construído sobre o PyYAML** - a forma da saída do `mediamtx_config.py` (um mapa `paths:` plano, uma entrada `source: publisher` por câmara) é simples e fixa o suficiente para que uma dependência real ainda não se justifique. Reveja se a configuração por câmara passar a ter campos aninhados ou em lista.
+* **O pipeline e a configuração do MediaMTX têm de concordar num só caminho RTSP por câmara** - o `rtsp_url_for()` é o único sítio que o deriva (a partir do nome da câmara), para que o `config gst` e o `config mediamtx` nunca possam discordar sobre onde vive o fluxo de uma câmara.
+* **O `FrameBuffer` descarta a trama mais antiga, não a mais recente, quando fica cheio.** O vídeo em direto não tem uso para uma acumulação crescente de tramas antigas - a trama mais recente é sempre a útil. Uma fila que bloqueasse os produtores arriscaria a própria thread real de captura, e uma fila que simplesmente continuasse a crescer arriscaria exatamente a falha de memória ilimitada que esta porta existe para impedir.
+* **O `reconnect.py` nunca dorme nem toca ele próprio num socket real.** O `ConnectionTracker` apenas acompanha o estado e devolve quanto tempo quem chama deve esperar - essa separação é o que torna todo o calendário de recuo (incluindo desistir depois de `max_attempts`) exatamente reproduzível num teste, sem relógio real nem ligação de câmara real.

@@ -1,0 +1,80 @@
+### ARCHITECTURE & DESIGN DECISIONS
+
+This repository is a **child** of the Cognitive AI Node family - its
+parent, [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+owns the shared HydraOS image and quantized model weights, and wires this
+service into `docker-compose.yml` alongside its three siblings
+(VLA-Engine, Semantic-Planner, Docs-QA):
+
+* **Why this child has no hardware/firmware/`os/`/`models/` of its
+  own.** It runs entirely on the CM5 + Hailo-10 M.2 module already owned
+  by the parent - keeping model weights and the HydraOS image
+  centralized in one place avoids four divergent multi-gigabyte copies
+  across the family.
+* **Why a `src/` layout.** Keeps the installable package
+  (`hydra_umc_voice_ui`) separate from repo-root tooling
+  (`bump_version.py`), matching the layout used by every other Python
+  project across the ecosystem.
+* **Why bare invocation only prints identity/version/role.** That stays
+  a thin, unchanged scaffolding check; the real v0 work lives behind its
+  subcommands instead - `analyze-audio` (real WAV loading + energy-gate
+  VAD, `audio.py`), `parse-intent` (real rule-based intent/entity
+  parsing, `intent.py`), and `serve` (the real authenticated Watch
+  voice-turn gateway, `http_service.py`/`gateway.py`). None of that is
+  the Whisper STT / neural TTS pipeline this README's own roadmap
+  describes - that still needs a real model dependency this environment
+  doesn't have.
+* **How this fits the rest of the ecosystem.** This service is the
+  hands-free entry point into the whole Cognitive AI Node: recognized
+  intent flows to its sibling HYDRA-UMC-SEMANTIC-PLANNER, and it acts as
+  a voice-control surface alongside HYDRA-UMC-STUDIO and HYDRA-UMC-DSI.
+* **Why `audio.py` uses `wave`/`array` instead of numpy.** 16-bit PCM
+  decoding and a real energy-gate VAD need nothing beyond what the
+  standard library already provides - keeping v0 dependency-free means
+  the real audio front-end works anywhere Python does, before any
+  Hailo-10-specific STT dependency is even installed.
+* **Why `intent.py` is real regex rules, not a trained NLU model.**
+  A small, real command vocabulary (start/stop/status/go home) is fully
+  and honestly covered by rules today - the same reasoning as the
+  sibling HYDRA-UMC-DOCS-QA's real TF-IDF index instead of an embedding
+  model: a real, testable kernel now that a future ML-based classifier
+  can replace behind the same `parse_intent()` contract, once recognized
+  speech needs to cover more than this v0 vocabulary.
+* **Why unmatched audio/text returns an honest miss, not a guess.**
+  `detect_voice_segments()` returns an empty list for silence, and
+  `parse_intent()` returns `None` for text outside its rule set - v0 has
+  no model to fall back on, so it never fabricates a segment or an
+  intent it didn't actually detect.
+* **Why the Watch gateway uses `classify_intent()`, not the legacy
+  `parse_intent()`.** `parse_intent()` stays first-match-wins (unchanged,
+  still tested as-is) for existing callers, but a real transcript that
+  genuinely matches more than one known command (e.g. containing both
+  "stop" and "status") is a real, safety-relevant ambiguity for a
+  gateway whose whole job is deciding whether a motion command needs
+  confirmation - `classify_intent()` checks every rule and reports a
+  real, distinct ambiguous case instead of silently resolving to
+  whichever rule happens to be declared first.
+* **Why `normalize_text()` applies Unicode NFKC before matching.** Some
+  speech-to-text pipelines emit full-width Latin letters and other
+  compatibility Unicode forms - distinct code points from ordinary
+  ASCII, and therefore not "the word" as far as a `\b...\b` regex is
+  concerned. NFKC collapses them to their ordinary equivalent first, so
+  a command that's semantically identical to a known rule is never
+  treated as an honest non-match just because of how it was encoded.
+
+### WATCH VOICE GATEWAY (v0)
+
+`python -m hydra_umc_voice_ui.main serve` exposes a deliberately bounded local HTTP gateway for a paired HYDRA-UMC-WATCH integration: `GET /health`, `POST /v1/voice/turn` and `POST /v1/voice/confirm`. The gateway validates the typed `voice_turn` payload, uses the existing deterministic intent parser and returns an `assistant_reply`; it does not control robot hardware.
+
+Loopback development may run without a token. A non-loopback bind requires `HYDRA_UMC_VOICE_UI_TOKEN` and a matching `Authorization: Bearer` header. Raw audio is never sent through this API, and motion-related intents always return `requiresConfirmation: true` along with a real, bounded `confirmationToken` - the Watch client echoes it back to `POST /v1/voice/confirm`, which reports `confirmed`/`expired`/`invalid` (never a bare boolean) without itself dispatching anything. See the confirmation section of [WATCH_VOICE_GATEWAY.md](docs/WATCH_VOICE_GATEWAY.md) below for the full contract.
+
+A transcript that genuinely matches more than one known command is rejected with a real, distinct reply instead of being silently resolved to one interpretation:
+
+```json
+// POST /v1/voice/turn
+{"type": "voice_turn", "requestId": "watch-voice-001", "transcript": "stop the status check", "locale": "en-US"}
+
+// -> {"type":"assistant_reply","requestId":"watch-voice-001","text":"That request matched more than one action (status, stop). Please rephrase it more specifically.","level":"ATTENTION","speak":true,"requiresConfirmation":false,"visualState":"clarification","interpretation":{"heardText":"stop the status check","normalizedText":"stop the status check","matchedRules":["status","stop"]}}
+```
+
+See [WATCH_VOICE_GATEWAY.md](docs/WATCH_VOICE_GATEWAY.md) for the full request contract and deployment boundary, and [CLI_REFERENCE.md](docs/CLI_REFERENCE.md) for every real `analyze-audio`/`parse-intent`/`serve` example captured from the installed CLI.

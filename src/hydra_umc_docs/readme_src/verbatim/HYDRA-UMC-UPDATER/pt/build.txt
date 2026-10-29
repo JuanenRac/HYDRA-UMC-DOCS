@@ -1,0 +1,27 @@
+```bash
+chmod +x build.sh   # uma única vez
+./build.sh          # cria o .venv, pip install -e ., verifica a compilação de tudo
+./run.sh                              # GUI com janela (por defeito)
+./run.sh --cli status                 # o que está instalado, versão local vs. GitHub
+./run.sh --cli status --offline       # o mesmo, saltando a verificação no GitHub
+./run.sh --cli install <PROJECT-NAME> # clona + compila um projeto ainda não instalado
+./run.sh --cli update  <PROJECT-NAME> # obtém + recompila um projeto já instalado
+./run.sh --cli prune-backups --keep 2  # remove as pastas <nome>.backup-xxxxxxxx antigas (mantém as 2 mais recentes de cada)
+```
+
+No Windows: `build.bat` e depois `run.bat` (GUI) / `run.bat --cli status` /
+`run.bat --cli install <name>` / `run.bat --cli update <name>`.
+
+A GUI preferida precisa do runtime Qt opcional (`pip install -e ".[gui]"`; o
+`build.bat`/`build.sh` já o instalam). O `--cli` não tem dependência de GUI e é
+o ponto de entrada correto para uma CM5 sem cabeça. Se o Qt não estiver
+disponível, o shell Tkinter mais antigo é apenas um recurso de compatibilidade.
+
+**Resolução de problemas**
+
+- O `status` mostra `?` na versão local ou do GitHub de um projeto: o seu ficheiro de versão existe, mas a entrada `native_version` do `hydra-umc.project.json` desse projeto já não corresponde ao sítio onde a versão realmente está - corrija o manifesto desse projeto.
+- O `status` mostra `-` para o GitHub sem erro visível: execute o `status`
+  (sem `--offline`) - o `-` só aparece quando a verificação no GitHub foi
+  totalmente saltada.
+- O `install`/`update` falha com "No non-versioning build-test.sh/.bat found": esse projeto ainda não tem `build-test.sh`/`build-test.bat` - acrescente-lhe o padrão do ecossistema (tem de verificar sem aumentar nenhuma versão).
+- O `git merge --ff-only failed`: a cópia local tem um histórico divergente ou commits locais (a mensagem indica-os) - mova-os ou descarte-os (`git status`/`git log` na pasta desse projeto) antes de repetir o `update`. As alterações por confirmar em ficheiros seguidos são recusadas logo de início. Esta ferramenta nunca força o reset de uma cópia.

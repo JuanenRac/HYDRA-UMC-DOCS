@@ -1,0 +1,9 @@
+```mermaid
+flowchart TB
+    URDF["Modelos URDF (EDITOR)"] --> TWIN["HYDRA-UMC-TWIN"]
+    TWIN --> PHYS["PHYSICS-REPLICA (MuJoCo/PhysX)"]
+    PHYS --> SYNC["HIL-BRIDGE (Sync de Comandos)"]
+    SYNC --> APP["App Android / iOS"]
+    SYNC --> STUDIO["HYDRA-UMC-STUDIO"]
+    TWIN --> DATA["SYNTHETIC-DATA-GEN"]
+```

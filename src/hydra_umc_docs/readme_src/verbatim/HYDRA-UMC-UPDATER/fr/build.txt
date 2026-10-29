@@ -1,0 +1,27 @@
+```bash
+chmod +x build.sh   # une seule fois
+./build.sh          # crée .venv, pip install -e ., compile-check de tout
+./run.sh                              # GUI avec fenêtre (par défaut)
+./run.sh --cli status                 # ce qui est installé, version locale vs. GitHub
+./run.sh --cli status --offline       # pareil, sans vérifier GitHub
+./run.sh --cli install <NOM-PROJET>   # clone + compile un projet pas encore installé
+./run.sh --cli update  <NOM-PROJET>   # met à jour + recompile un projet déjà installé
+./run.sh --cli prune-backups --keep 2  # supprime les anciens dossiers <nom>.backup-xxxxxxxx (garde les 2 plus récents de chacun)
+```
+
+Sous Windows : `build.bat`, puis `run.bat` (GUI) / `run.bat --cli status`
+/ `run.bat --cli install <nom>` / `run.bat --cli update <nom>`.
+
+La GUI préférée requiert le runtime Qt optionnel (`pip install -e ".[gui]"`;
+`build.bat`/`build.sh` l'installent déjà). `--cli` n'a pas de dépendance GUI et
+convient à une CM5 headless. Sans Qt, l'ancienne fenêtre Tkinter reste un
+fallback de compatibilité uniquement.
+
+**Dépannage**
+
+- `status` affiche `?` pour la version locale ou GitHub d'un projet : son fichier de version existe, mais l'entrée `native_version` du `hydra-umc.project.json` de ce projet ne correspond plus à l'endroit où se trouve réellement sa version - corrigez le manifeste de ce projet.
+- `status` affiche `-` pour GitHub sans erreur affichée : lancez `status`
+  (sans `--offline`) - `-` n'apparaît que quand la vérification GitHub a
+  été complètement sautée.
+- `install`/`update` échoue avec « No non-versioning build-test.sh/.bat found » : ce projet n'a pas encore de `build-test.sh`/`build-test.bat` - ajoutez-lui celui, standard, de l'écosystème (il doit vérifier sans incrémenter aucune version).
+- `git merge --ff-only failed` : le checkout local a un historique divergent ou des commits locaux (le message les nomme) - déplacez-les ou abandonnez-les (`git status`/`git log` dans le répertoire de ce projet) avant de relancer `update`. Les modifications non validées de fichiers suivis sont refusées d'emblée. Cet outil ne force jamais la réinitialisation d'un checkout.

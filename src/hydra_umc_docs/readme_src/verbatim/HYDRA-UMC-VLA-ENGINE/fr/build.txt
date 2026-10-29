@@ -1,0 +1,69 @@
+Nécessite Python >= 3.10.
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # crée .venv, installe le paquet (éditable, avec extras dev),
+             # vérifie l'import, exécute la suite de tests réelle
+./run.sh     # exécute le point d'entrée
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` ne changent jamais la version (seule `python tools/hydra_project_tool.py bump` la fait monter). Sortie
+attendue de `run.sh` (invocation nue) :
+
+```text
+HYDRA-UMC-VLA-ENGINE v0.1.8
+Vision-Language-Action engine (Hailo-10) - translates camera frames and text instructions into robotic action sequences.
+```
+
+Exemple réel - encoder une action en jetons, la décoder, et intégrer une courte séquence d'actions en une trajectoire :
+
+```bash
+./run.sh tokens encode --action "0.02,-0.03,0.01,0.05,-0.04,0.02,0.7"
+# 179,51,153,192,76,153,179
+
+./run.sh tokens decode --tokens "179,51,153,192,76,153,179"
+# 0.020117,-0.029883,0.009961,0.050391,-0.040234,0.019922,0.701172
+# (pas identique à l'entrée d'encodage ci-dessus - la discrétisation à 256
+# bins est intentionnellement destructrice, decode récupère le point médian
+# du bin, pas la valeur d'origine exacte)
+
+echo '[[0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5], [0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 1.0]]' > actions.json
+./run.sh trajectory integrate --start "0,0,0,0,0,0" --actions actions.json
+# step 0: x=0.000000 y=0.000000 z=0.000000 roll=0.000000 pitch=0.000000 yaw=0.000000 gripper=0.000000
+# step 1: x=0.010000 y=0.000000 z=0.000000 roll=0.000000 pitch=0.000000 yaw=0.000000 gripper=0.500000
+# step 2: x=0.010000 y=0.010000 z=0.000000 roll=0.000000 pitch=0.000000 yaw=0.000000 gripper=1.000000
+```
+
+`status` rapporte la disponibilité réelle et honnête de l'accélérateur/des
+poids du modèle - jamais un faux état « prêt » :
+
+```text
+$ ./run.sh status
+accelerator (Hailo-10):    MISSING
+model weights (parent):    MISSING
+mode: no_accelerator - no Hailo-10 NPU device node on this machine - real inference cannot run here.
+```
+
+### 🩺 Dépannage
+
+* **`python : commande introuvable` / le build échoue à l'étape 1.**
+  Nécessite Python >= 3.10 dans le `PATH`. Sous Windows, installez-le
+  depuis [python.org](https://python.org) et cochez "Add to PATH" lors de
+  l'installation ; sous Linux/macOS, c'est généralement `python3`.
+* **`build.sh` n'arrive pas à activer le venv.** `python3 -m venv .venv`
+  place le script d'activation à un emplacement différent selon la
+  plateforme : `.venv/bin/activate` sous Linux/macOS,
+  `.venv/Scripts/activate` sous Windows (également pour un venv Python
+  Windows utilisé depuis Git Bash). `build.sh` vérifie déjà les deux
+  chemins - si cela échoue toujours, supprimez `.venv/` et relancez
+  `./build.sh` pour le reconstruire entièrement.
+* **`pip install -e .` échoue.** Généralement dû à un `.venv/` obsolète.
+  Supprimez le dossier `.venv/` et relancez `./build.sh`/`build.bat` pour
+  le recréer.
+* **`import OK` ne s'affiche jamais.** Signifie que `python -c "import
+  hydra_umc_vla_engine"` a lui-même échoué - relancez avec le venv actif
+  pour voir la vraie trace d'erreur.

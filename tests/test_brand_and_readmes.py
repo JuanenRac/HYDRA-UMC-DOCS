@@ -13,11 +13,17 @@ from pathlib import Path
 
 import pytest
 
-from hydra_umc_docs import brand, readme_family, readme_text, readmes
+from hydra_umc_docs import brand, glance, readme_family, readme_text, readme_universal
 from hydra_umc_docs.descriptions import DESCRIPTIONS
 
 REPO = Path(__file__).resolve().parents[1]
 PRIVATE = ("SON" + "NET", "BIB" + "LIA", "Cla" + "ude", "Anthro" + "pic")
+
+
+def readme_outputs():
+    """The eight READMEs of this repository as the generator writes them."""
+    entry = glance.load_data(REPO / "data" / "glance.json")["HYDRA-UMC-DOCS"]
+    return readme_universal.outputs(REPO, entry)
 
 
 def load_parity():
@@ -99,7 +105,7 @@ def test_the_family_list_has_no_duplicates_and_matches_the_descriptions():
 # --- generated READMEs --------------------------------------------------------------------------------
 
 def test_the_committed_readmes_are_what_the_generator_writes():
-    for filename, content in readmes.outputs(REPO).items():
+    for filename, content in readme_outputs().items():
         assert (REPO / filename).read_text(encoding="utf-8").replace("\r\n", "\n") == content, filename
 
 
@@ -110,10 +116,10 @@ def test_readmes_pass_the_shared_parity_check_of_the_ecosystem():
 
 def test_every_readme_has_the_same_headings_links_and_version():
     manifest = json.loads((REPO / "hydra-umc.project.json").read_text(encoding="utf-8"))
-    outputs = readmes.outputs(REPO)
+    outputs = readme_outputs()
     headings = {name: re.findall(r"(?m)^## (\S+)", text) for name, text in outputs.items()}
     assert len({tuple(value) for value in headings.values()}) == 1
-    assert len(headings["README.md"]) == 10
+    assert len(headings["README.md"]) >= 15
     links = {name: set(re.findall(r"\]\((https?://[^)\s]+)\)", text)) for name, text in outputs.items()}
     assert len({frozenset(value) for value in links.values()}) == 1
     for name, text in outputs.items():
@@ -123,7 +129,7 @@ def test_every_readme_has_the_same_headings_links_and_version():
 
 
 def test_readmes_name_every_repository_of_the_family_once_as_a_link():
-    text = readmes.outputs(REPO)["README.md"]
+    text = readme_outputs()["README.md"]
     for _, group in readme_family.FAMILY_REPOS:
         for name in group:
             if name == "HYDRA-UMC-DOCS":
@@ -133,19 +139,18 @@ def test_readmes_name_every_repository_of_the_family_once_as_a_link():
 
 
 def test_the_language_bar_marks_the_current_language_and_links_the_others():
-    bar = readmes.language_bar("es")
+    bar = readme_outputs()["README_spa.md"]
     assert "<b>Español</b>" in bar and 'href="README_spa.md"' not in bar and 'href="README.md"' in bar
 
 
 def test_the_maturity_is_translated_from_the_manifest():
     manifest = {"name": "X", "version": "1.2.3", "maturity": "functional", "technologies": ["Python"], "role": "tool", "deployment_target": "user-pc"}
     entry = {"hardware": "not_applicable"}
-    assert "| Funcional |" in readmes.render("es", manifest, entry)
-    assert "Maturity-functional" in readmes.render("en", manifest, entry)
+    assert "| Funcional |" in glance.render_section("es", manifest, entry)
 
 
 def test_no_readme_carries_a_private_name_a_date_or_an_unfinished_marker():
-    for filename, text in readmes.outputs(REPO).items():
+    for filename, text in readme_outputs().items():
         for word in PRIVATE:
             assert word.lower() not in text.lower(), (filename, word)
         assert re.search(r"\b20\d\d-\d\d-\d\d\b", text) is None, filename

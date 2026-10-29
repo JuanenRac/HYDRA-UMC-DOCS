@@ -1,0 +1,4 @@
+* **Fase 1:** sincronização do Gémeo Digital com telemetria de hardware em tempo real e latência abaixo de 10 ms.
+* **Fase 2:** integração da Réplica de Física com simuladores de nível industrial (Isaac Sim) e suporte de corpos deformáveis.
+* **Fase 3:** padrões de recuperação automática do Node Healing para failover descentralizado e deteção precoce da degradação de sensores.
+* **Fase 4:** refinamento de texturas baseado em GAN para materiais industriais hiper-realistas e geração de conjuntos de dados fotorrealistas.

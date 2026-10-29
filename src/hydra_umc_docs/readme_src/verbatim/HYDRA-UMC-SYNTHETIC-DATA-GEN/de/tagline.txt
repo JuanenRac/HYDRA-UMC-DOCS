@@ -1,0 +1,1 @@
+📸 Prozeduraler Datensatz-Generator für das Vision AI Node Training

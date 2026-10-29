@@ -1,0 +1,116 @@
+### 前提条件
+
+* `PATH` 中存在 **Python 3.10 或更新版本**（通过 `python3`/`python` 检查——脚本会依次尝试两者）。
+* 目前不需要任何系统级 Hailo SDK、GStreamer 或其他原生依赖——**没有任何第三方运行时依赖**（`pyproject.toml` 中 `dependencies = []`）；`pytest` 只是一个开发附加依赖，仅用于真实的测试套件。相应的真实逻辑落地后才会添加运行时依赖。
+* 有足够的磁盘空间用于本地虚拟环境（在此阶段创建于 `.venv/` 下，仅需数十 MB）。
+
+### 逐步说明——每条命令实际执行的操作
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **版本读取** —— 读取并显示项目版本；构建绝不会更改它（只有 `python tools/hydra_project_tool.py bump` 才会提升）。
+2. **虚拟环境** —— 若 `.venv/` 尚不存在则创建它（可安全重复运行；已存在的 `.venv/` 会被复用，而非重新创建）。
+3. **可编辑安装（含 dev 附加依赖）** —— `pip install -e ".[dev]"` 以"可编辑"模式将本包安装到 `.venv` 中，因此对 `src/` 下源代码的修改会立即生效而无需重新安装，安装 `pytest`，并注册 `run.sh` 所使用的 `hydra-umc-vision-node` 控制台入口点。
+4. **编译检查** —— `python -m compileall -q src` 对 `src/` 下的每个 `.py` 文件进行字节码编译，即使某个文件从未被 `main.py` 实际导入，也能捕获整个包中的语法错误。
+5. **真实测试套件** —— `pytest tests/` 运行全部 {tests} 个测试。
+
+脚本使用 `set -euo pipefail`，在第一个失败步骤处停止，只有全部步骤
+均成功时才打印 `Build complete.` (`build.sh`) / `== Build OK ==` (`build.bat`)。
+
+```bash
+./run.sh
+```
+
+在 `.venv` 内定位 Python 解释器（同时支持 POSIX 的 `.venv/bin/python` 和
+Windows 风格的 `.venv/Scripts/python.exe` 目录结构，因为本仓库是跨平台
+开发的），并运行 `python -m hydra_umc_vision_node.main`，并转发任何参数。
+
+无参数调用会打印名称 + 版本 + 角色：
+
+```text
+HYDRA-UMC-VISION-NODE v0.1.6
+High-speed perception edge AI node (Hailo-8 + CM5) - integration parent of Vision-Streamer, Detection-HEF, Safety-Zones and Visual-Servoing-API.
+```
+
+真实的 `family-status` 子命令会检查真实的本地检出：
+
+```bash
+./run.sh family-status
+./run.sh family-status --workspace /path/to/some/other/checkout
+
+# Windows
+run.bat family-status
+```
+
+默认使用本仓库自身的父目录——这正是本生态系统任何真实检出已经在使用的
+布局。如果缺少任何真实子项目，将以 `1` 退出。
+
+真实的 `pipeline-status` 子命令会探测真实硬件并报告真实、诚实的结果：
+
+```bash
+./run.sh pipeline-status
+```
+```json
+{
+  "manifest": { "version": "0.1.0", "stages": [ "..." ] },
+  "camera_present": false,
+  "accelerator_present": false,
+  "mode": "degraded_no_hardware",
+  "runnable_stages": ["preprocess", "postprocess", "publish"],
+  "skipped_stages": ["capture", "inference"]
+}
+```
+
+在这台开发机器上（没有 CM5、没有 Hailo-8、没有摄像头），这就是真实、诚实的
+答案——退出码 `1`（任何非 `full` 模式）。真实的 `validate-frame` 子命令会
+检查磁盘上的原始帧缓冲区文件是否存在结构性损坏：
+
+```bash
+./run.sh validate-frame path/to/frame.raw --width 1920 --height 1080
+# Frame OK: path/to/frame.raw matches 1920x1080x3 (6220800 bytes)
+
+./run.sh validate-frame path/to/truncated.raw --width 1920 --height 1080
+# Frame INVALID: path/to/truncated.raw
+#   [size_mismatch] frame buffer is ... bytes, expected 6220800 bytes ... - likely truncated or corrupt
+```
+
+```bat
+:: Windows - 步骤相同，批处理语法
+build.bat
+run.bat
+```
+
+### JSON/HTTP API
+
+真实的 `serve` 子命令会将 `family-status`/`pipeline-status`/`validate-frame` 作为 JSON/HTTP API 运行，而不是一次性的 CLI 调用——这与本系列其他 `api.py` 文件已经采用的约定相同，构建在标准库的 `http.server`（`ThreadingHTTPServer`）之上，不引入任何额外的运行时依赖：
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8094
+```
+
+| 路由 | 方法 | 说明 |
+|---|---|---|
+| `/family-status` | `GET` | 与 `family-status` 子命令相同。可选查询参数 `?workspace=PATH` 仅针对该次请求覆盖服务器默认的工作区。 |
+| `/pipeline-status` | `GET` | 与 `pipeline-status` 子命令相同。 |
+| `/read-code` | `POST` | 读取作为请求体发送的原始图像中的 DataMatrix 编码,查询参数 `?width=W&height=H` 和可选的 `channels`(默认 3)与 `/validate-frame` 相同;返回 `{"codes": [...], "count": N}`,若未安装 `pylibdmtx` 则返回 `503`。 |
+| `/validate-frame` | `POST` | 与 `validate-frame` 子命令相同的校验，但原始帧字节通过请求体传输，而不是服务器端的文件路径——真实的远程调用方根本没有本服务器自身文件系统上的本地路径可以传递。需要 `?width=W&height=H` 查询参数（`channels` 可选，默认 `3`）。 |
+| `/stats` | `GET` | 报告服务器默认的工作区路径。 |
+
+`/validate-frame` 示例，使用与上文 CLI 演示相同的 48 字节多样化测试数据：
+
+```bash
+curl -X POST "http://127.0.0.1:8094/validate-frame?width=4&height=4&channels=3" --data-binary @vn_good_frame.raw
+# {"valid": true, "expectedBytes": 48, "actualBytes": 48, "issues": []}
+```
+
+每个路由都会返回诚实的错误响应体（`{"error": "..."}`）和对应的 HTTP 状态码——查询参数错误或缺失时返回 `400`，未知路径返回 `404`——而不是静默失败。逐路由的完整参考见 [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md)。
+
+### 故障排查
+
+* **找不到 `python`/`python3`** —— 安装 Python 3.10+ 并确保其在 `PATH` 中；`build.sh` 使用 `python3`，`build.bat` 使用 `python`。
+* **`compileall` 失败** —— 意味着 `src/` 下确实引入了语法错误；构建脚本会以非零状态退出，且不会创建/更新安装，这是故意设计的，为的是绝不留下一个"构建成功"却损坏的包。
+* **`run.sh`/`run.bat` 提示"未找到 `.venv`"** —— 必须先至少运行一次 `build.sh`/`build.bat`；`run.sh`/`run.bat` 自身从不创建环境，只有构建脚本会。
+* **拉取更新后可编辑安装过期** —— 删除 `.venv/` 并重新运行 `build.sh`/`build.bat`；这种情况很少需要，因为 `pip install -e .` 通常无需重新安装即可识别源代码变更。

@@ -1,0 +1,54 @@
+### ARCHITECTURE & DESIGN DECISIONS
+
+This repository is a **child** of the Cognitive AI Node family - its
+parent, [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+owns the shared HydraOS image and quantized model weights, and wires this
+service into `docker-compose.yml` alongside its three siblings
+(Voice-UI, Semantic-Planner, Docs-QA):
+
+* **Why this child has no hardware/firmware/`os/`/`models/` of its
+  own.** It runs entirely on the CM5 + Hailo-10 M.2 module already owned
+  by the parent - keeping model weights and the HydraOS image
+  centralized in one place avoids four divergent multi-gigabyte copies
+  across the family.
+* **Why a `src/` layout.** Keeps the installable package
+  (`hydra_umc_vla_engine`) separate from repo-root tooling
+  (`bump_version.py`), matching the layout used by every other Python
+  project across the ecosystem.
+* **Why action tokenization ships before model inference.** Turning a continuous action into discrete tokens (and back) is fixed math defined by the action space's bounds and vocabulary size - it needs no VLA model or Hailo-10 NPU to write or test, so v0 lands that piece (`action_tokens.py`, `trajectory.py`) first. Real VLA inference needs the model weights and Hailo-10 hardware this environment doesn't have, and lands later.
+* **Why `hailo_runtime.py` imports `hailo_platform` lazily, inside just two
+  functions.** `hailort` isn't on PyPI and isn't installed on this
+  development machine - importing it at module load time would make this
+  entire package fail to install/import everywhere except a machine with
+  a real Hailo module attached. Only `open_vdevice()` and
+  `load_hailo_vla_model()` (the two functions that genuinely need real
+  HailoRT) import it, and lazily; both raise a clear
+  `HailoNotAvailableError` instead of a bare `ImportError` when it's
+  missing. Same pattern this ecosystem already uses for every other real
+  hardware transport (GRBL serial, MAVLink, SPI-OTA, ...).
+* **How this fits the rest of the ecosystem.** This engine converts raw
+  perception (camera frames, forwarded conceptually from
+  HYDRA-UMC-VISION-NODE upstream) and natural-language instructions into
+  action tokens that HYDRA-UMC-SEMANTIC-PLANNER, its sibling, turns into
+  mission-level decisions for HYDRA-UMC-ORCHESTRATOR. *(Planned: today the engine receives no camera frames and no text, and no module consumes its output besides the generic proxy of HYDRA-UMC-SERVER.)*
+* **Why `model_manifest.py` doesn't name a specific OpenVLA/RT-2
+  variant.** No model has actually been chosen yet (see this README's
+  own Roadmap) - `EXPECTED_MODEL_MANIFEST` is honestly a shape/target
+  contract derived directly from `action_tokens.py`'s own real
+  constants, not a loader for a model that doesn't exist. `hailo_arch`
+  reuses the same real, closed chip-family set `HYDRA-UMC-DETECTION-HEF`
+  already validates its own model registry against.
+* **Why `status` reports `hardware_ready_no_inference` instead of
+  "ready".** Even once a real Hailo-10 device and real model weights are
+  both present, this v0 still has no real inference code - claiming
+  readiness at that point would be a real lie about a capability that
+  doesn't exist yet. `hardware.py`'s `determine_mode()` checks the
+  accelerator first (a cheap device-node probe) before the model
+  weights, the same cheapest-precondition-first ordering
+  `HYDRA-UMC-DETECTION-HEF`'s `safe_load()` already uses.
+* **Why `model_weights_available()` checks the parent's `models/`, not
+  a local one.** This child has no `models/` of its own (pruned - see
+  the bullet above) - the real shared weights live in the parent
+  `HYDRA-UMC-COGNITIVE-NODE`'s own `models/`, one sibling-workspace
+  level up, the same real directory that repo's own
+  `check_shared_models()` already checks.

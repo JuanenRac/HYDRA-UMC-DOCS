@@ -1,0 +1,27 @@
+```bash
+chmod +x build.sh   # una sola vez
+./build.sh          # crea .venv, pip install -e ., compile-check de todo
+./run.sh                                # GUI con ventana (por defecto)
+./run.sh --cli status                   # qué está instalado, versión local vs. GitHub
+./run.sh --cli status --offline         # lo mismo, sin comprobar GitHub
+./run.sh --cli install <NOMBRE-PROYECTO> # clona + compila un proyecto aún no instalado
+./run.sh --cli update  <NOMBRE-PROYECTO> # actualiza + recompila un proyecto ya instalado
+./run.sh --cli prune-backups --keep 2  # elimina las carpetas <nombre>.backup-xxxxxxxx antiguas (conserva las 2 más recientes de cada una)
+```
+
+En Windows: `build.bat`, y luego `run.bat` (GUI) / `run.bat --cli status`
+/ `run.bat --cli install <nombre>` / `run.bat --cli update <nombre>`.
+
+La GUI preferida necesita el runtime Qt opcional (`pip install -e ".[gui]"`;
+`build.bat`/`build.sh` ya lo instalan). `--cli` no tiene dependencia grafica y
+es la entrada correcta para una CM5 headless. Si Qt no esta disponible, la
+antigua ventana Tkinter es solo un fallback de compatibilidad.
+
+**Solución de problemas**
+
+- `status` muestra `?` en la versión local o de GitHub de un proyecto: su fichero de versión existe, pero la entrada `native_version` del `hydra-umc.project.json` de ese proyecto ya no coincide con dónde vive realmente su versión - corrige el manifiesto de ese proyecto.
+- `status` muestra `-` en GitHub sin ningún error: ejecuta `status` (sin
+  `--offline`) - `-` solo aparece cuando la comprobación de GitHub se
+  omitió por completo.
+- `install`/`update` falla con "No non-versioning build-test.sh/.bat found": ese proyecto aún no tiene `build-test.sh`/`build-test.bat` - añádele el estándar del ecosistema (debe verificar sin subir ninguna versión).
+- `git merge --ff-only failed`: el checkout local tiene un historial divergente o commits locales (el mensaje los nombra) - muévelos o descártalos (`git status`/`git log` en el directorio de ese proyecto) antes de reintentar `update`. Las ediciones sin confirmar de ficheros versionados se rechazan de entrada. Esta herramienta nunca fuerza el reseteo de un checkout.

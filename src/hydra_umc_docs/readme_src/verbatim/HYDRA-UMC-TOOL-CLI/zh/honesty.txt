@@ -1,0 +1,5 @@
+**诚实核查 - 今天真正能运行的部分：** `version`、`status`、`robots`、`claims`、`claim`、`release`、`limits`、`jog-arm`、`jog`、`table`、`robot`、`audit`、`doctor`、`config validate`、`config apply --dry-run`，以及交互式 `shell`（`main.go`、`server.go`、`robots.go`、`control.go`、`doctor.go`、`config.go`、`shell.go`、`exitcode.go`）都是真实可运行的 Go 代码，由 {tests} 个通过的测试（`go test ./...`）验证——针对一个模拟服务器的真实 `net/http`/`httptest` 往返请求，加上真实的临时配置文件测试夹具，而不是桩代码。这些测试模拟的是一个 HYDRA-UMC-SERVER 实例；`status`、`robots` 和 `doctor`（包括登录）也已针对真实的 HYDRA-UMC-SERVER 进程运行过。`config apply` 在没有 `--dry-run` 时会诚实地返回 `ExitNotImplemented` 退出码，而不是伪装成功，因为它需要调用的车队写入端点在 HYDRA-UMC-SERVER 上还不存在。`deploy`、`flash-all` 和 `audit` 完全是愿景——在下文中标记为"planned"，在 `src/` 中完全不存在，连桩函数都没有。具体已经交付了什么，请参见 `CHANGELOG.md`。
+
+---
+
+> **安全与安防现状:**本生态系统不是经认证的安全系统。目前尚无硬件 E-STOP 通路,没有由固件强制执行的限位或联锁,也没有经过验证的运动指令;固件映像使用 CRC32 和共享密钥的 HMAC-SHA256 校验,而非非对称签名;TLS 与双向 TLS 均为可选项,默认关闭;自制电路板尚未组装或测试。在依赖此处任何说法来保障人身安全之前,请先阅读[安全基线](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md)和[威胁模型](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md)。

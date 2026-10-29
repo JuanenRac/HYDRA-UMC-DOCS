@@ -1,0 +1,1 @@
+📐 Loi de correction de pose avec autorisation conditionnée aux zones (v0 : pas encore d'estimation de pose par caméra)

@@ -1,0 +1,46 @@
+HYDRA-UMC-UPDATER 是一个小型工具——默认为窗口化 GUI，通过 `--cli` 可
+获得完整的 CLI——旨在运行在真实的 CM5 本机上，或运行在开发者自己的
+Windows/Linux/macOS 计算机上（任何以相同方式检出的工作区），它为生态
+系统中通过每个相邻检出自身的 `hydra-umc.project.json` 清单发现的
+每一个其他真实项目都回答三个问题——这个数量本身在此从不写死，
+因为它会随着生态系统一起增长：
+
+1. **这里实际安装了什么，版本是多少？**
+2. **GitHub 上发布的最新版本是什么？**
+3. **如果 GitHub 上的版本更新，让我选择一个项目或已确认的顺序批量操作。**
+
+最后一点是刻意为之、不容妥协的：本工具绝不会自行更改任何项目。对选定
+项目的操作始终需要明确确认。GUI 还可以提供**安装全部缺失项目**或**更新
+全部过期项目**；二者都是分别确认的顺序批量操作，并经过相同的清单、版本
+和安全检查。不存在无人批准的夜间自动更新。确认对话框会按执行顺序列出该批量操作的确切项目。
+
+发现的项目中也并非每一个都属于 CM5 本机——有些是开发者从自己的 PC 上运行的工具（固件是从工作站编译/刷写的，而非在单元本机上构建的），或是安装在手机/手表上的应用。每个项目自己的清单记录了它属于哪一种（见第 3 节），GUI 的项目表格可据此筛选——默认显示所有项目，因此更新器自身和 SDK 都不会被隐藏。
+
+示例说明（下面的项目数量和每个版本号都是为了展示输出格式而虚构的，
+并非真实捕获的执行结果——真实数量始终是 `registry.py` 当下实际发现的
+数量，绝不是写死在本文档中的固定数字）：
+
+```
+$ hydra-umc-updater --cli status
+Workspace root: /home/pi/HYDRA-UMC
+PROJECT           MATURITY     ROLE      STACK       LOCAL     GITHUB    STATE
+-----------------------------------------------------------------------------
+HYDRA-UMC         functional   firmware  firmware-c  0.0.7     0.0.7     up to date
+HYDRA-UMC-SERVER  functional   service   node        0.0.5     0.0.9     OUTDATED
+HYDRA-UMC-STUDIO  functional   client    node        0.0.8     0.1.3     OUTDATED
+...
+59/59 installed, 2 outdated
+Run `hydra-umc-updater update <project>` to update one by hand - never automatic, see this tool's own README.
+
+$ hydra-umc-updater --cli update HYDRA-UMC-SERVER
+Updating HYDRA-UMC-SERVER into /home/pi/HYDRA-UMC ...
+OK  Updated /home/pi/HYDRA-UMC/HYDRA-UMC-SERVER to v0.0.9 (commit 1a2b3c4d5e6f) after a verified build; previous installation kept at /home/pi/HYDRA-UMC/HYDRA-UMC-SERVER.backup-9f3c2d1a
+```
+
+不带任何参数运行 `hydra-umc-updater`（或直接双击它）会在窗口中打开同样
+的信息——一个可排序的项目表格、一个部署目标筛选器，以及针对当前所选行
+的安装/更新按钮。
+
+<p align="center">
+  <img src="images/HYDRA_UMC_UPDATER_INTERFACE_1.png" alt="HYDRA-UMC-UPDATER 真实桌面总览" width="100%">
+</p>

@@ -1,0 +1,20 @@
+Requer o Python >= 3.10.
+
+```bash
+# Linux/macOS
+./build.sh && ./run.sh --datalake-url http://localhost:8095
+
+# Windows
+build.bat
+run.bat --datalake-url http://localhost:8095
+```
+
+O `build` cria/ativa um `.venv` local, instala o pacote em modo editável com os extras de desenvolvimento, verifica a importação e executa a suite `pytest` real. O `run` arranca a API HTTP real (porta por omissão `8099`) contra uma instância do HYDRA-UMC-DATALAKE em `--datalake-url` (por omissão `http://localhost:8095`).
+
+```bash
+# Relatório OEE real para a fonte "robot-1" numa janela de 5 segundos
+curl "http://localhost:8099/reports/oee?sourceId=robot-1&start=0&end=5000&plannedTimeS=10.0&idealCycleTimeS=2.0"
+
+# Relatório de disponibilidade real para o fluxo motor_temp da mesma fonte
+curl "http://localhost:8099/reports/availability?sourceId=robot-1&kind=motor_temp&field=value&start=0&end=10000&expectedIntervalMs=1000"
+```

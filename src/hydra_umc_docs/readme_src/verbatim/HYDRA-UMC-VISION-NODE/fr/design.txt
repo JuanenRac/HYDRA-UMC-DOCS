@@ -1,0 +1,29 @@
+### FLUX SYSTÈME PRÉVU
+
+Le diagramme ci-dessous est le flux de données cible vers lequel ce squelette est construit - il documente la décision d'architecture, pas un pipeline qui fonctionne aujourd'hui.
+
+### INFORMATIONS TECHNIQUES AVANCÉES
+
+### Pourquoi ce projet est le parent d'intégration (et ce que cela signifie concrètement)
+
+Parmi les 5 projets de la famille Vision AI Node, celui-ci est le seul à :
+
+* Contenir un dossier **`os/`** — la configuration de l'image système HydraOS partagée pour l'hôte CM5. Les 4 enfants s'exécutent comme processus/conteneurs *au-dessus de* cette unique image système partagée ; aucune raison que chacun ait sa propre copie.
+* Contenir un dossier **`models/`** — les modèles `.hef` compilés réellement chargés sur le NPU Hailo-8 à l'exécution. [HYDRA-UMC-DETECTION-HEF](https://github.com/JuanenRac/HYDRA-UMC-DETECTION-HEF) est l'endroit où ces modèles sont *compilés et versionnés* ; ce nœud est l'endroit où vit la *copie servie en exécution*, car c'est le processus propriétaire du handle du périphérique Hailo-8.
+* Contenir **`docker-compose.yml`** — voir ci-dessous.
+
+Aucun des 5 projets ne contient de dossier `hardware/` ni `firmware/` : CM5 + Hailo-8 est du matériel existant sur étagère sans carte propre à concevoir, contrairement (par exemple) aux cartes STM32H745/STM32G474 sur mesure à l'intérieur de [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC).
+
+### `docker-compose.yml` : la carte d'intégration, construite à partir des Dockerfile des enfants (jamais exécutée avec Docker ici)
+
+`docker-compose.yml` à la racine du projet définit le service de ce nœud ainsi que les 4 enfants, câblés avec les devices/volumes/ports qu'on attend de chacun (le nœud de périphérique Hailo-8, les devices V4L2 par caméra, les ports gRPC vers le core HYDRA-UMC). Il est abondamment commenté pour expliquer *pourquoi* chaque pièce est là. Les 4 enfants ont désormais leur propre `Dockerfile` et la stack est construite à partir d'eux, mais elle n'a **jamais été construite ni exécutée dans un environnement avec Docker** (il n'y en a pas dans l'environnement de développement) : sa forme et ses commandes ont été vérifiées à la main contre ces Dockerfile et les vraies unités systemd du CM5. Il existe pour que la forme de l'intégration soit décidée et documentée une seule fois plutôt qu'improvisée séparément par chaque enfant.
+
+### Décisions de conception déjà prises dans ce squelette
+
+* **La version est lue depuis les métadonnées du paquet installé, pas codée en dur.** `main.py` appelle `importlib.metadata.version("hydra-umc-vision-node")` plutôt que de garder une seconde chaîne `__version__` quelque part dans le paquet. Cela signifie que `bump_version.py` n'a qu'un seul endroit à modifier (`pyproject.toml`), et la version affichée ne peut jamais silencieusement diverger.
+* **L'incrément « compteur kilométrique » ne touche automatiquement que `PATCH`/`MINOR`.** `bump_version.py` incrémente `PATCH` à chaque bump, avec report vers `MINOR` au-delà de 9, et de `MINOR` vers `MAJOR` au-delà de 9 - mais n'incrémente jamais `MAJOR` lui-même. `MAJOR` est une décision humaine et sémantique délibérée (une véritable étape d'architecture), pas quelque chose qu'un script de build devrait décider seul. C'est la même convention déjà utilisée dans le reste de l'écosystème (voir `HYDRA-UMC-EDITOR-URDF/bump_version.py` et `HYDRA-UMC-SUITE/bump_version.py`).
+* **gRPC/Protobuf, pas REST, pour l'API de contrôle prévue** (voir badge ci-dessus) - choisi car la boucle perception → correction → firmware dans laquelle vit ce nœud est sensible à la latence et parle à d'autres services Python/embarqués sur le même LAN, où le framing binaire et le support du streaming de gRPC conviennent mieux que JSON sur HTTP. Pas encore implémenté ; documenté ici pour que la direction soit claire avant l'arrivée du code.
+* **`family-status` lit le propre manifeste de chaque enfant plutôt qu'une liste maintenue à la main.** `hydra-umc.project.json` est déjà la source unique de vérité en laquelle le tableau de bord/updater de l'écosystème ont confiance - une seconde liste ici dériverait dès que la maturité réelle d'un enfant changerait et que personne ne penserait à la mettre à jour.
+* **Un checkout frère manquant est un « not found » réel et honnête, pas un crash.** Un parent d'intégration ne peut vraiment pas savoir si un développeur a bien les 4 enfants checkoutés localement - `manifest.py` retourne `None` pour chaque mode d'échec réel (dépôt manquant, fichier manquant, JSON malformé) afin que `family-status` puisse le signaler clairement plutôt que de lever une exception.
+* **Pourquoi la détection de mode dégradé est divisée en une sonde et une fonction de décision pure.** `camera_available()`/`accelerator_available()` de `hardware.py` sont les seules parties qui touchent du matériel réel (un device node Linux) ; `determine_mode()`/`active_stages()` prennent de simples booléens et contiennent la logique de décision réelle. Cette séparation est ce qui permet de tester chaque combinaison matérielle réelle (complet, sans caméra, sans accélérateur, sans aucun matériel) directement et de façon déterministe, sans simuler un système de fichiers ni avoir besoin de matériel CM5+Hailo-8 réel pour prouver que la logique est correcte.
+* **Pourquoi la validation de frame ne vérifie que la structure, pas le contenu des pixels.** Détecter un buffer tronqué/surdimensionné ou un buffer étrangement uniforme (un capteur figé, une capture vide) est une validation réelle, utile et indépendante du matériel qui n'a besoin d'aucune image de référence ni d'aucune caméra pour être testée honnêtement. Décider si le CONTENU réel d'une frame semble mauvais (flou, exposition, une vraie métrique de qualité vision) est un problème fondamentalement différent et bien plus difficile qui nécessiterait de vraies frames capturées pour être calibré - explicitement hors du périmètre de cette v0.

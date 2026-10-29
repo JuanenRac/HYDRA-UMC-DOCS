@@ -1,0 +1,1 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** —— 每个子命令（`family-status`、`pipeline-status`、`validate-frame`、`serve`）以及每个 JSON/HTTP API 路由，均附有真实捕获的输出。

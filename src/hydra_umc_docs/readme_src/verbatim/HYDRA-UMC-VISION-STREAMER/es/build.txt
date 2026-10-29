@@ -1,0 +1,82 @@
+### Requisitos previos
+
+* **Python 3.10 o superior** en el `PATH` (los scripts prueban `python3` y luego `python`).
+* No hace falta GStreamer, herramientas V4L2 ni otra dependencia nativa todavía - **cero dependencias de terceros en tiempo de ejecución** en esta etapa (`dependencies = []` en `pyproject.toml`).
+* Unas pocas decenas de MB de espacio en disco para un entorno virtual local en `.venv/`.
+
+### Paso a paso
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **Lectura de la versión** - lee e imprime la versión del proyecto; compilar nunca la cambia (solo `python tools/hydra_project_tool.py bump` la sube).
+2. **Entorno virtual** - crea `.venv/` si falta; lo reutiliza si ya existe.
+3. **Instalación editable** - `pip install -e ".[dev]"` para que los cambios en `src/` tengan efecto inmediato, instala `pytest`, y registra el entry point de consola `hydra-umc-vision-streamer`.
+4. **Compile-check** - `python -m compileall -q src` compila a bytecode cada archivo bajo `src/`, detectando errores de sintaxis en todo el paquete.
+5. **Suite de tests real** - `python -m pytest tests/ -q` ({tests} tests que cubren config (incluido el parseo real de cámaras IP y el percent-encoding de `rtsp_url()`), pipeline, generación de MediaMTX, la política de buffer/reconexión, el límite de integración con HailoRT, la ruta de captura+servido MJPEG, y el CLI).
+
+`set -euo pipefail` detiene el script en el primer paso que falle; el build solo reporta éxito si los 5 pasos tienen éxito.
+
+```bash
+./run.sh
+```
+
+Localiza el intérprete dentro de `.venv` (soporta ambos layouts, POSIX y Windows) y ejecuta `python -m hydra_umc_vision_streamer.main`, reenviando cualquier argumento - la invocación desnuda imprime nombre + versión + rol.
+
+Ejemplo real - validar una config de cámaras, generar su pipeline GStreamer, y generar la config de relay MediaMTX correspondiente:
+
+```bash
+./run.sh config validate --config cameras.json
+# 2 camera(s) in cameras.json
+#   cam0: /dev/video0 1920x1080@30 MJPG
+#   cam1: /dev/video1 640x480@15 YUYV
+# config OK
+
+./run.sh config gst --config cameras.json --camera cam0
+# v4l2src device=/dev/video0 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! tee name=t t. ! queue ! appsink name=cam0_hailo_sink t. ! queue ! rtspclientsink location=rtsp://localhost:8554/cam0
+
+./run.sh config mediamtx --config cameras.json
+# paths:
+#   cam0:
+#     source: publisher
+#   cam1:
+#     source: publisher
+```
+
+Ejemplo real - captura+sirve de verdad una cámara como MJPEG por HTTP (el único subcomando que abre un dispositivo real):
+
+```bash
+# Dispositivo USB/V4L2
+./run.sh stream serve --device 0 --port 8100
+
+# Cámara IP real por RTSP (verificado contra hardware real - ver CHANGELOG.md)
+CAMERA_URL="rtsp://admin:secret@192.168.0.211:554/11" ./run.sh stream serve --device-env CAMERA_URL --port 8100 --width 1920 --height 1080 --fps 15
+```
+
+Ejemplo real - simula un consumidor lento contra un buffer acotado, y una conexión caída llevada a través de la política real de reconexión:
+
+```bash
+./run.sh stream simulate --buffer-size 8 --frames 1000 --consumer-rate 1000
+# Pushed 1000 frame(s) through a buffer capped at 8
+# Max buffer size observed: 8 (must never exceed 8)
+# Frames dropped by backpressure: 972
+#
+# Simulated disconnect at frame 500
+# Reconnect backoff schedule (s): [0.5, 1.0, 2.0, 4.0]
+# Final connection state: given_up
+```
+
+```bat
+:: Windows - mismos pasos, sintaxis batch
+build.bat
+run.bat
+```
+
+### Solución de problemas
+
+* **No se encuentra `python`/`python3`** - instala Python 3.10+ y asegúrate de que está en el `PATH`.
+* **`compileall` falla** - se introdujo un error de sintaxis real bajo `src/`; el build se detiene sin tocar la instalación, a propósito.
+* **"No `.venv` found" en `run.sh`/`run.bat`** - ejecuta `build.sh`/`build.bat` al menos una vez antes; `run` nunca crea el entorno por sí mismo.
+* **Instalación editable desactualizada** - borra `.venv/` y reconstruye; rara vez hace falta.

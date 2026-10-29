@@ -1,0 +1,1 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — 每一次 `correct`/`request`/`serve` 调用、从已安装 CLI 运行中捕获的真实输出、退出码表，以及 `POST /correct`/`POST /request`/`GET /stats` 的 HTTP JSON 契约。

@@ -1,0 +1,38 @@
+Python >= 3.10 が必要です。
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # .venv を作成し、パッケージを（editable モードで）インストールし、インポートを検証します
+./run.sh     # エントリポイントを実行します
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` はバージョンを変更せず（上げるのは `python tools/hydra_project_tool.py bump` だけです）、実際のテストスイートを
+実行します（`pytest tests/`）。引数なしの `run.sh` の予期される出力：
+
+```text
+HYDRA-UMC-VOICE-UI v0.1.8
+Voice UI (Hailo-10) - local STT/TTS pipeline for hands-free robotic mission control.
+```
+
+実際のサブコマンドは、WAV ファイルを分析するか、すでに文字起こしされた
+テキストを処理します：
+
+```bash
+./run.sh analyze-audio recordings/command.wav
+./run.sh parse-intent "start mission alpha"
+
+# Windows
+run.bat analyze-audio recordings\command.wav
+run.bat parse-intent "status of robot 3"
+```
+
+### 🩺 トラブルシューティング
+
+* **`python: command not found` / ビルドがステップ 1 で失敗する。** `PATH` 上に Python >= 3.10 が必要です。Windows では [python.org](https://python.org) からインストールし、セットアップ中に「Add to PATH」がチェックされていることを確認してください。Linux/macOS では通常 `python3` という名前が使われます。
+* **`build.sh` が venv をアクティブ化できない。** `python3 -m venv .venv` は、プラットフォームごとに異なる場所にアクティベートスクリプトを配置します：Linux/macOS では `.venv/bin/activate`、Windows（Git Bash から使用される Windows Python venv でも同様）では `.venv/Scripts/activate`。`build.sh` は既に両方のパスをチェックしています——それでも失敗する場合は、`.venv/` を削除して `./build.sh` を再実行し、ゼロから再構築してください。
+* **`pip install -e .` が失敗する。** 通常は `.venv/` が古くなっていることが原因です。`.venv/` フォルダを削除して `./build.sh`/`build.bat` を再実行し、再作成してください。
+* **`import OK` が一度も表示されない。** `python -c "import hydra_umc_voice_ui"` 自体が失敗したことを意味します——venv がアクティブな状態で再実行し、実際のトレースバックを確認してください。

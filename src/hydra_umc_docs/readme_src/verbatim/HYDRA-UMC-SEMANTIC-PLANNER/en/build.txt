@@ -1,0 +1,68 @@
+Requires Python >= 3.10.
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # creates .venv, installs the package (editable), verifies import
+./run.sh     # runs the entry point
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` never change the version (only `python tools/hydra_project_tool.py bump` raises it), and run the real test suite
+(`pytest tests/`). Expected output of a bare `run.sh`:
+
+```text
+HYDRA-UMC-SEMANTIC-PLANNER v0.1.4
+Semantic Planner (Hailo-10) - decomposes high-level goals into robotic primitives and recovers from execution failures.
+```
+
+The real subcommands decompose a goal or propose a recovery:
+
+```bash
+./run.sh decompose "assemble the pcb"
+./run.sh recover --component gripper --error-code GRIP_LOST_SEAL --detail "vacuum gripper lost seal"
+
+# Windows
+run.bat decompose "assemble the pcb"
+run.bat recover --component gripper --error-code GRIP_LOST_SEAL --detail "vacuum gripper lost seal"
+```
+
+Every real decomposed plan is checked against `validation.py`'s real
+preconditions before being printed. `decompose.py`'s own templates
+always pass; a plan that failed would be refused instead:
+
+```text
+Plan for: "broken" FAILED precondition validation:
+  step 1 (GRIP): missing required param 'target'
+```
+
+The same `decompose`/`recover` logic is also reachable over HTTP, for
+callers that aren't the CLI itself:
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8109
+# in another terminal:
+curl -s -X POST http://127.0.0.1:8109/decompose -d '{"goal": "assemble the pcb"}'
+```
+
+See [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) for the full command/flag/exit-code reference, and [`docs/RECOVERY_CONTRACT.md`](docs/RECOVERY_CONTRACT.md) for the public recovery error-code vocabulary.
+
+### 🩺 Troubleshooting
+
+* **`python: command not found` / build fails at step 1.** Requires
+  Python >= 3.10 on `PATH`. On Windows, install from
+  [python.org](https://python.org) and make sure "Add to PATH" was
+  checked during setup; `python3` is the usual name on Linux/macOS.
+* **`build.sh` fails to activate the venv.** `python3 -m venv .venv`
+  lays out the activate script differently per platform:
+  `.venv/bin/activate` on Linux/macOS, `.venv/Scripts/activate` on
+  Windows (also true for a Windows Python venv used from Git Bash).
+  `build.sh` already checks both paths - if it still fails, delete
+  `.venv/` and re-run `./build.sh` to rebuild it from scratch.
+* **`pip install -e .` fails.** Usually a stale `.venv/`. Delete the
+  `.venv/` folder and re-run `./build.sh`/`build.bat` to recreate it.
+* **`import OK` never prints.** Means `python -c "import
+  hydra_umc_semantic_planner"` itself failed - re-run with the venv
+  active to see the real traceback.

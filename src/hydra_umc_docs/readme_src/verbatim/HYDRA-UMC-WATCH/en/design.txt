@@ -1,0 +1,45 @@
+### WEARABLE SYNC FLOW
+
+*Target architecture once a direct Server WebSocket exists. The real, tested
+path today relays through the paired phone instead: Watch -> Data Layer ->
+HYDRA-UMC-ANDROID-CONTROL -> authenticated HYDRA-UMC-SERVER/Voice UI, and
+back - see Architecture below and
+[docs/VOICE_AI_PROTOCOL.md](docs/VOICE_AI_PROTOCOL.md) for that real
+end-to-end flow. The Watch never holds a Server credential itself; a direct
+Watch-to-Server WebSocket and the wireless E-STOP button remain future,
+hardware-gated work.*
+
+### ARCHITECTURE & DESIGN DECISIONS
+
+* **Why this is a standalone Wear OS app, not a feature of the phone app.** A watch runs its own independent process on its own OS - it can't just be a UI mode of HYDRA-UMC-ANDROID-CONTROL, it needs its own manifest, its own build, and its own (much more constrained) UI for glanceable status/quick E-STOP.
+* **Why `minSdk 30` (Wear OS 3), lower than the phone app's own minSdk.** This targets the current Wear OS 3+ hardware generation deliberately, not old Wear OS 2 devices - unlike HYDRA-UMC-ANDROID-CONTROL, which supports older phones, a companion watch app has a narrower realistic hardware base to support.
+* **Why the paired relay uses Data Layer instead of a custom socket.** The official Wear OS channel enforces the same package name and signing certificate on Watch and phone, then carries only bounded protocol messages. Android Control retains the Server session; this keeps the Watch out of direct Server credential and robot-control paths.
+* **Why reconnection policy and last-known-state cache are their own pure modules, not inline in `WatchRelayTransport`.** Both are real, decoupled Kotlin classes (`RelayRetryPolicy`, `LastKnownStateCache`) testable on a plain JVM without a watch, emulator, or paired phone - the same standard `HapticPatterns.kt`/`SyncMessage.kt` already set. `WatchRelayTransport` itself stays the thin, necessarily-Android piece that actually schedules a retry or records a received message, not where the underlying policy math lives.
+* **Why a stale cached state is flagged, not hidden.** Withholding an old status entirely would leave the watch face blank exactly when the phone connection is flaky - the real risk moment. Showing it clearly marked "last known - may be outdated" keeps the operator informed without letting a minutes-old reading pass as a live one.
+* **How this fits the rest of the ecosystem.** Pairs with HYDRA-UMC-ANDROID-CONTROL and HYDRA-UMC-IOS-CONTROL as a glanceable, on-wrist companion - not a replacement for either, a quick-status/quick-E-STOP surface.
+
+### UPDATES WITHOUT GOOGLE PLAY
+
+This project is not distributed through Google Play. The repeatable update
+path is a GitHub Release APK installed over ADB:
+
+```bash
+# from the project root, watch paired and Wireless debugging enabled
+update-from-github.bat    # Windows
+./update-from-github.sh   # Linux / macOS / WSL
+```
+
+The script reads `releases/latest` from GitHub, requires a stable
+`vMAJOR.MINOR.PATCH` tag, checks the version already installed, asks for
+explicit operator confirmation, then downloads and runs `adb install -r`. It
+never touches the repository version, manifest or `CHANGELOG.md`. A manual,
+best-effort install (open the downloaded APK's package installer directly on
+the watch) is also documented for devices without a usable ADB path. See
+[docs/GITHUB_ADB_UPDATES.md](docs/GITHUB_ADB_UPDATES.md) for the full
+procedure, release-APK naming requirement, and release-signing setup.
+
+`HYDRA-UMC-ANDROID-CONTROL` can inform the operator that a newer Watch
+release exists once the paired companion-version status message is wired up
+— it is informational only and can never install anything on the watch
+itself. See [docs/COMPANION_VERSION_PROTOCOL.md](docs/COMPANION_VERSION_PROTOCOL.md)
+for that message shape.

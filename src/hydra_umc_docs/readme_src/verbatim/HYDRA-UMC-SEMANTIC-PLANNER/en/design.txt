@@ -1,0 +1,67 @@
+### ARCHITECTURE & DESIGN DECISIONS
+
+This repository is a **child** of the Cognitive AI Node family - its
+parent, [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+owns the shared HydraOS image and quantized model weights, and wires this
+service into `docker-compose.yml` alongside its three siblings
+(VLA-Engine, Voice-UI, Docs-QA):
+
+* **Why this child has no hardware/firmware/`os/`/`models/` of its
+  own.** It runs entirely on the CM5 + Hailo-10 M.2 module already owned
+  by the parent - keeping model weights and the HydraOS image
+  centralized in one place avoids four divergent multi-gigabyte copies
+  across the family.
+* **Why a `src/` layout.** Keeps the installable package
+  (`hydra_umc_semantic_planner`) separate from repo-root tooling
+  (`bump_version.py`), matching the layout used by every other Python
+  project across the ecosystem.
+* **Why the entry point started out only printing identity/version/role.**
+  The andamiaje (scaffolding) stage proved the package installs, compiles
+  and imports cleanly - on the actual target Python version - before any
+  real LLM-based planning/recovery logic was added, keeping that later
+  work isolated from packaging concerns. `main.py` has since grown real
+  `decompose`/`recover`/`serve` subcommands (see BUILD & RUN below) - the
+  bare `run.sh` with no arguments still only prints identity/version/role,
+  which is intentional (a quick "did the package install correctly"
+  smoke check), not a sign the CLI itself is still a stub.
+* **How this fits the rest of the ecosystem.** This planner is the
+  decision-making core of the Cognitive AI Node: it consumes intent from
+  its sibling HYDRA-UMC-VOICE-UI and action tokens from its sibling
+  HYDRA-UMC-VLA-ENGINE, and sends the resulting mission decisions
+  downstream to HYDRA-UMC-ORCHESTRATOR for physical execution.
+* **Why `decompose.py` is real regex templates, not a local LLM.** A
+  small, real goal vocabulary (assemble/pick-and-place/inspect) is fully
+  and honestly covered by rules today - the same reasoning as the
+  sibling HYDRA-UMC-DOCS-QA's real TF-IDF index instead of an embedding
+  model: a real, testable kernel now that a future LLM-based planner can
+  replace behind the same `decompose_goal()` contract.
+* **Why `recovery.py`'s error codes match the public recovery contract.**
+  `INVALID_STATE`/
+  `OUT_OF_RANGE`/`ESTOP_ACTIVE`/`TOOL_INCOMPATIBLE`/`TIMEOUT`/
+  `UNSUPPORTED` are the real structured errors that adapter is designed
+  to return - recovery logic built against that real vocabulary today
+  stays valid once the adapter itself exists, instead of inventing a
+  parallel error taxonomy that would need reconciling later.
+* **Why `ESTOP_ACTIVE`/`UNSUPPORTED`/unknown codes always escalate to a
+  human.** Matches the ecosystem-wide safety rule that IA, UI and cloud
+  layers never override a physical safety condition - this planner
+  proposes a recovery action, it never clears an E-STOP or guesses at an
+  error it doesn't recognize.
+* **Why `validation.py` exists even though `decompose.py`'s real
+  templates never actually produce an invalid plan.** A fixed template
+  can guarantee well-formed params by construction - a future LLM-based
+  planner cannot. `validate_plan()` is the real, explicit contract that
+  planner would have to satisfy, checked here and now against the only
+  planner that exists today so the contract itself is proven correct
+  before anything harder ever has to meet it. Its optional `capabilities`
+  argument is deliberately the bounded half of "is this plan actually
+  executable" answerable *before* execution - real POSTcondition
+  verification (did `GRIP` actually end up holding its target) needs
+  live feedback from a real executor (HYDRA-UMC-ORCHESTRATOR) this
+  project doesn't have yet, so it isn't attempted here.
+* **Why `decompose_goal()` is fuzz-tested with a fixed random seed
+  instead of `hypothesis`.** This project (like the rest of the
+  ecosystem) stays stdlib-only - a reproducible, seeded `random.Random`
+  loop over hundreds of synthetic goals gets the same real property
+  (never crashes, never returns a malformed plan) without a new
+  dependency.

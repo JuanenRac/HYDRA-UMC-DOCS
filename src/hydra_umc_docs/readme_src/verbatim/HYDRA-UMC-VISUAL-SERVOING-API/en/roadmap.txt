@@ -1,0 +1,24 @@
+### Current Status & Next Steps
+
+**Real today:** the PBVS pose-error and velocity-command correction law
+(`pose.py`, `servo.py`) - the "Error Calculation (Pose Delta)" step in
+the loop diagram above - with a real `correct` CLI command; the
+safety-gated authorization policy (`authorization.py`) that refuses to
+turn a visual detection into motion unless the upstream safety state is
+`READY` and the data is confident/fresh enough, exposed via the `request`
+CLI command; and a real HailoRT integration boundary (`hailo_runtime.py`)
+ready for a real Hailo-8 pose estimator the moment it plugs in. {tests} tests
+total.
+
+**Still ahead, and blocked on real hardware:** actually running 6-DOF
+pose *estimation* through `hailo_runtime.py` needs a real compiled
+pose-estimation `.hef` (no specific model chosen yet) and a physical
+Hailo-8 NPU attached, and the low-latency gRPC feed of the resulting
+velocity command to the HYDRA-UMC core is separate future work.
+
+### ROADMAP
+
+* **Phase 1:** Multi-camera pipeline synchronization and calibration for 8x USB 3.0 feeds.
+* **Phase 2:** Migration to YOLOv11 and Hailo-8L optimization for industrial component detection.
+* **Phase 3:** Real-time 3D reconstruction from stereo vision nodes and safety zone dynamic mapping.
+* **Phase 4:** Support for 9-DOF visual tracking (including orientation redundancy) and sub-micrometric correction.

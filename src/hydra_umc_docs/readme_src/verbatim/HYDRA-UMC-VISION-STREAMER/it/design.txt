@@ -1,0 +1,22 @@
+### ARCHITETTURA DI PIPELINE PREVISTA
+
+Il diagramma sotto è il flusso dati obiettivo verso cui viene costruito questo progetto - la sua *forma* (quale elemento alimenta quale, la diramazione `Tee`) è fissata da `pipeline.py` e generata come sintassi reale `gst-launch-1.0` oggi, ma nulla di questo diagramma viene ancora eseguito: serve il vero runtime V4L2/GStreamer/Hailo-8 e vere telecamere USB fisiche.
+
+### INFORMAZIONI TECNICHE AVANZATE
+
+### Perché non ci sono `hardware/`, `firmware/`, `os/` né `models/` qui
+
+CM5 + Hailo-8 è hardware già esistente senza una scheda propria da progettare, a differenza delle schede STM32H745/STM32G474 su misura dentro [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) - quindi nessuna cartella `hardware/`/`firmware/` esiste in nessuno dei 5 progetti Vision AI Node. `os/` (l'immagine HydraOS condivisa) e `models/` (i `.hef` compilati realmente serviti alla NPU) vivono solo nel genitore di integrazione, [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE), perché è il processo proprietario dell'immagine dell'host CM5 e dell'handle del dispositivo Hailo-8 - portare copie separate qui sarebbe solo stato extra da sincronizzare senza alcun beneficio.
+
+### Forma di pipeline prevista
+
+L'elemento `Tee` nel diagramma sopra è la decisione di design chiave già presa prima dell'implementazione: i fotogrammi catturati/pre-elaborati sono pensati per diramarsi verso due consumatori contemporaneamente - il percorso di inferenza Hailo-8 (alimentando [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE)) e uno stream locale/RTSP-WebRTC opzionale per il monitoraggio umano - senza che il percorso di monitoraggio aggiunga latenza al percorso di inferenza.
+
+### Decisioni di design già prese
+
+* **La versione viene letta dai metadati del pacchetto installato, non è hardcoded** - `main.py` chiama `importlib.metadata.version("hydra-umc-vision-streamer")` invece di una seconda stringa `__version__`, così `bump_version.py` ha un solo posto da modificare e i due non possono mai disallinearsi.
+* **L'incremento "contachilometri" tocca automaticamente solo `PATCH`/`MINOR`** - `bump_version.py` riporta `PATCH` a `MINOR` oltre il 9 e da `MINOR` a `MAJOR` oltre il 9, ma non incrementa mai `MAJOR` da solo; è una decisione umana deliberata, stessa convenzione di `HYDRA-UMC-EDITOR-URDF/bump_version.py` e `HYDRA-UMC-SUITE/bump_version.py`.
+* **Lo YAML di MediaMTX è scritto a mano, non basato su PyYAML** - la forma di output di `mediamtx_config.py` (una mappa piatta `paths:`, una voce `source: publisher` per camera) è abbastanza semplice e fissa da non giustificare ancora una vera dipendenza. Da rivedere se la config per camera crescerà con campi annidati o di tipo lista.
+* **La pipeline e la config MediaMTX devono concordare su un unico percorso RTSP per camera** - `rtsp_url_for()` è l'unico punto che lo deriva (dal nome della camera), così `config gst` e `config mediamtx` non possono mai essere in disaccordo su dove vive lo stream di una camera.
+* **`FrameBuffer` scarta l'elemento più vecchio, non il più recente, una volta pieno.** Il video live non ha alcun uso per un arretrato crescente di frame obsoleti - il frame più fresco è sempre quello utile. Una coda che bloccasse i produttori rischierebbe il vero thread di cattura stesso, e una coda che continuasse semplicemente a crescere rischierebbe esattamente il fallimento di memoria senza limiti che questa verifica esiste per prevenire.
+* **`reconnect.py` non dorme mai né tocca mai un vero socket da solo.** `ConnectionTracker` traccia solo lo stato e restituisce quanto deve attendere chi lo chiama - questa separazione è ciò che rende l'intero calendario di backoff (incluso l'arrendersi onestamente dopo `max_attempts`) esattamente riproducibile in un test, senza orologio reale né vero collegamento camera coinvolto.

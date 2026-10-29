@@ -1,0 +1,8 @@
+```mermaid
+graph LR
+    USB[8x USB-Kameras] --> V4L2[V4L2-Erfassung]
+    V4L2 --> ISP[Hardware-ISP<br/>Skalierung/Format]
+    ISP --> TEE[Tee-Element]
+    TEE --> HAI[Hailo-NPU-Inferenz]
+    TEE --> DISP[Lokale Anzeige / Stream]
+```

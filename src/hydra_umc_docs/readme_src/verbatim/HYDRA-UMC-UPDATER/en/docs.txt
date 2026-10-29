@@ -1,0 +1,2 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — every `--cli` subcommand, real output captured from an installed run, and the exit-code contract.
+- **[docs/QML_DESKTOP_GUI.md](docs/QML_DESKTOP_GUI.md)** — how the Qt Quick/QML desktop client is structured, and how it stays a real control surface over the same backend `--cli` uses rather than a second implementation.

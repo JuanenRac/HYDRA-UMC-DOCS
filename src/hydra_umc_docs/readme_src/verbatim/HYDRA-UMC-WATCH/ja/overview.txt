@@ -1,0 +1,20 @@
+**HYDRA-UMC-WATCH** は、プラントオペレーター向けの手首の相棒です。状態とアラートの情報を手首で一目で確認でき、短い音声のやり取りをペアリング済みのスマートフォン経由で中継します。安全装置ではなく、無線 E-STOP はなく、物理的なウォッチ上ではまだ実行していません。
+
+Kotlin + Jetpack Compose for Wear で構築された独立した Wear OS アプリ
+であり、新しいツールチェーンを導入するのではなく、兄弟リポジトリ
+HYDRA-UMC-ANDROID-CONTROL と同じ Gradle/Kotlin ツールチェーンを再利用
+しています。
+
+### 主な機能：
+* ✅ **実装済み v0 —— ハプティックパターンと同期プロトコル：** `haptics/HapticPatterns.kt` はアラートの重大度（重大/警告/情報）ごとに実際の、区別された振動パターンを定義します。`protocol/SyncMessage.kt` は下記の SERVER<->WATCH 同期フローにおける `EStopCommand`/`Alert` メッセージの実際の形を定義し、（デ）シリアライズします。どちらも純粋な Kotlin でテスト可能です——実行にもテストにも、ウォッチのハードウェア、エミュレーター、開かれた WebSocket は一切不要です。
+* 🛑 **ワイヤレス E-STOP（計画中）** — 専用の緊急ボタン。*（送信することになる `EStopCommand` メッセージは実装済みでテスト済みです。WebSocket トランスポートと物理ボタンの配線はまだ計画中です——HYDRA-UMC-SERVER とのペアリングが必要。）*
+* 📳 **ハプティックアラート** — さまざまなアラートタイプ（重大、警告、情報）向けの差別化された振動パターン。Androidの実際の`Vibrator`/`VibratorManager`サービス経由で再生。*（実装済み——`haptics/HapticAlertPlayer.kt`。このアプリの他部分と同様、実際のWear OSデバイスではまだ未検証です。）*
+* 🎙️ **音声** — タップして話す：明示的な`RECORD_AUDIO`権限リクエスト、文字起こしのためのシステム音声認識インテント（`RecognizerIntent`）、文字起こし結果を境界付きの`voice_turn`同期メッセージとしてHYDRA-UMC-ANDROID-CONTROLへ中継、そしてウォッチ上でのローカル`TextToSpeech`応答。*（実装済み——`MainActivity.kt`。音声がロボットを直接作動させることは決してありません。下記アーキテクチャおよび完全なエンドツーエンドのメッセージフローと安全境界については [docs/VOICE_AI_PROTOCOL.md](docs/VOICE_AI_PROTOCOL.md) を参照。）*
+* ⌚ **一目でわかるステータス：** **ステータス更新**ボタンが、ペアリングされた Data Layer 経由で境界付きのステータス要求を HYDRA-UMC-ANDROID-CONTROL に中継します。返された `system_status` カードは、陳腐化すると「最終既知——古い可能性あり」の表示とともに示されます。*（実装済み——`MainActivity.kt`/`WatchRelayTransport.requestSystemStatus()`。電話のリレー経由のプル型であり、ウォッチからサーバーへの直接プッシュソケットではなく、実際の Wear OS デバイスではまだ未検証です。）*
+* 🔐 **JWT Auth** HYDRA-UMC-SERVER との JWT ベースのペアリング。*（計画中。）*
+* ✅ **独立した Wear OS ツールチェーン** — 動作するデバッグ APK をビルドする実際の Gradle/Kotlin/Compose-for-Wear アプリ。*（実装済み——下記の「ビルドと実行」を参照）*
+* 🔁 **リレー再接続ポリシー** — `transport/RelayRetryPolicy.kt` は、リレー送信が失敗した場合（例えばまだペアリングされたスマートフォンがない場合）のための、実装済みの純粋な指数バックオフポリシーであり、上限付きの最大遅延に制限されています。保留中の再試行は画面が閉じられた時点で確実にキャンセルされ、破棄済みのアクティビティに対して発火することは決してありません。*（実装済み）*
+* 🧭 **コンパニオン検証済みノード選択** — `WatchRelayTransport` は、`connectedNodes.firstOrNull()` ではなく、実際の `CapabilityClient` クエリ（HYDRA-UMC-ANDROID-CONTROL 自身の `res/values/wear.xml` で宣言されている `hydra_umc_phone_companion`）経由で送信します——コンパニオンアプリがインストールされていない2つ目の接続ノードが誤って選ばれることは決してありません。複数の候補が有効な場合、クラウド経由で中継されるノードよりも、近く（Bluetooth で直接到達可能）にあるノードが優先されます。*（実装済み — `pickCompanionNode()`）*
+* 🗂️ **最終既知状態キャッシュ** — `transport/LastKnownStateCache.kt` は、最後に中継されたステータス/アラートの実際の陳腐化を追跡し、古い情報が最新のものとして表示されることを防ぎます。*（実装済み）*
+* 📥 **リレー受信箱** — `transport/RelayInbox.kt`: Wear OS では手首を下げるとすぐに画面が破棄され、その間に届いた返信は受信者がなく失われていました。リスナーサービスが最新のメッセージ(最大 8 件、10 分より古いものは除く)を保持し、画面が再び作られたときに、読み上げや振動なしで表示します。 *(実装済み、実機の時計では未検証)*
+* 🌐 **8言語対応UI：** `app/src/main/res/values-xx/strings.xml` が英語・スペイン語・フランス語・ドイツ語・イタリア語・日本語・中国語・ポルトガル語に対応し、時計のシステム言語から自動的に選ばれる。`LocalizedStringsTest` が、各言語ファイルに英語とまったく同じキーと書式指定子があることを確認するため、文字列の欠落や壊れたプレースホルダーは手首に表示される前にビルドで失敗する。*（実装済み）*

@@ -1,0 +1,1 @@
+🚨 Lógica de violação de zonas e pedido de E-STOP (v0: ainda sem detetor nem E-STOP físico)

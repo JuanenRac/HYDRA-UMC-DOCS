@@ -1,0 +1,1 @@
+🧠 High-Speed Perception Edge AI Node (Hailo-8 + Raspberry Pi CM5)

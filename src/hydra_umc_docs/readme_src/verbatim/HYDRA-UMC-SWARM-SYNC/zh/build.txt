@@ -1,0 +1,61 @@
+一个真实、经过测试的 CRDT 合并——而不只是一个能编译的骨架：它会
+协调一个多单元的 JSON 场景并打印收敛后的状态。
+
+```bash
+# Windows
+build.bat
+run.bat scenarios/example.json
+
+# Linux / macOS
+./build.sh
+./run.sh scenarios/example.json
+```
+
+`build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升），然后执行 `cargo build --release`。
+`run.sh`/`run.bat` 直接执行生成的二进制文件，并将任何参数（场景路径）
+转发给它。
+
+场景是一个包含 `cells` 数组的 JSON 文件——每个单元有一个 `id`（便于
+阅读）、一个 `writer`（写入者 ID），以及一组 `writes`
+（`{key, value, time}`，其中 `time` 是显式的 Lamport 时间戳，是回放
+而非实时生成的——与 HYDRA-UMC-PATH-PLANNER-3D 的 `seed` 使用的
+"显式、确定性输入"模式相同）。每个单元的写入先折叠进它自己的映射，然后用 `merge_report()` 从左到右合并所有单元的映射，因此过程中出现的每个真实冲突都会记录在结果中。无论按什么顺序合并都得到相同状态，这是 CRDT 本身的性质，由 `src/crdt.rs` 中的属性测试固定，不会在每次调用时重新检查。
+
+对照 `scenarios/example.json`（其中 `cell-a` 和 `cell-b` 都写入了
+`cell-a-node-2`）运行时，可以看到真实的冲突解决过程，而不只是最终的
+不透明结果：
+
+```bash
+./run.sh scenarios/example.json
+```
+```json
+{
+  "cells_merged": 2,
+  "merged_state": { "...": "..." },
+  "conflicts_resolved": 1,
+  "conflicts": [
+    { "key": "cell-a-node-2",
+      "local_time": 2, "local_writer": 1, "local_value": "ok",
+      "remote_time": 3, "remote_writer": 2, "remote_value": "unhealthy",
+      "kept_remote": true }
+  ],
+  "next_local_time": 6
+}
+```
+
+```bash
+cargo test   # Lamport 时钟，以及 CRDT 本身——包括直接验证 merge
+             # 具有可交换性、可结合性和幂等性的测试（不仅仅是在某个
+             # 例子上"看起来正确"）、一个针对真正并发写入的确定性
+             # 平局判定测试、merge_report() 自身的冲突检测行为，以及
+             # 一个证明多轮分区和部分重连后依然收敛的 4 单元模拟——
+             # 共 102 个测试
+```
+
+同一个 `reconcile()` 调用也可以通过真实的 JSON/HTTP API
+（`src/server.rs`，`tiny_http`，阻塞式，无异步运行时）访问，而不必
+使用本地场景文件——`run.sh serve [--addr ADDR] [--port PORT]` 启动它
+（默认 `127.0.0.1:8112`），暴露 `POST /reconcile`（场景数据放在请求体中，
+JSON 格式相同）和 `GET /stats`。`systemd/hydra-umc-swarm-sync.service`
+在 CM5 上无人值守运行的正是这个模式。完整用法、退出码和路由参考详见
+[`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md)。

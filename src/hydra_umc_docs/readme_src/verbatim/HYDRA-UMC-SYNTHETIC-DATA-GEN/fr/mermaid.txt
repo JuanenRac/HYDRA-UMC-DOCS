@@ -1,0 +1,8 @@
+```mermaid
+flowchart LR
+    MODELS["Modèles 3D de composants"] --> SCENE["Aléatiseur de scène"]
+    SCENE --> RENDER["Rendu basé sur la physique"]
+    RENDER --> ANN["Moteur d'auto-annotation"]
+    ANN --> DATASET["Jeu di données d'entraînement (YOLO/COCO)"]
+    DATASET --> TRAIN["Entraînement du nœud Vision"]
+```

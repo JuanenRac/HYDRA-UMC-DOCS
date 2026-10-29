@@ -1,0 +1,11 @@
+- Un ejecutable de GUI independiente empaquetado (PyInstaller, siguiendo
+  la propia convención `build_exe.bat`/`.sh` de HYDRA-UMC-SUITE) para una
+  instalación con doble clic sin ningún paso de `pip`/venv - hoy la GUI
+  todavía necesita `./build.sh` primero, igual que la CLI.
+- Comprobación previa opcional de dependencias por proyecto (avisar de
+  toolchains faltantes - sin Rust/Go/SDK de Android/Flutter instalado -
+  antes de que un `install` falle a mitad de camino).
+- Seguimiento por componente para el firmware multi-binario propio de
+  HYDRA-UMC/URTC (ver la "simplificación conocida" de la sección 3), en
+  cuanto haya una necesidad real más allá del único componente
+  representativo que se sigue hoy.

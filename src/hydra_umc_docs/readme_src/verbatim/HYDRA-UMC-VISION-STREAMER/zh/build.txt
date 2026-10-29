@@ -1,0 +1,86 @@
+### 前提条件
+
+* `PATH` 中存在 **Python 3.10 或更新版本**（脚本先尝试 `python3`，再回退到 `python`）。
+* 目前不需要任何 GStreamer、V4L2 工具或其他原生依赖——此阶段**没有任何第三方运行时依赖**（`pyproject.toml` 中 `dependencies = []`）。
+* 本地虚拟环境（`.venv/` 下）需要数十 MB 磁盘空间。
+
+### 逐步说明
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **版本读取** —— 读取并显示项目版本；构建绝不会更改它（只有 `python tools/hydra_project_tool.py bump` 才会提升）。
+2. **虚拟环境** —— 若 `.venv/` 不存在则创建；否则复用。
+3. **可编辑安装** —— `pip install -e ".[dev]"`，使 `src/` 下的修改立即生效，安装 `pytest`，并注册 `hydra-umc-vision-streamer` 控制台入口点。
+4. **编译检查** —— `python -m compileall -q src` 对 `src/` 下每个文件进行字节码编译，即使某个文件从未被 `main.py` 导入，也能在整个生态系统范围内捕获语法错误。
+5. **真实测试套件** —— `python -m pytest tests/ -q`（{tests} 个测试，覆盖 config、pipeline、MediaMTX 生成、缓冲/重连策略、HailoRT 集成边界和 CLI）。
+
+`set -euo pipefail` 会在第一个失败步骤处停止脚本；只有全部 5 个步骤均
+成功时，构建才会报告成功。
+
+```bash
+./run.sh
+```
+
+在 `.venv` 内定位解释器（同时处理 POSIX 和 Windows 的 `.venv` 目录结构），
+运行 `python -m hydra_umc_vision_streamer.main` 并转发所有参数——裸调用会
+打印名称 + 版本 + 角色。
+
+真实示例——校验一份摄像头配置，生成其 GStreamer 流水线，并生成对应的 MediaMTX 中继配置：
+
+```bash
+./run.sh config validate --config cameras.json
+# 2 camera(s) in cameras.json
+#   cam0: /dev/video0 1920x1080@30 MJPG
+#   cam1: /dev/video1 640x480@15 YUYV
+# config OK
+
+./run.sh config gst --config cameras.json --camera cam0
+# v4l2src device=/dev/video0 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! tee name=t t. ! queue ! appsink name=cam0_hailo_sink t. ! queue ! rtspclientsink location=rtsp://localhost:8554/cam0
+
+./run.sh config mediamtx --config cameras.json
+# paths:
+#   cam0:
+#     source: publisher
+#   cam1:
+#     source: publisher
+```
+
+真实示例——真正采集并以 MJPEG 形式通过 HTTP 推流一台摄像头（唯一会打开真实设备的子命令）：
+
+```bash
+# USB/V4L2 设备
+./run.sh stream serve --device 0 --port 8100
+
+# 真实的 RTSP IP 摄像头（已对真实硬件验证——见 CHANGELOG.md）
+CAMERA_URL="rtsp://admin:secret@192.168.0.211:554/11" ./run.sh stream serve --device-env CAMERA_URL --port 8100 --width 1920 --height 1080 --fps 15
+```
+
+真实示例——模拟一个慢速消费者对抗一个有界缓冲区，以及一次断开的连接
+被真实的重连策略处理：
+
+```bash
+./run.sh stream simulate --buffer-size 8 --frames 1000 --consumer-rate 1000
+# Pushed 1000 frame(s) through a buffer capped at 8
+# Max buffer size observed: 8 (must never exceed 8)
+# Frames dropped by backpressure: 972
+#
+# Simulated disconnect at frame 500
+# Reconnect backoff schedule (s): [0.5, 1.0, 2.0, 4.0]
+# Final connection state: given_up
+```
+
+```bat
+:: Windows - 步骤相同，批处理语法
+build.bat
+run.bat
+```
+
+### 故障排查
+
+* **找不到 `python`/`python3`** —— 安装 Python 3.10+ 并确保其在 `PATH` 中。
+* **`compileall` 失败** —— 意味着 `src/` 下确实引入了语法错误；构建会故意在不触及安装的情况下停止。
+* **`run.sh`/`run.bat` 提示"未找到 `.venv`"** —— 先至少运行一次 `build.sh`/`build.bat`；`run` 自身从不创建环境。
+* **可编辑安装过期** —— 删除 `.venv/` 并重新构建；由于 `pip install -e .` 通常能实时识别源代码变更，这种情况很少需要。

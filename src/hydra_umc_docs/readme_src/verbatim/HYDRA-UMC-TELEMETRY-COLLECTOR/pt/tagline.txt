@@ -1,0 +1,1 @@
+🚀 Nó de ingestão de alto débito para registos CAN e WebSocket

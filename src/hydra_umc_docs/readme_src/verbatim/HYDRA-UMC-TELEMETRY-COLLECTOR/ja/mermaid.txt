@@ -1,0 +1,8 @@
+```mermaid
+flowchart LR
+    CAN["CAN Bus Traffic"] --> COLL["TELEMETRY-COLLECTOR"]
+    WS["WebSocket Streams"] --> COLL
+    COLL --> PARSE["Packet Parser & Norm"]
+    PARSE --> BUF["High-Speed Buffer"]
+    BUF --> LAKE["HYDRA-UMC-DATALAKE"]
+```

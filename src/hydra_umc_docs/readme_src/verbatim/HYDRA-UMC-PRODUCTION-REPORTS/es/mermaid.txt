@@ -1,0 +1,7 @@
+```mermaid
+flowchart LR
+    LAKE["HYDRA-UMC-DATALAKE"] --> PROC["Motor Procesador de Informes"]
+    PROC --> OEE["Cálculo de OEE y KPI"]
+    OEE -.-> TPL["Plantillas de Informes (PDF/HTML)"]
+    TPL -.-> DISP["Dashboard / Email / Exportar"]
+```

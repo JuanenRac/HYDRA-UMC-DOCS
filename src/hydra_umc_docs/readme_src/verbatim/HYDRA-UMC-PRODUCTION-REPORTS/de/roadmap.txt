@@ -1,0 +1,5 @@
+* **Erledigt (v0):** echte OEE- und Verfügbarkeitsberechnung, echte HTTP-Integration mit HYDRA-UMC-DATALAKE, echte HTTP-API, echte Schicht-/Tagesgrenzen, versionierte Formeln + Input-Fingerabdruck, byteidentisch reproduzierbarer CSV-Export.
+* **Als Nächstes:** eine echte `production_event`-Datenquelle - der Orchestrator (oder der Roboter) soll Zyklusabschlüsse in diesem Schema melden.
+* **Als Nächstes:** persistente/geplante Berichte (heute wird jeder Bericht live, auf Anfrage berechnet).
+* **Später:** PDF-Export, ein E-Mail-/Zustellmechanismus, und ein Dashboard.
+* KI-gestützte ROI-Analyse für Werkzeug-Upgrades, verknüpft mit denselben OEE-Daten, sobald historische Trends gespeichert werden.

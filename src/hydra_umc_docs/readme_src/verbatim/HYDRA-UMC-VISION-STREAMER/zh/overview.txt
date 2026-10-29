@@ -1,0 +1,26 @@
+**HYDRA-UMC-VISION-STREAMER** 旨在成为 Vision AI Node 系列的高性能媒体
+接入层。其任务是对最多 8 路并发的 USB 3.0 摄像头流进行底层捕获、预处理
+和分发，利用博通 BCM2712（CM5）的硬件加速 ISP，在帧到达 Hailo-8 NPU
+之前完成色彩空间转换、缩放和归一化处理。
+
+这是集成父项目 **[HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE)** 4 个子项目之一：本项目仅负责捕获/预处理，不运行自己的 Hailo-8 推理、gRPC API 或安全逻辑——这些被刻意拆分到其另外 3 个同族项目中。
+
+### 关键要点
+
+* 🔑 **可选的 Bearer 令牌：** 在回环地址上视频流不需要令牌；在非回环地址上，没有令牌就拒绝启动（`--token-file` 或 `HYDRA_UMC_VISION_STREAMER_TOKEN`）。设置令牌后，请求 `/stream` 必须带 `Authorization: Bearer <token>`（恒定时间比较）；只有 `GET /health` 保持开放。*(已实现)*
+* ✅ **真实 v0 —— 配置、流水线与中继生成：** `config.py` 校验逐摄像头的 JSON 配置（设备、分辨率、fps、格式）；`pipeline.py` 为一台摄像头生成真实的 GStreamer 流水线描述；`mediamtx_config.py` 生成对应的 MediaMTX `paths.yml`。通过下方的 `config validate`/`config gst`/`config mediamtx` 暴露——运行或测试都不需要 GStreamer 运行时、V4L2 或物理摄像头。
+* 📷 **真实 v0 —— USB 与 RTSP IP 摄像头采集+推流：** `mjpeg_server.py` 的 `stream serve` 真的会打开一台摄像头，并通过 HTTP 提供真实的 MJPEG——可以是 USB/V4L2 设备（`--device 0`），也可以是通过 RTSP 的真实 IP 摄像头（`--device rtsp://用户名:密码@主机:端口/路径`，经由 OpenCV 的 `cv2.CAP_FFMPEG` 后端，无需额外依赖）。`config.py` 的 `CameraConfig` 现在带有真实的 `source_type`（默认为 `"usb"`，或 `"ip"` 并带有 `host`/`rtsp_port`/`rtsp_path`/`username`/`password`，以及一个真实的、带百分号编码的 `rtsp_url()` 构造器）。已对真实硬件完成端到端验证：本地网络上全部 4 台真实 IP 摄像头都通过这条完全相同的路径成功打开并传输了真实的 MJPEG/H.264 帧（第二对摄像头需要它们自己真实的 RTSP 路径 `profile0`，是在摄像头自身的配置界面上找到的——与第一对摄像头的 `/11` 不同，并非凭据或固件问题）。
+* 🔁 **真实 v0 —— 有界缓冲与重连：** `buffer.py` 的 `FrameBuffer` 是一个固定容量的队列，满了之后会丢弃最旧的（而不是最新的）条目——这是一个实时中继所需要的真实背压策略，能确保一个慢速消费者永远不会让本进程的内存无限增长。`reconnect.py` 的 `ConnectionTracker` 是针对断开的摄像头/中继链路的真实的、确定性的指数退避重连策略。`mjpeg_server.py` 自身真实的采集路径缓冲的是一个 `Frame`(而不仅仅是原始字节)——带有真实的 `frame_id`/`session_id`/`capture_ts` 身份标识，每次真实重连都会获得一个真正全新的 `session_id`，因此断线前后的帧永远不会被混淆为同一条连续流。通过下方的 `stream simulate` 暴露——完全无需 GStreamer 或物理摄像头即可测试。
+* 📡 **RTSP/WebRTC 支持（部分计划中）：** RTSP 中继路径（`rtspclientsink` → MediaMTX）已经设计完成，其配置在上方已真实生成；真正运行它需要本环境不具备的 GStreamer 运行时。WebRTC 输出仍完全处于计划阶段。
+* 🔌 **HailoRT 集成边界，先于模块本身准备就绪：** `hailo_runtime.py` 依据真实、已确认的 `hailo_platform` API(`VDevice`、`HEF`、`ConfigureParams`)编写——采用延迟导入,因此即使没有安装 `hailort` 包或没有 Hailo-8 模块存在,本仓库也能干净地安装/测试——此外还具备真实的预检验证,在向设备推送任何一帧之前,确认摄像头配置的分辨率确实与已加载模型的输入张量形状相匹配。*(已实现,仅为集成边界——真正运行推理并解析真实模型的 NMS 输出仍是未来的工作。)*
+* ⚡ **零拷贝流水线（计划中）：** 设计 V4L2 与 HailoRT 之间的缓冲区交接，以避免不必要的帧拷贝。*（未来工作——需要本环境尚不具备的真实 V4L2/HailoRT 运行时。）*
+* 🌈 **预处理（计划中，后端尚待选定）：** 实时缩放和像素格式转换，卸载原本每帧都需 CPU 承担的工作。树莓派 5 的 ISP（PiSP）通过 libcamera 服务 CSI 接口的摄像头，不服务 USB 摄像头；对 USB 摄像头，转换将在 CPU 或 V4L2 内存到内存模块上进行，这一点尚未调研也未选定。*（未来工作：需要真实的 V4L2 运行时和本环境没有的摄像头。）*
+* 🪪 **帧标识、最新帧以及单进程多摄像头：** MJPEG 流的每个部分都带有 `X-Frame-Id`、`X-Session-Id` 和 `X-Capture-Ts`（传感器交付该帧时的纪元毫秒数），使消费者能算出一帧有多旧；`GET /latest.jpg` 和 `GET /latest.json` 在不保持流打开的情况下返回最新帧及其标识和时龄。`stream serve --config cams.json --camera 名称` 从列表中读取设备、尺寸和帧率（以及 IP 摄像头的 RTSP 凭据），因此单元文件和进程列表都不会带有它们；`stream serve-all --config cams.json --port N` 用一个进程、一个端口提供列表中的所有摄像头（`/<名称>/stream`、`/<名称>/latest.jpg`、`/<名称>/latest.json`、`/<名称>/health`、`/health`），不再为每个摄像头各用一个解释器和一份 OpenCV。*（已用模拟源测试，未用真实摄像头）*
+* 🛠️ **动态配置：** 逐摄像头的分辨率、帧率和像素格式今天已经真实存在并会被校验（`config.py`）；曝光/增益控制需要真实的 V4L2 设备，属于未来工作。
+* 🧩 **为何作为独立项目存在：** 捕获/ISP 调优所需的技能和故障域与模型推理或安全逻辑不同——将其保持在独立进程中，意味着一个捕获方面的漏洞不会波及 [HYDRA-UMC-SAFETY-ZONES](https://github.com/JuanenRac/HYDRA-UMC-SAFETY-ZONES)，并且两者可以独立开发/测试。
+
+**诚实说明——今天实际运行的内容：** 配置校验、GStreamer 流水线描述生成、以及 MediaMTX 中继配置生成，以及真实的 HailoRT 集成边界（`config.py`、`pipeline.py`、`mediamtx_config.py`、`buffer.py`、`reconnect.py`、`hailo_runtime.py`）都是真实的并已经过测试（{tests} 个测试）。其中没有任何一处会打开 V4L2 设备、导入 GStreamer，或与物理摄像头通信——真正运行生成的流水线需要本环境不具备的真实运行时和硬件。具体已交付内容请参见 `/stream` 通过 `--max-clients` 限制并发观看者数量（默认 5，超出返回真实的 503），以保护 CM5 有限的 Wi-Fi 上行带宽，并在观看者停止读取 30 秒后将其断开（套接字超时），因此卡住的客户端不会永远占用名额。
+[`CHANGELOG.md`](CHANGELOG.md)，尚待完成的内容请参见下方"当前状态与
+后续步骤"章节。
+
+**多个观看者、健康检查与凭据：** 同一摄像头的每个观看者都能收到每一帧（共享缓冲区不再被第一个读取者消耗）；`GET /health` 在有帧到达时返回 `200`，否则返回 `503`（`connecting`、`stalled`、`given_up`）；当所有重连尝试用尽后，进程现在会以错误退出，而不是继续提供空流，从而让其监督程序重新启动它。RTSP URL 中的密码在日志和消息中会被屏蔽；请用 `--device-env VAR`（环境变量）而不是 `--device` 传入 URL，使其不出现在进程列表中。主机、设备和 RTSP 路径在写入生成的管道之前会被校验，IP 摄像头的管道使用带有界丢弃队列的 `rtspsrc`。 流媒体器记录的所有内容现在还会经过共享的机密脱敏（除 URL 凭据外，还包括令牌、`password=` 的值和 bearer 头），与其他项目使用同一模块和同一组测试向量。

@@ -1,0 +1,56 @@
+HYDRA-UMC-UPDATER is a small tool - windowed GUI by default, full CLI with
+`--cli` - meant to run either on the real CM5 itself or on a developer's
+own Windows/Linux/macOS machine (any workspace checked out the same way)
+that answers three questions for every other real project it discovers
+via each sibling checkout's own `hydra-umc.project.json` manifest - the
+count itself is never hardcoded here, since it grows as the ecosystem
+does:
+
+1. **What's actually installed here, and what version is it?**
+2. **What's the latest version published on GitHub?**
+3. **If GitHub is newer, let me choose one project or a confirmed sequential batch.**
+
+That last point is deliberate and non-negotiable: this tool never changes a
+project on its own initiative. A selected-project action always needs an
+explicit confirmation. The GUI may also offer **Install all missing** or
+**Update all outdated**; each is a separately confirmed, sequential batch
+whose projects follow the same manifest, version and safety gates. A
+robot-control cell must never auto-update overnight without a person
+approving the exact action. The confirmation shows the exact projects of the batch, in the order they will run.
+
+Not every discovered project belongs on the CM5 itself, either - a few are tools a developer runs from their own PC (firmware gets compiled/flashed FROM a workstation, not built ON the cell) or apps installed on a phone/watch. Each project's own manifest records which is which (see section 3), and the GUI's project table can filter by it - every project is shown by default, so the updater itself and the SDK are never hidden.
+
+Illustrative example (the exact project count and every version number
+below is made up for the shape of the output, not a real captured run -
+the real count is whatever `registry.py` discovers today, never a fixed
+number baked into this doc):
+
+```
+$ hydra-umc-updater --cli status
+Workspace root: /home/pi/HYDRA-UMC
+PROJECT           MATURITY     ROLE      STACK       LOCAL     GITHUB    STATE
+-----------------------------------------------------------------------------
+HYDRA-UMC         functional   firmware  firmware-c  0.0.7     0.0.7     up to date
+HYDRA-UMC-SERVER  functional   service   node        0.0.5     0.0.9     OUTDATED
+HYDRA-UMC-STUDIO  functional   client    node        0.0.8     0.1.3     OUTDATED
+...
+59/59 installed, 2 outdated
+Run `hydra-umc-updater update <project>` to update one by hand - never automatic, see this tool's own README.
+
+$ hydra-umc-updater --cli update HYDRA-UMC-SERVER
+Updating HYDRA-UMC-SERVER into /home/pi/HYDRA-UMC ...
+OK  Updated /home/pi/HYDRA-UMC/HYDRA-UMC-SERVER to v0.0.9 (commit 1a2b3c4d5e6f) after a verified build; previous installation kept at /home/pi/HYDRA-UMC/HYDRA-UMC-SERVER.backup-9f3c2d1a
+```
+
+Running `hydra-umc-updater` with no arguments (or double-clicking it)
+opens the same information in a dark desktop control surface instead: a
+**Local Ecosystem** panel with live discovery/install/update metrics, a
+manifest-driven **Project Registry** tree, and a **Safe Update** panel for
+the selected project. The layout makes the real guardrails visible:
+manifest discovery, one explicit project action, manual confirmation,
+optional build and an on-screen activity trail; the full log of every session
+is written to `~/.hydra_umc_updater/logs/`.
+
+<p align="center">
+  <img src="images/HYDRA_UMC_UPDATER_INTERFACE_1.png" alt="HYDRA-UMC-UPDATER real desktop overview" width="100%">
+</p>

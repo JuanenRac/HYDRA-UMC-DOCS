@@ -1,0 +1,9 @@
+```mermaid
+flowchart TB
+    CAM["8x USB-3.0-Kameras"] --> STREAMER["HYDRA-VISION-STREAMER<br/>(GStreamer-Pipeline)"]
+    STREAMER --> NPU["Hailo-8-NPU<br/>(HEF-Modellausführung)"]
+    NPU --> DETECT["Erkennung & Segmentierung"]
+    DETECT --> API["VISUAL-SERVOING-API"]
+    API --> CORE["HYDRA-UMC Core (STM32H745)"]
+    DETECT --> SAFETY["SAFETY-ZONES (E-STOP)"]
+```

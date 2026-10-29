@@ -1,0 +1,8 @@
+**Qué funciona hoy:** definiciones reales de zonas Warning/Danger y comprobación de brechas (`geometry.py`/`zones.py`/`breach.py`), aplicación real de frescura de calibración que falla de forma segura a `INHIBITED` antes de ejecutar cualquier lógica de brechas (`calibration.py`/`safety_state.py`), un pipeline real de *solicitud* de E-STOP que respeta el límite detectar-vs-aplicar por construcción (`estop.py`), un subcomando CLI real `check` sobre ficheros JSON de zonas/detecciones, y {tests} tests pasando - ver [`CHANGELOG.md`](CHANGELOG.md) para la salida completa real de build/run.
+
+**Qué sigue abierto, sin orden particular y sin calendario comprometido:**
+
+* Mapeo real de ocupación 3D a partir de la segmentación espacial de Hailo-8, para producir de verdad las posiciones de objetos detectados que `check` hoy espera como entrada JSON.
+* Enmascarado dinámico de auto-oclusión de la propia estructura del robot.
+* Un transporte CAN real que implemente `EStopRequester` hacia [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) - `estop.py` ya define la interfaz que una implementación real necesitaría cumplir.
+* Cualquier trabajo real de certificación de seguridad (el badge ISO 13849-1 de arriba expresa una aspiración, no una certificación completada).

@@ -1,0 +1,33 @@
+**HYDRA-UMC-VISION-NODE** 是 HYDRA-UMC 生态系统的专用感知引擎。设计为运行在
+Raspberry Pi Compute Module 5 上，并搭配 Hailo-8 M.2 AI 加速器，其预期任务是
+同时处理最多 8 路 USB 3.0 摄像头的海量视频流。
+
+它的目标是充当系统的“反射神经”:在不加重中央编排器负担的情况下进行目标跟踪、缺陷检测和安全监控(计划中:这些功能目前都没有在 Hailo-8 上运行,也不宣称任何精度)。
+
+本项目是 Vision AI Node 系列的**集成父项目**：它本身并不完成所有这些工作，
+而是下方 4 个专项子项目所接入的节点，每个子项目各自负责一项职责：
+
+* 🔑 **可选的 Bearer 令牌：** 在回环地址上 API 不需要令牌；在非回环地址上，没有令牌就拒绝启动（`--token-file` 或 `HYDRA_UMC_VISION_NODE_TOKEN`）。设置令牌后，每个请求都必须发送 `Authorization: Bearer <token>`（恒定时间比较）；只有清单声明的健康路径 `GET /stats` 保持开放。*(已实现)*
+* **[HYDRA-UMC-VISION-STREAMER](https://github.com/JuanenRac/HYDRA-UMC-VISION-STREAMER)** —— 捕获并预处理本节点所消费的摄像头画面。
+* **[HYDRA-UMC-DETECTION-HEF](https://github.com/JuanenRac/HYDRA-UMC-DETECTION-HEF)** —— 编译并管理本节点在其 Hailo-8 NPU 上加载的 `.hef` 模型版本。
+* **[HYDRA-UMC-SAFETY-ZONES](https://github.com/JuanenRac/HYDRA-UMC-SAFETY-ZONES)** —— 目标是把本节点的感知转换为入侵检测和 E-STOP 请求(仅有 v0 逻辑;尚无检测器为其供数)。
+* **[HYDRA-UMC-VISUAL-SERVOING-API](https://github.com/JuanenRac/HYDRA-UMC-VISUAL-SERVOING-API)** —— 目标是把本节点的感知转换为运动学位姿修正(尚无摄像头位姿估计)。
+
+### 关键要点
+
+* 🧩 **家族就绪检查（v0）：** 真实的 `family-status` 子命令读取 4 个真实子项目各自真实的 `hydra-umc.project.json`，报告其是否存在/版本/成熟度/角色——对于一个自身尚未运行任何 Hailo-8 运行时或摄像头流水线的集成父项目来说，这是诚实的。详见下方"诚实说明"。
+* 🩺 **流水线清单、帧验证与降级模式（v0）：** 一份真实的、可检视的本节点感知流水线形状清单（哪些阶段需要摄像头、加速器，或两者都不需要），对原始帧缓冲区进行真实的结构性损坏校验，以及真实的降级模式检测——诚实地探测真实的摄像头/Hailo-8 硬件，并准确报告当前哪些阶段真的可以运行——通过新增的 `pipeline-status` 和 `validate-frame` 子命令实现。
+* 🌐 **JSON/HTTP API（v0）：** 真实的 `serve` 子命令将 `family-status`/`pipeline-status`/`validate-frame` 以 HTTP API 的形式对外提供（`GET /family-status`、`GET /pipeline-status`、`POST /validate-frame`，外加 `GET /stats`）——与 CLI 子命令执行的完全是同一批函数，构建在 `http.server` 之上，不引入任何额外依赖。详见下文"JSON/HTTP API"一节以及 [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md)。
+* 🏷️ **读取板卡编码:** `POST /read-code?width=W&height=H&channels=N` 以请求体接收一帧原始图像(与 `/validate-frame` 的形式相同),返回其中的 DataMatrix 编码,供贴片机桥接把板卡上的编码与其作业所指的板卡进行比对。解码器是 `pylibdmtx`,一个首次使用时才导入的可选依赖:没有它时该路由返回 `503` 并说明要安装什么,其他路由不受影响。编码文本有界(可打印 ASCII,最多 256 个字符,最多 16 个编码)。已用模拟解码器测试;尚未在真实标签上试过。*(已实现)*
+* 🚀 **硬件加速（计划中）：** 设计目标是在 Hailo-8（26 TOPS）上原生执行 HEF 模型——编译这些模型的工具链是一个独立项目（[HYDRA-UMC-DETECTION-HEF](https://github.com/JuanenRac/HYDRA-UMC-DETECTION-HEF)），并非本节点自身构建。
+* 📷 **多路流处理（计划中）：** 同时分析最多 8 路高分辨率摄像头画面，由 [HYDRA-UMC-VISION-STREAMER](https://github.com/JuanenRac/HYDRA-UMC-VISION-STREAMER) 在上游捕获。
+* 🎯 **精准感知（计划中）：** 围绕 YOLO 系列架构设计，用于工业组件检测。
+* 🛡️ **主动安全（计划中）：** 实时占用地图输入至 [HYDRA-UMC-SAFETY-ZONES](https://github.com/JuanenRac/HYDRA-UMC-SAFETY-ZONES) 以进行人员入侵检测。
+* 🧩 **存在的意义：** 若没有专用节点，感知工作要么会使 [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) 内部的 STM32H745 实时核心过载（该核心没有多余算力承担此任务），要么必须将每一帧摄像头画面通过网络传输到远程 GPU，从而增加安全回路无法承受的延迟。将其运行在紧邻机器人本体的 CM5 + Hailo-8 上，可使检测 → 修正 →（必要时）E-STOP 的回路保持本地化和快速。
+
+**诚实说明——今天实际运行的内容：** 无参数调用时仍会打印身份/版本/角色，但现在新增了一个真实的 `family-status [--workspace 路径]` 子命令：从本地检出中读取 `HYDRA-UMC-VISION-STREAMER`/`HYDRA-UMC-DETECTION-HEF`/`HYDRA-UMC-SAFETY-ZONES`/`HYDRA-UMC-VISUAL-SERVOING-API` 各自真实的清单，并诚实地报告发现的内容。上文描述的 Hailo-8 运行时、gRPC 控制
+API 或真实的子节点监督逻辑目前均尚未实现——它们是本项目存在的原因，而非
+当前已完成的工作。具体已交付内容请参见 [`CHANGELOG.md`](CHANGELOG.md)，
+尚待完成的内容请参见下方"当前状态与后续步骤"章节。
+
+**API 限制：** `POST /validate-frame` 会在读取请求体之前拒绝大于 8192x8192x4 或 64 MiB 的帧（以及非正数尺寸），`?workspace=` 只能指向服务器启动时所用工作区的内部。在容器中，工作区来自 `HYDRA_UMC_WORKSPACE`（像 `docker-compose.yml` 那样把同级仓库以只读方式挂载到 `/workspace`）。systemd 单元保留真实的 `/dev`，以便摄像头和加速器探测正常工作，并用 `DevicePolicy=closed` 而不是 `PrivateDevices` 限制设备。

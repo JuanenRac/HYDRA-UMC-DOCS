@@ -1,0 +1,4 @@
+* **Fase 1:** Ingesta de alto rendimiento e indexación del Datalake para análisis histórico.
+* **Fase 2:** Compresión en el borde del colector de telemetría y protocolos de transmisión seguros.
+* **Fase 3:** Detección de anomalías mediante aprendizaje no supervisado y análisis de vibración de motores.
+* **Fase 4:** Compresión en tiempo real para ingesta de logs masivos y optimización multi-protocolo.

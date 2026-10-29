@@ -1,0 +1,1 @@
+📡 Riconciliazione dello stato con CRDT e sincronizzazione multi-nodo

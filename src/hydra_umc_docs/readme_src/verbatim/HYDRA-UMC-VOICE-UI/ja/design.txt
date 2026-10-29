@@ -1,0 +1,31 @@
+### アーキテクチャと設計上の決定
+
+本リポジトリは Cognitive AI Node ファミリーの**子プロジェクト**です——
+親プロジェクトである [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE) が共有の HydraOS イメージと量子化モデルの重みを保持し、本サービスを他の 3 つの兄弟プロジェクト（VLA-Engine、Semantic-Planner、Docs-QA）とともに `docker-compose.yml` に接続します：
+
+* **本子プロジェクトに独自のハードウェア/ファームウェア/`os/`/`models/` がない理由。** 親プロジェクトが既に保有する CM5 + Hailo-10 M.2 モジュール上で完全に動作します——モデルの重みと HydraOS イメージを 1 か所に集約することで、ファミリー全体で数 GB にも及ぶモデルの重みが 4 つの食い違ったコピーとして存在することを避けられます。
+* **`src/` レイアウトを採用した理由。** インストール可能なパッケージ（`hydra_umc_voice_ui`）をリポジトリルートのツール（`bump_version.py`）から分離し、エコシステム内の他のすべての Python プロジェクトで使用されているレイアウトと一致させるためです。
+* **裸の呼び出しが今日も身元/バージョン/役割のみを表示する理由。** それは今も変わらない、軽量な足場チェックのままだ。実際の v0 の作業はそのサブコマンドの背後にある——`analyze-audio`（実際の WAV 読み込み + エネルギー閾値による音声活動検出、`audio.py`）、`parse-intent`（実際のルールベースの意図/エンティティ解析、`intent.py`）、そして `serve`（Watch 向けの実際に認証された音声ターンゲートウェイ、`http_service.py`/`gateway.py`）。これらはいずれも、この README 自身のロードマップが説明する Whisper STT / ニューラル TTS パイプラインではない——それには依然として、この環境にはない本物のモデル依存関係が必要だ。
+* **エコシステムの他の部分との関係。** 本サービスは、Cognitive AI Node 全体へのハンズフリーなエントリポイントです：認識された意図は兄弟プロジェクトである HYDRA-UMC-SEMANTIC-PLANNER に流れ、HYDRA-UMC-STUDIO や HYDRA-UMC-DSI と並んで音声制御インターフェースとして機能します。
+* **`audio.py` が numpy ではなく `wave`/`array` を使う理由。** 16 ビット PCM のデコードと実際のエネルギー閾値 VAD は、標準ライブラリがすでに提供するもの以外何も必要としません——v0 を依存関係なしに保つことで、実際のオーディオフロントエンドは、Hailo-10 固有の STT 依存関係がインストールされる前でも、Python が動くあらゆる場所で動作します。
+* **`intent.py` が学習済み NLU モデルではなく実際の正規表現ルールである理由。** 小さな実際のコマンド語彙（start/stop/status/go home）は、今日ルールによって完全かつ正直にカバーされています——これは兄弟プロジェクトである HYDRA-UMC-DOCS-QA が埋め込みモデルではなく実際の TF-IDF インデックスを使う理由と同じです：認識された音声がこの v0 語彙以上をカバーする必要が出てきたときに、将来 ML ベースの分類器が同じ `parse_intent()` 契約の背後で置き換えられる、実際に機能するテスト可能なカーネルを今持っているということです。
+* **一致しないオーディオ/テキストが推測ではなく正直な失敗を返す理由。** `detect_voice_segments()` は無音に対して空リストを返し、`parse_intent()` はルールセット外のテキストに対して `None` を返します——v0 にはフォールバックモデルがないため、実際には検出していないセグメントや意図を捏造することは決してありません。
+* **Watch ゲートウェイが旧来の `parse_intent()` ではなく `classify_intent()` を使う理由。** 既存の呼び出し元に対しては `parse_intent()` は引き続き「最初に一致したものが勝つ」動作のまま変更されず、これまで通りテストされます。しかし、複数の既知コマンドに本当に一致する実際の文字起こし（例えば "stop" と "status" の両方を含む場合）は、運動コマンドに確認が必要かどうかを判断することが全ての役割であるゲートウェイにとって、実在の、安全性に関わるあいまいさです——`classify_intent()` はすべてのルールをチェックし、たまたま最初に宣言されたルールへ黙って解決するのではなく、実在の、明確に区別されるあいまいなケースを報告します。
+* **`normalize_text()` がマッチングの前に Unicode NFKC を適用する理由。** 一部の音声認識パイプラインは全角ラテン文字やその他の互換 Unicode 形式を出力します——これらは通常の ASCII とは異なるコードポイントであり、`\b...\b` 正規表現にとっては「その単語」とは見なされません。NFKC はまずそれらを通常の等価な形式に変換するため、既知のルールと意味的に同一のコマンドが、単にエンコードの違いだけを理由に正直な不一致として扱われることはありません。
+
+### WATCH 音声ゲートウェイ（v0）
+
+`python -m hydra_umc_voice_ui.main serve` は、ペアリングされた HYDRA-UMC-WATCH 統合用に意図的に制限されたローカル HTTP ゲートウェイを公開します。エンドポイントは `GET /health`、`POST /v1/voice/turn`、`POST /v1/voice/confirm` です。ゲートウェイは型付き `voice_turn` ペイロードを検証し、既存の決定論的なインテントパーサーを使用して `assistant_reply` を返します。ロボットハードウェアを制御するものではありません。
+
+ループバック開発はトークンなしで実行できます。ループバック以外へのバインドには `HYDRA_UMC_VOICE_UI_TOKEN` と一致する `Authorization: Bearer` ヘッダーが必要です。この API が生の音声を転送することはなく、移動に関係するインテントは常に `requiresConfirmation: true` を、実在し範囲が限定された `confirmationToken` とともに返します。Watch クライアントはそれを `POST /v1/voice/confirm` に返送し、`confirmed`/`expired`/`invalid`（単なる真偽値ではない）が報告されます。このエンドポイント自体は何も送出しません。完全な契約は下の [WATCH_VOICE_GATEWAY.md](docs/WATCH_VOICE_GATEWAY.md) の確認セクションを参照してください。
+
+複数の既知コマンドに本当に一致する文字起こしは、単一の解釈へ黙って解決されるのではなく、実在の、明確に区別される応答とともに拒否されます：
+
+```json
+// POST /v1/voice/turn
+{"type": "voice_turn", "requestId": "watch-voice-001", "transcript": "stop the status check", "locale": "en-US"}
+
+// -> {"type":"assistant_reply","requestId":"watch-voice-001","text":"That request matched more than one action (status, stop). Please rephrase it more specifically.","level":"ATTENTION","speak":true,"requiresConfirmation":false,"visualState":"clarification","interpretation":{"heardText":"stop the status check","normalizedText":"stop the status check","matchedRules":["status","stop"]}}
+```
+
+完全なリクエスト契約とデプロイ境界については [WATCH_VOICE_GATEWAY.md](docs/WATCH_VOICE_GATEWAY.md) を、インストール済みCLIから実際に取得した `analyze-audio`/`parse-intent`/`serve` の全実例については [CLI_REFERENCE.md](docs/CLI_REFERENCE.md) を参照してください。

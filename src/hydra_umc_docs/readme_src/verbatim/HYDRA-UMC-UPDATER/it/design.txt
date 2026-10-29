@@ -1,0 +1,120 @@
+### COME FUNZIONA DAVVERO UN CONTROLLO/AGGIORNAMENTO
+
+- **Origine della versione**: la convenzione "contachilometri" di
+  auto-incremento di questo ecosistema (ogni bump esplicito incrementa un
+  numero di versione che vive DENTRO un file sorgente - `pyproject.toml`,
+  `Cargo.toml`, `version.go`, `package.json`, `version.properties`,
+  `pubspec.yaml`, o un `#define` di firmware, a seconda dello stack del
+  progetto) non ha mai creato un tag git né una GitHub Release per
+  quell'incremento. Questo strumento legge quindi lo STESSO file che il
+  proprio `bump_version.py`/script di build di ogni progetto già scrive,
+  direttamente dal branch predefinito del repo tramite l'host di
+  contenuto raw di GitHub - non l'API delle Releases, che riporterebbe
+  che tutti i progetti non hanno alcuna release.
+- **Rilevamento locale**: per ogni progetto scoperto,
+  controlla se esiste una directory con quel nome esatto sotto la radice
+  del workspace (la disposizione standard dell'ecosistema - ogni
+  progetto come directory sorella, esattamente ciò che già presuppongono
+  build-frontend.sh e il proprio discovery di HYDRA-UMC-SUITE), e se sì,
+  legge la propria copia locale di quello stesso file di versione.
+- **Un'unica implementazione di parsing** (`version_parse.py`) è
+  condivisa tra la lettura locale e il recupero da GitHub, così un
+  checkout locale e un recupero da GitHub non vengono mai interpretati
+  da due regex che potrebbero divergere indipendentemente.
+- **Installare/aggiornare**: `git clone` (installazione) compila poi
+  come passo separato. Aggiornare un checkout GIA' ESISTENTE è invece
+  atomico-per-verifica: il candidato viene clonato, unito con
+  fast-forward (mai un reset forzato, così vere modifiche locali
+  falliscono rumorosamente invece di essere scartate), e compilato/
+  verificato PRIMA in un clone di staging completamente indipendente -
+  l'installazione reale viene toccata (tramite due rinomine di
+  directory consecutive, con l'installazione precedente conservata in
+  `<nome>.backup-xxxxxxxx`, mai cancellata) solo se quella build di staging ha
+  davvero successo. Un fallimento di build, un checkout divergente/
+  sporco, un crash o un disco pieno in qualsiasi momento prima di
+  quella promozione finale lasciano l'installazione precedente
+  completamente intatta e ancora operativa - vedi il docstring proprio
+  di `clone_or_pull` in `install.py`. Il remote git proprio del clone di
+  staging viene ripristinato verso il repository GitHub reale subito
+  dopo la sua creazione (un semplice clone locale lo lascerebbe invece
+  puntare al vecchio percorso di installazione, terminando in silenzio
+  tutti i futuri aggiornamenti una volta promosso), e i dati locali
+  reali propri del checkout installato (tutto ciò che git considera non
+  tracciato o ignorato - `data/settings.json` e simili, esclusi gli
+  artefatti di build rigenerabili) vengono trasferiti nel clone di
+  staging prima che venga compilato, così lo stato operativo reale di un
+  progetto sopravvive a un aggiornamento invece di restare bloccato nel
+  checkout `.backup` conservato. In ogni caso questo esegue il
+  `build-test.sh`/`build-test.bat` proprio di quel progetto (il
+  controllo non-versionante - vedi sezione 3) se ce l'ha. Questo
+  strumento non reimplementa mai i passi di build propri di un
+  progetto.
+
+- **Barriera di firma opzionale**: lo script `build-test` di un candidato è codice che il candidato porta con sé e che viene eseguito qui prima che qualcosa abbia dimostrato che il commit è del manutentore. Con `HYDRA_UMC_UPDATER_REQUIRE_SIGNED=1` l'updater esegue prima `git verify-commit` sul candidato accettato nel clone di staging e, se il commit non ha una firma di cui questa macchina si fida (una chiave gpg nel portachiavi, o un firmatario ssh in `gpg.ssh.allowedSignersFile`), si ferma lì: non viene compilato né eseguito nulla e l'installazione in uso resta intatta. Disattivata per impostazione predefinita, perché richiede sulla macchina un portachiavi che si fidi della chiave del manutentore.
+
+- **Un `.venv` nuovo dopo ogni promozione**: se l'installazione sostituita aveva un `.venv`, il checkout promosso ne riceve uno nuovo (`python -m venv`, poi `pip install -r requirements.txt` se il progetto ha quel file) invece di nessuno; il vecchio resta nel `.backup`. Si disattiva con `HYDRA_UMC_UPDATER_RECREATE_VENV=0` o con l'impostazione salvata `recreate_venv`. Se non si riesce a crearlo, l'aggiornamento è segnalato come fallito e indica il backup che conserva il vecchio.
+- **Altre reti di sicurezza**: una sola installazione o aggiornamento alla volta per area di lavoro (file di blocco); un limite di tempo su ogni comando git e su ogni build-test, senza mai chiedere credenziali; un errore imprevisto diventa un risultato fallito nella finestra e nel file di evidenze, mai una finestra bloccata su "in corso"; la barriera di firma copre anche una prima installazione e si può attivare nelle impostazioni salvate (`require_signed_commits`; un file di impostazioni illeggibile vale come attivata), con un avviso rosso nella finestra finché è disattivata; un commit locale che impedisce il fast-forward è nominato nel rifiuto; una nuova installazione la cui build fallisce viene rimossa di nuovo; le cartelle di staging obsolete vengono ripulite all'inizio di un'esecuzione, e `--cli prune-backups [--keep N] [--dry-run]` rimuove le vecchie cartelle `<nome>.backup-xxxxxxxx` solo su richiesta.
+
+<p align="center">
+  <img src="images/HYDRA_UMC_UPDATER_INTERFACE_2.png" alt="Checkpoint reali durante installazione o aggiornamento di HYDRA-UMC-UPDATER" width="100%">
+</p>
+
+### ARCHITETTURA E DECISIONI DI DESIGN
+
+- **GUI Qt Quick predefinita, `--cli` per headless.** `main.py` controlla
+  `--cli` prima di importare il runtime PySide6 opzionale. La CLI funziona su
+  una CM5 senza schermo né dipendenze desktop; senza argomenti avvia QML quando
+  disponibile e Tkinter resta solo un fallback temporaneo.
+- **La GUI con finestra è reale, multilingue in 8 lingue (`i18n.py`) - `--cli` deliberatamente non lo è.** Ogni widget reale si ri-etichetta dal vivo da una `Combobox` di lingua (en/es/fr/it/de/zh/ja/pt, le stesse 8 pubblicate dalla dashboard pubblica e da ogni README), rilevata da una preferenza salvata o dalla locale propria del sistema operativo. I nomi di progetti/famiglie e il testo reale `notes`/`tech` di ciascun progetto restano non tradotti - `registry.py` è la loro unica fonte di verità, e 8 copie parallele di documentazione ingegneristica reale impedirebbero che lo restasse. L'output di `--cli` resta volutamente solo in inglese: è pensato per essere scriptato/reindirizzato, dove un testo stabile e grep-abile conta più della localizzazione.
+- **`deploy` è una classificazione, non una restrizione.** Trattare ogni
+  progetto scoperto come "una cosa che appartiene al CM5" era sbagliato - i
+  repository di firmware vengono compilati e flashati DA un PC (il CM5
+  ha bisogno solo del binario risultante via CAN-OTA, mai del codice
+  sorgente di questo repository), e diversi strumenti (URTC-FLASHER,
+  HYDRA-UMC-SUITE, HYDRA-UMC-TOOL-CLI, ...) sono pensati per girare sul
+  proprio posto di lavoro di un operatore, non dentro la cella stessa.
+  Il campo `deploy` di `registry.py` ("cm5" / "user-pc" / "mobile" /
+  "wearable" / "dev-server") registra questo, e il filtro della GUI lo usa come punto di
+  partenza ragionevole - mai come restrizione rigida, dato che questo
+  stesso strumento è anche pensato per girare sul PC personale di uno
+  sviluppatore, dove ogni progetto scoperto è ugualmente valido da ispezionare.
+- **Nessuna logica di build per stack in questo strumento.** L'ecosistema abbraccia 7 toolchain (Python, Rust, Go, Node/TS, Android/Kotlin, Flutter, firmware ARM). Reimplementare `npm install && npm run build` / `cargo build --release` / `./gradlew assembleDebug` / ecc. QUI creerebbe un secondo posto che pretende di sapere come compilare ogni progetto, destinato a divergere dai controlli reali (e già corretti) del progetto stesso. `install.py` esegue invece solo il `build-test.sh` non versionante del progetto (`build-test.bat` su Windows), che verifica senza incrementare alcuna versione; un progetto che non ne ha uno viene rifiutato con "No non-versioning build-test.sh/.bat found".
+- **Contenuto raw di GitHub, non l'API delle Releases.** Vedi la sezione
+  2 - la convenzione di versionamento di questo ecosistema non crea mai
+  un tag/release, quindi l'API delle Releases sarebbe attivamente
+  sbagliata qui, non solo meno comoda.
+- **Un errore di rete transitorio riceve un vero ritentativo; una
+  risposta definitiva mai.** Ogni richiesta reale a GitHub
+  (`_urlopen_with_retries` di `github_client.py`) riprova fino a 3 volte
+  con backoff, ma solo quando la connessione non ha mai ottenuto alcuna
+  risposta (DNS/timeout/reset). Uno stato HTTP reale che GitHub ha
+  effettivamente restituito - 404, 403, 500 - non viene mai riprovato:
+  GitHub ha già risposto, e insistere consumerebbe solo altro rate limit
+  per lo stesso risultato.
+- **Un catalogo remoto malformato fallisce rumorosamente; un singolo
+  progetto malformato no.** Se l'elenco stesso dei repository GitHub è
+  irraggiungibile o non analizzabile, `discover_remote_projects()`
+  solleva un'eccezione - sia `gui.py` che `main.py` la catturano già e
+  ricadono sull'elenco dei progetti scoperti localmente invece di
+  mostrare una scansione rotta o vuota. Il manifest malformato di un
+  singolo repository, invece, viene isolato nella lista `errors` di
+  quella scansione e non interrompe mai la scoperta del resto - un vero
+  test con server di fixture (`tests/test_github_client.py`) dimostra
+  entrambi i percorsi.
+- **La CLI resta esplicita; i lotti GUI restano confermati.** I comandi CLI
+  `install`/`update` richiedono un nome di progetto. La GUI può eseguire
+  **Installa tutti i mancanti** o **Aggiorna tutti gli obsoleti**, ma solo dopo
+  una conferma separata e in sequenza attraverso gli stessi controlli di
+  sicurezza. Non esiste aggiornamento automatico non supervisionato.
+- **Solo libreria standard.** `urllib` per i recuperi da GitHub
+  (`github_client.py`), `subprocess` per le chiamate a git/script di
+  build (`install.py`), nient'altro - che uno strumento responsabile di
+  mantenere sane le dipendenze di TUTTI gli altri progetti resti esso
+  stesso senza dipendenze è deliberato.
+- **Semplificazione nota**: HYDRA-UMC e URTC sono veri repo di firmware
+  multi-componente (6 e 4 binari versionati in modo indipendente
+  ciascuno - vedi il proprio `VERSION_CHECKLIST.txt`/`build_firmware.sh`)
+  senza un unico numero di versione. `registry.py` segue UN componente
+  rappresentativo per repo - sufficiente per rispondere "questo repo è
+  più o meno aggiornato?", non un sostituto del proprio
+  `firmware_manifest.json` di `build_firmware.sh` per un flash reale.

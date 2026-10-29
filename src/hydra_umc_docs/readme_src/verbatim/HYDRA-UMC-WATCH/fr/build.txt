@@ -1,0 +1,21 @@
+Nécessite JDK 21, le SDK Android (`local.properties` → `sdk.dir`, ignoré par git — pointez-le vers votre propre installation du SDK) et un appareil ou émulateur Wear OS pour `run`.
+
+```bash
+# Linux/macOS
+chmod +x gradlew   # une seule fois
+./build.sh
+./run.sh            # nécessite un appareil/émulateur Wear OS connecté
+
+# Windows
+build.bat
+run.bat
+```
+
+`build` ne change jamais la version (seul `python tools/hydra_project_tool.py bump` la fait monter), lance la vraie suite de tests JUnit (`haptics`, `protocol`, `transport`), et compile l'APK de débogage vers `app/build/outputs/apk/debug/app-debug.apk` - le tout en une seule invocation Gradle (les scripts passent encore `-PhydraUmcReadOnly=true`, mais cela n'a plus d'effet : le build Gradle ne change jamais la version). `run` installe l'APK via `gradlew installDebug` et lance `MainActivity` avec `adb`.
+
+Exemple réel - les deux scripts d'incrémentation de version sont exécutés par la commande `bump` explicite et fonctionnent aussi de manière autonome (ils modifient les fichiers de version quand ils s'exécutent) :
+
+```bash
+python3 bump_manifest_version.py   # ex. "HYDRA-UMC version: v0.1.2 -> v0.1.3"
+python3 bump_version_code.py       # ex. "versionCode: 12 -> 13"
+```

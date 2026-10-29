@@ -1,0 +1,59 @@
+Richiede Python 3.10+.
+
+```bash
+# Linux / macOS
+./build.sh   # crea .venv, installa il
+             # pacchetto in modalità editabile (con extra dev), esegue la
+             # vera suite di test, compile-check di tutto src/
+./run.sh     # esegue l'entry point da .venv, stampa nome + version + ruolo
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` non cambiano mai la versione (solo `python tools/hydra_project_tool.py bump` la alza), fanno il compile-check del codice sorgente con `python -m compileall`, e poi eseguono la vera suite di test (`pytest tests/`).
+
+Il vero sottocomando `generate` scrive un vero dataset su disco:
+
+```bash
+./run.sh generate --out dataset/ --count 20 --components 6 --defect-rate 0.3 --seed 42 --format both
+
+# Windows
+run.bat generate --out dataset\ --count 20 --components 6 --defect-rate 0.3 --seed 42 --format both
+```
+
+`--jobs N` renderizza le scene in N processi (predefinito 1): ogni scena ha il proprio generatore casuale inizializzato dal seme e dal suo indice, quindi il dataset è lo stesso qualunque sia N. Il manifesto ora registra l'elenco delle classi (`classes`) e il suo hash (`classes_sha256`, lo sha256 di `classes.txt`) così chi registra un modello addestrato sul dataset può verificare l'ordine delle classi. `verify --out dataset/` rilegge una cartella di dataset: le immagini contro i checksum del manifesto, le etichette YOLO (cinque campi, un id di classe noto, tutto in [0, 1]), il file COCO (id unici, riquadri dentro l'immagine) e il numero di etichette contro il manifesto; `generate` esegue lo stesso controllo sul proprio output. Il renderer BMP dipinge per fette invece che per pixel (gli stessi byte, molto più veloce sulle immagini grandi). Provato; il controllo lato DETECTION-HEF che confronterebbe l'hash non esiste ancora.
+
+Scrive vere immagini BMP in `dataset/images/`, vere etichette YOLO in `dataset/labels/` + `dataset/classes.txt`, e/o un vero `dataset/annotations.json` in formato COCO, a seconda di `--format`. Un `--seed` dato rende il dataset riproducibile byte per byte.
+
+Gli argomenti sono controllati per intervallo (`--count` 1..10000, `--width`/`--height` 16..4096, `--components` 1..1000, `--defect-rate` 0..1) e le immagini dell'intero dataset sono limitate a 4 GiB: un comando la cui dimensione stimata supera quel limite viene rifiutato con codice di uscita 2 prima di scrivere qualsiasi cosa, così un errore di battitura non può riempire il disco della macchina su cui gira.
+
+Ogni esecuzione scrive anche un vero `dataset/manifest.json` e valida il proprio output:
+
+```
+Generated 20 scene(s) -> dataset/images
+Total labeled components (incl. defects): 150
+Annotations exported as: both
+Reproducible seed: yes (seed=42)
+Manifest written -> dataset/manifest.json
+Validation: OK (scene bounds, BMP integrity, label distribution)
+```
+
+```json
+{
+  "seed": 42,
+  "reproducible": true,
+  "count": 20,
+  "scenes": [
+    { "image": "scene_0000.bmp", "num_components": 7,
+      "label_counts": {"bracket": 1, "bolt": 2, "gear": 2, "defect": 1, "connector": 1},
+      "sha256": "2301c6974673d9f6a408d7a4b746d236d0ec98b535064884b7a3929645a8f2eb" }
+  ],
+  "validation_issues": []
+}
+```
+
+Se la validazione trova un problema reale (un componente fuori intervallo, un BMP troncato/corrotto, o un tasso di difetti che si è discostato molto da `--defect-rate`), `generate` esce con codice `1` ed elenca ogni problema invece di consegnare silenziosamente un dataset difettoso.

@@ -1,0 +1,8 @@
+```mermaid
+flowchart LR
+    MIC["Entrée microphone"] --> STT["Whisper STT (Hailo-10)"]
+    STT --> NLU["Analyseur d'intention sémantique"]
+    NLU --> LOGIC["Logique du nœud cognitif"]
+    LOGIC --> TTS["Moteur TTS"]
+    TTS --> SPK["Sortie haut-parleur"]
+```

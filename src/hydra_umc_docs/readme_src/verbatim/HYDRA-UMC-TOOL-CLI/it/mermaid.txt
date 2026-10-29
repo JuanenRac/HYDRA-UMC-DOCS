@@ -1,0 +1,9 @@
+```mermaid
+flowchart LR
+    USER["Sviluppatore / DevOps"] --> CLI["HYDRA-UMC-TOOL-CLI"]
+    CLI -- HTTP --> SERVER["HYDRA-UMC-SERVER (/api/hydra-info)"]
+    SERVER -- Stato della Flotta --> CLI
+    CLI -- Risultato --> USER
+    CLI -- "config validate / apply --dry-run" --> CONFIG["Config file"]
+    CLI -- "completion" --> SHELL["bash / zsh"]
+```

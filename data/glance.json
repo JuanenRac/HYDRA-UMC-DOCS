@@ -117,7 +117,11 @@
       }
     },
     "HYDRA-UMC-DOCS": {
-      "hardware": "not_applicable"
+      "hardware": "not_applicable",
+      "tests": {
+        "count": 153,
+        "command": "python -m pytest tests -q"
+      }
     },
     "HYDRA-UMC-DOCS-QA": {
       "hardware": "not_run",
@@ -247,12 +251,16 @@
     "HYDRA-UMC-PRODUCTION-REPORTS": {
       "hardware": "not_run",
       "tests": {
-        "count": 122,
-        "command": "pytest"
+        "count": 126,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-SAFETY-ZONES": {
-      "hardware": "not_run"
+      "hardware": "not_run",
+      "tests": {
+        "count": 244,
+        "command": "python -m pytest -q tests"
+      }
     },
     "HYDRA-UMC-SDK": {
       "hardware": "not_run"
@@ -260,8 +268,8 @@
     "HYDRA-UMC-SEMANTIC-PLANNER": {
       "hardware": "not_run",
       "tests": {
-        "count": 71,
-        "command": "pytest"
+        "count": 88,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-SERVER": {
@@ -280,69 +288,86 @@
     "HYDRA-UMC-SWARM-SYNC": {
       "hardware": "not_run",
       "tests": {
-        "count": 70,
+        "count": 102,
         "command": "cargo test"
       }
     },
     "HYDRA-UMC-SYNTHETIC-DATA-GEN": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 58,
-        "command": "pytest"
+        "count": 82,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-TELEMETRY-COLLECTOR": {
-      "hardware": "not_run"
+      "hardware": "not_run",
+      "tests": {
+        "count": 126,
+        "command": "go test ./..."
+      }
     },
     "HYDRA-UMC-TOOL-CLI": {
       "hardware": "simulated",
       "tests": {
-        "count": 132,
+        "count": 219,
         "command": "go test ./..."
       }
     },
     "HYDRA-UMC-TWIN": {
-      "hardware": "not_run"
+      "hardware": "not_run",
+      "tests": {
+        "count": 77,
+        "command": "cargo test"
+      }
     },
     "HYDRA-UMC-UPDATER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 140,
-        "command": "pytest tests/"
+        "count": 160,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-VISION-NODE": {
-      "hardware": "not_run"
+      "hardware": "not_run",
+      "tests": {
+        "count": 98,
+        "command": "python -m pytest -q tests"
+      }
     },
     "HYDRA-UMC-VISION-STREAMER": {
       "hardware": "not_run",
       "tests": {
-        "count": 109
+        "count": 142,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-VISUAL-SERVOING-API": {
       "hardware": "not_run",
       "tests": {
-        "count": 128,
-        "command": "pytest tests/"
+        "count": 172,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-VLA-ENGINE": {
       "hardware": "not_run",
       "tests": {
-        "count": 98,
-        "command": "pytest tests/"
+        "count": 138,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-VOICE-UI": {
       "hardware": "not_run",
       "tests": {
-        "count": 85,
-        "command": "pytest tests/"
+        "count": 195,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-WATCH": {
-      "hardware": "not_run"
+      "hardware": "not_run",
+      "tests": {
+        "count": 94,
+        "command": "./gradlew testDebugUnitTest"
+      }
     },
     "ELECTRO-HOBBY-3D-UPDATER": {
       "hardware": "not_applicable",

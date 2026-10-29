@@ -1,0 +1,48 @@
+### FLUX DE SYNCHRONISATION DU WEARABLE
+
+*Architecture cible une fois qu'un WebSocket direct avec le Server existera.
+Le chemin réel et testé aujourd'hui passe par le téléphone appairé : Watch
+-> Data Layer -> HYDRA-UMC-ANDROID-CONTROL -> HYDRA-UMC-SERVER/Voice UI
+authentifié, et retour - voir Architecture ci-dessous et
+[docs/VOICE_AI_PROTOCOL.md](docs/VOICE_AI_PROTOCOL.md) pour ce flux réel de
+bout en bout. La montre ne détient jamais elle-même d'identifiant Server ;
+un WebSocket direct Watch-Server et le bouton E-STOP sans fil restent un
+travail futur conditionné au matériel.*
+
+### ARCHITECTURE & DÉCISIONS DE CONCEPTION
+
+* **Pourquoi c'est une application Wear OS autonome, pas une fonctionnalité de l'application téléphone.** Une montre exécute son propre processus indépendant sur son propre système d'exploitation - elle ne peut pas être simplement un mode d'interface de HYDRA-UMC-ANDROID-CONTROL, elle a besoin de son propre manifeste, sa propre compilation, et sa propre interface (bien plus contrainte) pour un statut en un coup d'œil/un E-STOP rapide.
+* **Pourquoi `minSdk 30` (Wear OS 3), inférieur au propre minSdk de l'application téléphone.** Cela cible délibérément la génération matérielle Wear OS 3+ actuelle, pas les anciens appareils Wear OS 2 - contrairement à HYDRA-UMC-ANDROID-CONTROL, qui supporte les téléphones plus anciens, une application montre compagnon a une base matérielle réaliste à supporter bien plus étroite.
+* **Pourquoi les motifs haptiques et le protocole de synchronisation arrivent avant la connexion WebSocket.** Définir les formes d'onde de vibration et les formes des messages que les deux côtés doivent s'accorder est du vrai travail Kotlin pur - inutile d'avoir un socket ouvert, un serveur appairé ou une montre physique pour l'écrire ou le tester. Ouvrir réellement cette connexion est la prochaine étape.
+* **Pourquoi la politique de reconnexion et le cache du dernier état connu sont leurs propres modules purs, et non du code intégré dans `WatchRelayTransport`.** Les deux sont des classes Kotlin réelles et découplées (`RelayRetryPolicy`, `LastKnownStateCache`) testables sur une simple JVM sans montre, émulateur, ni téléphone appairé - la même norme déjà établie par `HapticPatterns.kt`/`SyncMessage.kt`. `WatchRelayTransport` lui-même reste l'élément mince, nécessairement Android, qui planifie réellement une nouvelle tentative ou enregistre un message reçu, et non l'endroit où vit la logique mathématique de la politique sous-jacente.
+* **Pourquoi un état mis en cache périmé est signalé, et non masqué.** Masquer entièrement un ancien statut laisserait l'écran de la montre vide exactement quand la connexion au téléphone est instable - le véritable moment à risque. L'afficher clairement marqué "dernier connu - peut être obsolète" tient l'opérateur informé sans laisser passer une lecture vieille de plusieurs minutes pour une lecture en direct.
+* **Comment cela s'intègre dans le reste de l'écosystème.** Fait paire avec HYDRA-UMC-ANDROID-CONTROL et HYDRA-UMC-IOS-CONTROL comme compagnon au poignet, en un coup d'œil - pas un remplacement de l'un ou l'autre, une surface de statut rapide/E-STOP rapide.
+
+### MISES À JOUR SANS GOOGLE PLAY
+
+Ce projet n'est pas distribué via Google Play. Le chemin de mise à jour
+répétable est un APK GitHub Release installé via ADB :
+
+```bash
+# depuis la racine du projet, montre appairée et débogage sans fil activé
+update-from-github.bat    # Windows
+./update-from-github.sh   # Linux / macOS / WSL
+```
+
+Le script lit `releases/latest` sur GitHub, exige un tag stable
+`vMAJOR.MINOR.PATCH`, vérifie la version déjà installée, demande une
+confirmation explicite de l'opérateur, puis télécharge et invoque
+`adb install -r`. Il ne touche jamais la version du dépôt, le manifeste ou
+`CHANGELOG.md`. Une installation manuelle, au mieux (ouvrir l'APK téléchargé
+avec l'installeur de paquets directement sur la montre) est également
+documentée pour les appareils sans chemin ADB utilisable. Voir
+[docs/GITHUB_ADB_UPDATES.md](docs/GITHUB_ADB_UPDATES.md) pour la procédure
+complète, le nom exigé de l'APK de release, et la configuration de
+signature de release.
+
+`HYDRA-UMC-ANDROID-CONTROL` peut informer l'opérateur qu'une nouvelle
+version de la montre existe une fois le message de statut de version du
+compagnon câblé — c'est purement informatif et cela ne peut jamais
+installer quoi que ce soit sur la montre elle-même. Voir
+[docs/COMPANION_VERSION_PROTOCOL.md](docs/COMPANION_VERSION_PROTOCOL.md)
+pour cette forme de message.

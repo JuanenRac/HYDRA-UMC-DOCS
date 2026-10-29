@@ -1,0 +1,46 @@
+Richiede Go >= 1.21. Una vera pipeline di ingestione con API HTTP, non solo
+uno scheletro che compila.
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh -addr 127.0.0.1:8092 -datalake-url http://localhost:8095
+
+# Windows
+build.bat
+run.bat -addr 127.0.0.1:8092 -datalake-url http://localhost:8095
+```
+
+`build` non cambia mai la versione (solo `python tools/hydra_project_tool.py bump` la alza) e compila il modulo Go
+in `src/` in `build/telemetry-collector(.exe)`. `run` esegue il binario
+compilato, inoltrando qualsiasi flag, e inizia ad ascoltare traffico
+reale. `-datalake-url` punta i batch svuotati verso un'istanza reale e
+in esecuzione di HYDRA-UMC-DATALAKE (`POST /ingest`,
+`sink.DatalakeSink`) - se omesso, stampa invece i campioni svuotati su
+stdout (`sink.ConsoleSink`), utile per eseguire questo collector in modo
+autonomo:
+
+Per impostazione predefinita il collector ascolta solo su loopback e le sue rotte di ingestione sono aperte ai chiamanti locali. Per ascoltare su un indirizzo di rete gli si deve dare un token Bearer (`-token`, oppure `HYDRA_UMC_TELEMETRY_COLLECTOR_TOKEN`; almeno 16 caratteri): `POST /ingest/can` e `POST /ingest/ws` richiedono allora `Authorization: Bearer <token>` (`/stats` e `/metrics` restano aperte perché uno scraper locale non abbia bisogno di alcun segreto). Un `-addr` non loopback senza token viene rifiutato all'avvio a meno che non si passi `-allow-anonymous`. Il corpo di una richiesta è limitato a 1 MiB (`413` oltre) e il server HTTP applica timeout di lettura, scrittura e inattività.
+
+**Leggere i ponti via MQTT.** Con `-mqtt-url tcp://127.0.0.1:1883` (o `tls://broker:8883`, con `-mqtt-ca-file` per un'autorità privata) il collettore si iscrive anche a `hydra/bridges/+/state` e `hydra/bridges/+/availability` (`-mqtt-topics`) e trasforma ogni messaggio in un campione: `bridge_state` con ogni numero e ogni flag dello stato (un livello di annidamento) e un flag `machine_state.<valore>`, con l'`observed_at` del ponte come marca temporale, e `bridge_availability` con `online` 1 o 0. Uno stato trattenuto più vecchio di `-mqtt-max-age` (2 minuti per impostazione predefinita) è la memoria del broker, non una lettura, e viene saltato. Il nome utente viene da `-mqtt-username` o `HYDRA_UMC_TELEMETRY_MQTT_USER` e la password da `-mqtt-password-file` o `HYDRA_UMC_TELEMETRY_MQTT_PASSWORD`; le credenziali su una connessione in chiaro verso un'altra macchina sono rifiutate salvo con `-mqtt-allow-plaintext`. L'ingresso è spento per impostazione predefinita e `GET /stats` riporta connessione e conteggi sotto `mqtt`. Non ancora provato con il broker reale dell'ecosistema.
+
+```bash
+# Ingerire un campione di telemetria in stile WebSocket
+curl -X POST localhost:8092/ingest/ws \
+  -d '{"sourceId":"robot-1","kind":"motor_temp","timestamp":1700000000000,"fields":{"value":42.5}}'
+
+# Ingerire un frame CAN (8 byte, base64 - vedi src/telemetry/can.go per il formato)
+curl -X POST localhost:8092/ingest/can \
+  -d '{"arbitrationId":7,"data":"AQAAUEEAAAA="}'
+
+# Vedere cosa ha ingerito/svuotato/scartato il collector
+curl localhost:8092/stats
+```
+
+```bash
+cd src && go test ./...   # telemetry (round-trip CAN, validazione WS),
+                           # buffer (FIFO limitato, contropressione, requeue),
+                           # collector (il vero comportamento "non perdere
+                           # dati durante un'interruzione del sink"), e api
+                           # (round-trip HTTP reali via httptest)
+```

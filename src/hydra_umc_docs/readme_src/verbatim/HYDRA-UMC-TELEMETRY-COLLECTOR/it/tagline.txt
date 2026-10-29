@@ -1,0 +1,1 @@
+🚀 Nodo di ingestione ad alto throughput per log CAN e WebSocket

@@ -1,0 +1,1 @@
+🚀 Nœud d'ingestion à haut débit pour les journaux CAN et WebSocket

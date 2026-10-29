@@ -1,0 +1,1 @@
+🚀 Nodo de Ingesta de Alto Rendimiento para Logs de CAN y WebSocket

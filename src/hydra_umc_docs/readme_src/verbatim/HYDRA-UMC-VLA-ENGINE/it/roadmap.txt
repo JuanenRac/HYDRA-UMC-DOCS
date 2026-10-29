@@ -1,0 +1,12 @@
+### Stato Attuale e Prossimi Passi
+
+**Reale oggi:** la codifica/decodifica dei token di azione e la generazione di traiettoria (`action_tokens.py`, `trajectory.py`) - i passaggi "Token di azione" e "Generatore di traiettoria" del diagramma di flusso sopra - più un vero limite di integrazione HailoRT (`hailo_runtime.py`) pronto per un vero modello `.hef` e un modulo Hailo-10 non appena esisteranno. {tests} test e una CLI reale.
+
+**Ancora da fare, e bloccato da vero hardware/un vero modello:** eseguire davvero l'inferenza richiede un vero modello VLA `.hef` realmente compilato (OpenVLA/RT-2 quantizzato per Hailo-10 - nessun modello specifico ancora scelto) e un modulo Hailo-10 fisico collegato, entrambi blocchi reali e inevitabili che `hailo_runtime.py` non può rimuovere da solo - ma caricare e decodificare un modello, una volta che esisterà, non è più codice non scritto.
+
+### TABELLA DI MARCIA
+
+* **Fase 1:** Distribuzione del motore VLA e elaborazione dell'input multi-modale su Hailo-10.
+* **Fase 2:** Integrazione del pianificatore semantico con modelli comportamentali di sciame e memoria a lungo termine.
+* **Fase 3:** Esecuzione locale a bassa latenza dell'interfaccia vocale e cancellazione del rumore industriale.
+* **Fase 4:** Supporto per la generazione di azioni coordinate a doppio braccio e audit del processo decisionale autonomo.

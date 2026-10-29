@@ -1,0 +1,56 @@
+Python >= 3.10 が必要です。
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # .venv を作成し、パッケージを（editable モード、dev
+             # エクストラ付きで）インストールし、インポートを検証し、
+             # 実際のテストスイートを実行します
+./run.sh     # エントリポイントを実行します
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` はバージョンを変更しません（上げるのは `python tools/hydra_project_tool.py bump` だけです）。`run.sh`（素の呼び出し）
+の予期される出力：
+
+```text
+HYDRA-UMC-VLA-ENGINE v0.1.8
+Vision-Language-Action engine (Hailo-10) - translates camera frames and text instructions into robotic action sequences.
+```
+
+実際の例 —— アクションをトークンにエンコードし、デコードして戻し、短いアクションシーケンスを軌道に積分する：
+
+```bash
+./run.sh tokens encode --action "0.02,-0.03,0.01,0.05,-0.04,0.02,0.7"
+# 179,51,153,192,76,153,179
+
+./run.sh tokens decode --tokens "179,51,153,192,76,153,179"
+# 0.020117,-0.029883,0.009961,0.050391,-0.040234,0.019922,0.701172
+# （上記のエンコード入力とは一致しない — 256 ビンの離散化は設計上
+# 情報損失を伴い、decode はビンの中点を復元するのであって、元の値
+# そのものではない）
+
+echo '[[0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5], [0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 1.0]]' > actions.json
+./run.sh trajectory integrate --start "0,0,0,0,0,0" --actions actions.json
+# step 0: x=0.000000 y=0.000000 z=0.000000 roll=0.000000 pitch=0.000000 yaw=0.000000 gripper=0.000000
+# step 1: x=0.010000 y=0.000000 z=0.000000 roll=0.000000 pitch=0.000000 yaw=0.000000 gripper=0.500000
+# step 2: x=0.010000 y=0.010000 z=0.000000 roll=0.000000 pitch=0.000000 yaw=0.000000 gripper=1.000000
+```
+
+`status` は、実際の、正直なアクセラレータ/モデルの重みの可用性を報告します——偽の準備完了状態を返すことは決してありません：
+
+```text
+$ ./run.sh status
+accelerator (Hailo-10):    MISSING
+model weights (parent):    MISSING
+mode: no_accelerator - no Hailo-10 NPU device node on this machine - real inference cannot run here.
+```
+
+### 🩺 トラブルシューティング
+
+* **`python: command not found` / ビルドがステップ 1 で失敗する。** `PATH` 上に Python >= 3.10 が必要です。Windows では [python.org](https://python.org) からインストールし、セットアップ中に「Add to PATH」がチェックされていることを確認してください。Linux/macOS では通常 `python3` という名前が使われます。
+* **`build.sh` が venv をアクティブ化できない。** `python3 -m venv .venv` は、プラットフォームごとに異なる場所にアクティベートスクリプトを配置します：Linux/macOS では `.venv/bin/activate`、Windows（Git Bash から使用される Windows Python venv でも同様）では `.venv/Scripts/activate`。`build.sh` は既に両方のパスをチェックしています——それでも失敗する場合は、`.venv/` を削除して `./build.sh` を再実行し、ゼロから再構築してください。
+* **`pip install -e .` が失敗する。** 通常は `.venv/` が古くなっていることが原因です。`.venv/` フォルダを削除して `./build.sh`/`build.bat` を再実行し、再作成してください。
+* **`import OK` が一度も表示されない。** `python -c "import hydra_umc_vla_engine"` 自体が失敗したことを意味します——venv がアクティブな状態で再実行し、実際のトレースバックを確認してください。

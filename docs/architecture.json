@@ -1,0 +1,181 @@
+{
+  "repo": "HYDRA-UMC-DOCS",
+  "ecosystem": "hydra",
+  "tagline": "The memory of the ecosystem: documents, and the tools that compare every repository side by side.",
+  "description": "HYDRA-UMC-DOCS reads the manifests and READMEs of the sibling repositories and writes the catalogue, the At a glance tables, the banner and the eight READMEs, and checks claims and publications.",
+  "columns": [
+    "WHERE IT RUNS",
+    "THIS REPOSITORY",
+    "WHAT IT READS"
+  ],
+  "nodes": [
+    {
+      "id": "ci",
+      "column": 0,
+      "level": "tested",
+      "title": "Nightly workflow",
+      "lines": [
+        "runs every check against",
+        "the sibling repositories"
+      ],
+      "code": [
+        ".github/workflows/nightly.yml"
+      ]
+    },
+    {
+      "id": "man",
+      "column": 0,
+      "level": "tested",
+      "title": "Maintainers",
+      "lines": [
+        "run the same checks",
+        "with tools/check_all.sh"
+      ],
+      "code": [
+        "tools/check_all.sh"
+      ]
+    },
+    {
+      "id": "sib",
+      "column": 2,
+      "level": "contract",
+      "title": "Sibling repositories",
+      "lines": [
+        "manifests, READMEs,",
+        "changelogs, git history"
+      ]
+    },
+    {
+      "id": "dat",
+      "column": 2,
+      "level": "config",
+      "title": "data/",
+      "lines": [
+        "glance.json and the",
+        "reviewed claims"
+      ]
+    },
+    {
+      "id": "gla",
+      "column": 1,
+      "level": "tested",
+      "title": "glance + status",
+      "lines": [
+        "At a glance and Project",
+        "status tables"
+      ],
+      "code": [
+        "src/hydra_umc_docs/glance.py",
+        "src/hydra_umc_docs/status.py"
+      ]
+    },
+    {
+      "id": "rea",
+      "column": 1,
+      "level": "tested",
+      "title": "readme_universal",
+      "lines": [
+        "writes the eight READMEs",
+        "of each repository"
+      ],
+      "code": [
+        "src/hydra_umc_docs/readme_universal.py"
+      ]
+    },
+    {
+      "id": "cla",
+      "column": 1,
+      "level": "tested",
+      "title": "claims.py",
+      "lines": [
+        "a risk word needs a",
+        "status or a review"
+      ],
+      "code": [
+        "src/hydra_umc_docs/claims.py"
+      ]
+    },
+    {
+      "id": "pub",
+      "column": 1,
+      "level": "tested",
+      "title": "publication.py",
+      "lines": [
+        "nothing private leaves",
+        "with a publication"
+      ],
+      "code": [
+        "src/hydra_umc_docs/publication.py"
+      ]
+    },
+    {
+      "id": "cat",
+      "column": 1,
+      "level": "tested",
+      "title": "catalog.py",
+      "lines": [
+        "the project catalogue",
+        "from the manifests"
+      ],
+      "code": [
+        "src/hydra_umc_docs/catalog.py"
+      ]
+    },
+    {
+      "id": "bra",
+      "column": 1,
+      "level": "tested",
+      "title": "brand.py",
+      "lines": [
+        "banner, icon and the",
+        "map of the families"
+      ],
+      "code": [
+        "src/hydra_umc_docs/brand.py"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "ci",
+      "to": "gla",
+      "level": "tested"
+    },
+    {
+      "from": "man",
+      "to": "gla",
+      "level": "tested"
+    },
+    {
+      "from": "gla",
+      "to": "rea",
+      "level": "tested"
+    },
+    {
+      "from": "rea",
+      "to": "pub",
+      "level": "tested"
+    },
+    {
+      "from": "cla",
+      "to": "pub",
+      "level": "tested"
+    },
+    {
+      "from": "cat",
+      "to": "bra",
+      "level": "tested"
+    },
+    {
+      "from": "gla",
+      "to": "sib",
+      "level": "contract"
+    },
+    {
+      "from": "dat",
+      "to": "cla",
+      "level": "config"
+    }
+  ],
+  "footer": "Tried on a computer next to the sibling repositories; nothing here is a hardware test."
+}

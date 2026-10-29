@@ -1,0 +1,22 @@
+### INTENDED PIPELINE ARCHITECTURE
+
+The diagram below is the target data flow this project is being built towards - the *shape* of it (which element feeds which, the `Tee` split) is fixed by `pipeline.py` and generated as real `gst-launch-1.0` syntax today, but nothing in this diagram executes yet: that needs the real V4L2/GStreamer/Hailo-8 runtime and physical USB cameras.
+
+### ADVANCED TECHNICAL INFORMATION
+
+### Why no `hardware/`, `firmware/`, `os/` or `models/` here
+
+CM5 + Hailo-8 is off-the-shelf hardware with no board of its own to design, unlike the custom STM32H745/STM32G474 boards inside [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) - so no `hardware/`/`firmware/` folder exists in any of the 5 Vision AI Node projects. `os/` (the shared HydraOS image) and `models/` (the compiled `.hef` files actually served to the NPU) live only in the integration parent, [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE), since it is the process that owns the CM5 host image and the Hailo-8 device handle - carrying separate copies here would just be extra state to keep in sync for no benefit.
+
+### Planned pipeline shape
+
+The `Tee` element in the diagram above is the key design decision already made ahead of implementation: captured/pre-processed frames are meant to fan out to two consumers at once - the Hailo-8 inference path (feeding [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE)) and an optional local display/RTSP-WebRTC stream for human monitoring - without the monitoring path adding latency to the inference path.
+
+### Design decisions already made
+
+* **Version read from installed package metadata, not hardcoded** - `main.py` calls `importlib.metadata.version("hydra-umc-vision-streamer")` instead of a second `__version__` string, so `bump_version.py` only ever has one place to edit and the two can never drift apart.
+
+* **MediaMTX YAML is hand-rolled, not built on PyYAML** - `mediamtx_config.py`'s output shape (a flat `paths:` map, one `source: publisher` entry per camera) is simple and fixed enough that a real dependency isn't justified yet. Revisit if per-camera config grows nested/list-valued fields.
+* **The pipeline and MediaMTX config must agree on one RTSP path per camera** - `rtsp_url_for()` is the single place that derives it (from the camera name), so `config gst` and `config mediamtx` can never disagree about where a camera's stream lives.
+* **`FrameBuffer` drops the oldest frame, not the newest, once full.** Live video has no use for a growing backlog of stale frames - the freshest frame is always the useful one. A queue that blocked producers instead would risk the real capture thread itself, and a queue that just kept growing would risk exactly the unbounded-memory failure this gate exists to prevent.
+* **`reconnect.py` never sleeps or touches a real socket itself.** `ConnectionTracker` only tracks state and returns how long a caller should wait - that split is what makes the entire backoff schedule (including giving up after `max_attempts`) exactly reproducible in a test, with no real clock or real camera link involved.

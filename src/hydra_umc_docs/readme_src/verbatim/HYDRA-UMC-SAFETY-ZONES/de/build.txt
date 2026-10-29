@@ -1,0 +1,115 @@
+### Voraussetzungen
+
+* **Python 3.10 oder neuer** im `PATH` (die Skripte probieren `python3`, dann `python`).
+* Keine Sicherheits-/Vision-Laufzeitabhängigkeit ist bisher erforderlich - **null Drittanbieter-Laufzeitabhängigkeiten** in dieser Phase (`dependencies = []` in `pyproject.toml`); `pytest` ist ein reines Dev-Extra, das ausschließlich für die echte Testsuite verwendet wird.
+* Einige Dutzend MB Festplattenplatz für eine lokale virtuelle Umgebung unter `.venv/`.
+
+### Schritt für Schritt
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **Versionsprüfung** - liest und zeigt die Projektversion an; Bauen ändert sie nie (nur `python tools/hydra_project_tool.py bump` erhöht sie).
+2. **Virtuelle Umgebung** - erstellt `.venv/`, falls nicht vorhanden; verwendet es sonst weiter.
+3. **Editierbare Installation (mit Dev-Extras)** - `pip install -e ".[dev]"`, sodass Änderungen unter `src/` sofort wirken, installiert `pytest` und registriert den Konsolen-Einstiegspunkt `hydra-umc-safety-zones`.
+4. **Compile-Check** - `python -m compileall -q src` kompiliert jede Datei unter `src/` zu Bytecode.
+5. **Echte Testsuite** - `pytest tests/` führt alle {tests} Tests aus.
+
+`set -euo pipefail` stoppt das Skript beim ersten fehlschlagenden Schritt; das Fenster bleibt geöffnet (`Press Enter to close...`), wenn es per Doppelklick statt aus einem bereits geöffneten Terminal gestartet wurde.
+
+```bash
+./run.sh
+```
+
+Sucht den Interpreter innerhalb von `.venv` und führt `python -m hydra_umc_safety_zones.main` aus, wobei alle Argumente weitergeleitet werden.
+
+Der argumentlose Aufruf gibt Name + Version + Rolle aus:
+
+```text
+HYDRA-UMC-SAFETY-ZONES v0.1.5
+Real-time 3D intrusion detection and E-STOP orchestration for robotic safe-working areas.
+```
+
+Der echte `check`-Subbefehl braucht eine Zonen- und eine Erkennungsdatei, beide einfaches JSON, sowie optional eine Beobachtungsstatus-Datei. `calibration` ist in der Zonendatei optional, und `--observation` ist auf der Kommandozeile optional - siehe unten, was ohne sie passiert:
+
+```json
+// zones.json
+{
+  "calibration": {"version": "cal-1", "source": "manual", "calibrated_at": "2024-01-15", "max_age_days": 30, "calibrated_by": "A. Operator"},
+  "zones": [
+    {"id": "warn1", "level": "warning", "min": {"x": 0, "y": 0, "z": 0}, "max": {"x": 5, "y": 5, "z": 5}},
+    {"id": "danger1", "level": "danger", "min": {"x": 0, "y": 0, "z": 0}, "max": {"x": 1, "y": 1, "z": 1}}
+  ]
+}
+```
+
+```json
+// detections.json
+{"objects": [{"id": "op1", "position": {"x": 0.5, "y": 0.5, "z": 0.5}}]}
+```
+
+```json
+// observation.json - echte Evidenz, dass die obigen Erkennungen wirklich von
+// einem aktiven, kürzlich aktualisierten Beobachter stammen
+{"active": true, "observedAt": "2024-01-15T12:00:00Z", "maxAgeSeconds": 5}
+```
+
+Die Daten in diesen Beispielen sind nur Beispiele: `calibrated_at` muss für `max_age_days` aktuell genug sein, und `observedAt` muss innerhalb von `maxAgeSeconds` vor jetzt liegen (mit Zeitzone, etwa einem abschließenden `Z`); mit den gezeigten Daten ist das Ergebnis heute `INHIBITED`, nicht das unten gezeigte `DANGER`.
+
+```bash
+./run.sh check --zones zones.json --detections detections.json --observation observation.json
+```
+
+```text
+SAFETY STATE: DANGER - object(s) ['op1'] breached a danger zone
+BREACH: object 'op1' inside warning zone 'warn1'
+BREACH: object 'op1' inside danger zone 'danger1'
+E-STOP REQUESTED: object 'op1' breached danger zone 'danger1' (not asserted - see estop.py)
+```
+
+Beendet sich mit `2` (Danger, E-STOP angefordert), `1` (nur Warning-Verletzung), `0` (keine Verletzung, Kalibrierung gültig, Beobachter aktiv und frisch) oder `3` (**Inhibited** - Kalibrierung fehlt/abgelaufen, oder Beobachter fehlt/deaktiviert/veraltet/fehlerhaft, geprüft vor jeglicher Verletzungslogik). Echtes Beispiel des Fail-Safe-Pfads - dieselbe `detections.json` von oben, aber `zones.json` ohne jeglichen `"calibration"`-Schlüssel:
+
+```bash
+./run.sh check --zones zones_no_calibration.json --detections detections.json --observation observation.json
+```
+
+```text
+SAFETY STATE: INHIBITED - no calibration metadata present - zone geometry cannot be trusted
+```
+
+Beendet sich mit `3` - beachte, dass es überhaupt keine `BREACH`/`E-STOP`-Ausgabe gibt, obwohl `op1` innerhalb beider Zonen liegt: eine nicht vertrauenswürdige Zonenmenge erreicht den Verletzungsprüfungsschritt nie. Das vollständige Weglassen von `--observation` schlägt genauso sicher fehl, selbst mit frischer Kalibrierung und keinem Objekt in der Nähe einer Zone:
+
+```bash
+./run.sh check --zones zones.json --detections detections_clear.json
+```
+
+```text
+SAFETY STATE: INHIBITED - no observation status provided - cannot confirm the supplied detections reflect a real, active observer
+```
+
+```bat
+:: Windows - gleiche Schritte, Batch-Syntax
+build.bat
+run.bat
+run.bat check --zones zones.json --detections detections.json --observation observation.json
+```
+
+Dieselbe `check`-Logik ist auch über HTTP erreichbar, für Aufrufer, die nicht die CLI sind - `zones`/`detections`/`observation` reisen im JSON-Body statt als Dateipfad:
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8108
+# in einem anderen Terminal:
+curl -s -X POST http://127.0.0.1:8108/check -d '{"zones": {...}, "detections": {...}, "observation": {...}}'
+```
+
+Siehe [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) für die vollständige Befehls-/Flag-/Exit-Code-Referenz, einschließlich jedes echten Zustands (`READY`/`WARNING`/`DANGER`/`INHIBITED`) aus einem echten Lauf.
+
+### Fehlerbehebung
+
+* **`python`/`python3` nicht gefunden** - Python 3.10+ installieren und sicherstellen, dass es im `PATH` liegt.
+* **`compileall` schlägt fehl** - ein echter Syntaxfehler wurde unter `src/` eingeführt; der Build stoppt absichtlich, ohne die Installation anzufassen.
+* **"No `.venv` found" von `run.sh`/`run.bat`** - `build.sh`/`build.bat` vorher mindestens einmal ausführen.
+* **Veraltete editierbare Installation** - `.venv/` löschen und neu bauen; selten nötig.
+* **`check` beendet sich mit einem Code ungleich null** - das ist echtes, korrektes Verhalten, kein Fehlschlag: `1` bedeutet, dass eine reine Warning-Verletzung gefunden wurde, `2` bedeutet, dass eine Danger-Verletzung einen E-STOP angefordert hat, `3` bedeutet, dass die Kalibrierung der Zonenmenge fehlt/abgelaufen ist oder der Beobachterstatus fehlt/deaktiviert/veraltet/fehlerhaft ist (Fail-Safe, geprüft bevor jegliche Verletzungslogik ausgeführt wird). Nur ein Python-Traceback oder ein Fehler durch fehlerhaftes JSON ist ein echter Bug.

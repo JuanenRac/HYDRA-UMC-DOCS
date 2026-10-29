@@ -1,0 +1,4 @@
+* **Fase 1:** Despliegue del motor VLA y procesamiento de entrada multi-modal en Hailo-10.
+* **Fase 2:** Integración del planificador semántico con modelos de comportamiento de enjambre y memoria a largo plazo.
+* **Fase 3:** Ejecución local de baja latencia de Voice UI y cancelación de ruido industrial.
+* **Fase 4:** Coordinación multi-agente para descomposición de objetivos compartidos y optimización de recuperación semántica.

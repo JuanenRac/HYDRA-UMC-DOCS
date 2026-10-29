@@ -1,0 +1,71 @@
+Erfordert Python >= 3.10.
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # erstellt .venv, installiert das Paket (editable), prüft den Import
+./run.sh     # führt den Einstiegspunkt aus
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` ändern die Version nie (nur `python tools/hydra_project_tool.py bump` erhöht sie) und führen die echte Testsuite
+aus (`pytest tests/`). Erwartete Ausgabe eines `run.sh` ohne Argumente:
+
+```text
+HYDRA-UMC-SEMANTIC-PLANNER v0.1.4
+Semantic Planner (Hailo-10) - decomposes high-level goals into robotic primitives and recovers from execution failures.
+```
+
+Die echten Subcommands zerlegen ein Ziel oder schlagen eine
+Wiederherstellung vor:
+
+```bash
+./run.sh decompose "assemble the pcb"
+./run.sh recover --component gripper --error-code GRIP_LOST_SEAL --detail "vacuum gripper lost seal"
+
+# Windows
+run.bat decompose "assemble the pcb"
+run.bat recover --component gripper --error-code GRIP_LOST_SEAL --detail "vacuum gripper lost seal"
+```
+
+Jeder echte zerlegte Plan wird vor der Ausgabe gegen die echten
+Präconditions von `validation.py` geprüft. Die eigenen Vorlagen von
+`decompose.py` bestehen immer; ein fehlgeschlagener Plan würde
+stattdessen abgelehnt:
+
+```text
+Plan for: "broken" FAILED precondition validation:
+  step 1 (GRIP): missing required param 'target'
+```
+
+Dieselbe `decompose`/`recover`-Logik ist auch über HTTP erreichbar, für Aufrufer, die nicht die CLI sind:
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8109
+# in einem anderen Terminal:
+curl -s -X POST http://127.0.0.1:8109/decompose -d '{"goal": "assemble the pcb"}'
+```
+
+Siehe [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) für die vollständige Befehls-/Flag-/Exit-Code-Referenz, und [`docs/RECOVERY_CONTRACT.md`](docs/RECOVERY_CONTRACT.md) für das öffentliche Vokabular der Recovery-Fehlercodes.
+
+### 🩺 Fehlerbehebung
+
+* **`python: Befehl nicht gefunden` / der Build schlägt bei Schritt 1
+  fehl.** Erfordert Python >= 3.10 im `PATH`. Unter Windows von
+  [python.org](https://python.org) installieren und bei der Installation
+  "Add to PATH" ankreuzen; unter Linux/macOS heißt es meist `python3`.
+* **`build.sh` kann das venv nicht aktivieren.** `python3 -m venv .venv`
+  legt das Aktivierungsskript je nach Plattform an anderer Stelle ab:
+  `.venv/bin/activate` unter Linux/macOS, `.venv/Scripts/activate` unter
+  Windows (auch bei einem Windows-Python-venv, das aus Git Bash heraus
+  verwendet wird). `build.sh` prüft bereits beide Pfade - schlägt es
+  weiterhin fehl, `.venv/` löschen und `./build.sh` erneut ausführen, um
+  es von Grund auf neu zu erstellen.
+* **`pip install -e .` schlägt fehl.** Meist wegen eines veralteten
+  `.venv/`. Den Ordner `.venv/` löschen und `./build.sh`/`build.bat`
+  erneut ausführen, um ihn neu zu erstellen.
+* **`import OK` erscheint nie.** Bedeutet, dass `python -c "import
+  hydra_umc_semantic_planner"` selbst fehlgeschlagen ist - mit aktivem
+  venv erneut ausführen, um den echten Traceback zu sehen.

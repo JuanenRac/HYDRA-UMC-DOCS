@@ -1,0 +1,26 @@
+```bash
+chmod +x build.sh   # 初回のみ
+./build.sh          # .venv を作成、pip install -e .、すべてをコンパイルチェック
+./run.sh                              # ウィンドウ付き GUI（デフォルト）
+./run.sh --cli status                 # 何がインストールされているか、ローカル対 GitHub のバージョン
+./run.sh --cli status --offline       # 同上、GitHub チェックをスキップ
+./run.sh --cli install <PROJECT-NAME> # まだインストールされていない 1 プロジェクトをクローン + ビルド
+./run.sh --cli update  <PROJECT-NAME> # 既にインストールされている 1 プロジェクトをプル + 再ビルド
+./run.sh --cli prune-backups --keep 2  # 古い <名前>.backup-xxxxxxxx フォルダーを削除（各プロジェクトで新しい 2 つを残す）
+```
+
+Windows では：先に `build.bat`、その後 `run.bat`（GUI）/ `run.bat
+--cli status` / `run.bat --cli install <name>` / `run.bat --cli
+update <name>`。
+
+優先 GUI にはオプションの Qt ランタイムが必要です（`pip install -e ".[gui]"`;
+`build.bat`/`build.sh` は既にこれを導入します）。`--cli` には GUI 依存がなく、
+ヘッドレス CM5 の正しい入口です。Qt がない場合、古い Tkinter ウィンドウは
+互換フォールバックとしてのみ残ります。
+
+**トラブルシューティング**
+
+- `status` があるプロジェクトのローカルまたは GitHub のバージョンに `?` を表示する：バージョンファイルは存在しますが、そのプロジェクト自身の `hydra-umc.project.json` の `native_version` が、実際にバージョンがある場所と一致しなくなっています——そのプロジェクトのマニフェストを修正してください。
+- `status` が GitHub についてエラーを表示せずに `-` を表示する：（`--offline` なしで）`status` を実行してください——`-` は GitHub チェックが完全にスキップされた場合にのみ表示されます。
+- `install`/`update` が "No non-versioning build-test.sh/.bat found" で失敗する：そのプロジェクトにはまだ `build-test.sh`/`build-test.bat` がありません——エコシステム標準のものを追加してください（バージョンを上げずに検証するものである必要があります）。
+- `git merge --ff-only failed`：ローカルのチェックアウトの履歴が分岐しているか、ローカルコミットがあります（メッセージで示されます）——`update` を再試行する前に、（そのプロジェクト自身のディレクトリで `git status`/`git log` を実行して）それらを移動または破棄してください。追跡ファイルの未コミットの変更は最初に拒否されます。本ツールがチェックアウトを強制リセットすることはありません。

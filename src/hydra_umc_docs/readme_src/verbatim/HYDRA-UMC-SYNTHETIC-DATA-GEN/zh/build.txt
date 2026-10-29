@@ -1,0 +1,64 @@
+需要 Python 3.10+。
+
+```bash
+# Linux / macOS
+./build.sh   # ，创建 .venv，以可编辑模式（含 dev 附加
+             # 依赖）安装该包，运行真实测试套件，对整个 src/ 进行编译检查
+./run.sh     # 从 .venv 运行入口点，打印名称 + 版本 + 角色
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升），使用 `python -m compileall` 对源代码进行编译检查，然后
+运行真实测试套件（`pytest tests/`）。
+
+真实的 `generate` 子命令会将真实数据集写入磁盘：
+
+```bash
+./run.sh generate --out dataset/ --count 20 --components 6 --defect-rate 0.3 --seed 42 --format both
+
+# Windows
+run.bat generate --out dataset\ --count 20 --components 6 --defect-rate 0.3 --seed 42 --format both
+```
+
+`--jobs N` 用 N 个进程渲染场景(默认 1)：每个场景都有由种子和其序号初始化的独立随机数生成器，所以无论 N 是多少数据集都相同。清单现在记录类别列表(`classes`)及其哈希(`classes_sha256`，即 `classes.txt` 的 sha256)，注册用该数据集训练的模型的人可以核对类别顺序。`verify --out dataset/` 会回读数据集文件夹：图像对照清单的校验和，YOLO 标签(五个字段、已知的类别 ID、全部在 [0, 1] 内)，COCO 文件(ID 唯一、框在图像内)，以及标签数量对照清单；`generate` 对自己的输出做同样的检查。BMP 渲染器按切片而不是逐像素绘制(字节完全相同，大图上快得多)。已测试；DETECTION-HEF 一侧用于比较该哈希的检查尚不存在。
+
+根据 `--format`，将真实的 BMP 图像写入 `dataset/images/`，真实的 YOLO
+标注写入 `dataset/labels/` + `dataset/classes.txt`，和/或将真实的
+`dataset/annotations.json`（COCO 格式）写入磁盘。给定 `--seed` 可使数据
+集实现逐字节可复现。
+
+参数会做范围检查（`--count` 1..10000、`--width`/`--height` 16..4096、`--components` 1..1000、`--defect-rate` 0..1），整个数据集的图像上限为 4 GiB：预计大小超过该上限的命令会在写入任何内容之前以退出码 2 被拒绝，因此一个笔误不会把运行它的机器的磁盘写满。
+
+每次运行还会写入一个真实的 `dataset/manifest.json`，并验证自身的输出：
+
+```
+Generated 20 scene(s) -> dataset/images
+Total labeled components (incl. defects): 150
+Annotations exported as: both
+Reproducible seed: yes (seed=42)
+Manifest written -> dataset/manifest.json
+Validation: OK (scene bounds, BMP integrity, label distribution)
+```
+
+```json
+{
+  "seed": 42,
+  "reproducible": true,
+  "count": 20,
+  "scenes": [
+    { "image": "scene_0000.bmp", "num_components": 7,
+      "label_counts": {"bracket": 1, "bolt": 2, "gear": 2, "defect": 1, "connector": 1},
+      "sha256": "2301c6974673d9f6a408d7a4b746d236d0ec98b535064884b7a3929645a8f2eb" }
+  ],
+  "validation_issues": []
+}
+```
+
+如果验证发现真实问题（超出边界的组件、被截断/损坏的 BMP 文件，或缺陷率
+与 `--defect-rate` 出现严重偏离），`generate` 会以退出码 `1` 结束，并
+列出每一个问题，而不是悄悄交付一个有缺陷的数据集。

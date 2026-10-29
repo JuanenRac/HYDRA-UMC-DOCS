@@ -1,0 +1,27 @@
+```bash
+chmod +x build.sh   # una tantum
+./build.sh          # crea .venv, pip install -e ., compile-check di tutto
+./run.sh                               # GUI con finestra (predefinita)
+./run.sh --cli status                  # cosa è installato, versione locale vs. GitHub
+./run.sh --cli status --offline        # lo stesso, senza controllare GitHub
+./run.sh --cli install <NOME-PROGETTO> # clona + compila un progetto non ancora installato
+./run.sh --cli update  <NOME-PROGETTO> # aggiorna + ricompila un progetto già installato
+./run.sh --cli prune-backups --keep 2  # rimuove le vecchie cartelle <nome>.backup-xxxxxxxx (mantiene le 2 più recenti di ciascuna)
+```
+
+Su Windows: `build.bat`, poi `run.bat` (GUI) / `run.bat --cli status` /
+`run.bat --cli install <nome>` / `run.bat --cli update <nome>`.
+
+La GUI preferita richiede il runtime Qt opzionale (`pip install -e ".[gui]"`;
+`build.bat`/`build.sh` lo installano già). `--cli` non ha dipendenze GUI ed è
+l'ingresso corretto per una CM5 headless. Senza Qt, la vecchia finestra
+Tkinter resta solo un fallback di compatibilità.
+
+**Risoluzione dei problemi**
+
+- `status` mostra `?` per la versione locale o GitHub di un progetto: il suo file di versione esiste, ma la voce `native_version` del `hydra-umc.project.json` di quel progetto non corrisponde più a dove si trova davvero la sua versione - correggi il manifest di quel progetto.
+- `status` mostra `-` per GitHub senza alcun errore mostrato: esegui
+  `status` (senza `--offline`) - `-` appare solo quando il controllo
+  GitHub è stato saltato del tutto.
+- `install`/`update` fallisce con "No non-versioning build-test.sh/.bat found": quel progetto non ha ancora un `build-test.sh`/`build-test.bat` - aggiungigli quello standard dell'ecosistema (deve verificare senza incrementare alcuna versione).
+- `git merge --ff-only failed`: il checkout locale ha una cronologia divergente o commit locali (il messaggio li nomina) - spostali o scartali (`git status`/`git log` nella directory di quel progetto) prima di riprovare `update`. Le modifiche non committate ai file tracciati vengono rifiutate subito. Questo strumento non forza mai il reset di un checkout.

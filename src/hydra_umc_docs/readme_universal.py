@@ -134,6 +134,9 @@ def render(repo: Path, lg: str, entry: dict) -> str:
     bodies = {key: text.strip() for key, text in body.items() if text and text.strip()}
     present = [s for s, _ in SECTIONS if s in ALWAYS or s in bodies]
     name = repo.name
+    # a source that has no prose files (the documentation hub) gives its tagline and its honesty paragraph itself
+    tagline = source.TAGLINE(lg, ctx) if hasattr(source, "TAGLINE") else ctx.v(lg, "tagline")
+    honesty = source.HONESTY(lg, ctx) if hasattr(source, "HONESTY") else ctx.v(lg, "honesty")
     badges = [b for b in source.BADGES if b[0] not in ("Tests", "Version", "Maturity")]
     badges.append(("Tests", f"{ctx.tests}%20passing", "2ea44f"))
     badges.append(("Version", ctx.version, "0f6cbd"))
@@ -156,7 +159,7 @@ GPL-3.0-or-later - see LICENSE
 
 <p align="center">{bar}</p>
 
-### {ctx.v(lg, 'tagline')}
+### {tagline}
 
 <p align="center">
 {badge_html}
@@ -164,7 +167,7 @@ GPL-3.0-or-later - see LICENSE
 
 ---
 
-{ctx.v(lg, 'honesty')}
+{honesty}
 
 ---
 """]

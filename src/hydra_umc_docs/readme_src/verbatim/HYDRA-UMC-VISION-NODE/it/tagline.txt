@@ -1,0 +1,1 @@
+🧠 Nodo IA Edge per Percezione ad Alta Velocità (Hailo-8 + Raspberry Pi CM5)

@@ -1,0 +1,16 @@
+**今天已实现的内容：** 真实的警告/危险区域定义与真实的越界检查
+（`geometry.py`/`zones.py`/`breach.py`）、在任何越界逻辑之前就安全故障切换
+到 `INHIBITED` 的真实校准新鲜度强制检查（`calibration.py`/`safety_state.py`）、
+一个在设计上就恪守检测与执行边界的真实 E-STOP*请求*流水线（`estop.py`）、
+一个基于区域/检测 JSON 文件的真实 `check` CLI 子命令，以及 {tests} 个通过的
+测试——完整的真实构建/运行输出见 [`CHANGELOG.md`](CHANGELOG.md)。
+
+**仍待完成的内容（顺序不分先后，无既定时间表）：**
+
+* 基于 Hailo-8 空间分割的真实 3D 占用地图，用于真正产生 `check` 目前作为
+  JSON 输入所期望的检测对象位置。
+* 机器人自身结构的动态自遮挡屏蔽。
+* 面向 [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) 的、实现
+  `EStopRequester` 的真实 CAN 传输——`estop.py` 已经定义了真实实现需要满足
+  的接口。
+* 任何真正的安全认证工作（上方 ISO 13849-1 徽章表达的是目标，而非已完成的认证）。

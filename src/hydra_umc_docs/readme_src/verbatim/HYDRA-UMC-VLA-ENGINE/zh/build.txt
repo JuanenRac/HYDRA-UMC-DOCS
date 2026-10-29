@@ -1,0 +1,53 @@
+需要 Python >= 3.10。
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # 创建 .venv，安装该包（可编辑模式，含 dev 附加项），验证导入，
+             # 运行真实的测试套件
+./run.sh     # 运行入口点
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升）。`run.sh`（裸调用）的预期输出：
+
+```text
+HYDRA-UMC-VLA-ENGINE v0.1.8
+Vision-Language-Action engine (Hailo-10) - translates camera frames and text instructions into robotic action sequences.
+```
+
+真实示例——将一个动作编码为令牌，再解码回来，并将一小段动作序列积分为一条轨迹：
+
+```bash
+./run.sh tokens encode --action "0.02,-0.03,0.01,0.05,-0.04,0.02,0.7"
+# 179,51,153,192,76,153,179
+
+./run.sh tokens decode --tokens "179,51,153,192,76,153,179"
+# 0.020117,-0.029883,0.009961,0.050391,-0.040234,0.019922,0.701172
+# （与上面 encode 的输入并不完全相同——256 个分箱的离散化在设计上是
+# 有损的，decode 恢复的是该分箱的中点值，而不是原始的精确值）
+
+echo '[[0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5], [0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 1.0]]' > actions.json
+./run.sh trajectory integrate --start "0,0,0,0,0,0" --actions actions.json
+# step 0: x=0.000000 y=0.000000 z=0.000000 roll=0.000000 pitch=0.000000 yaw=0.000000 gripper=0.000000
+# step 1: x=0.010000 y=0.000000 z=0.000000 roll=0.000000 pitch=0.000000 yaw=0.000000 gripper=0.500000
+# step 2: x=0.010000 y=0.010000 z=0.000000 roll=0.000000 pitch=0.000000 yaw=0.000000 gripper=1.000000
+```
+
+`status` 报告真实、诚实的加速器/模型权重可用性——绝不是虚假的就绪状态：
+
+```text
+$ ./run.sh status
+accelerator (Hailo-10):    MISSING
+model weights (parent):    MISSING
+mode: no_accelerator - no Hailo-10 NPU device node on this machine - real inference cannot run here.
+```
+
+### 🩺 故障排查
+
+* **`python: command not found` / 构建在第 1 步失败。** 需要 `PATH` 中存在 Python >= 3.10。在 Windows 上，从 [python.org](https://python.org) 安装，并确保安装过程中勾选了"Add to PATH"；`python3` 是 Linux/macOS 上的常见命令名。
+* **`build.sh` 无法激活 venv。** `python3 -m venv .venv` 在不同平台上生成的激活脚本路径不同：Linux/macOS 上是 `.venv/bin/activate`，Windows（从 Git Bash 使用的 Windows Python venv 也是如此）上是 `.venv/Scripts/activate`。`build.sh` 已经检查了这两个路径——如果仍然失败，删除 `.venv/` 并重新运行 `./build.sh` 从头重建。
+* **`pip install -e .` 失败。** 通常是 `.venv/` 已过期。删除 `.venv/` 文件夹并重新运行 `./build.sh`/`build.bat` 重新创建它。
+* **`import OK` 从未打印。** 意味着 `python -c "import hydra_umc_vla_engine"` 本身失败了——在激活 venv 的情况下重新运行以查看真实的回溯信息。

@@ -1,0 +1,53 @@
+### ARQUITECTURA Y DECISIONES DE DISEÑO
+
+Este repositorio es un **hijo** de la familia Cognitive AI Node - su
+padre, [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+posee la imagen HydraOS compartida y los pesos de modelos cuantizados, y
+conecta este servicio en su `docker-compose.yml` junto a sus tres
+hermanos (Voice-UI, Semantic-Planner, Docs-QA):
+
+* **Por qué este hijo no tiene hardware/firmware/`os/`/`models/`
+  propios.** Corre por completo sobre el módulo CM5 + Hailo-10 M.2 que ya
+  posee el padre - centralizar los pesos de modelos y la imagen HydraOS
+  en un solo lugar evita cuatro copias divergentes de varios gigabytes
+  dentro de la familia.
+* **Por qué una estructura `src/`.** Mantiene el paquete instalable
+  (`hydra_umc_vla_engine`) separado del tooling en la raíz del repo
+  (`bump_version.py`), igual que el resto de proyectos Python del
+  ecosistema.
+* **Por qué la tokenización de acciones llega antes que la inferencia del modelo.**
+  Convertir una acción continua en tokens discretos (y viceversa) es
+  matemática fija definida por los límites del espacio de acción y el
+  tamaño del vocabulario - no necesita modelo VLA ni NPU Hailo-10 para
+  escribirse ni testearse, así que v0 entrega esa pieza (`action_tokens.py`,
+  `trajectory.py`) primero. La inferencia VLA real necesita los pesos del
+  modelo y el hardware Hailo-10 que este entorno no tiene, y llega después.
+* **Por qué `hailo_runtime.py` importa `hailo_platform` de forma perezosa, dentro de solo dos funciones.** `hailort` no está en PyPI y no está instalado en esta máquina de desarrollo - importarlo en el momento de cargar el módulo haría que todo este paquete fallara al instalarse/importarse en cualquier lugar excepto en una máquina con un módulo Hailo real conectado. Solo `open_vdevice()` y `load_hailo_vla_model()` (las dos funciones que realmente necesitan HailoRT real) lo importan, y de forma perezosa; ambas lanzan un `HailoNotAvailableError` claro en vez de un `ImportError` a secas cuando falta. Mismo patrón que este ecosistema ya usa para cualquier otro transporte de hardware real (serial GRBL, MAVLink, SPI-OTA, ...).
+* **Cómo encaja en el resto del ecosistema.** Este motor convierte la
+  percepción bruta (frames de cámara, conceptualmente reenviados desde
+  HYDRA-UMC-VISION-NODE aguas arriba) e instrucciones en lenguaje natural
+  en tokens de acción que su hermano HYDRA-UMC-SEMANTIC-PLANNER convierte
+  en decisiones de misión para HYDRA-UMC-ORCHESTRATOR. *(Previsto: hoy el motor no recibe fotogramas de cámara ni texto, y ningún módulo consume su salida salvo el proxy genérico de HYDRA-UMC-SERVER.)*
+* **Por qué `model_manifest.py` no nombra una variante específica de
+  OpenVLA/RT-2.** Todavía no se ha elegido ningún modelo (ver la Hoja de
+  Ruta de este mismo README) - `EXPECTED_MODEL_MANIFEST` es honestamente
+  un contrato de forma/objetivo derivado directamente de las constantes
+  reales de `action_tokens.py`, no un cargador para un modelo que no
+  existe. `hailo_arch` reutiliza el mismo conjunto real y cerrado de
+  familias de chip que `HYDRA-UMC-DETECTION-HEF` ya usa para validar su
+  propio registro de modelos.
+* **Por qué `status` reporta `hardware_ready_no_inference` en vez de
+  "listo".** Incluso una vez que un dispositivo Hailo-10 real y los
+  pesos de modelo reales estén ambos presentes, este v0 todavía no
+  tiene código de inferencia real - afirmar que está listo en ese punto
+  sería una mentira real sobre una capacidad que aún no existe.
+  `determine_mode()` de `hardware.py` comprueba primero el acelerador
+  (una prueba barata de nodo de dispositivo) antes que los pesos del
+  modelo, el mismo orden de precondición-más-barata-primero que ya usa
+  `safe_load()` de `HYDRA-UMC-DETECTION-HEF`.
+* **Por qué `model_weights_available()` comprueba el `models/` del
+  padre, no uno local.** Este hijo no tiene su propio `models/` (podado
+  - ver el punto anterior) - los pesos compartidos reales viven en el
+  propio `models/` del padre `HYDRA-UMC-COGNITIVE-NODE`, un nivel de
+  espacio de trabajo hermano más arriba, el mismo directorio real que ya
+  comprueba `check_shared_models()` de ese repositorio.

@@ -1,0 +1,1 @@
+📸 Generador de Datasets Procedurales para Entrenamiento del Nodo Vision AI

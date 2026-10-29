@@ -1,0 +1,4 @@
+* **Fase 1:** Sincronização determinista do enxame sobre TSN e redução de jitter abaixo do milissegundo.
+* **Fase 2:** Planeamento de caminhos 3D com evitação dinâmica de obstáculos em células multirrobô.
+* **Fase 3:** Otimização do despacho de trabalhos multirrobô com a disponibilidade de recursos em tempo real.
+* **Fase 4:** Suporte para sincronização PTP sem fios sobre Wi-Fi 6 (modo de alta fiabilidade) e validação de precisão abaixo de 100 ns.

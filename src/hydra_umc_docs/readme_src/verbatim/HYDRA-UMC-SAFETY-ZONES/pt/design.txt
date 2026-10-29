@@ -1,0 +1,25 @@
+### FLUXO LÓGICO DE SEGURANÇA PRETENDIDO
+
+O diagrama abaixo é o fluxo de dados de destino para que este projeto está a ser construído. `CAL` (verificação da calibração), `OBS` (verificação da saúde do observador), `ZONE` (verificação de zonas) e a divisão Aviso/Perigo que se segue são reais hoje, impulsionados por `evaluate_safety()` (que envolve `check_breaches()`/`request_estop_for()`), dadas posições de objetos detetados a partir de um ficheiro JSON. Tudo o que está a montante de `CAL`/`OBS`/`ZONE` (o pipeline real do Hailo-8 e o processo observador real cuja vida o `OBS` verifica) e a jusante de `STOP` (o transporte CAN real) continua a ser trabalho futuro.
+
+### INFORMAÇÃO TÉCNICA AVANÇADA
+
+### A fronteira detetar-vs-impor, e porque importa aqui em particular
+
+De tudo neste README, esta é a única decisão de desenho que não é apenas um pormenor de implementação: este serviço destina-se a *decidir* que é preciso uma paragem e a *pedi-la* por CAN, mas o corte físico real da potência dos motores acontece em hardware dentro do [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) construído e certificado para esse papel. É uma escolha deliberada de defesa em profundidade - um erro de software aqui (uma falha, um bloqueio, uma imagem má) degrada-se para "não se enviam novos pedidos de paragem", não para "o hardware de segurança já existente do robô deixa de funcionar".
+
+### Porque não há aqui `hardware/`, `firmware/`, `os/` nem `models/`
+
+O CM5 + Hailo-8 é hardware de prateleira sem placa própria a desenhar, pelo que - como no resto da família Vision AI Node - aqui não existe pasta `hardware/`/`firmware/`. O `os/` (a imagem HydraOS partilhada) e o `models/` (os ficheiros `.hef` compilados que realmente se servem ao NPU) vivem só no pai de integração, o [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE), já que é ele o dono da imagem do anfitrião CM5 e do manípulo do dispositivo Hailo-8.
+
+### Decisões de desenho já tomadas
+
+* **Versão lida dos metadados do pacote instalado, não escrita no código** - o `main.py` chama `importlib.metadata.version("hydra-umc-safety-zones")` em vez de uma segunda cadeia `__version__`, pelo que o `bump_version.py` só tem um sítio onde editar.
+
+* **Zonas AABB, não malhas nem envolventes convexas** - o volume mais simples que ainda permite ao `check_breaches()` ser exato e rápido; um perímetro real é muito frequentemente próximo de uma caixa na prática, e pode acrescentar-se mais tarde uma forma mais rica atrás da mesma interface `Zone`/`AABB.contains()` sem tocar em `breach.py` nem `estop.py`.
+* **A contenção na fronteira da zona é inclusiva, não exclusiva** - o `AABB.contains()` trata um ponto exatamente no bordo como dentro. Num perímetro de segurança, é a direção conservadora de errar: só pode causar um relatório de violação mais cedo, nunca uma violação falhada.
+* **O `NullEStopRequester` é o único pedidor neste repositório** - não um marcador à espera de ser trocado de ânimo leve, mas a materialização honesta da própria fronteira detetar-vs-impor: aqui não há transporte CAN real, e não deve acrescentar-se um sem cuidado mais tarde (veja "Uma fronteira de desenho crítica" acima e a docstring do módulo `estop.py`).
+* **Zonas e deteções são JSON simples, não YAML** - a lista de dependências do `pyproject.toml` continua a ser `[]`; `json` é da biblioteca padrão, e `pyyaml` é trabalho futuro real quando existir uma ferramenta de autoria de zonas que valha a pena serializar.
+* **A calibração verifica-se antes de qualquer lógica de violação, nunca depois** - o `evaluate_safety()` devolve `INHIBITED` no momento em que a calibração falta ou caducou, antes de o `check_breaches()` ser sequer chamado. É deliberado: uma calibração antiga significa que a própria geometria das zonas não é de confiança, pelo que o resultado de executar verificações de violação contra ela seria insignificante em qualquer dos casos - verificar a calibração primeiro significa também que uma calibração caducada ganha sempre ao que, de outro modo, pareceria uma violação de Perigo real, e não o contrário.
+* **Uma chave `"calibration"` em falta carrega com sucesso, apenas significa `INHIBITED`** - o `load_zone_set()` nunca levanta erro só porque um ficheiro de zonas é anterior a esta funcionalidade ou foi escrito à mão sem metadados de calibração; falha de forma segura por desenho na avaliação em vez de falhar ao carregar.
+* **`--observation`/`"observation"` é opcional ao nível da interface, não ao nível da segurança** - um chamador que nunca o passa recebe sempre um `INHIBITED` honesto, nunca uma falha e nunca um `READY` silencioso; isto mantém a camada de análise compatível com chamadores ainda por atualizar e fecha, ao mesmo tempo, a lacuna real em que uma lista `objects` vazia era indistinguível de um observador real e ativo a confirmar a célula livre.

@@ -1,0 +1,70 @@
+### ARCHITEKTUR & DESIGNENTSCHEIDUNGEN
+
+Dieses Repository ist ein **Kind** der Cognitive AI Node-Familie - sein
+Elternteil, [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+besitzt das gemeinsam genutzte HydraOS-Image und die quantisierten
+Modellgewichte und bindet diesen Dienst in seiner `docker-compose.yml`
+neben seinen drei Geschwistern (VLA-Engine, Voice-UI, Docs-QA) ein:
+
+* **Warum dieses Kind keine eigene Hardware/Firmware/`os/`/`models/`
+  hat.** Es läuft vollständig auf dem CM5 + Hailo-10 M.2-Modul, das
+  bereits dem Elternteil gehört - Modellgewichte und HydraOS-Image an
+  einer zentralen Stelle zu halten vermeidet vier abweichende, mehrere
+  Gigabyte große Kopien innerhalb der Familie.
+* **Warum ein `src/`-Layout.** Trennt das installierbare Paket
+  (`hydra_umc_semantic_planner`) vom Tooling im Repo-Root
+  (`bump_version.py`) und entspricht dem Layout aller anderen
+  Python-Projekte im Ökosystem.
+* **Warum der Einstiegspunkt anfangs nur Identität/Version/Rolle
+  ausgab.** Die Andamiaje- (Gerüst-) Phase bewies, dass sich das Paket
+  auf der tatsächlichen Ziel-Python-Version sauber installieren,
+  kompilieren und importieren lässt, bevor überhaupt echte LLM-basierte
+  Planungs-/Wiederherstellungslogik hinzugefügt wurde, und hielt diese
+  spätere Arbeit von Packaging-Fragen getrennt. `main.py` hat seitdem
+  echte Unterbefehle `decompose`/`recover`/`serve` bekommen (siehe
+  ERSTELLEN UND AUSFÜHREN weiter unten) - dass `run.sh` ohne Argumente
+  weiterhin nur Identität/Version/Rolle ausgibt, ist beabsichtigt (ein
+  schneller "wurde das Paket korrekt installiert"-Check), kein Zeichen
+  dafür, dass die CLI selbst noch ein Gerüst wäre.
+* **Wie sich das in den Rest des Ökosystems einfügt.** Dieser Planer ist
+  der Entscheidungskern des Cognitive AI Node: Er verarbeitet die
+  Absicht seines Geschwisters HYDRA-UMC-VOICE-UI und die Aktions-Token
+  seines Geschwisters HYDRA-UMC-VLA-ENGINE und sendet die daraus
+  resultierenden Missionsentscheidungen nachgelagert an
+  HYDRA-UMC-ORCHESTRATOR zur physischen Ausführung.
+* **Warum `decompose.py` echte Regex-Regeln sind, kein lokales LLM.**
+  Ein kleines, echtes Zielvokabular (montieren/pick-and-place/
+  inspizieren) wird heute vollständig und ehrlich durch Regeln abgedeckt
+  - dieselbe Überlegung wie der echte TF-IDF-Index des Geschwisterprojekts
+  HYDRA-UMC-DOCS-QA anstelle eines Embedding-Modells: ein echter,
+  testbarer Kern jetzt, den ein künftiger LLM-basierter Planer hinter
+  demselben `decompose_goal()`-Vertrag ersetzen kann.
+* **Warum die Fehlercodes von `recovery.py` dem öffentlichen
+  Wiederherstellungsvertrag entsprechen.**
+  `INVALID_STATE`/`OUT_OF_RANGE`/`ESTOP_ACTIVE`/`TOOL_INCOMPATIBLE`/
+  `TIMEOUT`/`UNSUPPORTED` sind die echten strukturierten Fehler, die
+  dieser Adapter zurückgeben soll - eine schon heute gegen dieses echte
+  Vokabular gebaute Wiederherstellungslogik bleibt gültig, sobald der
+  Adapter selbst existiert, statt eine parallele Fehlertaxonomie zu
+  erfinden, die später abgeglichen werden müsste.
+* **Warum `ESTOP_ACTIVE`/`UNSUPPORTED`/unbekannte Codes immer an einen
+  Menschen eskalieren.** Entspricht der ökosystemweiten Sicherheitsregel,
+  dass KI-, UI- und Cloud-Schichten niemals eine physische
+  Sicherheitsbedingung außer Kraft setzen - dieser Planer schlägt eine
+  Wiederherstellungsaktion vor, er hebt niemals einen E-STOP auf und rät
+  nicht bei einem Fehler, den er nicht erkennt.
+* **Warum `validation.py` existiert, obwohl die echten Vorlagen von
+  `decompose.py` nie tatsächlich einen ungültigen Plan erzeugen.**
+  Eine feste Vorlage kann wohlgeformte Parameter allein durch ihre
+  Konstruktion garantieren - ein künftiger LLM-basierter Planer kann
+  das nicht. `validate_plan()` ist der echte, explizite Vertrag, den
+  dieser Planer erfüllen müsste, hier und heute gegen den einzigen
+  existierenden Planer geprüft, damit der Vertrag selbst als korrekt
+  erwiesen ist, bevor etwas Schwierigeres ihn je erfüllen muss.
+* **Warum `decompose_goal()` mit einem festen Zufalls-Seed statt mit
+  `hypothesis` gefuzzt wird.** Dieses Projekt bleibt (wie der Rest des
+  Ökosystems) ausschließlich bei der Standardbibliothek - eine
+  reproduzierbare, mit Seed versehene `random.Random`-Schleife über
+  Hunderte synthetischer Ziele liefert dieselbe echte Eigenschaft
+  (stürzt nie ab, liefert nie einen fehlerhaft geformten Plan), ohne
+  eine neue Abhängigkeit hinzuzufügen.

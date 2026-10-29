@@ -1,0 +1,25 @@
+```bash
+chmod +x build.sh   # 仅需一次
+./build.sh          # 创建 .venv，pip install -e .，对一切进行编译检查
+./run.sh                              # 窗口化 GUI（默认）
+./run.sh --cli status                 # 已安装的内容，本地版本与 GitHub 版本对比
+./run.sh --cli status --offline       # 相同，但跳过 GitHub 检查
+./run.sh --cli install <PROJECT-NAME> # 克隆 + 构建一个尚未安装的项目
+./run.sh --cli update  <PROJECT-NAME> # 拉取 + 重新构建一个已安装的项目
+./run.sh --cli prune-backups --keep 2  # 删除旧的 <名称>.backup-xxxxxxxx 文件夹（每个项目保留最新的 2 个）
+```
+
+在 Windows 上：先 `build.bat`，然后 `run.bat`（GUI）/ `run.bat --cli
+status` / `run.bat --cli install <name>` / `run.bat --cli update
+<name>`。
+
+首选 GUI 需要可选 Qt 运行时（`pip install -e ".[gui]"`；
+`build.bat`/`build.sh` 已经安装它）。`--cli` 没有图形依赖，适合无桌面的
+CM5。没有 Qt 时，旧 Tkinter 窗口仅作为兼容回退。
+
+**故障排查**
+
+- `status` 对某个项目的本地或 GitHub 版本显示 `?`：它的版本文件存在，但该项目自己的 `hydra-umc.project.json` 中的 `native_version` 条目已不再对应其版本的真实位置——请修正该项目的清单。
+- `status` 对 GitHub 显示 `-` 但没有显示任何错误：运行 `status`（不带 `--offline`）——`-` 只会在 GitHub 检查被完全跳过时出现。
+- `install`/`update` 失败并提示 "No non-versioning build-test.sh/.bat found"：该项目还没有 `build-test.sh`/`build-test.bat`——请为它添加生态系统的标准脚本（它必须在不递增任何版本的情况下完成验证）。
+- `git merge --ff-only failed`：本地检出的历史已分叉或存在本地提交（提示信息会点名）——请先移走或丢弃它们（在该项目自身目录中运行 `git status`/`git log`），再重试 `update`。已跟踪文件中未提交的修改会被直接拒绝。本工具从不对检出目录执行强制重置。

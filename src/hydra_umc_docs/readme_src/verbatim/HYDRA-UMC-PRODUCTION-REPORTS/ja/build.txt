@@ -1,0 +1,25 @@
+Python >= 3.10 が必要です。
+
+```bash
+# Linux/macOS
+./build.sh && ./run.sh --datalake-url http://localhost:8095
+
+# Windows
+build.bat
+run.bat --datalake-url http://localhost:8095
+```
+
+`build` はローカルの `.venv` を作成/アクティブ化し、開発用 extras 込みで
+パッケージを editable モードでインストールし、インポートを検証した後、
+実際の `pytest` テストスイートを実行します。`run` は実際の HTTP API
+（デフォルトポート `8099`）を起動し、`--datalake-url`（デフォルト
+`http://localhost:8095`）で指定した HYDRA-UMC-DATALAKE インスタンスに
+接続します。
+
+```bash
+# ソース "robot-1" の 5 秒間ウィンドウにおける実際の OEE レポート
+curl "http://localhost:8099/reports/oee?sourceId=robot-1&start=0&end=5000&plannedTimeS=10.0&idealCycleTimeS=2.0"
+
+# 同じソースの motor_temp ストリームに対する実際の可用性レポート
+curl "http://localhost:8099/reports/availability?sourceId=robot-1&kind=motor_temp&field=value&start=0&end=10000&expectedIntervalMs=1000"
+```

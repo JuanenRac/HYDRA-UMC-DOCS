@@ -1,0 +1,46 @@
+需要 Python 3.10+。
+
+```bash
+# Linux / macOS
+./build.sh   # ，创建 .venv，以可编辑模式（含 dev 附加项）
+             # 安装该包，对 src/ 下的每个文件进行编译检查，并运行真实的
+             # pytest 套件
+./run.sh     # 从 .venv 运行入口点，打印名称 + 版本 + 角色
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升），然后使用 `python -m compileall` 对源代码进行编译检查。
+
+真实示例——计算从当前位姿到目标位姿的修正：
+
+```bash
+./run.sh correct --current "0,0,0.5,0,0,0" --target "0.02,-0.01,0.48,0,0,0.05" \
+  --gain 0.8 --max-linear-speed 0.05
+# pose error   : dx=0.020000 dy=-0.010000 dz=-0.020000  droll=0.000000 dpitch=0.000000 dyaw=0.050000
+# error norm   : linear=0.030000 m  angular=0.050000 rad
+# velocity cmd : vx=0.016000 vy=-0.008000 vz=-0.016000  wroll=0.000000 wpitch=0.000000 wyaw=0.040000
+# converged    : False
+```
+
+真实示例——请求一次带安全联锁的修正（接受、联锁阻止、拒绝三种情形）：
+
+```bash
+./run.sh request --current "0,0,0,0,0,0" --target "1,0,0,0,0,0" \
+  --frame-id cam0-f42 --confidence 0.9 --data-age-ms 30 --safety-state READY
+# outcome : ACCEPTED - frame 'cam0-f42' authorized (confidence=0.9, data_age_ms=30.0)
+# pose error   : dx=1.000000 dy=0.000000 dz=0.000000  droll=0.000000 dpitch=0.000000 dyaw=0.000000
+# velocity cmd : vx=0.250000 vy=0.000000 vz=0.000000  wroll=0.000000 wpitch=0.000000 wyaw=0.000000
+
+./run.sh request --current "0,0,0,0,0,0" --target "1,0,0,0,0,0" \
+  --frame-id cam0-f42 --confidence 0.9 --data-age-ms 30 --safety-state FAULT
+# outcome : INHIBITED - safety_state is 'FAULT', not 'READY'   （退出码 2）
+
+./run.sh request --current "0,0,0,0,0,0" --target "1,0,0,0,0,0" \
+  --frame-id cam0-f42 --confidence 0.2 --data-age-ms 30 --safety-state READY
+# outcome : REJECTED - confidence 0.2 is below the required minimum 0.6 for frame 'cam0-f42'   （退出码 1）
+```

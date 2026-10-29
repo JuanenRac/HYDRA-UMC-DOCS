@@ -1,0 +1,8 @@
+```mermaid
+flowchart LR
+    MODELS["3D-Komponentenmodelle"] --> SCENE["Szenen-Randomisierer"]
+    SCENE --> RENDER["Physikbasiertes Rendering"]
+    RENDER --> ANN["Auto-Annotations-Engine"]
+    ANN --> DATASET["Trainingsdatensatz (YOLO/COCO)"]
+    DATASET --> TRAIN["Vision Node Training"]
+```

@@ -1,0 +1,9 @@
+**O que funciona hoje:** uma verificação real de prontidão da família (`manifest.py`/`family.py`) que lê o manifesto próprio de cada um dos 4 filhos reais e reporta presença/versão/maturidade/papel, um manifesto real do pipeline e deteção de modo degradado (`pipeline.py`/`hardware.py`) que sonda honestamente a existência de hardware real de câmara/Hailo-8 e reporta exatamente que etapas do pipeline podem correr, validação real e independente do hardware de corrupção de tramas (`frame.py`), os subcomandos de CLI `family-status`/`pipeline-status`/`validate-frame` mais um subcomando `serve` que expõe os três como uma API JSON/HTTP (`api.py`), {tests} testes a passar, e um mapa de integração totalmente documentado para os 4 filhos no `docker-compose.yml` (construído a partir dos Dockerfiles dos próprios filhos, nunca executado com Docker) - veja o [`CHANGELOG.md`](CHANGELOG.md) para a saída real completa de compilação/execução.
+
+**O que continua em aberto, sem ordem particular e sem calendário comprometido:**
+
+* A inicialização real do ambiente de execução do Hailo-8 e o ciclo de inferência.
+* A API de controlo gRPC para o núcleo HYDRA-UMC.
+* A supervisão real dos 4 serviços filhos (o `family-status` de hoje só verifica presença/maturidade, não a saúde em execução; o `docker-compose.yml` só documenta a forma prevista).
+* A sincronização do pipeline multicâmara quando o [HYDRA-UMC-VISION-STREAMER](https://github.com/JuanenRac/HYDRA-UMC-VISION-STREAMER) tiver um pipeline de captura real com que sincronizar.
+* Construir e executar o `docker-compose.yml` a sério num ambiente com Docker (os 4 filhos já trazem o seu `Dockerfile`).

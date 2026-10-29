@@ -1,0 +1,29 @@
+### INTENDED SYSTEM FLOW
+
+The diagram below is the target data flow this skeleton is being built towards - it documents the architecture decision, not a pipeline that runs today.
+
+### ADVANCED TECHNICAL INFORMATION
+
+### Why this project is the integration parent (and what that means concretely)
+
+Of the 5 projects in the Vision AI Node family, this is the only one that:
+
+* Carries an **`os/`** folder — the shared HydraOS system image configuration for the CM5 host. The 4 children run as processes/containers *on top of* that one shared OS image; there is no reason for each of them to carry its own copy.
+* Carries a **`models/`** folder — the compiled `.hef` models actually loaded onto the Hailo-8 NPU at runtime. [HYDRA-UMC-DETECTION-HEF](https://github.com/JuanenRac/HYDRA-UMC-DETECTION-HEF) is where those models are *compiled and versioned*; this node is where the *served, running copy* lives, because it is the process that owns the Hailo-8 device handle.
+* Carries **`docker-compose.yml`** — see below.
+
+None of the 5 projects carries a `hardware/` or `firmware/` folder: CM5 + Hailo-8 is off-the-shelf hardware with no board of its own to design, unlike (for example) the custom STM32H745/STM32G474 boards inside [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC).
+
+### `docker-compose.yml`: the integration map, built from the four children's own Dockerfiles (never run with Docker here)
+
+`docker-compose.yml` at the project root defines this node's own service plus all 4 children, wired together with the devices/volumes/ports they are each expected to need (the Hailo-8 device node, per-camera V4L2 devices, the gRPC ports towards the HYDRA-UMC core). It is heavily commented explaining *why* each piece is there. All 4 children now ship their own `Dockerfile` and the stack is built from them, but it has **never been built or run in an environment with Docker** (there is none in the development environment): its shape and commands were checked by hand against those Dockerfiles and the real CM5 systemd units. It exists so the integration shape is decided and documented once rather than improvised separately by each child.
+
+### Design decisions already made in this skeleton
+
+* **Version read from installed package metadata, not hardcoded.** `main.py` calls `importlib.metadata.version("hydra-umc-vision-node")` instead of keeping a second `__version__` string somewhere in the package. This means `bump_version.py` only ever has one place to edit (`pyproject.toml`), and the printed version can never silently drift out of sync with it.
+`MAJOR` is a deliberate, human, semantic decision (a real architecture milestone), not something a build script should decide on its own. This is the same convention already used across the ecosystem (see `HYDRA-UMC-EDITOR-URDF/bump_version.py` and `HYDRA-UMC-SUITE/bump_version.py`).
+* **gRPC/Protobuf, not REST, for the planned control API** (see badge above) - chosen because the perception → correction → firmware loop this node sits in is latency-sensitive and talks to other Python/embedded services within the same LAN, where gRPC's binary framing and streaming support are a better fit than JSON-over-HTTP. Not implemented yet; documented here so the direction is clear before the code lands.
+* **`family-status` reads each child's own manifest instead of a hand-maintained list.** `hydra-umc.project.json` is already the single source of truth the ecosystem's dashboard/updater trust - a second list here would drift the moment a child's real maturity changed and nobody remembered to update it.
+* **A missing sibling checkout is a real, honest "not found" rather than a crash.** An integration parent genuinely cannot know whether a developer has all 4 children checked out locally - `manifest.py` returns `None` for every real failure mode (missing repo, missing file, malformed JSON) so `family-status` can report it clearly instead of raising.
+* **Why degraded-mode detection is split into a probe and a pure decision function.** `hardware.py`'s `camera_available()`/`accelerator_available()` are the only parts that ever touch real hardware (a Linux device node); `determine_mode()`/`active_stages()` take plain booleans and contain the actual decision logic. That split is what lets every real hardware combination (full, no camera, no accelerator, no hardware at all) be tested directly and deterministically, without mocking a filesystem or needing real CM5+Hailo-8 hardware to prove the logic correct.
+* **Why frame validation only checks structure, not pixel content.** Detecting a truncated/oversized buffer or a suspiciously uniform one (a frozen sensor, a blank capture) is real, useful, hardware-independent validation that needs no reference image and no camera to test honestly. Deciding whether a frame's actual CONTENT looks wrong (blur, exposure, a real vision-quality metric) is a fundamentally different, much harder problem that would need real captured frames to calibrate against - explicitly out of scope for this v0.

@@ -1,0 +1,73 @@
+需要 Rust 工具链（`cargo`/`rustc`，通过 [rustup](https://rustup.rs) 安装）
+以及 Python 3.10+（仅供 `bump_version.py` 使用）。
+
+```bash
+# Linux / macOS
+./build.sh   # 、`cargo test`（{tests} 个测试），然后执行 `cargo build --release`
+./run.sh     # 运行 target/release/hydra-umc-twin，打印名称 + 版本 + 角色
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升），运行真实的测试
+套件，然后构建一个 release 二进制文件。
+
+真实的 `family-status` 子命令会检查真实的本地检出：
+
+```bash
+./run.sh family-status
+./run.sh family-status --workspace /path/to/some/other/checkout
+
+# Windows
+run.bat family-status
+```
+
+```text
+Digital Twin family status (workspace: /path/to/GitHub):
+  HYDRA-UMC-PHYSICS-REPLICA: v0.0.6, maturity=established, role=library
+  HYDRA-UMC-HIL-BRIDGE: v0.0.8, maturity=established, role=service
+  HYDRA-UMC-SYNTHETIC-DATA-GEN: v0.0.9, maturity=established, role=tool
+
+All 3 children present.
+```
+
+默认使用本仓库自身的父目录——这正是本生态系统任何真实检出已经在使用的
+布局。如果缺少任何真实子项目，将以 `1` 退出。
+
+真实的 `family-sync` 子命令更进一步——它还会针对每个已存在的子项目检查
+真实的状态同步契约（最低成熟度、兼容的最高主版本号）：
+
+```bash
+./run.sh family-sync --workspace /path/to/some/checkout
+```
+
+```text
+Digital Twin family sync contract (workspace: /path/to/some/checkout):
+  HYDRA-UMC-PHYSICS-REPLICA: READY (v0.0.6, maturity=functional)
+  HYDRA-UMC-HIL-BRIDGE: REJECTED (incompatible version) - HYDRA-UMC-HIL-BRIDGE reports major version 1 - this Twin's sync contract is only verified up to major 0 (incompatible simulator version)
+  HYDRA-UMC-SYNTHETIC-DATA-GEN: MISSING (not checked out)
+
+Not every child is sync-ready - see the lines above.
+```
+
+仅当所有预期子项目都是 `READY` 时才以 `0` 退出；任何 `MISSING`/`REJECTED`
+子项目都会导致以 `1` 退出。
+
+**重要提示：** `Cargo.toml` 目前刻意**不包含 Bevy 依赖**。Bevy 是一个
+较重的图形引擎（编译耗时长，需要并非总是可用的 GPU/图形工具链）；v0 只
+添加了 `serde`/`serde_json`/`tiny_http` 用于读取清单。真正的 `bevy` 依赖（以及物理
+后端和面向 HIL-BRIDGE 的 gRPC/WebSocket 客户端）将在真正的渲染/引擎工作
+开始时添加。
+
+### 集成 3 个子项目（`docker-compose.blueprint.yml`）
+
+作为集成父项目，`docker-compose.blueprint.yml` 记录了本引擎如何将其 3 个子项目
+组合为一个技术栈：**PHYSICS-REPLICA**（求解器，每个物理帧被调用）、
+**HIL-BRIDGE**（真实与虚拟指令同步）、**SYNTHETIC-DATA-GEN**（离线批量
+数据集导出）。这 4 个项目在骨架阶段均尚未拥有 `Dockerfile`，因此今天
+`docker compose up` 尚不可运行——该文件是已确认的拓扑结构/端口/依赖图
+参考，未来的 `Dockerfile` 将据此添加。

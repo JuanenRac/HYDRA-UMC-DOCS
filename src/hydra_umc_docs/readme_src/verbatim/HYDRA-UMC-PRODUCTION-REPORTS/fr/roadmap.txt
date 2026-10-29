@@ -1,0 +1,5 @@
+* **Fait (v0) :** vrai calcul d'OEE et de disponibilité, vraie intégration HTTP avec HYDRA-UMC-DATALAKE, vraie API HTTP, vraies limites d'équipe/journée, formules versionnées + empreinte d'entrée, export CSV reproductible bit à bit.
+* **Ensuite :** une vraie source de données `production_event` - faire rapporter les fins de cycle selon ce schéma par l'orchestrateur (ou le robot).
+* **Ensuite :** rapports persistants/planifiés (aujourd'hui chaque rapport est calculé en direct, à la demande).
+* **Plus tard :** un export PDF, un mécanisme d'e-mail/de livraison, et un tableau de bord.
+* Analyse du ROI pilotée par l'IA pour les mises à niveau d'outils, connectée à ces mêmes données OEE une fois les tendances historiques stockées.

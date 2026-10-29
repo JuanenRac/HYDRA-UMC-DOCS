@@ -1,0 +1,59 @@
+Erfordert die Rust-Toolchain (`cargo`/`rustc`, Installation via [rustup](https://rustup.rs)) und Python 3.10+ (nur für `bump_version.py`).
+
+```bash
+# Linux / macOS
+./build.sh   # `cargo test` ({tests} Tests), dann `cargo build --release`
+./run.sh     # führt target/release/hydra-umc-twin aus, gibt Name + Version + Rolle aus
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` ändern die Version nie (nur `python tools/hydra_project_tool.py bump` erhöht sie), führen die echte Testsuite aus und bauen dann eine Release-Binärdatei.
+
+Der echte Subbefehl `family-status` prüft den echten lokalen Checkout:
+
+```bash
+./run.sh family-status
+./run.sh family-status --workspace /pfad/zu/einem/anderen/checkout
+
+# Windows
+run.bat family-status
+```
+
+```text
+Digital Twin family status (workspace: /pfad/zu/GitHub):
+  HYDRA-UMC-PHYSICS-REPLICA: v0.0.6, maturity=established, role=library
+  HYDRA-UMC-HIL-BRIDGE: v0.0.8, maturity=established, role=service
+  HYDRA-UMC-SYNTHETIC-DATA-GEN: v0.0.9, maturity=established, role=tool
+
+All 3 children present.
+```
+
+Standardmäßig wird das eigene übergeordnete Verzeichnis dieses Repositorys verwendet - das echte Geschwister-Checkout-Layout, das dieses Ökosystem bereits nutzt. Beendet sich mit `1`, wenn ein echtes Kind fehlt.
+
+Der echte Subbefehl `family-sync` geht weiter - er prüft auch den echten Zustands-Sync-Vertrag (Mindestreife, maximal kompatible Hauptversion) für jedes vorhandene Kind:
+
+```bash
+./run.sh family-sync --workspace /pfad/zu/einem/checkout
+```
+
+```text
+Digital Twin family sync contract (workspace: /pfad/zu/einem/checkout):
+  HYDRA-UMC-PHYSICS-REPLICA: READY (v0.0.6, maturity=functional)
+  HYDRA-UMC-HIL-BRIDGE: REJECTED (incompatible version) - HYDRA-UMC-HIL-BRIDGE reports major version 1 - this Twin's sync contract is only verified up to major 0 (incompatible simulator version)
+  HYDRA-UMC-SYNTHETIC-DATA-GEN: MISSING (not checked out)
+
+Not every child is sync-ready - see the lines above.
+```
+
+Beendet sich nur dann mit `0`, wenn jedes erwartete Kind `READY` ist; mit `1` für jedes `MISSING`/`REJECTED`-Kind.
+
+**Wichtig:** `Cargo.toml` enthält absichtlich **noch keine Bevy-Abhängigkeit**. Bevy ist eine schwere Grafik-Engine (lange Kompilierzeiten, benötigt eine GPU/Grafik-Toolchain, die nicht immer verfügbar ist); v0 hat nur `serde`/`serde_json`/`tiny_http` zum Lesen von Manifesten hinzugefügt. Die echte `bevy`-Abhängigkeit (plus ein Physik-Backend und der gRPC/WebSocket-Client für HIL-BRIDGE) wird hinzugefügt, wenn die echte Rendering-/Engine-Arbeit beginnt.
+
+### Integration der 3 Kinder (`docker-compose.blueprint.yml`)
+
+Als Integrations-Elternteil dokumentiert `docker-compose.blueprint.yml`, wie diese Engine ihre 3 Kinder zu einem Stack zusammensetzt: **PHYSICS-REPLICA** (Solver, bei jedem Physik-Tick aufgerufen), **HIL-BRIDGE** (Real-vs-Virtual-Befehlssynchronisation) und **SYNTHETIC-DATA-GEN** (Offline-Batch-Datensatzexport). Keines der 4 Projekte hat in dieser Skelett-Phase bereits ein `Dockerfile`, daher ist `docker compose up` heute nicht ausführbar; die Datei ist die bestätigte Referenz für Topologie, Ports und Abhängigkeiten künftiger Dockerfiles.

@@ -1,0 +1,10 @@
+**今天已实现的内容：** 一个真实的家族就绪检查（`manifest.py`/`family.py`），读取 4 个真实子项目各自的清单并报告是否存在/版本/成熟度/角色，一个真实的流水线清单和真实的降级模式检测（`pipeline.py`/`hardware.py`），会诚实地探测真实的摄像头/Hailo-8 硬件并准确报告哪些流水线阶段可以运行，真实的、与硬件无关的帧损坏校验（`frame.py`），`family-status`/`pipeline-status`/`validate-frame` 这几个 CLI 子命令，外加一个将这三者以 JSON/HTTP API 形式对外提供的 `serve` 子命令（`api.py`），{tests} 个通过的测试，以及 `docker-compose.yml` 中针对 4 个子
+项目的完整集成蓝图文档（由各子项目自己的 Dockerfile 构建，从未用 Docker 运行过）——具体的真实构建/运行输出见 [`CHANGELOG.md`](CHANGELOG.md)。
+
+**仍待完成的内容（顺序不分先后，无既定时间表）：**
+
+* 实际的 Hailo-8 运行时初始化与推理循环。
+* 面向 HYDRA-UMC 核心的 gRPC 控制 API。
+* 对 4 个子服务的真实监督（今天的 `family-status` 只检查是否存在/成熟度，不检查运行时健康状况；`docker-compose.yml` 仅记录了预期形态）。
+* 一旦 [HYDRA-UMC-VISION-STREAMER](https://github.com/JuanenRac/HYDRA-UMC-VISION-STREAMER) 拥有真实的采集流水线，即进行多摄像头流水线同步。
+* 在装有 Docker 的环境中真正构建并运行 `docker-compose.yml`（4 个子项目已经提供了各自的 `Dockerfile`）。

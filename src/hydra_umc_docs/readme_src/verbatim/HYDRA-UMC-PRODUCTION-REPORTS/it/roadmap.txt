@@ -1,0 +1,5 @@
+* **Fatto (v0):** vero calcolo OEE e disponibilità, vera integrazione HTTP con HYDRA-UMC-DATALAKE, vera API HTTP, veri confini turno/giorno, formule versionate + impronta dell'input, esportazione CSV riproducibile byte per byte.
+* **Prossimo:** una vera fonte di dati `production_event` - far riportare i completamenti dei cicli con questo schema all'orchestratore (o al robot).
+* **Prossimo:** report persistenti/pianificati (oggi ogni report viene calcolato in tempo reale, su richiesta).
+* **Più avanti:** esportazione PDF, un meccanismo di email/consegna, e una dashboard.
+* Analisi ROI guidata dall'IA per l'aggiornamento degli strumenti, collegata a questi stessi dati OEE una volta memorizzati i trend storici.

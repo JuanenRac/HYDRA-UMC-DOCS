@@ -1,0 +1,69 @@
+Python 3.10+ が必要です。
+
+```bash
+# Linux / macOS
+./build.sh   # 、.venv を作成し、
+             # パッケージを editable モード（dev エクストラ付き）で
+             # インストールし、実際のテストスイートを実行し、
+             # src/ 全体をコンパイルチェックします
+./run.sh     # .venv からエントリポイントを実行し、名前 + バージョン + 役割を表示します
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` はバージョンを変更せず（上げるのは `python tools/hydra_project_tool.py bump` だけです）、
+`python -m compileall` でソースをコンパイルチェックし、その後
+実際のテストスイートを実行します（`pytest tests/`）。
+
+実際の `generate` サブコマンドは、実際のデータセットをディスクに
+書き込みます：
+
+```bash
+./run.sh generate --out dataset/ --count 20 --components 6 --defect-rate 0.3 --seed 42 --format both
+
+# Windows
+run.bat generate --out dataset\ --count 20 --components 6 --defect-rate 0.3 --seed 42 --format both
+```
+
+`--jobs N` はシーンを N 個のプロセスでレンダリングします(既定は 1)。各シーンはシードとそのインデックスから初期化された独自の乱数生成器を持つため、N が何であってもデータセットは同じです。マニフェストにはクラス一覧(`classes`)とそのハッシュ(`classes_sha256`、`classes.txt` の sha256)が記録されるようになり、データセットで学習したモデルを登録する側がクラスの順序を確認できます。`verify --out dataset/` はデータセットのフォルダーを読み戻して確認します:画像はマニフェストのチェックサムと、YOLO ラベル(5 つのフィールド、既知のクラス ID、すべて [0, 1] の範囲内)、COCO ファイル(一意の ID、画像内のボックス)、ラベル数はマニフェストと照合します。`generate` は自身の出力に同じ確認を行います。BMP レンダラーはピクセル単位ではなくスライス単位で描画します(同じバイト列で、大きな画像ではるかに高速)。テスト済みです。ハッシュを比較する DETECTION-HEF 側の確認はまだありません。
+
+`--format` に応じて、実際の BMP 画像を `dataset/images/` に、実際の
+YOLO ラベルを `dataset/labels/` + `dataset/classes.txt` に、および/または
+実際の `dataset/annotations.json`（COCO 形式）を書き込みます。特定の
+`--seed` を指定すると、データセットはバイト単位で再現可能になります。
+
+引数は範囲チェックされ（`--count` 1..10000、`--width`/`--height` 16..4096、`--components` 1..1000、`--defect-rate` 0..1）、データセット全体の画像は 4 GiB に制限されます。推定サイズがこれを超えるコマンドは、何かを書き込む前に終了コード 2 で拒否されるため、入力ミスで実行マシンのディスクがいっぱいになることはありません。
+
+各実行は実際の `dataset/manifest.json` も書き込み、自身の出力を検証します：
+
+```
+Generated 20 scene(s) -> dataset/images
+Total labeled components (incl. defects): 150
+Annotations exported as: both
+Reproducible seed: yes (seed=42)
+Manifest written -> dataset/manifest.json
+Validation: OK (scene bounds, BMP integrity, label distribution)
+```
+
+```json
+{
+  "seed": 42,
+  "reproducible": true,
+  "count": 20,
+  "scenes": [
+    { "image": "scene_0000.bmp", "num_components": 7,
+      "label_counts": {"bracket": 1, "bolt": 2, "gear": 2, "defect": 1, "connector": 1},
+      "sha256": "2301c6974673d9f6a408d7a4b746d236d0ec98b535064884b7a3929645a8f2eb" }
+  ],
+  "validation_issues": []
+}
+```
+
+検証で実際の問題（境界を超えたコンポーネント、切り詰められた/破損した BMP
+ファイル、`--defect-rate` から大きく外れた欠陥率）が見つかった場合、
+`generate` は終了コード `1` で終了し、欠陥のあるデータセットを黙って
+出荷する代わりに、すべての問題を一覧表示します。

@@ -1,0 +1,1 @@
+🚨 Logik für Zonenverletzung und E-STOP-Anforderung (v0: noch kein Detektor, noch kein physischer E-STOP)

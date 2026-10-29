@@ -1,0 +1,59 @@
+Requires Python 3.10+.
+
+```bash
+# Linux / macOS
+./build.sh   # creates .venv, installs the package
+             # in editable mode (with dev extras), runs the real test
+             # suite, compile-checks all of src/
+./run.sh     # runs the entry point from .venv, prints name + version + role
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` never change the version (only `python tools/hydra_project_tool.py bump` raises it), compile-check the source with `python -m compileall`, then run the real test suite (`pytest tests/`).
+
+The real `generate` subcommand writes a real dataset to disk:
+
+```bash
+./run.sh generate --out dataset/ --count 20 --components 6 --defect-rate 0.3 --seed 42 --format both
+
+# Windows
+run.bat generate --out dataset\ --count 20 --components 6 --defect-rate 0.3 --seed 42 --format both
+```
+
+`--jobs N` renders the scenes in N processes (default 1): every scene has its own random generator seeded from the seed and its index, so the dataset is the same whatever N is. The manifest now records the class list (`classes`) and its hash (`classes_sha256`, the sha256 of `classes.txt`) so whoever registers a model trained on the dataset can check the class order. `verify --out dataset/` reads a dataset folder back: the images against the manifest checksums, the YOLO labels (five fields, a known class id, everything inside [0, 1]), the COCO file (unique ids, boxes inside the image) and the number of labels against the manifest; `generate` runs the same check on its own output. The BMP renderer paints by slice instead of by pixel (the same bytes, much faster on large images). Tested; the check on the DETECTION-HEF side that would compare the hash does not exist yet.
+
+Writes real BMP images to `dataset/images/`, real YOLO labels to `dataset/labels/` + `dataset/classes.txt`, and/or a real `dataset/annotations.json` in COCO format, depending on `--format`. A given `--seed` makes the dataset byte-for-byte reproducible.
+
+The arguments are range-checked (`--count` 1..10000, `--width`/`--height` 16..4096, `--components` 1..1000, `--defect-rate` 0..1), and the images of the whole dataset are capped at 4 GiB: a command whose estimated size is over that is refused with exit code 2 before anything is written, so a typo cannot fill the disk of the machine it runs on.
+
+Every run also writes a real `dataset/manifest.json` and validates its own output:
+
+```
+Generated 20 scene(s) -> dataset/images
+Total labeled components (incl. defects): 150
+Annotations exported as: both
+Reproducible seed: yes (seed=42)
+Manifest written -> dataset/manifest.json
+Validation: OK (scene bounds, BMP integrity, label distribution)
+```
+
+```json
+{
+  "seed": 42,
+  "reproducible": true,
+  "count": 20,
+  "scenes": [
+    { "image": "scene_0000.bmp", "num_components": 7,
+      "label_counts": {"bracket": 1, "bolt": 2, "gear": 2, "defect": 1, "connector": 1},
+      "sha256": "2301c6974673d9f6a408d7a4b746d236d0ec98b535064884b7a3929645a8f2eb" }
+  ],
+  "validation_issues": []
+}
+```
+
+If validation finds a real problem (an out-of-range component, a truncated/corrupt BMP, or a defect rate that drifted far from `--defect-rate`), `generate` exits `1` and lists every issue instead of silently shipping a bad dataset.

@@ -1,0 +1,12 @@
+### Estado atual e próximos passos
+
+**Real hoje:** codificação/descodificação de tokens de ação e geração de trajetórias (`action_tokens.py`, `trajectory.py`) - os passos "Action Tokens" e "Trajectory Generator" do diagrama de fluxo acima - mais uma fronteira real de integração com o HailoRT (`hailo_runtime.py`) pronta para um `.hef` real e um módulo Hailo-10 no momento em que existirem. {tests} testes e uma CLI real.
+
+**Ainda por fazer, e bloqueado por hardware real/um modelo real:** executar inferência precisa de um modelo VLA `.hef` compilado real (OpenVLA/RT-2 quantizado para Hailo-10 - ainda sem modelo concreto escolhido) e de um módulo Hailo-10 físico ligado, dois bloqueios reais e inevitáveis que o `hailo_runtime.py` não consegue remover sozinho - mas carregar e descodificar um, quando existir, já não é código por escrever.
+
+### ROTEIRO
+
+* **Fase 1:** Implantação do motor VLA e processamento de entradas multimodais no Hailo-10.
+* **Fase 2:** Integração do planeador semântico com modelos comportamentais do enxame e memória de longo prazo.
+* **Fase 3:** Execução local de baixa latência da Voice UI e cancelamento de ruído industrial.
+* **Fase 4:** Suporte da geração de ações coordenadas de braço duplo e auditorias de tomada de decisão autónoma.

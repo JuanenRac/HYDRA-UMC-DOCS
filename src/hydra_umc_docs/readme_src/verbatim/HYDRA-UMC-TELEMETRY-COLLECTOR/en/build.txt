@@ -1,0 +1,45 @@
+Requires Go >= 1.21. A real ingestion pipeline with an HTTP API, not just a
+skeleton that compiles.
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh -addr 127.0.0.1:8092 -datalake-url http://localhost:8095
+
+# Windows
+build.bat
+run.bat -addr 127.0.0.1:8092 -datalake-url http://localhost:8095
+```
+
+`build` never changes the version (only `python tools/hydra_project_tool.py bump` raises it) and compiles the Go module in
+`src/` into `build/telemetry-collector(.exe)`. `run` executes the compiled
+binary, forwarding any flags, and starts listening for real traffic.
+`-datalake-url` points flushed batches at a real, running
+HYDRA-UMC-DATALAKE instance's `POST /ingest` (`sink.DatalakeSink`) -
+omit it to print flushed samples to stdout instead
+(`sink.ConsoleSink`), useful for running this collector standalone.
+
+By default the collector listens on loopback only and its ingest routes are open to local callers. To listen on a network address, give it a bearer token (`-token`, or `HYDRA_UMC_TELEMETRY_COLLECTOR_TOKEN`; at least 16 characters): `POST /ingest/can` and `POST /ingest/ws` then require `Authorization: Bearer <token>` (`/stats` and `/metrics` stay open so a local scraper needs no secret). A non-loopback `-addr` with no token is refused at startup unless `-allow-anonymous` is passed. A request body is capped at 1 MiB (`413` beyond it) and the HTTP server applies read, write and idle timeouts.
+
+**Reading the bridges from MQTT.** With `-mqtt-url tcp://127.0.0.1:1883` (or `tls://broker:8883`, with `-mqtt-ca-file` for a private authority) the collector also subscribes to `hydra/bridges/+/state` and `hydra/bridges/+/availability` (`-mqtt-topics`) and turns each message into a sample: `bridge_state` with every number and flag of the state (one level of nesting) and a `machine_state.<value>` flag, stamped with the `observed_at` of the bridge, and `bridge_availability` with `online` 1 or 0. A retained state older than `-mqtt-max-age` (default 2 minutes) is the memory of the broker, not a reading, and is skipped. The user name comes from `-mqtt-username` or `HYDRA_UMC_TELEMETRY_MQTT_USER` and the password from `-mqtt-password-file` or `HYDRA_UMC_TELEMETRY_MQTT_PASSWORD`; credentials over a plain connection to another machine are refused unless `-mqtt-allow-plaintext` is passed. The input is off by default and `GET /stats` reports its connection and counts under `mqtt`. Not yet tried against the real broker of the ecosystem.
+
+```bash
+# Ingest a WebSocket-style telemetry sample
+curl -X POST localhost:8092/ingest/ws \
+  -d '{"sourceId":"robot-1","kind":"motor_temp","timestamp":1700000000000,"fields":{"value":42.5}}'
+
+# Ingest a CAN frame (8 bytes, base64 - see src/telemetry/can.go for the wire format)
+curl -X POST localhost:8092/ingest/can \
+  -d '{"arbitrationId":7,"data":"AQAAUEEAAAA="}'
+
+# Check what the collector has ingested/flushed/dropped
+curl localhost:8092/stats
+```
+
+```bash
+cd src && go test ./...   # telemetry (CAN round-trip, WS validation),
+                           # buffer (bounded FIFO, backpressure, requeue),
+                           # collector (the actual "don't lose data on a
+                           # sink outage" behavior), and api (real HTTP
+                           # round-trips via httptest)
+```

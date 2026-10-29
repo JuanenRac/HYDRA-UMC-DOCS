@@ -1,0 +1,25 @@
+### INTENDED SAFETY LOGIC FLOW
+
+The diagram below is the target data flow this project is being built towards. `CAL` (calibration check), `OBS` (observer-health check), `ZONE` (Zone Check) and the Warning/Danger split after it are real today, driven by `evaluate_safety()` (which wraps `check_breaches()`/`request_estop_for()`), given detected-object positions from a JSON file. Everything upstream of `CAL`/`OBS`/`ZONE` (the real Hailo-8 pipeline, and the real observer process whose liveness `OBS` checks) and downstream of `STOP` (the real CAN transport) is still future work.
+
+### ADVANCED TECHNICAL INFORMATION
+
+### The detect-vs-enforce boundary, and why it matters here specifically
+
+Of everything in this README, this is the one design decision that is not just an implementation detail: this service is meant to *decide* that a stop is needed and *request* it over CAN, but the actual, physical motor-power cut happens on hardware inside [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) built and certified for that role. This is a deliberate defense-in-depth choice - a software bug here (a crash, a hang, a bad frame) degrades to "no new stop requests get sent", not to "the robot's existing safety hardware stops working".
+
+### Why no `hardware/`, `firmware/`, `os/` or `models/` here
+
+CM5 + Hailo-8 is off-the-shelf hardware with no board of its own to design, so - like the rest of the Vision AI Node family - no `hardware/`/`firmware/` folder exists here. `os/` (the shared HydraOS image) and `models/` (the compiled `.hef` files actually served to the NPU) live only in the integration parent, [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE), since it owns the CM5 host image and the Hailo-8 device handle.
+
+### Design decisions already made
+
+* **Version read from installed package metadata, not hardcoded** - `main.py` calls `importlib.metadata.version("hydra-umc-safety-zones")` instead of a second `__version__` string, so `bump_version.py` only ever has one place to edit.
+
+* **AABB zones, not meshes or convex hulls** - the simplest volume that still lets `check_breaches()` be exact and fast; a real perimeter is very often close to a box in practice, and a richer shape can be added later behind the same `Zone`/`AABB.contains()` interface without touching `breach.py` or `estop.py`.
+* **Zone-boundary containment is inclusive, not exclusive** - `AABB.contains()` treats a point exactly on the edge as inside. For a safety perimeter, that is the conservative direction to be wrong in: it can only cause an earlier breach report, never a missed one.
+* **`NullEStopRequester` is the only requester in this repository** - not a placeholder waiting to be swapped out casually, but the honest embodiment of the detect-vs-enforce boundary itself: there is no real CAN transport here, and there should not be one bolted on carelessly later either (see "A critical design boundary" above and `estop.py`'s own module docstring).
+* **Zones and detections are plain JSON, not YAML** - `pyproject.toml`'s dependency list is still `[]`; `json` is stdlib, `pyyaml` is real future work once there is an actual zone-authoring tool worth serializing for.
+* **Calibration is checked before any breach logic runs, never after** - `evaluate_safety()` returns `INHIBITED` the moment calibration is missing or expired, before `check_breaches()` is even called. This is deliberate: a stale calibration means the zone geometry itself cannot be trusted, so the outcome of running breach checks against it would be meaningless either way - checking calibration first also means an expired calibration always wins over what would otherwise look like a real Danger breach, not the other way around.
+* **A missing `"calibration"` key loads successfully, it just means `INHIBITED`** - `load_zone_set()` never raises just because a zones file predates this feature or was hand-written without calibration metadata; it fails safe by design at evaluation time instead of failing to load at all.
+* **`--observation`/`"observation"` is optional at the interface level, not at the safety level** - a caller that never passes it gets an honest `INHIBITED` every time, never a crash and never a silent `READY`; this keeps the parsing layer backward-compatible for callers not yet updated while still closing the real gap where an empty `objects` list was indistinguishable from a real, active observer confirming the cell clear.

@@ -1,0 +1,46 @@
+Go >= 1.21 が必要です。コンパイルできるだけの骨組みではなく、HTTP API
+を備えた本物の取り込みパイプラインです。
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh -addr 127.0.0.1:8092 -datalake-url http://localhost:8095
+
+# Windows
+build.bat
+run.bat -addr 127.0.0.1:8092 -datalake-url http://localhost:8095
+```
+
+`build` はバージョンを変更せず（`src/version.go`）、`src/` 内の Go
+モジュールを `build/telemetry-collector(.exe)` としてコンパイルします。
+`run` はコンパイル済みバイナリを実行し、フラグをそのまま渡して、
+実際のトラフィックのリッスンを開始します。`-datalake-url` は
+フラッシュされたバッチを、実際に稼働している HYDRA-UMC-DATALAKE
+インスタンス（`POST /ingest`、`sink.DatalakeSink`）に向けます——
+省略した場合は、フラッシュされたサンプルを代わりに標準出力へ表示します
+（`sink.ConsoleSink`）。このコレクターを単独で実行する際に便利です：
+
+デフォルトでは、コレクターはループバックのみで待ち受け、取り込みルートはローカルの呼び出し元に開かれています。ネットワークアドレスで待ち受けるには、Bearer トークン（`-token`、または `HYDRA_UMC_TELEMETRY_COLLECTOR_TOKEN`。16文字以上）を指定します。すると `POST /ingest/can` と `POST /ingest/ws` は `Authorization: Bearer <token>` を要求します（`/stats` と `/metrics` は、ローカルのスクレイパーが秘密情報を必要としないよう開いたままです）。ループバック以外の `-addr` でトークンがない場合は、`-allow-anonymous` を渡さない限り起動時に拒否されます。リクエスト本文は 1 MiB に制限され（超えると `413`）、HTTP サーバーは読み取り・書き込み・アイドルのタイムアウトを適用します。
+
+**MQTT でブリッジを読む。** `-mqtt-url tcp://127.0.0.1:1883`(または `tls://broker:8883`、私設の認証局には `-mqtt-ca-file`)を付けると、コレクターは `hydra/bridges/+/state` と `hydra/bridges/+/availability`(`-mqtt-topics`)も購読し、各メッセージをサンプルに変換します。`bridge_state` は状態のすべての数値とフラグ(入れ子は 1 段)と `machine_state.<値>` フラグを持ち、ブリッジの `observed_at` を時刻とします。`bridge_availability` は `online` が 1 または 0 です。`-mqtt-max-age`(既定 2 分)より古い保持状態はブローカーの記憶であって測定値ではないため、読み飛ばします。ユーザー名は `-mqtt-username` または `HYDRA_UMC_TELEMETRY_MQTT_USER`、パスワードは `-mqtt-password-file` または `HYDRA_UMC_TELEMETRY_MQTT_PASSWORD` から取ります。別のマシンへの平文接続で認証情報を送ることは `-mqtt-allow-plaintext` がない限り拒否されます。この入力は既定でオフで、`GET /stats` の `mqtt` に接続状態とカウントが出ます。エコシステムの実際のブローカーではまだ試していません。
+
+```bash
+# WebSocket 形式のテレメトリサンプルを取り込む
+curl -X POST localhost:8092/ingest/ws \
+  -d '{"sourceId":"robot-1","kind":"motor_temp","timestamp":1700000000000,"fields":{"value":42.5}}'
+
+# CAN フレームを取り込む(8 バイト、base64 - フォーマットは src/telemetry/can.go を参照)
+curl -X POST localhost:8092/ingest/can \
+  -d '{"arbitrationId":7,"data":"AQAAUEEAAAA="}'
+
+# collector が取り込み/フラッシュ/破棄した内容を確認する
+curl localhost:8092/stats
+```
+
+```bash
+cd src && go test ./...   # telemetry(CAN 往復、WS 検証)、buffer(有界
+                           # FIFO、背圧、requeue)、collector(「シンク
+                           # 障害時にデータを失わない」という実際の
+                           # 挙動)、そして api(httptest による本物の
+                           # HTTP 往復テスト)
+```

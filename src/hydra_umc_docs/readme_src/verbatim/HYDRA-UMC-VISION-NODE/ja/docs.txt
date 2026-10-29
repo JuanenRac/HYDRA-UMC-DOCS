@@ -1,0 +1,1 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** —— 各サブコマンド（`family-status`、`pipeline-status`、`validate-frame`、`serve`）と JSON/HTTP API の各ルート、実際に取得した出力付き。

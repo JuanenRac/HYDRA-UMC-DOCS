@@ -1,0 +1,13 @@
+### 架构与设计决策
+
+本仓库是 Cognitive AI Node 系列的**子项目**——其父项目
+[HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE) 拥有共享的 HydraOS 镜像和量化模型权重，并将本服务与其另外 3 个同级项目（Voice-UI、Semantic-Planner、Docs-QA）一同接入 `docker-compose.yml`：
+
+* **为何本子项目没有自己的硬件/固件/`os/`/`models/`。** 它完全运行在父项目已拥有的 CM5 + Hailo-10 M.2 模块上——将模型权重和 HydraOS 镜像集中保存在一处，可避免整个项目族中出现四份互不一致的、动辄数 GB 的副本。
+* **为何采用 `src/` 布局。** 使可安装的包（`hydra_umc_vla_engine`）与仓库根目录的工具（`bump_version.py`）分离，与生态系统中其他每个 Python 项目所使用的布局保持一致。
+* **为何动作令牌化先于模型推理落地。** 将连续动作转化为离散令牌（及其逆过程）是由动作空间的边界和词表大小定义的固定数学运算——编写和测试都不需要 VLA 模型或 Hailo-10 NPU，因此 v0 优先交付这一部分（`action_tokens.py`、`trajectory.py`）。真正的 VLA 推理需要本环境不具备的模型权重和 Hailo-10 硬件，将在后续落地。
+* **为何 `hailo_runtime.py` 仅在两个函数内部延迟导入 `hailo_platform`。** `hailort` 不在 PyPI 上,也没有安装在这台开发机器上——如果在模块加载时就导入它,会导致整个包在除了连接了真实 Hailo 模块的机器之外的任何地方都安装/导入失败。只有 `open_vdevice()` 和 `load_hailo_vla_model()`(真正需要真实 HailoRT 的那两个函数)会导入它,并且是延迟导入的;两者在缺少该模块时都会抛出明确的 `HailoNotAvailableError`,而不是一个普通的 `ImportError`。这与本生态系统已经用于其他所有真实硬件传输(GRBL 串口、MAVLink、SPI-OTA……)的模式相同。
+* **这如何融入生态系统的其余部分。** 本引擎将原始感知数据（概念上由上游 HYDRA-UMC-VISION-NODE 转发的摄像头帧）和自然语言指令转化为动作令牌，其同级项目 HYDRA-UMC-SEMANTIC-PLANNER 再将这些令牌转化为供 HYDRA-UMC-ORCHESTRATOR 使用的任务级决策。 *（计划中：目前引擎既不接收摄像头画面也不接收文本，除 HYDRA-UMC-SERVER 的通用代理外，没有任何模块使用它的输出。）*
+* **为何 `model_manifest.py` 不指定具体的 OpenVLA/RT-2 变体。** 目前实际上还没有选定任何模型（参见本 README 自身的路线图）——`EXPECTED_MODEL_MANIFEST` 老实说只是一份直接源自 `action_tokens.py` 自身真实常量的形状/目标契约，而不是一个为不存在的模型准备的加载器。`hailo_arch` 复用了与 `HYDRA-UMC-DETECTION-HEF` 已经用来验证其自身模型注册表的同一套真实的、封闭的芯片系列集合。
+* **为何 `status` 报告的是 `hardware_ready_no_inference` 而不是“就绪”。** 即便真实的 Hailo-10 设备和真实的模型权重都已具备，这个 v0 仍然没有真正的推理代码——在那个时点宣称就绪将是关于一项尚不存在的能力的真实谎言。`hardware.py` 的 `determine_mode()` 会先检查加速器（一次廉价的设备节点探测），再检查模型权重，这与 `HYDRA-UMC-DETECTION-HEF` 的 `safe_load()` 已经采用的“最廉价前提条件优先”的顺序相同。
+* **为何 `model_weights_available()` 检查的是父项目的 `models/`，而不是本地的。** 本子项目没有自己的 `models/`（已被省略——见上一条）——真实的共享权重存放在父项目 `HYDRA-UMC-COGNITIVE-NODE` 自身的 `models/` 中，位于同级工作区上一层，正是该仓库自身的 `check_shared_models()` 已经检查的那个真实目录。

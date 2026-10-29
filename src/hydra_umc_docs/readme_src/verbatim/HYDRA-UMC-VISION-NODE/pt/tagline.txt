@@ -1,0 +1,1 @@
+🧠 Nó de IA de periferia para perceção de alta velocidade (Hailo-8 + Raspberry Pi CM5)

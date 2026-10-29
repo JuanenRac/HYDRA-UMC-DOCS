@@ -1,0 +1,1 @@
+🚨 Zone-Breach and E-STOP-Request Logic (v0: no detector, no physical E-STOP yet)

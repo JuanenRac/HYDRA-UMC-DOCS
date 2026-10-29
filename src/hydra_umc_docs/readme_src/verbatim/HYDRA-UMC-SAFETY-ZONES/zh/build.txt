@@ -1,0 +1,125 @@
+### 前提条件
+
+* `PATH` 中存在 **Python 3.10 或更新版本**（脚本先尝试 `python3`，再回退到 `python`）。
+* 目前不需要任何安全/视觉运行时依赖——此阶段**没有任何第三方运行时依赖**（`pyproject.toml` 中 `dependencies = []`）；`pytest` 只是一个开发附加依赖，仅用于真实的测试套件。
+* 本地虚拟环境（`.venv/` 下）需要数十 MB 磁盘空间。
+
+### 逐步说明
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **版本读取** —— 读取并显示项目版本；构建绝不会更改它（只有 `python tools/hydra_project_tool.py bump` 才会提升）。
+2. **虚拟环境** —— 若 `.venv/` 不存在则创建；否则复用。
+3. **可编辑安装（含 dev 附加依赖）** —— `pip install -e ".[dev]"`，使 `src/` 下的修改立即生效，安装 `pytest`，并注册 `hydra-umc-safety-zones` 控制台入口点。
+4. **编译检查** —— `python -m compileall -q src` 对 `src/` 下每个文件进行字节码编译，在整个生态系统范围内捕获语法错误。
+5. **真实测试套件** —— `pytest tests/` 运行全部 {tests} 个测试。
+
+`set -euo pipefail` 会在第一个失败步骤处停止脚本；如果是通过双击而非从已
+打开的终端运行的，窗口会保持打开（`Press Enter to close...`）。
+
+```bash
+./run.sh
+```
+
+在 `.venv` 内定位解释器（同时处理 POSIX 和 Windows 的 `.venv` 目录结构），
+运行 `python -m hydra_umc_safety_zones.main`，并转发任何参数。
+
+无参数调用会打印名称 + 版本 + 角色：
+
+```text
+HYDRA-UMC-SAFETY-ZONES v0.1.5
+Real-time 3D intrusion detection and E-STOP orchestration for robotic safe-working areas.
+```
+
+真实的 `check` 子命令需要一个区域文件和一个检测文件，均为纯 JSON，外加一个
+可选的观测状态文件。`calibration` 在区域文件中是可选的，命令行的 `--observation`
+也是可选的——没有它们会发生什么见下文：
+
+```json
+// zones.json
+{
+  "calibration": {"version": "cal-1", "source": "manual", "calibrated_at": "2024-01-15", "max_age_days": 30, "calibrated_by": "A. Operator"},
+  "zones": [
+    {"id": "warn1", "level": "warning", "min": {"x": 0, "y": 0, "z": 0}, "max": {"x": 5, "y": 5, "z": 5}},
+    {"id": "danger1", "level": "danger", "min": {"x": 0, "y": 0, "z": 0}, "max": {"x": 1, "y": 1, "z": 1}}
+  ]
+}
+```
+
+```json
+// detections.json
+{"objects": [{"id": "op1", "position": {"x": 0.5, "y": 0.5, "z": 0.5}}]}
+```
+
+```json
+// observation.json - 真实证据，证明上面的检测确实来自一个活动的、
+// 最近更新过的观测者
+{"active": true, "observedAt": "2024-01-15T12:00:00Z", "maxAgeSeconds": 5}
+```
+
+这些示例中的日期只是示例：`calibrated_at` 必须足够新以满足 `max_age_days`，`observedAt` 必须在距现在 `maxAgeSeconds` 之内（并带有时区，例如结尾的 `Z`）；按所示日期，今天的结果是 `INHIBITED`，而不是下面的 `DANGER`。
+
+```bash
+./run.sh check --zones zones.json --detections detections.json --observation observation.json
+```
+
+```text
+SAFETY STATE: DANGER - object(s) ['op1'] breached a danger zone
+BREACH: object 'op1' inside warning zone 'warn1'
+BREACH: object 'op1' inside danger zone 'danger1'
+E-STOP REQUESTED: object 'op1' breached danger zone 'danger1' (not asserted - see estop.py)
+```
+
+退出码为 `2`（危险，已请求 E-STOP）、`1`（仅警告级越界）、`0`（无越界，校准
+有效，观测者活动且新鲜）或 `3`（**Inhibited**——校准缺失/已过期，或观测者
+缺失/被禁用/已过期/出错，在任何越界逻辑之前检查）。
+以下是故障安全路径的真实示例——使用上面同样的 `detections.json`，但
+`zones.json` 完全没有 `"calibration"` 键：
+
+```bash
+./run.sh check --zones zones_no_calibration.json --detections detections.json --observation observation.json
+```
+
+```text
+SAFETY STATE: INHIBITED - no calibration metadata present - zone geometry cannot be trusted
+```
+
+退出码为 `3`——注意完全没有 `BREACH`/`E-STOP` 输出，即使 `op1` 同时位于两个
+区域内：不可信的区域集合永远不会到达越界检查这一步。完全省略 `--observation`
+也会同样安全地失败，即使校准新鲜且没有对象靠近任何区域：
+
+```bash
+./run.sh check --zones zones.json --detections detections_clear.json
+```
+
+```text
+SAFETY STATE: INHIBITED - no observation status provided - cannot confirm the supplied detections reflect a real, active observer
+```
+
+```bat
+:: Windows - 步骤相同，批处理语法
+build.bat
+run.bat
+run.bat check --zones zones.json --detections detections.json --observation observation.json
+```
+
+同样的 `check` 逻辑也可以通过 HTTP 访问,供非 CLI 调用方使用——`zones`/`detections`/`observation` 通过 JSON 请求体传递,而不是文件路径:
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8108
+# 在另一个终端:
+curl -s -X POST http://127.0.0.1:8108/check -d '{"zones": {...}, "detections": {...}, "observation": {...}}'
+```
+
+完整的命令、参数和退出码参考(包含从真实运行中采集的每个真实状态 `READY`/`WARNING`/`DANGER`/`INHIBITED`)请见 [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md)。
+
+### 故障排查
+
+* **找不到 `python`/`python3`** —— 安装 Python 3.10+ 并确保其在 `PATH` 中。
+* **`compileall` 失败** —— 意味着 `src/` 下确实引入了语法错误；构建会故意在不触及安装的情况下停止。
+* **`run.sh`/`run.bat` 提示"未找到 `.venv`"** —— 先至少运行一次 `build.sh`/`build.bat`。
+* **可编辑安装过期** —— 删除 `.venv/` 并重新构建；很少需要这样做。
+* **`check` 以非零退出码结束** —— 这是真实且正确的行为，而非失败：`1` 表示发现了仅警告级越界，`2` 表示发现了危险级越界并已请求 E-STOP，`3` 表示区域集合的校准缺失/已过期，或观测者状态缺失/被禁用/已过期/出错（故障安全，在任何越界逻辑执行之前检查）。只有 Python 回溯或 JSON 格式错误才是真正的 bug。

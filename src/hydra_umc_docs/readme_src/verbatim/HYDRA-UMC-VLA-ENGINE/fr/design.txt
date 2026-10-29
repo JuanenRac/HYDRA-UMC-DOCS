@@ -1,0 +1,56 @@
+### ARCHITECTURE & DÉCISIONS DE CONCEPTION
+
+Ce dépôt est un **enfant** de la famille Cognitive AI Node - son parent,
+[HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+détient l'image HydraOS partagée et les poids de modèles quantifiés, et
+relie ce service dans son `docker-compose.yml` aux côtés de ses trois
+frères (Voice-UI, Semantic-Planner, Docs-QA) :
+
+* **Pourquoi cet enfant n'a pas de matériel/firmware/`os/`/`models/`
+  propres.** Il fonctionne entièrement sur le module CM5 + Hailo-10 M.2
+  déjà détenu par le parent - centraliser les poids de modèles et
+  l'image HydraOS à un seul endroit évite quatre copies divergentes de
+  plusieurs gigaoctets au sein de la famille.
+* **Pourquoi une structure `src/`.** Sépare le paquet installable
+  (`hydra_umc_vla_engine`) de l'outillage à la racine du dépôt
+  (`bump_version.py`), conformément au reste des projets Python de
+  l'écosystème.
+* **Pourquoi la tokenisation d'actions arrive avant l'inférence du modèle.**
+  Transformer une action continue en jetons discrets (et inversement) est
+  de la mathématique fixe définie par les bornes de l'espace d'action et
+  la taille du vocabulaire - inutile d'avoir un modèle VLA ou un NPU
+  Hailo-10 pour l'écrire ou la tester, donc v0 livre cette pièce
+  (`action_tokens.py`, `trajectory.py`) en premier. La vraie inférence VLA
+  nécessite les poids du modèle et le matériel Hailo-10 que cet
+  environnement n'a pas, et arrivera plus tard.
+* **Pourquoi `hailo_runtime.py` importe `hailo_platform` paresseusement, à l'intérieur de seulement deux fonctions.** `hailort` n'est pas sur PyPI et n'est pas installé sur cette machine de développement - l'importer au chargement du module ferait échouer l'installation/l'import de tout ce paquet partout sauf sur une machine avec un vrai module Hailo branché. Seules `open_vdevice()` et `load_hailo_vla_model()` (les deux fonctions qui ont réellement besoin du vrai HailoRT) l'importent, et paresseusement ; toutes deux lèvent une `HailoNotAvailableError` claire plutôt qu'un simple `ImportError` quand il manque. Même schéma déjà utilisé dans cet écosystème pour tout autre transport matériel réel (série GRBL, MAVLink, SPI-OTA, ...).
+* **Comment cela s'intègre dans le reste de l'écosystème.** Ce moteur
+  convertit la perception brute (images caméra, conceptuellement
+  transmises depuis HYDRA-UMC-VISION-NODE en amont) et les instructions
+  en langage naturel en jetons d'action que son frère
+  HYDRA-UMC-SEMANTIC-PLANNER transforme en décisions de mission pour
+  HYDRA-UMC-ORCHESTRATOR. *(Prévu : aujourd'hui le moteur ne reçoit ni images de caméra ni texte, et aucun module ne consomme sa sortie hormis le proxy générique de HYDRA-UMC-SERVER.)*
+* **Pourquoi `model_manifest.py` ne nomme pas une variante spécifique
+  d'OpenVLA/RT-2.** Aucun modèle n'a encore été réellement choisi (voir
+  la Roadmap de ce README) - `EXPECTED_MODEL_MANIFEST` est honnêtement
+  un contrat de forme/cible dérivé directement des constantes réelles de
+  `action_tokens.py`, pas un chargeur pour un modèle qui n'existe pas.
+  `hailo_arch` réutilise le même ensemble réel et fermé de familles de
+  puces que `HYDRA-UMC-DETECTION-HEF` utilise déjà pour valider son
+  propre registre de modèles.
+* **Pourquoi `status` rapporte `hardware_ready_no_inference` plutôt que
+  « prêt ».** Même une fois qu'un vrai périphérique Hailo-10 et de vrais
+  poids de modèle sont tous deux présents, ce v0 n'a toujours pas de
+  code d'inférence réel - prétendre être prêt à ce stade serait un vrai
+  mensonge sur une capacité qui n'existe pas encore. `determine_mode()`
+  de `hardware.py` vérifie d'abord l'accélérateur (un test bon marché de
+  nœud de périphérique) avant les poids du modèle, le même ordre de
+  précondition-la-moins-coûteuse-d'abord que `safe_load()` de
+  `HYDRA-UMC-DETECTION-HEF` utilise déjà.
+* **Pourquoi `model_weights_available()` vérifie le `models/` du
+  parent, pas un `models/` local.** Cet enfant n'a pas son propre
+  `models/` (supprimé - voir le point ci-dessus) - les vrais poids
+  partagés se trouvent dans le `models/` du parent
+  `HYDRA-UMC-COGNITIVE-NODE`, un niveau d'espace de travail frère plus
+  haut, le même répertoire réel que `check_shared_models()` de ce dépôt
+  vérifie déjà.

@@ -1,0 +1,50 @@
+Requiere Python >= 3.10.
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # crea .venv, instala el paquete (editable), verifica la importación
+./run.sh     # ejecuta el punto de entrada
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` nunca cambian la versión (solo `python tools/hydra_project_tool.py bump` la sube), y corren la suite de tests
+real (`pytest tests/`). Salida esperada de un `run.sh` sin argumentos:
+
+```text
+HYDRA-UMC-VOICE-UI v0.1.8
+Voice UI (Hailo-10) - local STT/TTS pipeline for hands-free robotic mission control.
+```
+
+Los subcomandos reales analizan un archivo WAV o parsean texto ya
+transcrito:
+
+```bash
+./run.sh analyze-audio recordings/command.wav
+./run.sh parse-intent "start mission alpha"
+
+# Windows
+run.bat analyze-audio recordings\command.wav
+run.bat parse-intent "status of robot 3"
+```
+
+### 🩺 Solución de problemas
+
+* **`python: comando no encontrado` / el build falla en el paso 1.**
+  Requiere Python >= 3.10 en el `PATH`. En Windows, instálalo desde
+  [python.org](https://python.org) y marca "Add to PATH" durante la
+  instalación; en Linux/macOS suele llamarse `python3`.
+* **`build.sh` no consigue activar el venv.** `python3 -m venv .venv`
+  coloca el script de activación en una ruta distinta según la
+  plataforma: `.venv/bin/activate` en Linux/macOS, `.venv/Scripts/activate`
+  en Windows (también con un venv de Python de Windows usado desde Git
+  Bash). `build.sh` ya comprueba ambas rutas - si sigue fallando, borra
+  `.venv/` y vuelve a ejecutar `./build.sh` para reconstruirlo desde cero.
+* **`pip install -e .` falla.** Normalmente por un `.venv/` obsoleto.
+  Borra la carpeta `.venv/` y vuelve a ejecutar `./build.sh`/`build.bat`
+  para recrearla.
+* **`import OK` nunca se imprime.** Significa que `python -c "import
+  hydra_umc_voice_ui"` falló - vuelve a ejecutarlo con el venv activo
+  para ver el traceback real.

@@ -1,0 +1,27 @@
+```bash
+chmod +x build.sh   # einmalig
+./build.sh          # erstellt .venv, pip install -e ., Compile-Check von allem
+./run.sh                              # Fenster-GUI (standardmäßig)
+./run.sh --cli status                 # was installiert ist, lokale vs. GitHub-Version
+./run.sh --cli status --offline       # dasselbe, ohne GitHub-Prüfung
+./run.sh --cli install <PROJEKT-NAME> # klont + baut ein noch nicht installiertes Projekt
+./run.sh --cli update  <PROJEKT-NAME> # aktualisiert + baut ein bereits installiertes Projekt neu
+./run.sh --cli prune-backups --keep 2  # entfernt alte Ordner <name>.backup-xxxxxxxx (behält die 2 neuesten je Projekt)
+```
+
+Unter Windows: `build.bat`, dann `run.bat` (GUI) / `run.bat --cli status`
+/ `run.bat --cli install <Name>` / `run.bat --cli update <Name>`.
+
+Die bevorzugte GUI braucht die optionale Qt-Laufzeit (`pip install -e ".[gui]"`;
+`build.bat`/`build.sh` installieren sie bereits). `--cli` hat keine GUI-
+Abhängigkeit und ist der richtige Einstieg für eine headless CM5. Ohne Qt
+bleibt das alte Tkinter-Fenster nur ein Kompatibilitäts-Fallback.
+
+**Fehlerbehebung**
+
+- `status` zeigt `?` für die lokale oder GitHub-Version eines Projekts: Seine Versionsdatei existiert, aber der Eintrag `native_version` in dessen eigener `hydra-umc.project.json` stimmt nicht mehr damit überein, wo seine Version tatsächlich steht - korrigieren Sie das Manifest dieses Projekts.
+- `status` zeigt `-` für GitHub ohne angezeigten Fehler: führen Sie
+  `status` aus (ohne `--offline`) - `-` erscheint nur, wenn die
+  GitHub-Prüfung komplett übersprungen wurde.
+- `install`/`update` schlägt mit "No non-versioning build-test.sh/.bat found" fehl: Dieses Projekt hat noch kein `build-test.sh`/`build-test.bat` - fügen Sie ihm das Standardskript des Ökosystems hinzu (es muss prüfen, ohne eine Version zu erhöhen).
+- `git merge --ff-only failed`: Der lokale Checkout hat eine abweichende Historie oder lokale Commits (die Meldung nennt sie) - verschieben oder verwerfen Sie sie (`git status`/`git log` im Verzeichnis dieses Projekts), bevor Sie `update` erneut versuchen. Nicht committete Änderungen an verfolgten Dateien werden gleich zu Beginn abgelehnt. Dieses Werkzeug setzt einen Checkout nie zwangsweise zurück.

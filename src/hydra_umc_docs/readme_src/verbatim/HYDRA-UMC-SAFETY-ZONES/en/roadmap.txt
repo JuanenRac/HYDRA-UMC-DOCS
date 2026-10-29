@@ -1,0 +1,8 @@
+**What works today:** real Warning/Danger zone definitions and breach checking (`geometry.py`/`zones.py`/`breach.py`), real calibration-freshness enforcement that fails safe to `INHIBITED` before any breach logic runs (`calibration.py`/`safety_state.py`), a real E-STOP *requesting* pipeline that respects the detect-vs-enforce boundary by construction (`estop.py`), a real `check` CLI subcommand over JSON zone/detection files, and {tests} passing tests - see [`CHANGELOG.md`](CHANGELOG.md) for the full real build/run output.
+
+**What is still open, in no particular order and with no committed timeline:**
+
+* Real 3D occupancy mapping from Hailo-8 spatial segmentation, to actually produce the detected-object positions `check` currently expects as a JSON input.
+* Dynamic self-occlusion masking of the robot's own structure.
+* A real CAN transport implementing `EStopRequester` towards [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) - `estop.py` already defines the interface a real implementation would need to satisfy.
+* Any real safety certification work (the ISO 13849-1 badge above states an aspiration, not a completed certification).

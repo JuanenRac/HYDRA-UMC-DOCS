@@ -1,0 +1,67 @@
+Una fusión CRDT real y probada, no solo un esqueleto que compila:
+reconcilia un escenario JSON multi-célula e imprime el estado convergido.
+
+```bash
+# Windows
+build.bat
+run.bat scenarios/example.json
+
+# Linux / macOS
+./build.sh
+./run.sh scenarios/example.json
+```
+
+`build.sh`/`build.bat` nunca cambian la versión (solo `python tools/hydra_project_tool.py bump` la sube) y luego ejecutan
+`cargo build --release`. `run.sh`/`run.bat` ejecutan directamente el binario
+resultante, reenviando cualquier argumento (la ruta del escenario).
+
+Un escenario es un archivo JSON con un array `cells` - cada célula tiene
+un `id` (por legibilidad), un `writer` (ID de escritor), y una lista de
+`writes` (`{key, value, time}`, siendo `time` una marca de tiempo Lamport
+explícita, reproducida en vez de generada en vivo - el mismo patrón de
+"entrada explícita y determinista" que usa el `seed` de
+HYDRA-UMC-PATH-PLANNER-3D). Los writes de cada célula se pliegan en su propio mapa, y luego el mapa de cada célula se fusiona de izquierda a derecha con `merge_report()`, así que cada conflicto real queda registrado en el resultado. Que la fusión dé el mismo estado en cualquier orden es una propiedad del propio CRDT, fijada por los tests de propiedades de `src/crdt.rs`, no se vuelve a comprobar en cada llamada.
+
+Al correrlo contra `scenarios/example.json` (donde `cell-a` y `cell-b`
+escribieron ambas a `cell-a-node-2`) se ve la resolución real del
+conflicto, no solo el resultado final opaco:
+
+```bash
+./run.sh scenarios/example.json
+```
+```json
+{
+  "cells_merged": 2,
+  "merged_state": { "...": "..." },
+  "conflicts_resolved": 1,
+  "conflicts": [
+    { "key": "cell-a-node-2",
+      "local_time": 2, "local_writer": 1, "local_value": "ok",
+      "remote_time": 3, "remote_writer": 2, "remote_value": "unhealthy",
+      "kept_remote": true }
+  ],
+  "next_local_time": 6
+}
+```
+
+```bash
+cargo test   # el reloj de Lamport, y el CRDT en si - incluyendo
+             # comprobaciones directas de que merge es conmutativa,
+             # asociativa e idempotente (no solo "parece correcto" en un
+             # ejemplo), un test de desempate determinista para
+             # escrituras verdaderamente concurrentes, el comportamiento
+             # propio de deteccion de conflictos de merge_report(), y una
+             # simulacion de 4 celulas que demuestra convergencia a
+             # traves de multiples rondas de particion y reconexion
+             # parcial - {tests} tests en total
+```
+
+La misma llamada a `reconcile()` también es alcanzable a través de una
+API JSON/HTTP real (`src/server.rs`, `tiny_http`, bloqueante, sin
+runtime asíncrono) en lugar de un fichero de escenario local -
+`run.sh serve [--addr ADDR] [--port PORT]` la arranca (por defecto
+`127.0.0.1:8112`), exponiendo `POST /reconcile` (el escenario en el
+cuerpo de la petición, con la misma forma JSON) y `GET /stats`. Esto es
+lo que `systemd/hydra-umc-swarm-sync.service` ejecuta sin supervisión en
+la CM5. El uso completo, los códigos de salida y la referencia completa
+de rutas están en [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md).

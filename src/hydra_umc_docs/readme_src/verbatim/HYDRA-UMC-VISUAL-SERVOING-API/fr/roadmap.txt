@@ -1,0 +1,25 @@
+### État Actuel et Prochaines Étapes
+
+**Réel aujourd'hui :** la loi de correction PBVS d'erreur de pose et de
+commande de vitesse (`pose.py`, `servo.py`) - l'étape « Calcul d'erreur
+(Pose Delta) » du diagramme de boucle ci-dessus - avec une vraie commande
+CLI `correct` ; la politique d'autorisation à verrou de sécurité
+(`authorization.py`) qui refuse de transformer une détection visuelle en
+mouvement à moins que l'état de sécurité en amont soit `READY` et que les
+données soient assez fiables/fraîches, exposée via la commande CLI
+`request` ; et une véritable limite d'intégration HailoRT (`hailo_runtime.py`)
+prête pour un véritable estimateur de pose Hailo-8 dès qu'il sera branché. {tests} tests au total.
+
+**Encore à venir, et bloqué par du matériel réel :** exécuter réellement
+l'*estimation* de pose à 6 degrés de liberté via `hailo_runtime.py`
+nécessite un `.hef` d'estimation de pose réellement compilé (aucun modèle
+spécifique choisi pour l'instant) et une NPU Hailo-8 physique branchée, et
+l'envoi gRPC à faible latence de la commande de vitesse résultante vers le
+cœur HYDRA-UMC est un travail futur séparé.
+
+### FEUILLE DE ROUTE
+
+* **Phase 1 :** Synchronisation et étalonnage du pipeline multi-caméras pour 8 flux USB 3.0.
+* **Phase 2 :** Migration vers YOLOv11 et optimisation pour Hailo-8L pour la détection de composants industriels.
+* **Phase 3 :** Reconstruction 3D en temps réel à partir de nœuds de vision stéréo et cartographie dynamique des zones de sécurité.
+* **Phase 4 :** Prise en charge du suivi visuel 9-DOF (y compris la redondance d'orientation) et correction sub-micrométrique.

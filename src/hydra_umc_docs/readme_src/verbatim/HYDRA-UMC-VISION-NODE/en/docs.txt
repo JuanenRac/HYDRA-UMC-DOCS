@@ -1,0 +1,1 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — every subcommand (`family-status`, `pipeline-status`, `validate-frame`, `serve`) and every JSON/HTTP API route, with real captured output.

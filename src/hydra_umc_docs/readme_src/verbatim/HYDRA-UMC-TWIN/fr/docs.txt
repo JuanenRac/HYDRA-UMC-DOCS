@@ -1,0 +1,1 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — chaque invocation de `family-status`/`family-sync`/`serve`, sortie réelle capturée depuis un binaire de release compilé, la table des codes de sortie, et le contrat HTTP JSON `GET /family-status`/`GET /family-sync`/`GET /stats`.

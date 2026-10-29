@@ -54,10 +54,14 @@ def test_a_readme_in_the_old_layout_is_left_as_glance_writes_it(tmp_path):
 @pytest.mark.parametrize("name", SOURCES)
 def test_every_source_has_its_prose_files_in_the_eight_languages(name):
     repo = name.replace("_", "-")
+    module = U.load_source(repo)
+    # a source may give its own roadmap text (EXTRAS) instead of a prose file
+    own = set(getattr(module, "EXTRAS", {})) | set(getattr(module, "OWN_PROSE", ()))
     for lg in K.LGS:
         for key in ("tagline", "honesty", "overview", "roadmap", "related"):
+            if key in own:
+                continue
             assert (SRC / "verbatim" / repo / lg / f"{key}.txt").is_file(), (repo, lg, key)
-    module = U.load_source(repo)
     assert module.ICON and module.COMMENT and module.BADGES is not None
 
 

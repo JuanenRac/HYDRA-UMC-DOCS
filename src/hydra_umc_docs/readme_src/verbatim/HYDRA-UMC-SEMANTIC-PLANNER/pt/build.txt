@@ -1,0 +1,68 @@
+Requer o Python >= 3.10.
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # cria o .venv, instala o pacote (editável), verifica a importação
+./run.sh     # executa o ponto de entrada
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` nunca altera a versão (só `python tools/hydra_project_tool.py bump` a sobe) e executa a suite de testes real
+(`pytest tests/`). Saída esperada de um `run.sh` simples:
+
+```text
+HYDRA-UMC-SEMANTIC-PLANNER v0.1.4
+Semantic Planner (Hailo-10) - decomposes high-level goals into robotic primitives and recovers from execution failures.
+```
+
+Os subcomandos reais decompõem um objetivo ou propõem uma recuperação:
+
+```bash
+./run.sh decompose "assemble the pcb"
+./run.sh recover --component gripper --error-code GRIP_LOST_SEAL --detail "vacuum gripper lost seal"
+
+# Windows
+run.bat decompose "assemble the pcb"
+run.bat recover --component gripper --error-code GRIP_LOST_SEAL --detail "vacuum gripper lost seal"
+```
+
+Cada plano real decomposto é verificado contra as pré-condições reais do
+`validation.py` antes de ser impresso. Os modelos do `decompose.py` passam
+sempre; um plano que falhasse seria antes recusado:
+
+```text
+Plan for: "broken" FAILED precondition validation:
+  step 1 (GRIP): missing required param 'target'
+```
+
+A mesma lógica de `decompose`/`recover` está também acessível por HTTP, para
+chamadores que não sejam a própria CLI:
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8109
+# noutro terminal:
+curl -s -X POST http://127.0.0.1:8109/decompose -d '{"goal": "assemble the pcb"}'
+```
+
+Veja o [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) para a referência completa de comandos/opções/códigos de saída e o [`docs/RECOVERY_CONTRACT.md`](docs/RECOVERY_CONTRACT.md) para o vocabulário público de códigos de erro de recuperação.
+
+### 🩺 Resolução de problemas
+
+* **`python: command not found` / a compilação falha no passo 1.** Requer o
+  Python >= 3.10 no `PATH`. No Windows, instale a partir de
+  [python.org](https://python.org) e confirme que "Add to PATH" ficou
+  marcado durante a instalação; `python3` é o nome habitual no Linux/macOS.
+* **O `build.sh` falha ao ativar o venv.** O `python3 -m venv .venv`
+  dispõe o script de ativação de forma diferente por plataforma:
+  `.venv/bin/activate` no Linux/macOS, `.venv/Scripts/activate` no
+  Windows (também verdade para um venv de Python do Windows usado a partir do Git Bash).
+  O `build.sh` já verifica ambos os caminhos - se ainda assim falhar, apague o
+  `.venv/` e volte a executar `./build.sh` para o reconstruir de raiz.
+* **O `pip install -e .` falha.** Normalmente um `.venv/` obsoleto. Apague a
+  pasta `.venv/` e volte a executar `./build.sh`/`build.bat` para a recriar.
+* **O `import OK` nunca aparece.** Significa que o próprio `python -c "import
+  hydra_umc_semantic_planner"` falhou - volte a executar com o venv
+  ativo para ver o traceback real.

@@ -1,0 +1,23 @@
+需要 Python >= 3.10。
+
+```bash
+# Linux/macOS
+./build.sh && ./run.sh --datalake-url http://localhost:8095
+
+# Windows
+build.bat
+run.bat --datalake-url http://localhost:8095
+```
+
+`build` 创建/激活本地 `.venv`，以可编辑模式安装该包（含开发 extras），
+验证导入，并运行真实的 `pytest` 测试套件。`run` 启动真实的 HTTP API
+（默认端口 `8099`），连接到 `--datalake-url` 指定的 HYDRA-UMC-DATALAKE
+实例（默认 `http://localhost:8095`）。
+
+```bash
+# robot-1 在 5 秒窗口内的真实 OEE 报告
+curl "http://localhost:8099/reports/oee?sourceId=robot-1&start=0&end=5000&plannedTimeS=10.0&idealCycleTimeS=2.0"
+
+# 同一来源 motor_temp 数据流的真实可用性报告
+curl "http://localhost:8099/reports/availability?sourceId=robot-1&kind=motor_temp&field=value&start=0&end=10000&expectedIntervalMs=1000"
+```

@@ -1,0 +1,23 @@
+### Estado atual e próximos passos
+
+**Real hoje:** a lei de correção PBVS de erro de pose e comando de velocidade
+(`pose.py`, `servo.py`) - o passo "Error Calculation (Pose Delta)" do
+diagrama do ciclo acima - com um comando real `correct` da CLI; a
+política de autorização protegida pela segurança (`authorization.py`) que recusa
+transformar uma deteção visual em movimento a menos que o estado de segurança
+a montante seja `READY` e os dados sejam confiáveis/recentes, exposta através do
+comando `request` da CLI; e uma fronteira real de integração com o HailoRT (`hailo_runtime.py`)
+pronta para um estimador de pose Hailo-8 real no momento em que se ligue. {tests} testes
+no total.
+
+**Ainda por fazer, e dependente de hardware real:** executar de facto a *estimação* de pose 6-DOF
+através do `hailo_runtime.py` precisa de um `.hef` real compilado de estimação de pose (ainda sem
+modelo escolhido) e de uma NPU Hailo-8 física ligada, e o fluxo gRPC de baixa latência do
+comando de velocidade resultante para o núcleo HYDRA-UMC é trabalho futuro à parte.
+
+### ROTEIRO
+
+* **Fase 1:** sincronização e calibração do pipeline multicâmara para 8 fluxos USB 3.0.
+* **Fase 2:** migração para o YOLOv11 e otimização para o Hailo-8L na deteção de componentes industriais.
+* **Fase 3:** reconstrução 3D em tempo real a partir de nós de visão estéreo e mapeamento dinâmico de zonas de segurança.
+* **Fase 4:** suporte de seguimento visual 9-DOF (incluindo redundância de orientação) e correção sub-micrométrica.

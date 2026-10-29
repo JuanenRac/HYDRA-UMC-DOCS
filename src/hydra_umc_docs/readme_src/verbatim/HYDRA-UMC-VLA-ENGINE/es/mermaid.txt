@@ -1,0 +1,8 @@
+```mermaid
+flowchart LR
+    IMG["Frame de Imagen"] --> VLA["VLA-ENGINE (Hailo-10)"]
+    TXT["Instrucción de Texto"] --> VLA
+    VLA --> ACTION["Tokens de Acción"]
+    ACTION --> TRAJ["Generador de Trayectorias"]
+    TRAJ --> MOTOR["Comandos de Motores"]
+```

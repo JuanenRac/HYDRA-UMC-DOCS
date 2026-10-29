@@ -1,0 +1,14 @@
+```mermaid
+flowchart TB
+    DET["Detección de Objetos (Hailo-8) - previsto"] --> SEG["Segmentación Espacial - previsto"]
+    SEG --> MAP["Mapa de Ocupación 3D - previsto"]
+    MAP --> CAL{"¿Calibración Fresca? - real v0"}
+    CAL -- No --> INHIBIT["INHIBITED - real v0 (fallo seguro)"]
+    CAL -- Sí --> OBS{"¿Observador Activo y Fresco? - real v0"}
+    OBS -- No --> INHIBIT
+    OBS -- Sí --> ZONE{"Comprobación de Zona - real v0"}
+    ZONE -- Warning --> SLOW["Comando de Reducción de Velocidad - previsto"]
+    ZONE -- Danger --> STOP["Solicitud CAN de E-STOP - real v0 (solo solicitud)"]
+    SLOW --> CAN["Bus CAN de HYDRA - previsto"]
+    STOP --> CAN
+```

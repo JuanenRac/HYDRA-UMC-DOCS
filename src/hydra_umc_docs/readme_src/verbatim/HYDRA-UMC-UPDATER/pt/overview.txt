@@ -1,0 +1,57 @@
+O HYDRA-UMC-UPDATER é uma pequena ferramenta - GUI com janela por defeito,
+CLI completa com `--cli` - pensada para correr na própria CM5 real ou numa
+máquina Windows/Linux/macOS de um programador (qualquer espaço de trabalho
+obtido da mesma forma) que responde a três perguntas para cada outro projeto
+real que descobre através do `hydra-umc.project.json` de cada cópia irmã - o
+número em si nunca é codificado aqui, já que cresce com o ecossistema:
+
+1. **O que está realmente instalado aqui, e em que versão?**
+2. **Qual é a versão mais recente publicada no GitHub?**
+3. **Se o GitHub for mais recente, deixe-me escolher um projeto ou um lote sequencial confirmado.**
+
+Este último ponto é deliberado e inegociável: esta ferramenta nunca altera um
+projeto pela sua própria iniciativa. Uma ação sobre um projeto selecionado
+exige sempre uma confirmação explícita. A GUI pode também oferecer **Instalar
+todos os em falta** ou **Atualizar todos os desatualizados**; cada uma é um
+lote sequencial confirmado em separado, cujos projetos seguem as mesmas
+portas de manifesto, versão e segurança. Uma célula de controlo de robôs
+nunca deve atualizar-se automaticamente de um dia para o outro sem que uma
+pessoa aprove a ação exata. A confirmação mostra os projetos exatos do lote, pela ordem em que serão executados.
+
+Nem todos os projetos descobertos pertencem à própria CM5 - alguns são ferramentas que um programador executa a partir do seu próprio PC (o firmware é compilado e gravado A PARTIR de um posto de trabalho, não compilado NA célula) ou aplicações instaladas num telemóvel/relógio. O manifesto de cada projeto regista qual é o caso (ver secção 3) e a tabela de projetos da GUI pode filtrar por ele - por omissão são mostrados todos os projetos, pelo que nem o próprio atualizador nem o SDK ficam escondidos.
+
+Exemplo ilustrativo (o número exato de projetos e todos os números de versão
+abaixo são inventados para dar a forma da saída, não uma execução real
+capturada - o número real é o que o `registry.py` descobrir hoje, nunca um
+número fixo escrito neste documento):
+
+```
+$ hydra-umc-updater --cli status
+Workspace root: /home/pi/HYDRA-UMC
+PROJECT           MATURITY     ROLE      STACK       LOCAL     GITHUB    STATE
+-----------------------------------------------------------------------------
+HYDRA-UMC         functional   firmware  firmware-c  0.0.7     0.0.7     up to date
+HYDRA-UMC-SERVER  functional   service   node        0.0.5     0.0.9     OUTDATED
+HYDRA-UMC-STUDIO  functional   client    node        0.0.8     0.1.3     OUTDATED
+...
+59/59 installed, 2 outdated
+Run `hydra-umc-updater update <project>` to update one by hand - never automatic, see this tool's own README.
+
+$ hydra-umc-updater --cli update HYDRA-UMC-SERVER
+Updating HYDRA-UMC-SERVER into /home/pi/HYDRA-UMC ...
+OK  Updated /home/pi/HYDRA-UMC/HYDRA-UMC-SERVER to v0.0.9 (commit 1a2b3c4d5e6f) after a verified build; previous installation kept at /home/pi/HYDRA-UMC/HYDRA-UMC-SERVER.backup-9f3c2d1a
+```
+
+Executar `hydra-umc-updater` sem argumentos (ou fazer duplo clique) abre antes
+a mesma informação numa superfície de controlo de desktop escura: um painel
+**Ecossistema local** com métricas em direto de descoberta/instalação/
+atualização, uma árvore **Registo de projetos** guiada por manifesto e um
+painel de **Atualização segura** para o projeto selecionado. A disposição torna
+visíveis as proteções reais: descoberta por manifesto, uma única ação
+explícita sobre um projeto, confirmação manual, compilação opcional e um
+rasto de atividade no ecrã; a evidência completa dos comandos continua a ser
+escrita no terminal de arranque.
+
+<p align="center">
+  <img src="images/HYDRA_UMC_UPDATER_INTERFACE_1.png" alt="HYDRA-UMC-UPDATER real desktop overview" width="100%">
+</p>

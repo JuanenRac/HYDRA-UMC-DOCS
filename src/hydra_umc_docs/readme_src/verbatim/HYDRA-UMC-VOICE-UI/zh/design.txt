@@ -1,0 +1,31 @@
+### 架构与设计决策
+
+本仓库是 Cognitive AI Node 系列的**子项目**——其父项目
+[HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE) 拥有共享的 HydraOS 镜像和量化模型权重，并将本服务与其另外 3 个同级项目（VLA-Engine、Semantic-Planner、Docs-QA）一同接入 `docker-compose.yml`：
+
+* **为何本子项目没有自己的硬件/固件/`os/`/`models/`。** 它完全运行在父项目已拥有的 CM5 + Hailo-10 M.2 模块上——将模型权重和 HydraOS 镜像集中保存在一处，可避免整个项目族中出现四份互不一致的、动辄数 GB 的副本。
+* **为何采用 `src/` 布局。** 使可安装的包（`hydra_umc_voice_ui`）与仓库根目录的工具（`bump_version.py`）分离，与生态系统中其他每个 Python 项目所使用的布局保持一致。
+* **为何裸调用今天仍然只打印身份/版本/角色。** 这仍然只是一个轻量、未变的脚手架检查；真正的 v0 工作都在它的子命令背后：`analyze-audio`（真实的 WAV 加载 + 基于能量阈值的语音活动检测，`audio.py`）、`parse-intent`（真实的基于规则的意图/实体解析，`intent.py`），以及 `serve`（面向 Watch 的真实、经过认证的语音轮次网关，`http_service.py`/`gateway.py`）。这些都还不是本 README 自己路线图中描述的 Whisper STT / 神经网络 TTS 流水线——那仍然需要一个这个环境里没有的真实模型依赖。
+* **这如何融入生态系统的其余部分。** 本服务是进入整个 Cognitive AI Node 的免提入口点：识别出的意图流向其同级项目 HYDRA-UMC-SEMANTIC-PLANNER，并与 HYDRA-UMC-STUDIO 和 HYDRA-UMC-DSI 一同充当语音控制界面。
+* **为何 `audio.py` 使用 `wave`/`array` 而非 numpy。** 16 位 PCM 解码和真实的能量阈值 VAD 除了标准库已经提供的之外，不需要任何东西——让 v0 保持零依赖，意味着真实的音频前端可以在任何运行 Python 的地方工作，甚至在安装任何 Hailo-10 专用 STT 依赖之前就能运行。
+* **为何 `intent.py` 是真实的正则规则，而非经过训练的 NLU 模型。** 一个小型真实的命令词汇表（start/stop/status/go home）如今已被规则完全且诚实地覆盖——这与兄弟项目 HYDRA-UMC-DOCS-QA 使用真实 TF-IDF 索引而非嵌入模型的理由相同：一个真实的、可测试的内核，未来基于 ML 的分类器可以在识别出的语音需要覆盖超出这个 v0 词汇表的内容时，在同一个 `parse_intent()` 契约背后替换它。
+* **为何不匹配的音频/文本会返回一个诚实的未命中，而非一个猜测。** `detect_voice_segments()` 对静音返回空列表，`parse_intent()` 对规则集之外的文本返回 `None`——v0 没有可回退的模型，因此它绝不会捏造一个实际上并未真正检测到的语音段或意图。
+* **为何 Watch 网关使用 `classify_intent()` 而非旧版 `parse_intent()`。** 对现有调用方而言，`parse_intent()` 仍保持"第一个匹配即胜出"的行为不变，依旧按原样测试；但一段真正同时匹配多个已知命令的真实转录文本（例如同时包含"stop"和"status"）对于一个全部职责就是判断运动命令是否需要确认的网关来说，是一个真实的、与安全相关的歧义——`classify_intent()` 会检查每一条规则，并报告一个真实、明确区分的歧义情形，而不是悄悄地解析为恰好排在最前面的那条规则。
+* **为何 `normalize_text()` 在匹配前应用 Unicode NFKC。** 一些语音转文本流水线会输出全角拉丁字母及其他兼容性 Unicode 形式——这些是与普通 ASCII 不同的码点，因此就 `\b...\b` 正则表达式而言并不算"这个词"。NFKC 会先将它们折叠为普通等价形式，这样一条与已知规则语义相同的命令就不会仅仅因为编码方式的不同而被当成诚实的未命中。
+
+### WATCH 语音网关（v0）
+
+`python -m hydra_umc_voice_ui.main serve` 为已配对的 HYDRA-UMC-WATCH 集成提供有意限制的本地 HTTP 网关：`GET /health`、`POST /v1/voice/turn` 和 `POST /v1/voice/confirm`。网关会验证类型化的 `voice_turn` 负载，使用现有的确定性意图解析器并返回 `assistant_reply`；它不控制机器人硬件。
+
+回环开发可在无令牌的情况下运行。非回环绑定要求 `HYDRA_UMC_VOICE_UI_TOKEN` 以及匹配的 `Authorization: Bearer` 标头。该 API 绝不传输原始音频，且与运动相关的意图始终返回 `requiresConfirmation: true`，并附带一个真实且有限定的 `confirmationToken`——Watch 客户端会把它回传给 `POST /v1/voice/confirm`，后者报告 `confirmed`/`expired`/`invalid`（绝不是单纯的布尔值），自身不会派发任何内容。完整契约见下文 [WATCH_VOICE_GATEWAY.md](docs/WATCH_VOICE_GATEWAY.md) 的确认部分。
+
+一段真正同时匹配多个已知命令的转录文本会被拒绝，并返回一个真实、明确区分的回复，而不是被悄悄地解析为单一的理解结果：
+
+```json
+// POST /v1/voice/turn
+{"type": "voice_turn", "requestId": "watch-voice-001", "transcript": "stop the status check", "locale": "en-US"}
+
+// -> {"type":"assistant_reply","requestId":"watch-voice-001","text":"That request matched more than one action (status, stop). Please rephrase it more specifically.","level":"ATTENTION","speak":true,"requiresConfirmation":false,"visualState":"clarification","interpretation":{"heardText":"stop the status check","normalizedText":"stop the status check","matchedRules":["status","stop"]}}
+```
+
+完整的请求协议和部署边界请参阅 [WATCH_VOICE_GATEWAY.md](docs/WATCH_VOICE_GATEWAY.md)，从已安装CLI真实捕获的每个 `analyze-audio`/`parse-intent`/`serve` 示例请参阅 [CLI_REFERENCE.md](docs/CLI_REFERENCE.md)。

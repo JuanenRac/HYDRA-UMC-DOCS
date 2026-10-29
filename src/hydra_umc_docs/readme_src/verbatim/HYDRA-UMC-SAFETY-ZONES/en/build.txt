@@ -1,0 +1,117 @@
+### Prerequisites
+
+* **Python 3.10 or newer** on your `PATH` (the scripts try `python3` then fall back to `python`).
+* No safety/vision runtime dependency is required yet - **zero third-party runtime dependencies** at this stage (`dependencies = []` in `pyproject.toml`); `pytest` is a dev-only extra used solely for the real test suite.
+* A few tens of MB of disk space for a local virtual environment under `.venv/`.
+
+### Step by step
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **Version check** - reads and prints the project version; building never changes it (only `python tools/hydra_project_tool.py bump` raises it).
+2. **Virtual environment** - creates `.venv/` if missing; reuses it otherwise.
+3. **Editable install (with dev extras)** - `pip install -e ".[dev]"` so `src/` edits take effect immediately, pulls in `pytest`, and registers the `hydra-umc-safety-zones` console entry point.
+4. **Compile-check** - `python -m compileall -q src` byte-compiles every file under `src/`, catching syntax errors ecosystem-wide.
+5. **Real test suite** - `pytest tests/` runs all {tests} tests.
+
+`set -euo pipefail` stops the script at the first failing step; the window stays open (`Press Enter to close...`) if it was double-clicked instead of run from an already-open terminal.
+
+```bash
+./run.sh
+```
+
+Locates the interpreter inside `.venv` (handling both the POSIX and Windows `.venv` layouts) and runs `python -m hydra_umc_safety_zones.main`, forwarding any arguments.
+
+Bare invocation prints name + version + role:
+
+```text
+HYDRA-UMC-SAFETY-ZONES v0.1.5
+Real-time 3D intrusion detection and E-STOP orchestration for robotic safe-working areas.
+```
+
+The real `check` subcommand needs a zones file and a detections file, both plain JSON, plus an optional observation-status file. `calibration` is optional in the zones file, and `--observation` is optional on the command line - see below for what happens without either:
+
+```json
+// zones.json
+{
+  "calibration": {"version": "cal-1", "source": "manual", "calibrated_at": "2024-01-15", "max_age_days": 30, "calibrated_by": "A. Operator"},
+  "zones": [
+    {"id": "warn1", "level": "warning", "min": {"x": 0, "y": 0, "z": 0}, "max": {"x": 5, "y": 5, "z": 5}},
+    {"id": "danger1", "level": "danger", "min": {"x": 0, "y": 0, "z": 0}, "max": {"x": 1, "y": 1, "z": 1}}
+  ]
+}
+```
+
+```json
+// detections.json
+{"objects": [{"id": "op1", "position": {"x": 0.5, "y": 0.5, "z": 0.5}}]}
+```
+
+```json
+// observation.json - real evidence the detections above actually came
+// from an active, recently-updated observer
+{"active": true, "observedAt": "2024-01-15T12:00:00Z", "maxAgeSeconds": 5}
+```
+
+The dates in these examples are only examples: `calibrated_at` must be recent enough for `max_age_days`, and `observedAt` must be within `maxAgeSeconds` of now (with a time zone, such as a trailing `Z`); with the dates shown, the result today is `INHIBITED`, not the `DANGER` below.
+
+```bash
+./run.sh check --zones zones.json --detections detections.json --observation observation.json
+```
+
+```text
+SAFETY STATE: DANGER - object(s) ['op1'] breached a danger zone
+BREACH: object 'op1' inside warning zone 'warn1'
+BREACH: object 'op1' inside danger zone 'danger1'
+E-STOP REQUESTED: object 'op1' breached danger zone 'danger1' (not asserted - see estop.py)
+```
+
+Exits `2` (Danger, E-STOP requested), `1` (Warning-only breach), `0` (no breach, calibration valid, observer active and fresh), or `3` (**Inhibited** - calibration missing/expired, or no/disabled/stale/errored observer, checked before any breach logic runs). Real example of the fail-safe path - the same `detections.json` above, but `zones.json` with no `"calibration"` key at all:
+
+```bash
+./run.sh check --zones zones_no_calibration.json --detections detections.json --observation observation.json
+```
+
+```text
+SAFETY STATE: INHIBITED - no calibration metadata present - zone geometry cannot be trusted
+```
+
+Exit `3` - note there is no `BREACH`/`E-STOP` output at all, even though `op1` is inside both zones: an untrusted zone set never reaches the breach-checking step. Omitting `--observation` entirely fails safe the same way, even with a fresh calibration and no object near a zone:
+
+```bash
+./run.sh check --zones zones.json --detections detections_clear.json
+```
+
+```text
+SAFETY STATE: INHIBITED - no observation status provided - cannot confirm the supplied detections reflect a real, active observer
+```
+
+```bat
+:: Windows - identical steps, batch syntax
+build.bat
+run.bat
+run.bat check --zones zones.json --detections detections.json --observation observation.json
+```
+
+The same `check` logic is also reachable over HTTP, for callers that
+aren't the CLI itself - `zones`/`detections`/`observation` travel in the
+JSON body instead of a file path:
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8108
+# in another terminal:
+curl -s -X POST http://127.0.0.1:8108/check -d '{"zones": {...}, "detections": {...}, "observation": {...}}'
+```
+
+See [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) for the full command/flag/exit-code reference, including every real state (`READY`/`WARNING`/`DANGER`/`INHIBITED`) captured from an actual run.
+
+### Troubleshooting
+
+* **`python`/`python3` not found** - install Python 3.10+ and ensure it is on `PATH`.
+* **`compileall` fails** - a real syntax error was introduced under `src/`; the build stops without touching the install, on purpose.
+* **"No `.venv` found" from `run.sh`/`run.bat`** - run `build.sh`/`build.bat` at least once first.
+* **Stale editable install** - delete `.venv/` and rebuild; rarely needed.
+* **`check` exits non-zero** - that is real, working behavior, not a failure: `1` means a Warning-only breach was found, `2` means a Danger breach requested an E-STOP, `3` means the zone set's calibration is missing/expired or the observer status is missing/disabled/stale/errored (fail-safe, checked before breach logic ever runs). Only a Python traceback or a malformed-JSON error is an actual bug.

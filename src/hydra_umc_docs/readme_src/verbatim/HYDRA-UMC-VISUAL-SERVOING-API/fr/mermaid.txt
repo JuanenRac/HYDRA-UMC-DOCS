@@ -1,0 +1,10 @@
+```mermaid
+flowchart LR
+    TARGET["Objet cible"] --> CAM["Capture caméra"]
+    CAM --> NPU["Détection de pose Hailo-8"]
+    NPU --> API["VISUAL-SERVOING-API"]
+    API --> ERROR["Calcul d'erreur (Pose Delta)"]
+    ERROR --> CORE["Cœur HYDRA-UMC (STM32)"]
+    CORE --> MOVE["Actionnement du moteur"]
+    MOVE --> TARGET
+```

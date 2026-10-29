@@ -18,6 +18,8 @@
    "7e8a01a27faf": "Safety Safety Fails Closed red.svg",
    "8a91cfb19016": "— the real headless backend (REST/WebSocket) every control client actually talks to; the authenticated ecosyst",
    "93294ff1a2a8": "Security baseline of the ecosystem",
+   "b761ff15474b": "Maturity Maturity established 2EA44F.svg",
+   "c586b9e8b347": "Jump to: Overview · Architecture · Security & Safety · Configuration · Quick start · Testing · Troubleshooting",
    "cfe823251d84": "✅ Real shared safety gate: every job dispatched through is evaluated by from 's , the same gate every sibling ",
    "e3ca095a2f77": "/ | none | The client certificate and its key for a broker that demands mutual TLS; both are needed",
    "ecd0a62c2932": "— real procedural 2D scene generator with YOLO/COCO annotation export."
@@ -150,6 +152,11 @@
    "d0d4d740d2e3": "It processes raw data from the Datalake to generate automated, high-level reports on production efficiency, qu",
    "f52f698783cc": "It calculates the OEE (Overall Equipment Effectiveness) of the entire swarm, identifying bottlenecks in the pr"
   },
+  "HYDRA-UMC-SAFETY-ZONES": {
+   "2be88138091b": "is the safety subsystem of the Vision AI Node family: it checks the positions of detected objects against Warn",
+   "501b6288c4b5": "It only ever requests an emergency stop; the physical stop stays in the hardware of the controller.",
+   "fb126b77df76": "<!-- ============================================================================= - Safety zones and E-STOP r"
+  },
   "HYDRA-UMC-SDK": {
    "1ac4d0d4c921": "— the documentation and tooling hub of the ecosystem: architecture, interfaces, security baseline, capability ",
    "20ee4d7a4604": "— reproducible Raspberry Pi OS product layer for the CM5: read-only agent, validated config/profiles, WiFi fir",
@@ -197,8 +204,13 @@
   "HYDRA-UMC-TELEMETRY-COLLECTOR": {
    "a1daf833d6cf": "The buffer ( ) is still bounded, though - an outage that outlasts its capacity does drop the oldest excess, a "
   },
+  "HYDRA-UMC-TWIN": {
+   "4121d1ccdb08": "A report of risk written by the one who wants the robot to move | The report travels as a certificate signed w",
+   "a90af17558fa": "Jump to: Overview · Architecture · Security & Safety · Configuration · Quick start · Testing · Repository Stru",
+   "dc0b43189a0b": "/ | none | Ed25519 key that turns on certificate signing"
+  },
   "HYDRA-UMC-UPDATER": {
-   "327c4d86725f": "sequential batch actions built from the same live state and safety path."
+   "3317caf20481": ", , or requires a valid signature on the cloned commit"
   },
   "HYDRA-UMC-VISION-NODE": {
    "db5e464672ce": "API limits: refuses frames above 8192x8192x4 or 64 MiB (and non-positive sizes) before reading the body, and m"
@@ -206,16 +218,14 @@
   "HYDRA-UMC-VISUAL-SERVOING-API": {
    "6b13702f107a": "A safety fault must win over everything else, even a perfectly fresh and confident detection - so (safety_stat",
    "a0c76cde8c92": "Real example - request a safety-gated correction (accepted, inhibited, and rejected):",
-   "cccf8f01efab": "🔁 Servoing sessions (the loop with memory): opens a session with a nominal period, a gain, a filter on the mea",
-   "d0fb2262f75c": "Who sets the safety limits: the limits (minimum confidence, maximum data age, maximum gain, maximum linear and"
+   "cccf8f01efab": "🔁 Servoing sessions (the loop with memory): opens a session with a nominal period, a gain, a filter on the mea"
   },
   "HYDRA-UMC-VOICE-UI": {
    "3a2c4dc0d6c4": "— web control dashboard with real-time multi-robot 3D visualization; another voice-control surface for the eco"
   },
   "HYDRA-UMC-WATCH": {
-   "1a9007c73fa3": "Still ahead: validation of pairing, radio transport, microphone/speaker and end-to-end status on a real Wear O",
-   "46fe86790863": "Integration boundary: the paired Android app retains the encrypted Server JWT;",
-   "4b37d23f778f": "The official Wear OS channel enforces the same package name and signing certificate on Watch and phone, then c"
+   "4b37d23f778f": "The official Wear OS channel enforces the same package name and signing certificate on Watch and phone, then c",
+   "d91df1fe6ba6": "Jump to: Overview · Architecture · Security & Safety · Quick start · Testing · Repository Structure · Related "
   }
  }
 }

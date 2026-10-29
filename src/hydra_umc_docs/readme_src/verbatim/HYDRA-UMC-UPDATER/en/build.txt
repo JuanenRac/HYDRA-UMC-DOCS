@@ -1,0 +1,27 @@
+```bash
+chmod +x build.sh   # one-time
+./build.sh          # creates .venv, pip install -e ., compile-checks everything
+./run.sh                              # windowed GUI (default)
+./run.sh --cli status                 # what's installed, local vs. GitHub version
+./run.sh --cli status --offline       # same, skipping the GitHub check
+./run.sh --cli install <PROJECT-NAME> # clone + build one project not yet installed
+./run.sh --cli update  <PROJECT-NAME> # pull + rebuild one project already installed
+./run.sh --cli prune-backups --keep 2  # remove old <name>.backup-xxxxxxxx folders (keeps the newest 2 of each)
+```
+
+On Windows: `build.bat`, then `run.bat` (GUI) / `run.bat --cli status` /
+`run.bat --cli install <name>` / `run.bat --cli update <name>`.
+
+The preferred GUI needs the optional Qt runtime (`pip install -e ".[gui]"`;
+`build.bat`/`build.sh` already install it). `--cli` has no GUI dependency and
+is the correct entry point for a headless CM5. If Qt is unavailable, the
+older Tkinter shell is only a compatibility fallback.
+
+**Troubleshooting**
+
+- `status` shows `?` for a project's local or GitHub version: its version file exists but the `native_version` entry of that project's own `hydra-umc.project.json` no longer matches where its version really lives - fix that project's manifest.
+- `status` shows `-` for GitHub with no error shown: run `status`
+  (without `--offline`) - `-` only appears when the GitHub check was
+  skipped entirely.
+- `install`/`update` fails with "No non-versioning build-test.sh/.bat found": that project has no `build-test.sh`/`build-test.bat` yet - add the ecosystem's standard one to the project (it must verify without bumping any version).
+- `git merge --ff-only failed`: the local checkout has diverged history or local commits (the message names them) - move or discard them (`git status`/`git log` in that project's own directory) before retrying `update`. Uncommitted edits to tracked files are refused up front. This tool never force-resets a checkout.

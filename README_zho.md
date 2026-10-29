@@ -1,3 +1,9 @@
+<!-- =============================================================================
+HYDRA-UMC-DOCS - Architecture, interfaces, security baseline and what is proven
+Copyright (C) JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
+GPL-3.0-or-later - see LICENSE
+============================================================================= -->
+
 <p align="center">
   <img src="images/HYDRA_UMC_BANNER.svg" alt="HYDRA-UMC-DOCS banner" width="100%">
 </p>
@@ -12,6 +18,7 @@
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-Markdown-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
+  <img src="https://img.shields.io/badge/Tests-153%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.4-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -24,15 +31,20 @@
 
 > **安全与安防现状:**本生态系统不是经认证的安全系统。目前尚无硬件 E-STOP 通路,没有由固件强制执行的限位或联锁,也没有经过验证的运动指令;固件映像使用 CRC32 和共享密钥的 HMAC-SHA256 校验,而非非对称签名;TLS 与双向 TLS 均为可选项,默认关闭;自制电路板尚未组装或测试。在依赖此处任何说法来保障人身安全之前,请先阅读[安全基线](docs/SECURITY_BASELINE.md)和[威胁模型](docs/THREAT_MODEL.md)。
 
+---
+
 ## 📋 速览
 
 | | |
 |---|---|
 | 版本 | `0.0.4` |
 | 成熟度 | 雏形 |
+| 测试 | 153 (`python -m pytest tests -q`) |
 | 技术栈 | Markdown / Mermaid / Python / SVG |
 | 目标 | 使用者的电脑 |
 | 真实硬件 | 不适用：这里的内容不在硬件上运行 |
+
+**跳转：** [概述](#-概述) · [架构](#-架构) · [安全与防护](#-安全与防护) · [快速开始](#-快速开始) · [测试](#-测试) · [仓库结构](#-仓库结构) · [相关项目](#-相关项目)
 
 ## 🚦 项目状态
 
@@ -43,11 +55,11 @@
 | 领域 | 状态 | 在这里的含义 |
 |---|---|---|
 | 软件 | 🟠 | 目前只有结构和最初的部分，大部分工作尚未完成 |
-| 测试 | 🟠 | 此仓库尚未记录测试数量 |
+| 测试 | 🟢 | 153 项自动测试，每次变更都会运行 |
 | 真实硬件 | 🟢 | 不适用：这里的内容不在硬件上运行 |
 | 文档 | 🟢 | 八种语言的 README，每次变更都会与清单核对 |
 
-## 🎯 简介
+## 🎯 概述
 
 <p align="center">
   <img src="images/HYDRA_UMC_FAMILY.svg" alt="HYDRA-UMC families" width="100%">
@@ -67,22 +79,23 @@
 
 HYDRA-UMC-DOCS 是整个生态的记忆：架构、接口、安全基线和能力矩阵都放在这里，同时也保存着把所有仓库并排比较的工具。每个仓库保留自己的 README、测试和契约；本仓库说明它们如何配合，以及真正证实了什么。
 
-## 📂 仓库结构
+## 🏛️ 架构
 
-```text
-HYDRA-UMC-DOCS/
-├── docs/     架构、接口、能力矩阵、安全基线、威胁模型、第一个切片、生成的目录
-├── data/     已核实的说法以及“速览”表的数据
-├── src/      以包形式提供的工具（目录、品牌素材、README、发布检查）
-├── tools/    包之上的薄脚本、check_all.sh，以及生态共享的 CI 检查
-├── tests/    工具的单元测试
-├── images/   横幅和家族图
-├── brand/    图标
-├── build.sh / build.bat, build-test.sh / build-test.bat, run.sh / run.bat
-└── hydra-umc.project.json, pyproject.toml, CHANGELOG.md, LICENSE, LICENSE.md
-```
+文档描述生态系统的每个系列。下图就是这个仓库本身：工具读取同级仓库的清单和 README，写出目录、一览表、横幅和八个 README，两项检查拒绝不应发布的内容。
 
-## 🛠️ 构建与运行
+<p align="center">
+  <img src="images/architecture.svg" alt="HYDRA-UMC-DOCS architecture" width="100%">
+</p>
+
+## 🔒 安全与防护
+
+| 威胁 | 防御 | 位置 |
+|---|---|---|
+| 声称具备有风险能力（紧急停止、互锁）却不说明验证到什么程度的 README | `check_claims.py` 读取每个仓库的英文 README，对含有风险词、既无状态标记又未经审阅的句子报错（`data/claims_reviewed.json`） | `tools/check_claims.py` |
+| 私有内容随发布一起流出 | `publication_check.py` 在发布前检查文件和历史中是否有私有内容 | `tools/publication_check.py` |
+| 无法追溯到任何仓库的说法 | 文档根据各仓库的 README、清单、更新日志和文档编写，无法追溯的说法会被如实标注 | `docs/CAPABILITY_MATRIX.md` |
+
+## 🚀 快速开始
 
 **要求：** Python 3.10 或更新版本；测试需要 pytest
 
@@ -97,7 +110,53 @@ bash tools/check_all.sh                          # 每个仓库的检查，每�
 python -m pytest tests -q                        # 工具的单元测试
 ```
 
-`build.sh` / `build.bat` 将版本提升一步（生态的里程表规则），安装包并运行测试；`build-test.sh` / `build-test.bat` 在不改变任何版本的情况下进行检查。
+## 🧪 测试
+
+运行 `python -m pytest tests -q` 会执行 153 个自动测试。 不需要硬件，也不需要这台机器以外的任何东西。
+
+CI 运行 `HYDRA_UMC_CI=1 python tools/ci_validate.py`，检查清单、文档、八个 README 和图片。
+
+## 🏗️ 构建与发布
+
+`build.sh` / `build.bat` 安装软件包并运行测试；它们从不改变版本。`build-test.sh` / `build-test.bat` 只检查，不改动任何内容。
+
+## 📂 仓库结构
+
+<p align="center">
+  <img src="images/repository-structure.svg" alt="Repository structure of HYDRA-UMC-DOCS" width="100%">
+</p>
+
+<details>
+<summary>目录树的文本版本</summary>
+
+```text
+HYDRA-UMC-DOCS/
+├── docs/                                                                           架构、接口、能力矩阵、安全基线、威胁模型、第一个切片、生成的目录
+├── data/                                                                           已核实的说法以及“速览”表的数据
+├── src/                                                                            以包形式提供的工具（目录、品牌素材、README、发布检查）
+├── tools/                                                                          包之上的薄脚本、check_all.sh，以及生态共享的 CI 检查
+├── tests/                                                                          工具的单元测试
+├── images/                                                                         横幅和家族图
+├── brand/                                                                          图标
+├── .github/                                                                        CI 工作流和 Issue 模板
+├── build.sh / build.bat / build-test.sh / build-test.bat / run.sh / run.bat        构建并检查；从不改变版本
+├── hydra-umc.project.json / pyproject.toml / CHANGELOG.md / LICENSE / LICENSE.md   清单：版本、成熟度、系列
+├── bump_manifest_version.py                                                        同步清单版本
+├── bump_version.py                                                                 显式提升版本
+└── test.sh                                                                         运行测试
+```
+
+</details>
+
+## 🗺️ 路线图与已知限制
+
+**当前已知限制**
+
+本仓库由文档和小工具组成。读取其他仓库的检查（目录、一览表、说法核对）需要把那些仓库检出到本仓库旁边。它不证明任何硬件方面的事：能力矩阵会逐项说明某项能力只是模拟过，还是真正试过。
+
+## 🌍 语言
+
+本 README 和仓库文档提供八种语言：英语、西班牙语、德语、法语、意大利语、日语、中文和葡萄牙语（葡萄牙）。它们同时编写，并由 CI 检查八个文件拥有相同的章节和相同的链接。 本仓库没有自己的界面或消息目录，因此没有需要翻译的界面文字。
 
 ## 🔗 相关项目
 
@@ -123,15 +182,23 @@ HYDRA-UMC 由相互独立的仓库组成，每个仓库都有自己的版本、�
 * **[URTC](https://github.com/JuanenRac/URTC)** - 通用机器人工具控制器，通过 SDK 连接的独立产品
 * **[JuanenRac](https://github.com/JuanenRac/JuanenRac)** - 所有生态的个人主页和状态面板
 
-## 📚 文档与社区
+## 📚 文档
 
 更多阅读：
 
 * [能力矩阵：哪些已证实，哪些没有](docs/CAPABILITY_MATRIX.md)
 * [项目目录：各仓库的版本和类型](docs/PROJECT_CATALOG.md)
-* [本仓库的变更日志](CHANGELOG.md)
-* [许可证 (GPL-3.0-or-later)](LICENSE)
-* 问题、想法和报告：electrohobby3d@gmail.com
+* [生态系统的安全基线](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md)
+* [生态系统的威胁模型](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md)
+* [本仓库的更新日志](CHANGELOG.md)
+* [本仓库的许可证](LICENSE.md)
+
+## 🤝 参与贡献与社区
+
+* 提交 pull request 之前，请运行 `HYDRA_UMC_CI=1 py -3 tools/ci_validate.py`（或 `HYDRA_UMC_CI=1 python3 tools/ci_validate.py`）：它必须输出 `CI_VALIDATION=PASS`。此检查不要运行 `build.sh` 或 `build.bat`；构建不是检查。
+* 八个 README 由 HYDRA-UMC-DOCS 中的同一个源生成；请勿手工编辑。修改源文件，再用 `tools/make_readmes.py` 重新生成。
+* 不要在 README 中声称尚未运行过的内容：属实时请写“仅模拟”或“尚未在硬件上试过”。
+* 请参阅 [CONTRIBUTING.md](CONTRIBUTING.md)、[行为准则](CODE_OF_CONDUCT.md)、[SECURITY.md](SECURITY.md) 和 [SUPPORT.md](SUPPORT.md)。
 
 ## 👤 作者
 
@@ -139,4 +206,4 @@ HYDRA-UMC 由相互独立的仓库组成，每个仓库都有自己的版本、�
 
 ## 📜 许可证
 
-软件：GPL-3.0-or-later - 见 [LICENSE](LICENSE)。文档：CC BY-SA 4.0 - 见 [LICENSE.md](LICENSE.md)。
+GPL-3.0-or-later - [LICENSE](LICENSE).

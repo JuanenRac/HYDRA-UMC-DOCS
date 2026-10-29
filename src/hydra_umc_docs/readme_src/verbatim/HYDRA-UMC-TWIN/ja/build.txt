@@ -1,0 +1,83 @@
+Rust ツールチェーン（`cargo`/`rustc`、[rustup](https://rustup.rs) 経由で
+インストール）と Python 3.10+（`bump_version.py` のみに使用）が必要です。
+
+```bash
+# Linux / macOS
+./build.sh   # 、`cargo test`（{tests} 件のテスト）、その後 `cargo build --release`
+./run.sh     # target/release/hydra-umc-twin を実行し、名前 + バージョン + 役割を表示
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` はバージョンを変更せず（上げるのは `python tools/hydra_project_tool.py bump` だけです）、実際のテストスイートを
+実行し、その後 release バイナリをビルドします。
+
+実際の `family-status` サブコマンドは、実際のローカルチェックアウトを
+確認します：
+
+```bash
+./run.sh family-status
+./run.sh family-status --workspace /path/to/some/other/checkout
+
+# Windows
+run.bat family-status
+```
+
+```text
+Digital Twin family status (workspace: /path/to/GitHub):
+  HYDRA-UMC-PHYSICS-REPLICA: v0.0.6, maturity=established, role=library
+  HYDRA-UMC-HIL-BRIDGE: v0.0.8, maturity=established, role=service
+  HYDRA-UMC-SYNTHETIC-DATA-GEN: v0.0.9, maturity=established, role=tool
+
+All 3 children present.
+```
+
+デフォルトでは、本リポジトリ自身の親ディレクトリを使用します——これは
+このエコシステムの実際のチェックアウトがすでに使用しているのと同じ
+レイアウトです。実際の子プロジェクトが 1 つでも見つからない場合は `1`
+で終了します。
+
+実際の `family-sync` サブコマンドはさらに一歩進みます——存在する各子
+プロジェクトに対して、実際の状態同期契約（最低成熟度、互換性のある
+最大メジャーバージョン）もチェックします：
+
+```bash
+./run.sh family-sync --workspace /path/to/some/checkout
+```
+
+```text
+Digital Twin family sync contract (workspace: /path/to/some/checkout):
+  HYDRA-UMC-PHYSICS-REPLICA: READY (v0.0.6, maturity=functional)
+  HYDRA-UMC-HIL-BRIDGE: REJECTED (incompatible version) - HYDRA-UMC-HIL-BRIDGE reports major version 1 - this Twin's sync contract is only verified up to major 0 (incompatible simulator version)
+  HYDRA-UMC-SYNTHETIC-DATA-GEN: MISSING (not checked out)
+
+Not every child is sync-ready - see the lines above.
+```
+
+期待されるすべての子プロジェクトが `READY` の場合にのみ終了コード `0`
+で終了します。`MISSING`/`REJECTED` の子プロジェクトが 1 つでもあれば
+`1` で終了します。
+
+**重要：** `Cargo.toml` は今のところ意図的に**Bevy 依存関係を持ちません**。
+Bevy は重量級のグラフィックスエンジンです（コンパイル時間が長く、常に
+利用可能とは限らない GPU/グラフィックスツールチェーンを必要とします）。
+v0 ではマニフェストを読み取るための `serde`/`serde_json`/`tiny_http` のみを追加
+しました。実際の `bevy` 依存関係（および物理バックエンドと HIL-BRIDGE
+向けの gRPC/WebSocket クライアント）は、実際のレンダリング/エンジン
+作業が始まった際に追加されます。
+
+### 3 つの子プロジェクトの統合（`docker-compose.blueprint.yml`）
+
+統合親プロジェクトとして、`docker-compose.blueprint.yml` は本エンジンがその 3 つの
+子プロジェクトを 1 つのスタックへとどのように構成するかを記録しています：
+**PHYSICS-REPLICA**（ソルバー、物理ティックごとに呼び出される）、
+**HIL-BRIDGE**（実際と仮想のコマンド同期）、**SYNTHETIC-DATA-GEN**
+（オフラインのバッチデータセットエクスポート）。4 つのプロジェクトの
+いずれもスケルトン段階ではまだ `Dockerfile` を持たないため、今日の時点
+では `docker compose up` は実行できません——このファイルは、各プロジェクト
+自身の `Dockerfile` が後で追加される際に参照される、確定済みのトポロジー/
+ポート/依存グラフのリファレンスです。

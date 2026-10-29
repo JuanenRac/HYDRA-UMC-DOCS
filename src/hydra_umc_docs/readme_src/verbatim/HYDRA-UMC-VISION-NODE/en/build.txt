@@ -1,0 +1,110 @@
+### Prerequisites
+
+* **Python 3.10 or newer** on your `PATH` (checked via `python3`/`python` - the scripts try both).
+* No system-level Hailo SDK, GStreamer, or other native dependency is required yet - **zero third-party runtime dependencies** (`dependencies = []` in `pyproject.toml`); `pytest` is a dev-only extra used solely for the real test suite. Those runtime dependencies get added once the corresponding real logic lands.
+* Enough disk space for a local virtual environment (created under `.venv/`, a few tens of MB at this stage).
+
+### Step by step - what each command actually does
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **Version check** - reads and prints the project version; building never changes it (only `python tools/hydra_project_tool.py bump` raises it).
+2. **Virtual environment** — creates `.venv/` if it does not already exist (safe to re-run; an existing `.venv/` is reused, not recreated).
+3. **Editable install (with dev extras)** — `pip install -e ".[dev]"` installs this package into `.venv` in "editable" mode, so source edits under `src/` take effect immediately without reinstalling, pulls in `pytest`, and registers the `hydra-umc-vision-node` console entry point used by `run.sh`.
+4. **Compile-check** — `python -m compileall -q src` byte-compiles every `.py` file under `src/`, catching syntax errors across the whole package even in files never actually imported by `main.py`.
+5. **Real test suite** — `pytest tests/` runs all {tests} tests.
+
+The script uses `set -euo pipefail` and stops at the first failing step, printing `Build complete.` (`build.sh`) / `== Build OK ==` (`build.bat`) only if every step succeeded.
+
+```bash
+./run.sh
+```
+
+Locates the Python interpreter inside `.venv` (handles both the POSIX `.venv/bin/python` and the Windows-style `.venv/Scripts/python.exe` layout, since this repo is developed cross-platform) and runs `python -m hydra_umc_vision_node.main`, forwarding any arguments.
+
+Bare invocation prints name + version + role:
+
+```text
+HYDRA-UMC-VISION-NODE v0.1.6
+High-speed perception edge AI node (Hailo-8 + CM5) - integration parent of Vision-Streamer, Detection-HEF, Safety-Zones and Visual-Servoing-API.
+```
+
+The real `family-status` subcommand checks the actual local checkout:
+
+```bash
+./run.sh family-status
+./run.sh family-status --workspace /path/to/some/other/checkout
+
+# Windows
+run.bat family-status
+```
+
+Defaults to this repo's own parent directory - the real sibling-checkout layout this ecosystem already uses. Exits `1` if any real child is missing.
+
+The real `pipeline-status` subcommand probes actual hardware and reports the real, honest result:
+
+```bash
+./run.sh pipeline-status
+```
+```json
+{
+  "manifest": { "version": "0.1.0", "stages": [ "..." ] },
+  "camera_present": false,
+  "accelerator_present": false,
+  "mode": "degraded_no_hardware",
+  "runnable_stages": ["preprocess", "postprocess", "publish"],
+  "skipped_stages": ["capture", "inference"]
+}
+```
+
+On this development machine (no CM5, no Hailo-8, no camera) that is the real, honest answer - exit code `1` (anything but `full` mode). The real `validate-frame` subcommand checks a raw frame buffer file for structural corruption:
+
+```bash
+./run.sh validate-frame path/to/frame.raw --width 1920 --height 1080
+# Frame OK: path/to/frame.raw matches 1920x1080x3 (6220800 bytes)
+
+./run.sh validate-frame path/to/truncated.raw --width 1920 --height 1080
+# Frame INVALID: path/to/truncated.raw
+#   [size_mismatch] frame buffer is ... bytes, expected 6220800 bytes ... - likely truncated or corrupt
+```
+
+```bat
+:: Windows - identical steps, batch syntax
+build.bat
+run.bat
+```
+
+### The JSON/HTTP API
+
+The real `serve` subcommand runs `family-status`/`pipeline-status`/`validate-frame` as a plain JSON/HTTP API instead of a one-shot CLI call - the same convention this family's other `api.py` files already use, built on the standard library's `http.server` (`ThreadingHTTPServer`), no extra runtime dependency:
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8094
+```
+
+| Route | Method | Notes |
+|---|---|---|
+| `/family-status` | `GET` | Same as the `family-status` subcommand. Optional `?workspace=PATH` query param overrides the server's default workspace for that one request. |
+| `/pipeline-status` | `GET` | Same as the `pipeline-status` subcommand. |
+| `/read-code` | `POST` | The DataMatrix codes in a raw frame sent as the body, with `?width=W&height=H` and optional `channels` (default 3) as for `/validate-frame`; answers `{"codes": [...], "count": N}`, or `503` when `pylibdmtx` is not installed. |
+| `/validate-frame` | `POST` | Same check as the `validate-frame` subcommand, but the raw frame bytes travel as the request body instead of a server-side file path - a remote caller has no local path on this server's own filesystem to hand it. Requires `?width=W&height=H` query params (`channels` optional, default `3`). |
+| `/stats` | `GET` | Reports the server's own default workspace path. |
+
+`/validate-frame` example, using the same 48-byte varied fixture as the CLI walkthrough above:
+
+```bash
+curl -X POST "http://127.0.0.1:8094/validate-frame?width=4&height=4&channels=3" --data-binary @vn_good_frame.raw
+# {"valid": true, "expectedBytes": 48, "actualBytes": 48, "issues": []}
+```
+
+Every route replies with an honest error body (`{"error": "..."}`) and the matching HTTP status - `400` for bad/missing query params, `404` for an unknown path - instead of failing silently. Full route-by-route reference: [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md).
+
+### Troubleshooting
+
+* **`python`/`python3` not found** — install Python 3.10+ and make sure it is on `PATH`; `build.sh` uses `python3`, `build.bat` uses `python`.
+* **`compileall` fails** — this means a real syntax error was introduced under `src/`; the build script exits non-zero without creating/updating the install, on purpose, so a broken package is never left "successfully built".
+* **`run.sh`/`run.bat` says "No `.venv` found"** — `build.sh`/`build.bat` must be run at least once first; `run.sh`/`run.bat` never creates the environment itself, only builds do.
+* **Stale editable install after pulling changes** — delete `.venv/` and re-run `build.sh`/`build.bat`; this is rarely needed since `pip install -e .` normally picks up source changes without reinstalling.

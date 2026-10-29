@@ -1,0 +1,1 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — すべての `family-status`/`family-sync`/`serve` 呼び出し、ビルド済みリリースバイナリから実際に取得した出力、終了コード表、そして `GET /family-status`/`GET /family-sync`/`GET /stats` の HTTP JSON 契約。

@@ -1,0 +1,1 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — cada subcomando (`config validate`/`gst`/`mediamtx`, `stream simulate`/`serve`, incluindo exemplos reais de câmaras USB e IP RTSP), com saída real capturada.

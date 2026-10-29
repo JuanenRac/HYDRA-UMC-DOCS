@@ -1,0 +1,1 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — ogni invocazione di `correct`/`request`/`serve`, output reale catturato da un'esecuzione della CLI installata, la tabella dei codici di uscita e il contratto HTTP JSON di `POST /correct`/`POST /request`/`GET /stats`.

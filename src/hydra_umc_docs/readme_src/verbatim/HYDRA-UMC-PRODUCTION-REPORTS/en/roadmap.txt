@@ -1,0 +1,5 @@
+* **Done (v0):** real OEE and availability calculation, real HTTP integration with HYDRA-UMC-DATALAKE, real HTTP API, real shift/day boundaries, versioned formulas + input fingerprinting, byte-for-byte reproducible CSV export.
+* **Next:** a real `production_event` data source - having the orchestrator (or the robot) report cycle completions in this schema.
+* **Next:** persistent/scheduled reports (currently every report is computed live, on request).
+* **Later:** PDF export, an email/delivery mechanism, and a dashboard.
+* AI-driven ROI analysis for tool upgrades, ties into the same OEE data once historical trends are stored.

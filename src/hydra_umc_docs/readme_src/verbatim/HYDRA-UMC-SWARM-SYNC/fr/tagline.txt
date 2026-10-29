@@ -1,0 +1,1 @@
+📡 Réconciliation d'état par CRDT & synchronisation multi-nœuds

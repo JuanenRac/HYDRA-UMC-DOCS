@@ -1,0 +1,134 @@
+### 前提条件
+
+* `PATH` 上に **Python 3.10 以降**があること（スクリプトは先に `python3` を試し、次に `python` にフォールバックします）。
+* 安全/視覚のランタイム依存関係は現時点では不要です——この段階では**サードパーティのランタイム依存関係が一切ありません**（`pyproject.toml` の `dependencies = []`）。`pytest` は開発専用のエクストラであり、実際のテストスイートのためだけに使用されます。
+* ローカル仮想環境（`.venv/` 下）には数十 MB のディスク容量が必要です。
+
+### ステップバイステップ
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **バージョンの確認** — プロジェクトのバージョンを読み取って表示します。ビルドがバージョンを変更することはありません（上げるのは `python tools/hydra_project_tool.py bump` だけです）。
+2. **仮想環境** — `.venv/` が存在しない場合は作成し、存在する場合は再利用します。
+3. **Editable インストール（dev エクストラ付き）** — `pip install -e ".[dev]"` により `src/` 下の変更が即座に反映され、`pytest` がインストールされ、`hydra-umc-safety-zones` コンソールエントリポイントが登録されます。
+4. **コンパイルチェック** — `python -m compileall -q src` が `src/` 下の各ファイルをバイトコンパイルし、エコシステム全体にわたる構文エラーを検出します。
+5. **実際のテストスイート** — `pytest tests/` が全 {tests} 件のテストを実行します。
+
+`set -euo pipefail` は最初に失敗したステップでスクリプトを停止させます。
+ダブルクリックで起動された場合（既に開いているターミナルからではなく）は、
+ウィンドウは開いたままになります（`Press Enter to close...`）。
+
+```bash
+./run.sh
+```
+
+`.venv` 内のインタープリタを特定し（POSIX と Windows 両方の `.venv`
+ディレクトリ構造を処理）、`python -m hydra_umc_safety_zones.main` を実行
+し、あらゆる引数を転送します。
+
+引数なしで呼び出すと名前・バージョン・役割を表示します：
+
+```text
+HYDRA-UMC-SAFETY-ZONES v0.1.5
+Real-time 3D intrusion detection and E-STOP orchestration for robotic safe-working areas.
+```
+
+実際の `check` サブコマンドには、ゾーンファイルと検知ファイルの両方が
+必要で、どちらも単純な JSON です。さらにオプションの観測ステータス
+ファイルも使えます。`calibration` はゾーンファイル内でオプションで、
+コマンドラインの `--observation` もオプションです——それが無い場合に
+何が起きるかは以下を参照してください：
+
+```json
+// zones.json
+{
+  "calibration": {"version": "cal-1", "source": "manual", "calibrated_at": "2024-01-15", "max_age_days": 30, "calibrated_by": "A. Operator"},
+  "zones": [
+    {"id": "warn1", "level": "warning", "min": {"x": 0, "y": 0, "z": 0}, "max": {"x": 5, "y": 5, "z": 5}},
+    {"id": "danger1", "level": "danger", "min": {"x": 0, "y": 0, "z": 0}, "max": {"x": 1, "y": 1, "z": 1}}
+  ]
+}
+```
+
+```json
+// detections.json
+{"objects": [{"id": "op1", "position": {"x": 0.5, "y": 0.5, "z": 0.5}}]}
+```
+
+```json
+// observation.json - 上記の検知が実際にアクティブで最近更新された
+// 観測者から得られたものであるという実際のエビデンス
+{"active": true, "observedAt": "2024-01-15T12:00:00Z", "maxAgeSeconds": 5}
+```
+
+これらの例の日付はあくまで例です。`calibrated_at` は `max_age_days` に収まる新しさで、`observedAt` は現在から `maxAgeSeconds` 以内（末尾の `Z` などのタイムゾーン付き）でなければなりません。示した日付のままでは、今日の結果は下の `DANGER` ではなく `INHIBITED` になります。
+
+```bash
+./run.sh check --zones zones.json --detections detections.json --observation observation.json
+```
+
+```text
+SAFETY STATE: DANGER - object(s) ['op1'] breached a danger zone
+BREACH: object 'op1' inside warning zone 'warn1'
+BREACH: object 'op1' inside danger zone 'danger1'
+E-STOP REQUESTED: object 'op1' breached danger zone 'danger1' (not asserted - see estop.py)
+```
+
+終了コードは `2`（危険、E-STOP をリクエスト済み）、`1`（警告レベルの
+越境のみ）、`0`（越境なし、キャリブレーション有効、観測者がアクティブで
+新鮮）、または `3`
+（**Inhibited**——キャリブレーションが欠落/期限切れ、または観測者が欠落/
+無効化/古すぎる/エラー、越境ロジックより
+前にチェック）です。以下はフェイルセーフパスの実際の例です——上記と同じ
+`detections.json` を使い、`zones.json` には `"calibration"` キーが全く
+ありません：
+
+```bash
+./run.sh check --zones zones_no_calibration.json --detections detections.json --observation observation.json
+```
+
+```text
+SAFETY STATE: INHIBITED - no calibration metadata present - zone geometry cannot be trusted
+```
+
+終了コードは `3` です——`op1` が両方のゾーン内にあるにもかかわらず、
+`BREACH`/`E-STOP` の出力が全く無いことに注目してください：信頼できない
+ゾーン集合は、越境チェックのステップに決して到達しません。`--observation`
+を完全に省略した場合も、キャリブレーションが新鮮でどのゾーンにも対象が
+近づいていなくても、同じように安全に失敗します：
+
+```bash
+./run.sh check --zones zones.json --detections detections_clear.json
+```
+
+```text
+SAFETY STATE: INHIBITED - no observation status provided - cannot confirm the supplied detections reflect a real, active observer
+```
+
+```bat
+:: Windows - 手順は同じ、バッチ構文
+build.bat
+run.bat
+run.bat check --zones zones.json --detections detections.json --observation observation.json
+```
+
+同じ `check` ロジックは、CLI以外の呼び出し元向けにHTTP経由でも利用できます—`zones`/`detections`/`observation` はファイルパスではなくJSONボディで渡されます:
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8108
+# 別のターミナルで:
+curl -s -X POST http://127.0.0.1:8108/check -d '{"zones": {...}, "detections": {...}, "observation": {...}}'
+```
+
+実際のコマンド・フラグ・終了コードの完全なリファレンス(実際の実行から採取した `READY`/`WARNING`/`DANGER`/`INHIBITED` の各状態を含む)は [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) を参照してください。
+
+### トラブルシューティング
+
+* **`python`/`python3` が見つからない** —— Python 3.10+ をインストールし `PATH` に含まれていることを確認してください。
+* **`compileall` が失敗する** —— `src/` 下に実際の構文エラーが導入されたことを意味します。ビルドは意図的にインストールに触れることなく停止します。
+* **`run.sh`/`run.bat` が「`.venv` が見つかりません」と表示する** —— 先に少なくとも 1 回 `build.sh`/`build.bat` を実行してください。
+* **editable インストールが古いままになる** —— `.venv/` を削除して再構築してください。これが必要になることはまれです。
+* **`check` が非ゼロの終了コードで終わる** —— これは実際の正しい動作であり、失敗ではありません：`1` は警告レベルの越境のみが見つかったことを、`2` は危険レベルの越境が E-STOP をリクエストしたことを、`3` はゾーン集合のキャリブレーションが欠落/期限切れであるか、観測者ステータスが欠落/無効化/古すぎる/エラーであること（フェイルセーフ、越境ロジックが実行される前にチェック）を意味します。Python のトレースバックや不正な JSON によるエラーだけが、実際のバグです。

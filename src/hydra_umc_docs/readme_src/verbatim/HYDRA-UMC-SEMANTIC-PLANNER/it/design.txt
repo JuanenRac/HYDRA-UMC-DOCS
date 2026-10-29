@@ -1,0 +1,70 @@
+### ARCHITETTURA E DECISIONI DI PROGETTAZIONE
+
+Questo repository è un **figlio** della famiglia Cognitive AI Node - il
+suo padre, [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+possiede l'immagine HydraOS condivisa e i pesi dei modelli quantizzati, e
+collega questo servizio nel suo `docker-compose.yml` insieme ai suoi tre
+fratelli (VLA-Engine, Voice-UI, Docs-QA):
+
+* **Perché questo figlio non ha hardware/firmware/`os/`/`models/`
+  propri.** Gira interamente sul modulo CM5 + Hailo-10 M.2 già posseduto
+  dal padre - centralizzare i pesi dei modelli e l'immagine HydraOS in un
+  unico posto evita quattro copie divergenti di più gigabyte all'interno
+  della famiglia.
+* **Perché una struttura `src/`.** Mantiene il pacchetto installabile
+  (`hydra_umc_semantic_planner`) separato dal tooling nella radice del
+  repo (`bump_version.py`), coerentemente con il resto dei progetti
+  Python dell'ecosistema.
+* **Perché il punto di ingresso inizialmente si limitava a stampare
+  identità/versione/ruolo.** La fase di andamiaje (impalcatura) ha
+  dimostrato che il pacchetto si installa, compila e importa
+  correttamente - sulla versione Python reale di destinazione - prima di
+  aggiungere qualsiasi vera logica di pianificazione/recupero basata su
+  LLM, mantenendo quel lavoro successivo isolato dalle questioni di
+  packaging. Da allora `main.py` si è arricchito di veri sottocomandi
+  `decompose`/`recover`/`serve` (vedi COMPILAZIONE ED ESECUZIONE più
+  sotto) - che `run.sh` senza argomenti continui a stampare solo
+  identità/versione/ruolo è intenzionale (un rapido controllo "il
+  pacchetto si è installato correttamente"), non un segno che la CLI
+  stessa sia ancora uno scheletro.
+* **Come si inserisce nel resto dell'ecosistema.** Questo pianificatore
+  è il nucleo decisionale del Cognitive AI Node: consuma l'intento dal
+  suo fratello HYDRA-UMC-VOICE-UI e i token di azione dal suo fratello
+  HYDRA-UMC-VLA-ENGINE, e invia le decisioni di missione risultanti a
+  valle verso HYDRA-UMC-ORCHESTRATOR per l'esecuzione fisica.
+* **Perché `decompose.py` sono vere regole regex, non un LLM locale.**
+  Un piccolo vocabolario reale di obiettivi (assemblare/pick-and-place/
+  ispezionare) è coperto interamente e onestamente da regole oggi - lo
+  stesso ragionamento del vero indice TF-IDF del fratello
+  HYDRA-UMC-DOCS-QA invece di un modello di embedding: un nucleo reale e
+  testabile ora, che un futuro pianificatore basato su LLM potrà
+  sostituire dietro lo stesso contratto `decompose_goal()`.
+* **Perché i codici di errore di `recovery.py` corrispondono al contratto
+  pubblico di recupero.** `INVALID_STATE`/`OUT_OF_RANGE`/`ESTOP_ACTIVE`/
+  `TOOL_INCOMPATIBLE`/`TIMEOUT`/`UNSUPPORTED` sono i veri errori
+  strutturati che quell'adattatore è progettato per restituire - una
+  logica di recupero costruita oggi contro questo vero vocabolario resta
+  valida quando l'adattatore stesso esisterà, invece di inventare una
+  tassonomia di errori parallela da riconciliare in seguito.
+* **Perché `ESTOP_ACTIVE`/`UNSUPPORTED`/i codici sconosciuti passano
+  sempre a un umano.** Coerente con la regola di sicurezza di tutto
+  l'ecosistema secondo cui i livelli IA, UI e cloud non annullano mai
+  una condizione di sicurezza fisica - questo pianificatore propone
+  un'azione di recupero, non annulla mai un E-STOP né indovina di
+  fronte a un errore che non riconosce.
+* **Perché `validation.py` esiste anche se i veri modelli di
+  `decompose.py` non producono mai realmente un piano non valido.**
+  Un modello fisso può garantire parametri ben formati per
+  costruzione - un futuro pianificatore basato su LLM non può farlo.
+  `validate_plan()` è il contratto reale ed esplicito che quel
+  pianificatore dovrebbe soddisfare, verificato qui e ora contro
+  l'unico pianificatore che esiste oggi, così che il contratto stesso
+  sia dimostrato corretto prima che qualcosa di più difficile debba
+  soddisfarlo.
+* **Perché `decompose_goal()` viene testato tramite fuzzing con un
+  seed casuale fisso invece che con `hypothesis`.** Questo progetto
+  (come il resto dell'ecosistema) rimane basato esclusivamente sulla
+  libreria standard - un ciclo riproducibile e con seed di
+  `random.Random` su centinaia di obiettivi sintetici ottiene la
+  stessa proprietà reale (non va mai in crash, non restituisce mai un
+  piano malformato) senza aggiungere una nuova dipendenza.

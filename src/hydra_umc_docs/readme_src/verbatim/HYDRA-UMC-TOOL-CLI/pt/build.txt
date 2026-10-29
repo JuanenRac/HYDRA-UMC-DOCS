@@ -1,0 +1,26 @@
+Requer o Go >= 1.24.
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh version
+./run.sh status --server http://localhost:3000
+./run.sh robots --server http://localhost:3000
+./run.sh doctor --server http://localhost:3000
+./run.sh config validate --config ./hydra-cli.json
+./run.sh config apply --config ./hydra-cli.json --dry-run
+echo $?   # 0=ok 2=utilização 3=config 4=rede 5=servidor 6=não-implementado 7=autenticação
+
+# Windows
+build.bat
+run.bat version
+run.bat status --server http://localhost:3000
+run.bat robots --server http://localhost:3000
+run.bat doctor --server http://localhost:3000
+run.bat config validate --config .\hydra-cli.json
+run.bat config apply --config .\hydra-cli.json --dry-run
+```
+
+`robots` e `doctor` leem `/api/settings`, que o HYDRA-UMC-SERVER só entrega a uma conta com sessão iniciada (um administrador vê as definições completas, os restantes papéis uma cópia com os segredos ocultos). Dê uma credencial à CLI através do ambiente - nunca por uma opção, para que não apareça na lista de processos nem no histórico do shell: `HYDRA_CLI_TOKEN` (um token Bearer que o servidor já emitiu), ou `HYDRA_CLI_USER` e `HYDRA_CLI_PASSWORD` (a CLI inicia sessão com `POST /api/login` nessa execução; se houver as duas coisas, prevalece o token). Sem nenhuma, o comando termina com o código `7` e indica que variáveis definir. `status` e o primeiro pedido do `doctor` usam o `/api/hydra-info` público e nunca enviam a credencial. Uma resposta é lida até 4 MiB.
+
+O `build` nunca altera a versão (só `python tools/hydra_project_tool.py bump` a sobe), executa a suite de testes real (`go vet` + `go test`), compila o módulo Go em `src/` para `build/hydra-cli(.exe)` e executa o `version` uma vez para verificar - depois compila de forma cruzada uma versão real para `linux/amd64`, `linux/arm64` (a arquitetura do próprio CM5), `windows/amd64`, `darwin/amd64` e `darwin/arm64` em `build/release/<os>-<arch>/`, com um ficheiro real de somas de verificação `SHA256SUMS` ao lado. O `run` volta a executar o binário compilado, reencaminhando todos os argumentos — experimente `run doctor` contra uma instância em execução do `HYDRA-UMC-SERVER`. O Doctor é uma verificação segura e só de leitura do contrato dos endpoints; veja [docs/DOCTOR.md](docs/DOCTOR.md).

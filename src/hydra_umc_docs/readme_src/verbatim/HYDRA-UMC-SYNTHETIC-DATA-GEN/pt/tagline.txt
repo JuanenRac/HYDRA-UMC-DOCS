@@ -1,0 +1,1 @@
+📸 Gerador procedural de conjuntos de dados para o treino do Nó de IA de Visão

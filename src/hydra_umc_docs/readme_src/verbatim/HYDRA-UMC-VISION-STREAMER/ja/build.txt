@@ -1,0 +1,87 @@
+### 前提条件
+
+* `PATH` 上に **Python 3.10 以降**があること（スクリプトは先に `python3` を試し、次に `python` にフォールバックします）。
+* GStreamer、V4L2 ツール、その他のネイティブ依存関係は現時点では不要です——この段階では**サードパーティのランタイム依存関係が一切ありません**（`pyproject.toml` の `dependencies = []`）。
+* ローカル仮想環境（`.venv/` 下）には数十 MB のディスク容量が必要です。
+
+### ステップバイステップ
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **バージョンの確認** — プロジェクトのバージョンを読み取って表示します。ビルドがバージョンを変更することはありません（上げるのは `python tools/hydra_project_tool.py bump` だけです）。
+2. **仮想環境** — `.venv/` が存在しない場合は作成し、存在する場合は再利用します。
+3. **Editable インストール** — `pip install -e ".[dev]"` により `src/` 下の変更が即座に反映され、`pytest` がインストールされ、`hydra-umc-vision-streamer` コンソールエントリポイントが登録されます。
+4. **コンパイルチェック** — `python -m compileall -q src` が `src/` 下の各ファイルをバイトコンパイルし、あるファイルが `main.py` から一度もインポートされない場合でも、エコシステム全体にわたる構文エラーを検出します。
+5. **実際のテストスイート** — `python -m pytest tests/ -q`（config、pipeline、MediaMTX 生成、バッファ/再接続ポリシー、HailoRT 統合境界、CLI をカバーする {tests} 個のテスト）。
+
+`set -euo pipefail` は最初に失敗したステップでスクリプトを停止させます。
+5 つのステップすべてが成功した場合にのみビルドは成功を報告します。
+
+```bash
+./run.sh
+```
+
+`.venv` 内のインタープリタを特定し（POSIX と Windows 両方の `.venv`
+ディレクトリ構造を処理）、`python -m hydra_umc_vision_streamer.main` を
+実行してすべての引数を転送します——素の呼び出しは名前・バージョン・役割
+を表示します。
+
+実際の例 —— カメラ設定を検証し、その GStreamer パイプラインを生成し、対応する MediaMTX リレー設定を生成する：
+
+```bash
+./run.sh config validate --config cameras.json
+# 2 camera(s) in cameras.json
+#   cam0: /dev/video0 1920x1080@30 MJPG
+#   cam1: /dev/video1 640x480@15 YUYV
+# config OK
+
+./run.sh config gst --config cameras.json --camera cam0
+# v4l2src device=/dev/video0 ! image/jpeg,width=1920,height=1080,framerate=30/1 ! jpegdec ! videoconvert ! tee name=t t. ! queue ! appsink name=cam0_hailo_sink t. ! queue ! rtspclientsink location=rtsp://localhost:8554/cam0
+
+./run.sh config mediamtx --config cameras.json
+# paths:
+#   cam0:
+#     source: publisher
+#   cam1:
+#     source: publisher
+```
+
+実際の例 —— カメラを実際にキャプチャして HTTP 経由で MJPEG として配信する（実際のデバイスを開く唯一のサブコマンド）：
+
+```bash
+# USB/V4L2 デバイス
+./run.sh stream serve --device 0 --port 8100
+
+# 実際の RTSP IP カメラ（実機に対して検証済み——CHANGELOG.md を参照）
+CAMERA_URL="rtsp://admin:secret@192.168.0.211:554/11" ./run.sh stream serve --device-env CAMERA_URL --port 8100 --width 1920 --height 1080 --fps 15
+```
+
+実際の例 —— 有界バッファに対する遅い消費者をシミュレートし、実際の
+再接続ポリシーを通して切断された接続を処理する：
+
+```bash
+./run.sh stream simulate --buffer-size 8 --frames 1000 --consumer-rate 1000
+# Pushed 1000 frame(s) through a buffer capped at 8
+# Max buffer size observed: 8 (must never exceed 8)
+# Frames dropped by backpressure: 972
+#
+# Simulated disconnect at frame 500
+# Reconnect backoff schedule (s): [0.5, 1.0, 2.0, 4.0]
+# Final connection state: given_up
+```
+
+```bat
+:: Windows - 手順は同じ、バッチ構文
+build.bat
+run.bat
+```
+
+### トラブルシューティング
+
+* **`python`/`python3` が見つからない** —— Python 3.10+ をインストールし `PATH` に含まれていることを確認してください。
+* **`compileall` が失敗する** —— `src/` 下に実際の構文エラーが導入されたことを意味します。ビルドは意図的にインストールに触れることなく停止します。
+* **`run.sh`/`run.bat` が「`.venv` が見つかりません」と表示する** —— 先に少なくとも 1 回 `build.sh`/`build.bat` を実行してください。`run` 自体が環境を作成することはありません。
+* **editable インストールが古いままになる** —— `.venv/` を削除して再構築してください。`pip install -e .` は通常、ソースの変更をリアルタイムで認識するため、これが必要になることはまれです。

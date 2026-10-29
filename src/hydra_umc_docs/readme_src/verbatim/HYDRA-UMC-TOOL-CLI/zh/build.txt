@@ -1,0 +1,33 @@
+需要 Go >= 1.24。
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh version
+./run.sh status --server http://localhost:3000
+./run.sh robots --server http://localhost:3000
+./run.sh doctor --server http://localhost:3000
+./run.sh config validate --config ./hydra-cli.json
+./run.sh config apply --config ./hydra-cli.json --dry-run
+echo $?   # 0=正常 2=用法 3=配置 4=网络 5=服务器 6=未实现 7=认证
+
+# Windows
+build.bat
+run.bat version
+run.bat status --server http://localhost:3000
+run.bat robots --server http://localhost:3000
+run.bat doctor --server http://localhost:3000
+run.bat config validate --config .\hydra-cli.json
+run.bat config apply --config .\hydra-cli.json --dry-run
+```
+
+`robots` 和 `doctor` 读取 `/api/settings`，HYDRA-UMC-SERVER 只会把它交给已登录的账户（管理员看到完整设置，其他角色看到隐去机密的副本）。请通过环境变量而不是命令行选项把凭据交给 CLI，这样它不会出现在进程列表和 shell 历史中：`HYDRA_CLI_TOKEN`（服务器已签发的 Bearer 令牌），或 `HYDRA_CLI_USER` 和 `HYDRA_CLI_PASSWORD`（CLI 在该次运行中通过 `POST /api/login` 登录；两者都设置时以令牌为准）。两者都没有时，命令以退出码 `7` 结束，并说明要设置哪些变量。`status` 和 `doctor` 的第一个请求使用公开的 `/api/hydra-info`，从不发送凭据。响应最多读取 4 MiB。
+
+`build` 不会更改版本号，运行真实测试
+套件（`go vet` + `go test`），将 `src/` 中的 Go 模块编译为
+`build/hydra-cli(.exe)`，并运行一次 `version` 命令以进行验证——随后为
+`linux/amd64`、`linux/arm64`（CM5 自身的架构）、`windows/amd64`、
+`darwin/amd64` 和 `darwin/arm64` 交叉编译真实的发布版本，输出到
+`build/release/`，并附带一份真实的 `SHA256SUMS` 校验和文件。`run`
+再次执行编译后的二进制文件，并转发所有参数——试着对一个正在运行的
+`HYDRA-UMC-SERVER` 实例运行 `run doctor`。Doctor 是安全的只读端点契约检查；详见 [docs/DOCTOR.md](docs/DOCTOR.md)。

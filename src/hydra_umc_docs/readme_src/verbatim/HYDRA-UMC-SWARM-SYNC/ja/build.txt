@@ -1,0 +1,66 @@
+コンパイルできるだけの骨組みではなく、本物の、テスト済みの CRDT
+マージです：複数セルの JSON シナリオを調整し、収束した状態を
+出力します。
+
+```bash
+# Windows
+build.bat
+run.bat scenarios/example.json
+
+# Linux / macOS
+./build.sh
+./run.sh scenarios/example.json
+```
+
+`build.sh`/`build.bat` はバージョンを変更せず（上げるのは `python tools/hydra_project_tool.py bump` だけです）、
+その後 `cargo build --release` を実行します。`run.sh`/`run.bat` は
+生成されたバイナリを直接実行し、引数（シナリオのパス）をそのまま
+渡します。
+
+シナリオは `cells` 配列を持つ JSON ファイルです——各セルには `id`
+(可読性のため)、`writer`(書き込み者 ID)、そして `writes` のリスト
+(`{key, value, time}`、`time` はライブ生成ではなく再生される明示的な
+Lamport タイムスタンプ - HYDRA-UMC-PATH-PLANNER-3D の `seed` が使う
+のと同じ「明示的で決定論的な入力」パターン)があります。各セルの書き込みはそれぞれのマップに畳み込まれ、その後すべてのセルのマップが `merge_report()` で左から右へマージされるため、途中で起きた実際の競合はすべて結果に記録されます。どの順序でマージしても同じ状態になることは CRDT 自体の性質であり、`src/crdt.rs` のプロパティテストで固定されています。呼び出しごとに再確認はしません。
+
+`scenarios/example.json`(`cell-a` と `cell-b` の両方が `cell-a-node-2`
+に書き込んだシナリオ)に対して実行すると、単なる不透明な最終結果では
+なく、実際の競合解決が見えます:
+
+```bash
+./run.sh scenarios/example.json
+```
+```json
+{
+  "cells_merged": 2,
+  "merged_state": { "...": "..." },
+  "conflicts_resolved": 1,
+  "conflicts": [
+    { "key": "cell-a-node-2",
+      "local_time": 2, "local_writer": 1, "local_value": "ok",
+      "remote_time": 3, "remote_writer": 2, "remote_value": "unhealthy",
+      "kept_remote": true }
+  ],
+  "next_local_time": 6
+}
+```
+
+```bash
+cargo test   # Lamport クロックと CRDT 自体 - merge が可換・結合的・
+             # 冪等であることの直接的な検証(単に「ある例で正しく見える」
+             # だけではない)、真に並行する書き込みに対する決定論的な
+             # タイブレークのテスト、merge_report() 自体の競合検出の
+             # 振る舞い、そして複数回のパーティション化と部分的な
+             # 再接続を経ても収束することを証明する 4 セルのシミュレー
+             # ション - 合計 102 個のテスト
+```
+
+同じ `reconcile()` 呼び出しは、ローカルのシナリオファイルの代わりに
+本物の JSON/HTTP API(`src/server.rs`、`tiny_http`、ブロッキング、
+非同期ランタイムなし)経由でも到達できます - `run.sh serve [--addr ADDR] [--port PORT]`
+で起動し(デフォルト `127.0.0.1:8112`)、`POST /reconcile`(リクエスト
+ボディに同じ JSON 形式のシナリオ)と `GET /stats` を公開します。これは
+`systemd/hydra-umc-swarm-sync.service` が CM5 上で無人実行している
+のと同じものです。完全な使用方法、終了コード、ルートの完全な
+リファレンスは [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) に
+あります。
