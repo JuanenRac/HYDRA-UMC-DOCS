@@ -9,6 +9,7 @@
    "5b10e71477f5": "— real forward kinematics and joint-limit validation over a real URDF subset.",
    "667ee408d2dc": "SECURITY.md",
    "69381d120c8a": "Maturity | Established",
+   "727de1d5e23d": "Software | 🟢 | Complete for its purpose and stable; the honesty check above lists the known limits",
    "8a91cfb19016": "— the real headless backend (REST/WebSocket) every control client actually talks to; the authenticated ecosyst",
    "cfe823251d84": "✅ Real shared safety gate: every job dispatched through is evaluated by from 's , the same gate every sibling ",
    "d116963177fe": "Fails Closed Safety Fails Closed red.svg",
@@ -66,6 +67,7 @@
    "630977b87ac2": "fixtures, read-only catalog, SDK safety gate, certification records)."
   },
   "HYDRA-UMC-DASHBOARD-AI": {
+   "37ea8219d430": "There it reads through the relay of that server, (read-only) and , with the access token of the person who sig",
    "95bec08958b7": "how to report a vulnerability; see instead for this project's own external-content and deployment safety contr"
   },
   "HYDRA-UMC-DATALAKE": {
@@ -90,7 +92,7 @@
   },
   "HYDRA-UMC-EDITOR-URDF": {
    "083d918ea6e3": "This app automates that entire pass - pull the source files from a GitHub URL or an already-downloaded local f",
-   "340acb167399": "Current version: 0.1.4 ( - see the Production Build section below for how this number moves)",
+   "435d5f302e7c": "Current version: 0.1.5 ( - see the Production Build section below for how this number moves)",
    "a885b988f1c6": "Every real robot model in STUDIO's catalog got there the same way in the past: find a description repo on GitH",
    "e0ccbc10b518": "— sibling desktop editor for the same model catalog's own raw STL geometry, rather than the URDF/kinematics si",
    "e25b674d0681": "Retype and re-limit a joint - change a joint's type (any of the 6 the URDF spec defines) and its lower/upper l"
@@ -103,6 +105,9 @@
   },
   "HYDRA-UMC-JOB-DISPATCHER": {
    "a10bddc29c34": "It ensures that high-priority tasks (e.g., \"Emergency Defect Fix\") bypass the normal production flow, and coor"
+  },
+  "HYDRA-UMC-LOCAL-TECHNICIAN": {
+   "a362ed7a5bcc": "Signed results."
   },
   "HYDRA-UMC-MQTT-BROKER": {
    "395671b28729": "Production Build Bundles the broker into a single deployable file with esbuild:"
@@ -117,6 +122,7 @@
    "384fa1954593": "Delivery 2's own real contract, providers, credentials and safety boundary."
   },
   "HYDRA-UMC-OS": {
+   "8030e777be18": "Installers of the CM5 (one per service), first boot, diagnostics, recovery, backup and restore of the settings",
    "d9cdfe793512": "— the real headless backend (REST/WebSocket) every control client actually talks to; the authenticated service"
   },
   "HYDRA-UMC-PHYSICS-REPLICA": {
@@ -138,11 +144,13 @@
    "2ec1d884e3ac": "Every route, the WebSocket message contract, authentication, and the per-client remote-access model are docume",
    "436aef625d16": "You own a domain pointing at this server - use Let's Encrypt (e.g. via Certbot) for a real, browser-trusted ce",
    "6c9adaf43d5e": "See \"TLS / HTTPS\" below.",
-   "9d08fe9b47f1": "JWT bearer-token authentication on every write; two account roles ( , ) gate settings/user-management writes v",
+   "8fa4acaae0fc": "the Bluetooth LE service: (the default), (phones read the state) or (and send commands, each with the access t",
    "bc0b19bbbf96": "exposes process uptime, connected WebSocket clients, write latency, atomic robot commands by type, authenticat",
    "cbc59d583480": "TLS / HTTPS",
+   "d028a0379a75": "The page reads the data lake ( , read-only: of , , , , and , anything else is refused) and the anomaly detecto",
    "d185bdc9bcde": "In production the server also refuses to start with an example /bootstrap password from a deployment template,",
-   "dc54efc9a372": "is the global stop: one call, open to every signed-in account, stops every robot and switches every valve and "
+   "dc54efc9a372": "is the global stop: one call, open to every signed-in account, stops every robot and switches every valve and ",
+   "dd2ccb9fef34": "JWT bearer-token authentication on every write; three account roles ( , , read-only ) gate settings/user-manag"
   },
   "HYDRA-UMC-STUDIO": {
    "018b23a49041": "🏭 Kinova - Gen3 Lite, Gen2 (BSD-3-Clause meshes, official ros2_kortex geometry/kinematics)",
@@ -158,6 +166,7 @@
    "fa01582b9b21": "Preview the production build locally with:"
   },
   "HYDRA-UMC-SUITE": {
+   "23c0cfbe617b": "The Ecosystem > Server Admin screen also sets who may use the local AI relay, whether the host information ask",
    "661bc473eaa6": "Math: NumPy (4x4 homogeneous transforms for forward kinematics)",
    "a23fc703e659": "how to report a vulnerability, and this app's own real security focus areas."
   },
@@ -165,6 +174,7 @@
    "1a01b3374cb8": "Format Format YOLO %2F COCO FF6F00.svg",
    "2874329958dc": "Renders training datasets (with automatic YOLO/COCO annotation) through 's own engine, for and to train agains",
    "52518243e90e": "Stack | Python / procedural scene generation / YOLO/COCO annotation export",
+   "6495e31cf2b5": "The manifest now records the class list ( ) and its hash ( , the sha256 of ) so whoever registers a model trai",
    "cd2e7c39e4d1": "Writes real BMP images to , real YOLO labels to + , and/or a real in COCO format, depending on ."
   },
   "HYDRA-UMC-TELEMETRY-COLLECTOR": {
@@ -179,6 +189,7 @@
   "HYDRA-UMC-VISUAL-SERVOING-API": {
    "6b13702f107a": "A safety fault must win over everything else, even a perfectly fresh and confident detection - so (safety_stat",
    "a0c76cde8c92": "Real example - request a safety-gated correction (accepted, inhibited, and rejected):",
+   "cccf8f01efab": "🔁 Servoing sessions (the loop with memory): opens a session with a nominal period, a gain, a filter on the mea",
    "d0fb2262f75c": "Who sets the safety limits: the limits (minimum confidence, maximum data age, maximum gain, maximum linear and"
   },
   "HYDRA-UMC-VOICE-UI": {
