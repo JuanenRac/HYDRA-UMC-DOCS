@@ -1,3 +1,5 @@
+**Limites conhecidos hoje**
+
 ### Estado
 
 O agente base, a sua configuração validada sem segredos, uma unidade systemd endurecida e testes no anfitrião estão implementados. O agente é deliberadamente só de leitura: a montagem de imagens de produção e a validação em hardware CM5 continuam a ser portas de lançamento separadas.

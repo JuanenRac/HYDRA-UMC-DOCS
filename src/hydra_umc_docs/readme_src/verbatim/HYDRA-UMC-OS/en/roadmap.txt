@@ -1,3 +1,5 @@
+**Known limits today**
+
 ### Status
 
 The base agent, its validated non-secret configuration, a hardened systemd

@@ -1,3 +1,5 @@
+**Limites connues aujourd'hui**
+
 ### Statut
 
 L'agent de base, sa configuration non secrète validée, une unité systemd

@@ -1,3 +1,5 @@
+**Límites conocidos hoy**
+
 ### Estado
 
 El agente base, su configuración no secreta validada, una unidad systemd

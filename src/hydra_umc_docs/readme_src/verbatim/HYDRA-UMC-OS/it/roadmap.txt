@@ -1,3 +1,5 @@
+**Limiti noti oggi**
+
 ### Stato
 
 L'agente di base, la sua configurazione non segreta convalidata, un'unità systemd

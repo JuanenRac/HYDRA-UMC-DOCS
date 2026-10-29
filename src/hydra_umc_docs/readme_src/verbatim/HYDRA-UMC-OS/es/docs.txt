@@ -1,5 +1,3 @@
-### Documentación adicional
-
 - **[`docs/AGENT_REFERENCE.md`](docs/AGENT_REFERENCE.md)** — referencia real de comandos/salida de `hydra-umc-agent`, la CLI de diagnóstico de solo lectura.
 - **[`docs/INSTALLATION.md`](docs/INSTALLATION.md)** — diseño de la instalación: plataforma objetivo y secuencia de instalación prevista.
 - **[`docs/CM5_PROVISIONING.md`](docs/CM5_PROVISIONING.md)** — la guía completa para convertir Raspberry Pi OS Lite en HYDRA-UMC-OS.
