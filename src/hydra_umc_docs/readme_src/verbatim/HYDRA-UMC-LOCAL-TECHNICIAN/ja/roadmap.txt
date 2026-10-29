@@ -1,0 +1,45 @@
+このバージョンはフェーズ0、フェーズ1、フェーズ3、フェーズ4を提供します。残りは、フェーズ順に:
+
+- **フェーズ1 - 検索可能な知識(完了)。** 承認済みのドキュメント、
+  マニフェスト、契約、runbook のローカルでバージョン管理されたインデッ
+  クス - ディスク全体を盲目的に学習させることは決してありません。
+  `knowledge/index.py` は HYDRA-UMC-DOCS-QA 自身のすでにテスト済みの
+  TF-IDF検索を変更なしで移植し、Markdown・JSONソース向けの範囲限定・
+  許可リスト化された取り込みを追加しており、10番目のOBSERVEレベルツール
+  `knowledge.search` として接続されています。
+- **フェーズ2 - ローカル推論エンジン。** Hailo-10H と互換性のある小型
+  LLM（候補: Qwen2.5-1.5B-Instruct、Qwen2.5-Coder-1.5B、
+  Qwen3-1.7B-Instruct）で、実際の Hailo 互換性、レイテンシ、言語品質、
+  消費電力、ライセンスが検証されてから初めて選定されます。
+- **フェーズ3 - ツール・オーケストレータ（完了: 宣言済み9個中9個）。**
+  `TOOL_MATRIX` にすべての実際の `OBSERVE` レベルのツールハンドラを接続する
+  決定論的コードで、すべての呼び出しでポリシーが強制されます。
+  `service.status`、`storage.usage`、`network.port_status`、
+  `network.connectivity`、`system.temperature`、`manifest.read`、`logs.read`、`process.list`、`update.pending` はすでに
+  実装済みです(`orchestrator/dispatch.py`)。
+- **フェーズ4 - 提案と証拠(完了)。** `MaintenanceProposal` と
+  `EvidenceBundle` の実際の構築(`escalation/`)で、HYDRA-UMC-DEV-SERVER
+  の将来の Developer Node 役割へとエスカレーションします。
+  `evidence.assemble_evidence_bundle()` はすでに観測済みの `ToolResult`
+  から実際のパッケージを導出し、`proposal.propose_maintenance()` は
+  人間が提供した提案を実際の証拠に基づいて検証・裏付けします - 推論エ
+  ンジンがまだ存在しないため、それを生成することは決してありません。
+  このコードのどこも `MaintenanceProposal` に対してまだ行動を起こせま
+  せん。
+- **フェーズ5 - ユーザーインターフェース(開始: CLIスライス)。**
+  HYDRA-UMC-SERVER/Studio に統合されたローカルAPI、続いてCLI、その後音声
+  - フェーズ0がすでに確立したポリシーと確認の境界を決して迂回しません。
+  CLIスライスは今すぐ実際のものです: `tools list`/`tools call` と
+  `escalation evidence`/`escalation propose`(`cli.py`)は、上記の各実際
+  の要素に、すでにテスト済みでポリシー適用済みの同じコードを通じて到達
+  します。意図的にこの1つのリポジトリ内にあるものだけに範囲を限定して
+  います。HYDRA-UMC-SERVERと統合されたAPIおよび音声は、将来のリリース
+  のための別個の、リポジトリをまたいだ作業のままです。
+
+- **フェーズ5 - 読み取り専用のローカルAPIとWebページ（第2弾）。** `serve`（`webapi.py`、`webui/`）は、技術者がすでに生成したもの（ツール一覧、データディレクトリにある ToolResult・EvidenceBundle・MaintenanceProposal の各ファイル、プロジェクトのマニフェスト、許可された知識ソースのドキュメント索引）を表示します。応答するのは GET のみ（他のメソッドは 405）、指定がなければ `127.0.0.1` で待ち受け、それ以外では 24 文字以上の Bearer トークンを必須とし、リクエストのパスを連結せずフォルダを列挙して項目を見つけ、CLI と同じ方法ですべての応答をマスクし、すべてのサイズに上限を設けます。単一ページはインターネットからの取得を一切必要とせず、英語・スペイン語・ドイツ語・フランス語・イタリア語・日本語・中国語・ポルトガル語（ポルトガル）で利用できます。[docs/WEB_API.md](docs/WEB_API.md) を参照してください。
+
+フェーズ2、そしてフェーズ5の残りはこのリポジトリにまだ存在しません - 残る各フェーズが
+明示的に含むもの・除外するものについては
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) を、各フェーズが引き続き
+尊重しなければならないセキュリティ不変条件については
+[docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) を参照してください。

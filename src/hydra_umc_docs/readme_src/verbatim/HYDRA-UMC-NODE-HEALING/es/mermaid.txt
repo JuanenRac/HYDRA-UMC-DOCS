@@ -1,0 +1,10 @@
+```mermaid
+flowchart TB
+    MONITOR["Monitor de Salud del Enjambre"] -- Latido --> N1["Nodo 1"]
+    MONITOR -- Latido --> N2["Nodo 2"]
+    N1 -- Timeout/Error --> DETECT["Fallo Detectado"]
+    DETECT --> DIAG["Motor de Diagnóstico"]
+    DIAG -- Crítico --> FAIL["FAILOVER: Mover Trabajos al Nodo 2"]
+    DIAG -- Recuperable --> RESET["SOFT-REBOOT: Reiniciar Servicio"]
+    FAIL --> ORCH["HYDRA-ORCHESTRATOR"]
+```

@@ -1,0 +1,37 @@
+### ARCHITEKTUR UND DESIGN-ENTSCHEIDUNGEN
+
+- **SSH-Hostschlüssel beim ersten Mal festgehalten und kein Standard-WLAN-Land.** Ein Remote-Build lehnt einen Rechner ab, dessen Schlüssel er nicht festgehalten hat, und zeigt den SHA-256-Fingerabdruck des Schlüssels; gibt man diesen Fingerabdruck ein (am Rechner selbst geprüft), wird der Schlüssel festgehalten, danach wird nur noch dieser akzeptiert und ein anderer als geänderter Schlüssel abgelehnt. Der WLAN-Ländercode des Images hat keinen Standardwert mehr (`--wifi-country` / das Länderfeld ist bei einem WLAN Pflicht), weil er die Funkregeln des Landes festlegt, in dem der Rechner steht.
+- **`ecosystem_plan.py` implementiert die GitHub-Erkennung niemals neu.**
+  Es hängt von `hydra-umc-updater` als echtem Python-Paket ab
+  (`hydra_umc_updater.github_client.discover_remote_projects()`) statt
+  von einer zweiten Kopie seiner Manifest-Validierungs-/Retry-/Backoff-
+  Logik - eine dort vorgenommene Korrektur oder Verbesserung kommt diesem
+  Tool automatisch zugute.
+- **`image_builder.py` implementiert den Build eines Projekts niemals
+  neu.** Jedes Ökosystem-Projekt wird bei seiner eigenen echten fixierten
+  Version geklont und durch Ausführen SEINES EIGENEN `build.sh`, im
+  Chroot des Ziel-Rootfs, gebaut - dasselbe Prinzip "an das eigene
+  Build-Skript jedes Projekts delegieren", das bereits das eigene
+  `install.py` von `hydra-umc-updater` dokumentiert.
+- **Die Linux/Root-Plattformgrenze wird immer zuerst geprüft.**
+  `check_build_platform()` ist das Allererste, was `build_image()` tut -
+  ein Build, der auf einem nicht unterstützten Host (Windows, ein
+  Linux-Benutzer ohne Root, ein fehlendes `losetup`/`chroot`) still
+  no-op'd, wäre schlimmer als einer, der mit einem klaren Grund die
+  Ausführung verweigert.
+- **`firstboot_config.py` ist ein reiner Generator ohne Nebeneffekte.** Es
+  erzeugt nur reinen Textinhalt (einen `firstrun.sh`-String, einen
+  `cmdline.txt`-Patch-String) - es berührt niemals ein echtes Image oder
+  Dateisystem selbst, sodass es ohne Root oder ein echtes Image trivial
+  testbar bleibt. Nur `image_builder.py` ist dafür verantwortlich, diesen
+  Inhalt tatsächlich auf eine echte Boot-Partition zu schreiben.
+- **Eine Firstboot-Konfiguration, die den Bediener aussperren würde, wird abgelehnt, nicht gebaut.** SSH zu deaktivieren, ohne dass ein Konto konfiguriert wird, lässt die eigenen offiziellen Basis-Images dieses Tools (kein Standardbenutzer ab Trixie) ganz ohne Anmeldeweg - es wird abgelehnt, außer `acknowledge_no_remote_access=True` stimmt ausdrücklich zu. `describe_recovery_procedure()` nennt den echten Wiederherstellungsweg für alles, was die Konfiguration offen lässt.
+- **Ein eingefrorenes Profil ist ein echtes, gespeichertes Rezept, das nie neu abgerufen wird.** `freeze_profile()` und `profile-build` aus `profile_manifest.py` pinnen jedes Projekt auf den exakten Commit-SHA, mit dem es getestet wurde - ein späterer Build ersetzt nie stillschweigend, was GitHub gerade „latest“ nennt. `diff_profile()` vergleicht ein eingefrorenes Profil pro Projekt (nicht als einzelnen Wahrheitswert) mit dem laufenden Ökosystem.
+- **Die Passwörter werden nicht mehr als Argumente übertragen.** `--password` und `--wifi-password` funktionieren weiter, aber eine Befehlszeile ist für jeden Benutzer der Maschine sichtbar und `sudo` schreibt sie ins Authentifizierungsprotokoll; die CLI liest sie daher auch aus `HYDRA_UMC_FIRSTBOOT_PASSWORD` / `HYDRA_UMC_FIRSTBOOT_WIFI_PASSWORD` oder mit `--secrets-stdin` aus einem JSON-Objekt (`{"password": "...", "wifiPassword": "..."}`) auf der Standardeingabe. Der Remote-Build (SSH) der GUI sendet sie so und setzt sie nicht mehr in den ausgeführten Befehl.
+- **Der Chroot ist vollständig und der Remote-Build festgelegt.** Der Build hängt `/proc`, `/sys`, `/dev` und `/dev/pts` in das Image ein und gibt ihm die Namensauflösung des Rechners, solange die Projekte gebaut werden (die eigene `resolv.conf` des Images wird danach zurückgelegt); so erreichen `pip`, `npm` und `go` aus dem Chroot das Netz. Ein Remote-Build über SSH installiert dieses Werkzeug aus dem Release-Tag der laufenden Version (`HYDRA_UMC_REBUILDER_REMOTE_REF` nennt einen anderen Tag oder Commit) und baut aus dem eingefrorenen Profil des geprüften Plans (`profile-build`), statt das Ökosystem auf dem Zielrechner neu zu ermitteln. Nichts davon lief bisher auf einem echten Linux-Rechner mit Root.
+- **Echtes SHA-512-Crypt-Passwort-Hashing, nicht das stdlib-Modul
+  `crypt`.** `crypt` umschließt nur den eigenen libc-Aufruf des *Hosts*
+  (nur Unix, und in Python 3.13 vollständig entfernt) - `passlib` erzeugt
+  auf jeder Plattform, auf der dieses Tool läuft, einschließlich Windows,
+  byte-identisch dasselbe echte `$6$...`-Format, das `chpasswd -e`
+  erwartet. Der Hash verwendet 500000 Runden statt der glibc-Vorgabe von 5000 aus dem Jahr 2000, sodass ein Angriff auf eine Kopie des Images oder von `/etc/shadow` deutlich teurer ist; das vom Gerät selbst bevorzugte yescrypt (`$y$`) lässt sich unter Windows nicht portabel aus Python erzeugen.

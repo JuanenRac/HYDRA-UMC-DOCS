@@ -1,0 +1,55 @@
+```bash
+chmod +x build.sh   # 初回のみ
+./build.sh          # .venv を作成、pip install -e ".[dev]"、コンパイルチェック + テスト
+./run.sh                                          # 本物のデモ: 使い捨てのサンプルプロジェクトに対して
+                                                   # edge collect を実行し、その後 control show
+./run.sh edge collect --node-name n --projects-root DIR --out FILE
+./run.sh control show snapshot.json
+pip install -e ".[ai-anthropic]"                  # または .[ai-openai] - control diagnose にのみ必要
+ANTHROPIC_API_KEY=sk-ant-... ./run.sh control diagnose snapshot.json --incident-id <id>
+./run.sh control propose snapshot.json --incident-id <id> --project-name NAME --description "..." --diff-file fix.diff --rationale "..." --out proposal.json
+./run.sh control keygen --name you --key-out you.pem --public-out you.pub
+./run.sh control approve proposal.json --approved-by you --key you.pem --live-root PATH
+./run.sh control deploy-canary proposal.json --live-root PATH --build-test-command "bash build-test.sh" --approvers approvers.json
+pip install -e ".[signing]"                       # needed to sign and to verify approvals (cryptography)
+pip install -e ".[sdk]"                           # マニフェストのインシデントの base_commit を再検証する場合のみ必要
+./run.sh control verify snapshot.json --incident-id <id>
+```
+
+Windows では: 先に `build.bat`、その後 `run.bat`(引数なしの場合は同じ
+デモ) / `run.bat edge collect ...` / 上記の `control ...` サブコマン
+ドのいずれか。`build-test.sh`/`.bat` は、このプロジェクト自身の CI
+が実行するのと同じコンパイルチェック(Python の構文のみ)を、プロジ
+ェクトのバージョンや CHANGELOG に触れずに実行します——ただしそれ自
+体はテストスイートを実行しません。CI は `pytest` を別の、より後の
+ステップとして実行します。完全なローカルテストスイートには
+`./build.sh`/`build.bat`(または直接 `pytest tests/`)を実行してくだ
+さい。
+
+**トラブルシューティング**
+
+- `edge collect` が毎回の実行で `systemdAvailable: false` を報告する:
+  このホストには本当に `PATH` に `systemctl` がありません(非 Linux の
+  開発マシンすべて、および一部の最小限の Linux コンテナ)——これは想
+  定どおりの正直な劣化であり、バグではありません。
+  [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) を参照してください。
+- `control show` が `ERROR: ...` で失敗する: スナップショットファイル
+  が存在しないか、有効な JSON でないか、本物のスナップショットオブジ
+  ェクトではありません——`edge collect` を再実行し、その `--out` パス
+  を確認してください。
+- `control diagnose` が `ERROR: the optional '<provider>' package is
+  not installed` で失敗する: `--provider` に合わせて先に
+  `pip install -e ".[ai-anthropic]"` または `".[ai-openai]"` を実行し
+  てください。
+- `control diagnose` が `ERROR: no ... API key available` で失敗す
+  る: 実行前に `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` を設定してくださ
+  い。
+- `control deploy-canary` が `ERROR: refusing to deploy ...` で失敗す
+  る: その提案がまだ `approved` になっていません——先に
+  `control approve` を実行してください。
+- `control deploy-canary` が `ERROR: ... signed approval` / `not a registered approver` / `expired` / `approved for commit` で失敗する：承認が無い、登録簿に無い鍵で行われた、期限切れ、またはチェックアウトの別の状態に対して与えられたものです。`control approve --key あなたの鍵 --live-root パス` で承認し直してください。ファイルを編集して承認した提案や、承認に署名が付く前の提案は受け付けられません。
+- `control deploy-canary` が `promoted: false` を報告する: 結果 JSON
+  内の `buildOutput` を読んでください——ステージングビルドが本当に失
+  敗しており、本番のチェックアウトには一切触れられていません。
+  [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md) を参照してく
+  ださい。

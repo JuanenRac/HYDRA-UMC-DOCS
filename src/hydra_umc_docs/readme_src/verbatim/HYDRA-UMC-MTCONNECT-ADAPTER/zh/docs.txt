@@ -1,0 +1,1 @@
+- **[docs/API.md](docs/API.md)** —— 真实的 HTTP 端点参考文档：`GET /probe`/`GET /current`/`GET /sample` 的请求/响应形态、完整的 XML 报文示例、两种真实的 `MachineReader` 实现(`FixtureMachineReader`/`HydraServerMachineReader`),以及对仍属占位实现部分的明确说明(唯一固定的 HydraNode——按机器人划分的动态设备树是另一项更大的独立工作)。

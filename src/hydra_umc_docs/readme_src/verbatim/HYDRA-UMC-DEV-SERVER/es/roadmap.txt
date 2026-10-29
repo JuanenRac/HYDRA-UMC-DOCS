@@ -1,0 +1,58 @@
+Esta versión trae DS01 hasta DS10: el plan de diez entregas está
+completo. Cada entrega, en orden:
+
+- **DS02 - Estación remota reproducible.** ✅ Entregado: un perfil de
+  estación remota validado, una comprobación previa del host de solo
+  lectura, y un plan de aprovisionamiento en seco (subcomandos
+  `station`). No se cambia ningún host y no se ejecuta ningún paso.
+- **DS03 - Migración conservadora.** ✅ Entregado: calcula el hash y
+  clasifica cada archivo de un checkout de origen y planifica cada clase
+  (limpio / modificado / no seguido / privado) a su propio destino
+  separado, con un bundle para los commits sin pushear (subcomandos
+  `migrate`). No copia nada y nunca toca el origen. Ejecutar un plan
+  aprobado es una entrega posterior.
+- **DS04 - Workspace y ejecutor acotado.** ✅ Entregado: workspace
+  aislado por tarea (dos tareas nunca chocan; rutas `..`, absolutas y
+  symlinks fuera del workspace rechazados), solo un comando de lista
+  blanca, un entorno saneado, y un timeout que mata todo el grupo de
+  procesos (subcomandos `task`). Ejecuta un subproceso pero no despliega
+  nada.
+- **DS05 - Cola durable y resultados trazables.** ✅ Entregado: una cola
+  SQLite con leases y un diario de ejecución append-only que sobreviven
+  a un reinicio; un enqueue duplicado nunca es un segundo trabajo, una
+  interrupción nunca un éxito falso, una base cambiada bloquea la
+  promoción (subcomandos `queue`).
+- **DS06 - Proveedor de IA intercambiable.** ✅ Entregado (mitad fake):
+  un proveedor falso determinista tras un contrato de seguridad -
+  timeout / malformado / cuota son resultados acotados, un presupuesto
+  detiene el paso, la sugerencia es dato inerte que no concede nada ni
+  despliega nada (`provider suggest`). El proveedor real es decisión del
+  usuario.
+- **DS07 - Incidencias coordinadas con HYDRA-UMC-OPS-AGENT.** ✅
+  Entregado: un transporte de incidentes autenticado por HMAC con
+  comprobaciones de replay / suplantación / sobrecarga / versión y una
+  ida y vuelta completa envío → diagnóstico → verificación post-despliegue
+  que se concilia tras una caída de red (`incident verify`).
+- **DS08 - Primer ciclo de reparación completamente controlado.** ✅
+  Entregado: una máquina de estados con puertas
+  repro->incidencia->parche->regresión->build-test->aprobación->instalación
+  aislada->verificación que bloquea un candidato manipulado o mal
+  dirigido y hace rollback si falla la comprobación post-instalación
+  (`repair check-candidate`).
+- **DS09 - Operación/restauración estable.** ✅ Entregado:
+  comprobaciones de salud operativa sobre la cola y el disco, y un
+  backup/restore de estado verificado que rechaza un backup de otra
+  instancia o uno corrupto (subcomandos `ops`).
+- **DS10 - Paquete de entrega y evaluación honesta de madurez.** ✅
+  Entregado: `deliver manifest` registra un sha256 por cada archivo
+  entregado y relee la superficie CLI real, la versión y el número de
+  tests; `deliver evaluate` reporta cada una de las diez entregas contra
+  evidencia real (DS06 es `partial` - solo se entrega el fake), lista
+  siete limitaciones con claridad, y reporta un `overall_maturity` fijado a `functional` en el código.
+
+**Madurez.** El plan está completo; la madurez es `functional`: el software está construido y cubierto por tests, pero no se ha verificado en hardware ni servicios reales, lo cual es un paso aparte y posterior. Lo que hay en este repositorio es una implementación funcional y probada de contratos y límites. Nada aquí aprovisiona un host, ejecuta un
+despliegue, une las piezas en un bucle de trabajo, ni ha tocado hardware
+real. `deliver evaluate` dice exactamente esto, y su lista
+`known_limitations` es la tarea pendiente honesta. Ver
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para lo que cada entrega
+incluye y excluye explícitamente.

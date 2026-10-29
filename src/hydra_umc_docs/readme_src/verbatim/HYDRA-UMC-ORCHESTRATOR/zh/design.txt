@@ -1,0 +1,32 @@
+### 编排架构
+
+> 实线箭头今天已存在（HTTP API、JOB-DISPATCHER，以及调用 `POST /nodes/:node/recover` 的 NODE-HEALING）。虚线箭头仅为计划，尚未实现：没有任何代码调用 PATH-PLANNER-3D 或 SWARM-SYNC。
+
+### 架构与设计决策
+
+> 下方的内部分层是本入口点背后逻辑的规划设计——目前实际运行的内容请见
+> 下方"🔧 构建与运行"部分：一个真实的、纯内存中的任务状态机
+> （`mission.rs`），目前还没有任何实时网络对端可供通信。
+
+**计划中的内部分层**，将在已经存在的真实状态机基础上逐步构建：
+* **API 层** —— 接收来自 Studio/应用程序的高层任务请求，并将其转化为车队级操作。
+* **任务队列集成** —— 现在已经是真实的，而不只是计划：通过与 `server.rs` 自身使用的同一个真实 HTTP/JSON 传输（`src/job_dispatcher.rs` 自身的 `submit_job`/`close_job`/`requeue_job`/`run_dispatch`，早已接入每一个真实的任务生命周期处理程序）将已接受的任务移交给 JOB-DISPATCHER，并使用 `mission.rs` 中已经存在的真实 `Mission`/`MissionRegistry` 状态机在整个车队中跟踪其生命周期，即使在真实的进程重启后依然持久保存（`--data-dir`，默认 `data/missions.json`；中途重新加载的任务会变为 `Unknown` 并重新排回 `Pending`，绝不会被默默视为已完成）。这一层从未使用过 gRPC，也从未计划使用——`proto/hydra_common.proto` 自身共享的 `HealthService` 契约是另一回事（HYDRA-UMC-NODE-HEALING 自身真实的车队健康探测），并非本仓库向 JOB-DISPATCHER 移交任务的机制。
+* **PTP 同步调度** —— 与 SWARM-SYNC 协调时序，使执行同一任务的多台机器人根据 PATH-PLANNER-3D 的检查结果保持无碰撞状态。
+* **车队健康聚合** —— 将 NODE-HEALING 提供的各节点信号整合为统一的全车队视图，并在每个信号到达时调用（已经真实的）`MissionRegistry::recover_node_unavailable()`；这也是全局 E-STOP 到达每个节点所经过的路径。
+
+### 为何这项特定服务使用 Rust
+这个进程是对整个车队拥有最高权限的进程：它将发出全局 E-STOP 并仲裁哪个
+机器人执行哪项任务。这一角色需要确定性的、低延迟的协调——不能有任何可能
+延迟安全关键停止的垃圾回收停顿——以及编译期的内存/类型安全，因为这里的
+一次崩溃或数据竞争不会局限于本地：它可能导致整个集群在任务执行过程中
+失去协调者。本编排器自身的两个子项目（JOB-DISPATCHER、NODE-HEALING）
+则使用 Go，这非常适合它们更简单、更独立的任务；但这并非本"大脑"进程所
+需要的权衡取舍。
+
+### 设计决策
+* **唯一拥有全族 `docker-compose.yml` 的进程。** 作为 SWARM-SYNC、PATH-PLANNER-3D、JOB-DISPATCHER 和 NODE-HEALING 的集成父项目，本仓库是描述整个项目族如何协同运行的自然场所——每个子项目自身的仓库则专注于自身。
+* **为应用程序/Studio 暴露"统一 API"。** 与其让每个客户端（移动应用程序、桌面版 Studio）直接与 4 个独立的子服务通信，不如让它们与这里的一个稳定入口点通信，该入口点可自由路由到底层任何变化的子实现。
+* **为何 `cancel()` 是幂等的，而不是在已取消的任务上报错。** 一个取消请求完全可能合法地到达两次——客户端在响应丢失后重试，或操作员在看到确认之前再次点击取消。将第二次调用视为成功（`AlreadyCancelled`，而非错误）意味着调用方永远不需要区分「我的取消生效了」和「别人的取消已经生效了」——两者是同一个好结果。取消一个 `Completed`/`Failed` 的任务仍然会被拒绝：那是一种真正不同、非幂等的情形（撤销已完成的工作），而不是一次重试。
+* **为何节点故障恢复是重新排队为 `Pending`，而不是直接判任务失败。** 一个报告 `UNREACHABLE` 的节点可能只是正在重启，而非永久消失（参见 `HYDRA-UMC-NODE-HEALING` 自身的限次重试逻辑，它在报告节点宕机之前就已经吸收了瞬时故障）——因此卡在该节点上的任务会通过 `Pending` 在另一个节点上获得新的机会，而不是在第一个问题迹象出现时就被标记为 `Failed`。`fail()` 仍然保留，用于重新调度真正耗尽所有选项的情形。
+
+关于每个真实的 mission-demo/CLI 示例（取自实际编译的二进制文件），参见 [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md)。关于共享的 `hydra.common.v1` gRPC 契约本身——它定义了什么、为何位于本仓库，以及各语言如何生成自己的绑定——参见 [`proto/README.md`](proto/README.md)。

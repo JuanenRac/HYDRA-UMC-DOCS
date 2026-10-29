@@ -1,0 +1,50 @@
+### 前提条件
+- [Node.js](https://nodejs.org/)（建议 v20 或更高版本）
+- npm
+
+### 安装
+```bash
+npm install
+```
+
+### 开发模式
+使用 `tsx` 直接运行聚合服务器（无需打包器）：
+- **Windows：** 双击 `dev.bat` 或运行 `npm run dev`
+- **Linux/Mac：** 运行 `./dev.sh` 或 `npm run dev`
+
+### 生产构建
+使用 esbuild 将服务器打包为单个可部署文件：
+- **Windows：** 双击 `build.bat` 或运行 `npm run build`
+- **Linux/Mac：** 运行 `./build.sh` 或 `npm run build`
+
+然后启动它：
+```bash
+npm start
+```
+
+服务器监听 `0.0.0.0:8000`——`GET /health` 是不对子服务探测的快速存活检查
+（`hydra-umc.project.json` 自身的 `service.health_path` 指向的正是这里），
+而 `GET /status` 是真正的深度诊断，会报告本网关自身的版本，以及它所对接的
+每个子桥接服务的名称/协议/端点/可达性。
+
+真实示例——对一个未运行的子服务发出一个白名单内的命令、一个未经
+授权的操作，以及一个格式错误的请求：
+
+```bash
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" \
+  -d '{"protocol":"OPC-UA","operation":"read","target":"ns=2;s=Line1.Status"}'
+# 502 {"status":"downstream_unreachable","reason":"TCP connect to opcua-server:4840 timed out after 2000ms"}
+
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" \
+  -d '{"protocol":"OPC-UA","operation":"write","target":"ns=2;s=Line1.SetPoint"}'
+# 403 {"status":"rejected_unauthorized","reason":"operation \"write\" is not allowlisted for OPC-UA"}
+
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" -d '{"protocol":"OPC-UA"}'
+# 400 {"error":"protocol, operation and target are required strings"}
+```
+
+### 版本管理
+`npm run build` 只负责打包服务器，绝不会更改版本；`python tools/hydra_project_tool.py bump` 才会提升它（通过 `bump_manifest_version.py`）
+
+（minor 超过 9 时进位到 major），而不会到达两位数段（`0.0.9` ->
+`0.1.0`，而非 `0.0.10`）。

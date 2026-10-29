@@ -1,0 +1,2 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — 每个 `--cli` 子命令，附带真实示例输出。
+- **[docs/FIRST_BOOT_CONFIG.md](docs/FIRST_BOOT_CONFIG.md)** — 本工具复现的真实 `firstrun.sh` 机制，以及原因。

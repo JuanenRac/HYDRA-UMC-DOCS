@@ -1,0 +1,46 @@
+Esta versão traz a Fase 0, a Fase 1, a Fase 3 e a Fase 4. O que falta, por ordem de fases:
+
+- **Fase 1 - Conhecimento recuperável (concluída).** Um índice local e versionado
+  de documentação, manifestos, contratos e guias de procedimentos aprovados -
+  nunca treinado às cegas sobre o disco inteiro. O `knowledge/index.py` porta
+  sem alterações a pesquisa TF-IDF, já testada, do próprio HYDRA-UMC-DOCS-QA e
+  acrescenta uma ingestão limitada, da lista de permissões, para fontes
+  Markdown e JSON, ligada como a décima ferramenta de nível OBSERVE,
+  `knowledge.search`.
+- **Fase 2 - Motor de inferência local.** Um LLM pequeno compatível com o
+  Hailo-10H (candidatos: Qwen2.5-1.5B-Instruct, Qwen2.5-Coder-1.5B,
+  Qwen3-1.7B-Instruct), escolhido só depois de verificadas a compatibilidade
+  real com o Hailo, a latência, a qualidade de idiomas, o consumo de energia e
+  a licença.
+- **Fase 3 - Orquestrador de ferramentas (concluída: 9 de 9 ferramentas
+  declaradas).** Código determinístico que liga cada manipulador real de
+  ferramenta de nível `OBSERVE` ao `TOOL_MATRIX`, com aplicação da política em
+  cada chamada. `service.status`, `storage.usage`, `network.port_status`,
+  `network.connectivity`, `system.temperature`, `manifest.read`, `logs.read`,
+  `process.list` e `update.pending` são agora todos reais
+  (`orchestrator/dispatch.py`).
+- **Fase 4 - Propostas e evidências (concluída).** Construção real de
+  `MaintenanceProposal` e `EvidenceBundle` (`escalation/`), a escalar para o
+  futuro papel de Nó de Desenvolvimento do próprio HYDRA-UMC-DEV-SERVER. O
+  `evidence.assemble_evidence_bundle()` deriva um pacote real a partir de
+  `ToolResult`s já observados; o `proposal.propose_maintenance()` valida e
+  fundamenta uma proposta fornecida por uma pessoa contra evidências reais -
+  nunca gera uma, já que ainda não existe motor de inferência. Nada neste
+  código pode ainda agir sobre uma `MaintenanceProposal`.
+- **Fase 5 - Interface de utilizador (iniciada: a fatia da CLI).** Uma API
+  local integrada no HYDRA-UMC-SERVER/Studio, depois uma CLI, depois voz -
+  nunca contornando as fronteiras de política e confirmação que a Fase 0 já
+  estabelece. A fatia da CLI é real agora: `tools list`/`tools call` e
+  `escalation evidence`/`escalation propose` (`cli.py`) chegam a todas as
+  peças reais acima pelo mesmo caminho de código, já testado e já regido por
+  políticas, deliberadamente limitado ao que vive dentro deste único
+  repositório. A API integrada no HYDRA-UMC-SERVER e a voz continuam a ser
+  trabalho separado, entre repositórios, para uma entrega posterior.
+
+- **Fase 5 - API local só de leitura e página web (segunda parte).** `serve` (`webapi.py`, `webui/`) mostra o que o técnico já produziu: o registo de ferramentas, os ficheiros ToolResult, EvidenceBundle e MaintenanceProposal de uma pasta de dados, os manifestos dos projetos e o índice de documentos das fontes de conhecimento permitidas. Só responde a GET (qualquer outro método recebe 405), escuta em `127.0.0.1` salvo indicação em contrário e então exige um token bearer de pelo menos 24 carateres, encontra os itens listando as suas pastas (nunca juntando um caminho do pedido), oculta cada resposta como a CLI faz e limita todos os tamanhos. A página única não precisa de nada da internet e está disponível em inglês, espanhol, alemão, francês, italiano, japonês, chinês e português de Portugal. Veja [docs/WEB_API.md](docs/WEB_API.md).
+
+A Fase 2 e o resto da Fase 5 ainda não existem neste repositório -
+veja [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para o que cada fase restante
+inclui e exclui explicitamente, e
+[docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) para as invariantes de
+segurança que cada fase tem de continuar a respeitar.

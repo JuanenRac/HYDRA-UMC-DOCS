@@ -1,0 +1,1 @@
+🛠️ Standardisierte XML/HTTP-Schnittstelle zur Überwachung von Werkzeugmaschinen

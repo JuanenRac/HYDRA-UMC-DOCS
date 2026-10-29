@@ -1,0 +1,7 @@
+```mermaid
+flowchart LR
+    API["Hydra Interne API"] --> MAP["OPC-UA Mapper"]
+    MAP --> SPACE["Adressraum-Baum"]
+    SPACE --> TAGS["Standardisierte SPS-Tags"]
+    TAGS --> CLIENT["Externe SPS / SCADA"]
+```

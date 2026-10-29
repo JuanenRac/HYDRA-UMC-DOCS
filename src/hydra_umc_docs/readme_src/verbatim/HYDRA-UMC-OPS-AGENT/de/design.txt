@@ -1,0 +1,82 @@
+### ARCHITEKTUR UND DESIGN-ENTSCHEIDUNGEN
+
+- **Ein Vorfall wird abgeleitet, niemals erklärt.** Die `add_*`-Methoden
+  von `IncidentBatch` geben `None` zurück, wenn das Untersuchte
+  tatsächlich gesund war. Es gibt keinen Codepfad, der aus einer
+  sauberen Beobachtung einen Vorfall erfindet, und keinen, der einen
+  echten stillschweigend verwirft.
+- **Eine Protokollgrenze degradiert ehrlich, sie rät niemals.**
+  `check_systemd_unit_health()` wirft in dem Moment einen eigenen
+  `SystemdUnavailableError`, in dem `systemctl` nicht im `PATH` ist -
+  was auf dieser Entwicklungsmaschine immer der Fall ist, und auf jedem
+  Host ohne systemd - statt einen erfundenen "inactive"-Status zu
+  melden. `check_http_health()` hält einen echten Netzwerkfehler
+  (`status_code is None`) unterscheidbar von einer echten, aber
+  ungesunden HTTP-Antwort.
+- **Die Redaktion ist hier das sicherheitskritischste Stück Code.**
+  `log_redaction.py` ist eine reine, abhängigkeitsfreie
+  Textumwandlung, durch eigene Tests abgedeckt, bevor irgendetwas
+  anderes sie konsumiert. Ein Schlüsselnamens-Treffer muss den
+  Geheimnisnamen als Teilstring eines echten Identifikator-Tokens
+  suchen (`DB_PASSWORD`, `api-key`), nicht als `\b`-begrenztes Wort -
+  `_` ist in einem regulären Ausdruck ein Wortzeichen, sodass ein
+  naives `\bpassword\b` niemals auf `DB_PASSWORD` passt.
+  `MaintenanceIncident.to_dict()` führt `redact_secrets()` auf
+  `symptom` beim Serialisieren erneut aus, selbst wenn der Aufrufer es
+  bereits vorher redigiert hat - Tiefenverteidigung für das Feld, das
+  am ehesten eine kopierte Log-Zeile trägt.
+- **Der `MaintenanceIncident`/`NodeSnapshot`-Vertrag ist absichtlich
+  Feld für Feld auf ein ausdrückliches "CONTRATO MINIMO" festgelegt.**
+  Siehe [docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md). Eine
+  spätere Lieferung, die mit einem echten KI-Anbieter oder
+  Ticket-System spricht, sollte niemals zwischen zwei inkompatiblen
+  Formen übersetzen müssen.
+- **Die Diagnose ist von Natur aus anbieterunabhängig.**
+  `diagnose_incident()` hängt nur von einem minimalen `AIProvider`-Protocol
+  ab - ein echter, namentlich genannter KI-Anbieter wird nie im Kerncode
+  festgelegt. Zwei echte Anbieter (`anthropic`, OpenAI) werden als
+  optionale Extras mitgeliefert; ein Aufrufer kann jedes andere Objekt
+  übergeben, das denselben Ein-Methoden-Vertrag implementiert.
+- **Ein Canary-Deployment fasst den echten Checkout nie an, bevor ein
+  echter Build bereits bewiesen hat, dass die Änderung funktioniert.**
+  `deploy_canary()` verweigert die Ausführung, solange der `status` des
+  gegebenen Vorschlags nicht `approved` ist, staged dann den Diff in
+  einem unabhängigen lokalen Klon und befördert (Zwei-Umbenennungs-Swap,
+  vorheriger Checkout als echtes Backup aufbewahrt) nur, wenn der eigene
+  Build-Test-Befehl dieses Projekts wirklich mit Code `0` endet - dasselbe
+  atomar-durch-Verifizierung-Muster, das der eigene `install.py` von
+  HYDRA-UMC-UPDATER bereits verwendet.
+- **Ein Vorschlag wird genau einmal entschieden.**
+  `approve_change()`/`reject_change()` werfen jeweils
+  `InvalidTransitionError` bei allem, was nicht `pending` ist - eine
+  zweite Entscheidung überschreibt nie stillschweigend die erste, und
+  jede Entscheidung wird einem echten, nicht leeren Namen zugeschrieben.
+- **Eine Freigabe ist eine Signatur, kein Feld.** `approve_change()` signiert mit dem eigenen Ed25519-Privatschlüssel des Freigebenden eine Erklärung dessen, was genau freigegeben wird: den Vorschlag, den SHA-256 des Diffs, wer freigibt, bis wann, den Commit des Checkouts, für den sie gilt, und ob geschützte Pfade erlaubt sind. `deploy_canary()` akzeptiert sie nur, wenn die Signatur gegen ein Register *öffentlicher* Schlüssel von Freigebenden gültig ist; wer nur die Vorschlagsdatei beschreiben kann, kann also nichts freigeben. Außerdem wird ein Diff abgelehnt, der etwas in der Form eines echten Geheimnisses enthält oder CI-, Build-Test- oder Service-Dateien berührt, ohne es zu sagen; der Build-Test läuft mit minimaler Umgebung; ein Dienst kann um den Austausch herum gestoppt und geprüft werden, mit automatischem Zurückrollen; und jeder Vorschlag, jede Freigabe, jedes Deployment, jedes Zurückrollen und Bereinigen wird an ein hash-verkettetes Audit-Journal angehängt. Siehe [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md).
+- **Die Verifizierung führt DIESELBE echte Prüfung erneut aus, nie eine
+  laxere.** `verify_incident_resolved()` ruft direkt die eigenen
+  `check_http_health()`/`check_systemd_unit_health()`/
+  `check_project_manifest()` von Lieferung 1 auf - es gibt nirgendwo in
+  diesem Projekt eine zweite, unabhängig driftende Implementierung der
+  Gesundheitsprüfung. Ein Manifest-Vorfall mit einem echten
+  `base_commit:` (best-effort bei der Erkennung erfasst) wird zusätzlich
+  gegen die geteilte `compare_runs()`-Kontrolle von HYDRA-UMC-SDK
+  geprüft - der Commit des Checkouts muss sich wirklich bewegt haben, es
+  reicht nicht, dass die Datei auf der Festplatte nur repariert aussieht.
+  Siehe [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md).
+- **Lieferung 6 ist blockiert, nicht einfach übersprungen.** Der eigene
+  echte Vertrag von HYDRA-UMC-VOICE-UI (`gateway.py`) ist ein
+  begrenztes, EINGEHENDES Gateway von Transkript zu Intent, ohne eine
+  echte Oberfläche für ausgehende Benachrichtigungen heute - eine hier
+  zu erfinden hätte bedeutet, eine Integration vorzutäuschen, die es
+  nicht gibt, was der eigene Anti-Fabrikations-Standard dieses Projekts
+  nicht erlaubt. Siehe den FAHRPLAN-Abschnitt unten.
+- **Nur Standardbibliothek für den Kern.** `edge collect`/`control
+  show`/`control propose`/`control approve`/`control reject`/`control
+  verify` brauchen überhaupt keine Abhängigkeit - `urllib.request` für
+  die HTTP-Prüfung, `subprocess`/`shutil.which` für die von systemd,
+  `git` (ein echtes externes Binary, kein Python-Paket) für die
+  Canary-Deployment-Stufe und für die `base_commit:`-Erfassung eines
+  Manifest-Vorfalls. Nur `control diagnose` (ein `ai-*`-Extra) und die
+  `compare_runs()`-Nachprüfung eines Manifest-Vorfalls (das `sdk`-Extra)
+  brauchen eine optionale Abhängigkeit, jeweils nur für das, was sie
+  tatsächlich benutzt.

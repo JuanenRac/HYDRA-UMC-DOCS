@@ -1,0 +1,10 @@
+```mermaid
+flowchart LR
+    INTERNAL["Écosystème HYDRA-UMC (API interne)"] --> GATEWAY["HYDRA-GATEWAY-INDUSTRIAL"]
+    GATEWAY --> OPC["Serveur OPC-UA (PLC)"]
+    GATEWAY --> MQTT["Broker MQTT (IIoT / Cloud)"]
+    GATEWAY --> MT["Adaptateur MTConnect (SCADA)"]
+    OPC --> EXT["Réseau d'usine"]
+    MQTT --> EXT
+    MT --> EXT
+```

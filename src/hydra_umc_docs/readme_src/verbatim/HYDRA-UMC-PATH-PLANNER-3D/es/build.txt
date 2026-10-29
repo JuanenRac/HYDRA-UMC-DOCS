@@ -1,0 +1,51 @@
+Una búsqueda real de rutas libres de colisiones, no solo un esqueleto que
+compila: planifica una ruta a partir de un archivo de escenario JSON e
+imprime el resultado.
+
+```bash
+# Windows
+build.bat
+run.bat scenarios/example.json
+
+# Linux / macOS
+./build.sh
+./run.sh scenarios/example.json
+```
+
+`build.sh`/`build.bat` nunca cambian la versión (solo `python tools/hydra_project_tool.py bump` la sube) y luego ejecutan
+`cargo build --release`. `run.sh`/`run.bat` ejecutan directamente el binario
+resultante, reenviando cualquier argumento (la ruta del escenario).
+
+Un escenario es un archivo JSON con `start`, `goal`, `obstacles` (una
+lista de esferas `{center, radius}`), un `workspace` (límites
+`min`/`max`), y opcionalmente `seed` (la búsqueda es totalmente
+determinista por semilla) y `config` (`max_iterations`, `step_size`,
+`goal_bias`, `goal_threshold`, `robot_radius`, `max_duration_ms` - todos
+opcionales, con valores por defecto razonables; `max_duration_ms` acota
+el tiempo de búsqueda por reloj real, independiente de `max_iterations`).
+El resultado se imprime como JSON:
+`{"status": "ok", "path": [...]}` o
+`{"status": "error", "reason": "..."}` (`start_inside_obstacle`,
+`goal_outside_workspace`, `no_path_found`, `time_limit_exceeded`, etc. -
+ver el `PlanError` de `src/rrt.rs` para la lista completa y honesta,
+incluyendo el caso en que directamente no existe ninguna ruta, no solo
+una que la búsqueda no encontró a tiempo).
+
+Un `frame` opcional (un nombre corto, de 64 bytes como máximo) indica el sistema de coordenadas en el que está escrito el escenario. Es solo una etiqueta: se repite en el resultado y nunca cambia una coordenada.
+
+Un segundo subcomando real revalida una ruta ya calculada (un array JSON
+plano de waypoints `{x, y, z}`) contra los obstáculos/workspace actuales
+de un escenario, sin correr una búsqueda nueva:
+
+```bash
+./run.sh validate scenarios/example.json path.json
+# {"status": "safe"}
+# o: {"status": "unsafe", "issues": [{"SegmentIntersectsObstacle": {"from_index": 0, "to_index": 1}}]}
+```
+
+```bash
+cargo test   # geometria + colision de obstaculos, el PRNG, el
+             # planificador RRT (incluyendo su limite real de tiempo por
+             # reloj) y la revalidacion de seguridad de validate.rs -
+             # {tests} tests en total
+```

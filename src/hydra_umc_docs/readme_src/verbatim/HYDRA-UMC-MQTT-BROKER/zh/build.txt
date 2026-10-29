@@ -1,0 +1,33 @@
+### 前提条件
+- [Node.js](https://nodejs.org/)（建议 v18 或更高版本）
+- npm
+
+### 安装
+```bash
+npm install
+```
+
+### 开发模式
+使用 `tsx` 直接运行 Broker（无需打包器）：
+- **Windows：** 双击 `dev.bat` 或运行 `npm run dev`
+- **Linux/Mac：** 运行 `./dev.sh` 或 `npm run dev`
+
+### 生产构建
+使用 esbuild 将 Broker 打包为单个可部署文件：
+- **Windows：** 双击 `build.bat` 或运行 `npm run build`
+- **Linux/Mac：** 运行 `./build.sh` 或 `npm run build`
+
+然后启动它：
+```bash
+npm start
+```
+
+Broker 监听 `0.0.0.0:1883`（纯 MQTT/TCP，IANA 注册的默认端口）——将
+任何 MQTT 客户端（`mosquitto_sub`、Home Assistant、MQTT Explorer……）
+指向 `<host>:1883`。
+
+### 版本管理
+`npm run build` 只负责打包服务器，绝不会更改版本；`python tools/hydra_project_tool.py bump` 才会提升它（通过 `bump_manifest_version.py`）
+
+（minor 超过 9 时进位到 major），而不会到达两位数段（`0.0.9` ->
+`0.1.0`，而非 `0.0.10`）。

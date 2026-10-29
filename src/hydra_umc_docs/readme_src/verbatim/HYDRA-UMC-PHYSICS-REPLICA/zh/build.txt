@@ -1,0 +1,50 @@
+需要 Rust 工具链（`cargo`/`rustc`，通过 [rustup](https://rustup.rs) 安装）
+以及 Python 3.10+（仅供 `bump_version.py` 使用）。
+
+```bash
+# Linux / macOS
+./build.sh   # 、`cargo test`（{tests} 个测试），然后执行 `cargo build --release`
+./run.sh     # 运行 target/release/hydra-umc-physics-replica，打印名称 + 版本 + 角色
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升），运行真实的测试
+套件，然后构建一个 release 二进制文件。
+
+真实的 `fk` 和 `validate-limits` 子命令需要一个 URDF 文件：
+
+```bash
+./run.sh fk --urdf arm.urdf --joints "shoulder=0,elbow=0"
+# shoulder: x=0.000000 y=0.000000 z=0.200000
+# elbow: x=0.300000 y=0.000000 z=0.200000
+
+./run.sh validate-limits --urdf arm.urdf --joints "shoulder=3.0,elbow=0.2"
+# LIMIT VIOLATION: joint 'shoulder' = 3.000000 (allowed [-1.570000, 1.570000])
+```
+
+真实的 `fk-checked` 子命令会在关节超限时拒绝计算位姿——而普通 `fk`
+则仍会照常计算：
+
+```bash
+./run.sh fk-checked --urdf arm.urdf --joints "shoulder=0.5,elbow=0.2"
+# shoulder: x=0.000000 y=0.000000 z=0.200000
+# elbow: x=0.263275 y=0.143828 z=0.200000
+
+./run.sh fk-checked --urdf arm.urdf --joints "shoulder=0.5,elbow=5.0"
+# LIMIT VIOLATION: joint 'elbow' = 5.000000 (allowed [-2.000000, 2.000000]) - refusing to compute an unreachable pose
+
+./run.sh fk --urdf arm.urdf --joints "shoulder=0.5,elbow=5.0"
+# elbow: x=0.263275 y=0.143828 z=0.200000   <- 仍会照常计算；这正是 fk-checked 所填补的漏洞
+```
+
+`fk` 成功时退出码为 `0`，`--urdf`/`--joints` 值无效时为 `2`。`fk-checked`
+返回真实位姿时为 `0`，出现限位违规时为 `1`，输入无效时为 `2`。
+`validate-limits` 无违规时退出码为 `0`，发现违规时为 `1`，输入无效时
+为 `2`。
+
+完整命令行参考——包含从真实发布二进制文件运行中采集到的每一种真实错误情形（缺失/格式错误的参数、无法读取的 URDF 文件）——见 [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md)。

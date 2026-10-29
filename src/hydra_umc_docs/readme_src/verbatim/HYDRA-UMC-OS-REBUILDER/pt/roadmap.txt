@@ -1,0 +1,15 @@
+- Suporte a cloud-init como mecanismo alternativo de primeiro arranque para uma
+  imagem base que não seja Pi, ao lado do caminho atual do `firstrun.sh`.
+- Atualizações incrementais de imagem (remendar uma `.img` existente no sítio
+  em vez de uma reconstrução completa) quando houver uma necessidade real para
+  lá de uma construção de raiz.
+- Um modo de saída `--json` para o `status`, para o usar em scripts.
+- Executável autónomo da GUI empacotado (PyInstaller), em linha com a convenção
+  `build_exe.bat`/`.sh` do próprio HYDRA-UMC-SUITE, para uma instalação com
+  duplo clique sem qualquer passo de `pip`/venv.
+- Uma caixa de seleção na GUI para `acknowledge_no_remote_access` - hoje a GUI
+  mostra com honestidade a mensagem real do `FirstBootConfigError` (sem falha,
+  sem operação nula silenciosa), mas não tem controlo próprio para a aceitar,
+  só a CLI/API o têm.
+- Um painel da GUI sobre o `profile_manifest.py` (congelar/comparar/atualizar a
+  partir do shell de desktop, e não apenas da CLI).

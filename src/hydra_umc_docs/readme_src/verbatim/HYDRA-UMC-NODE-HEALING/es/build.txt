@@ -1,0 +1,34 @@
+Un watchdog real, no solo un esqueleto que compila: contacta a cada nodo
+de `nodes.example.json` (o `-nodes <ruta>` para apuntar a tu propio
+registro) (por URL de salud HTTP o, si la entrada tiene `address`, por gRPC) y reporta los cambios de estado por stdout.
+
+```bash
+# Windows
+build.bat
+run.bat -nodes nodes.example.json
+
+# Linux / macOS
+./build.sh
+./run.sh -nodes nodes.example.json
+```
+
+`build.sh`/`build.bat` nunca cambian la versión (solo `python tools/hydra_project_tool.py bump` la sube) y luego ejecutan
+`go build`. `run.sh`/`run.bat` ejecutan directamente el binario resultante.
+
+Cada entrada del registro necesita algo real escuchando en su `address` e
+implementando `hydra.common.v1.HealthService` (ver
+`HYDRA-UMC-ORCHESTRATOR/proto/hydra_common.proto`) para poder reportar
+alguna vez como saludable - con nada corriendo todavía en los puertos de
+ejemplo, lo esperable es ver `UNKNOWN -> UNREACHABLE` en el primer ciclo
+para los tres (ahora solo tras agotar los intentos acotados de
+`RetryPolicy`, no en el primer dial - ver la característica "Reintentos
+Acotados" arriba), que es el resultado correcto y honesto hoy (todos los
+nodos del ecosistema siguen en etapa de andamiaje más allá de la propia
+lógica de detección de este repo). Un nodo que responde pero no puede
+autoidentificarse correctamente imprime `UNKNOWN -> INVALID` de
+inmediato en su lugar.
+
+```bash
+go test ./...   # src/config + src/watchdog, round-trips gRPC
+                 # reales sobre sockets loopback reales, sin cliente simulado
+```

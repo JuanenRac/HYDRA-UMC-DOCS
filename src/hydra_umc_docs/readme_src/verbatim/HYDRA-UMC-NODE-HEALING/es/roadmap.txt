@@ -1,0 +1,4 @@
+* **Fase 1:** (hecho, `-journal`) Un diario persistente en JSON por líneas, encadenado por hash, de cada transición y petición de recuperación. Falta: las respuestas del Orquestador como campos estructurados.
+* **Fase 2:** Un sondeo más rápido: un bucle por nodo con conexiones gRPC persistentes y cabeceras por entrada para el sondeo HTTP.
+* **Fase 3:** Observabilidad propia (un endpoint de métricas) y recarga del registro de nodos sin reiniciar.
+* **Fase 4:** Una prueba de contrato contra un HYDRA-UMC-SERVER real y un arrendamiento (lease) para que solo actúe un sanador a la vez.

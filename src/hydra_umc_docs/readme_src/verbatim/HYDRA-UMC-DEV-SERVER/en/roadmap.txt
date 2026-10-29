@@ -1,0 +1,57 @@
+This version ships DS01 through DS10 - the ten-delivery plan is
+complete. Each delivery, in order:
+
+- **DS02 - Reproducible remote station.** ✅ Shipped: a validated
+  remote-station profile, a read-only host preflight, and a dry-run
+  provisioning plan (`station` subcommands). No host is changed and no
+  step is executed.
+- **DS03 - Conservative migration.** ✅ Shipped: hash + classify every
+  file in a source checkout and plan each class (clean / modified /
+  untracked / private) into its own separate destination, with a bundle
+  for unpushed commits (`migrate` subcommands). It copies nothing and
+  never touches the source. Executing an approved plan is a later
+  delivery.
+- **DS04 - Workspace and bounded runner.** ✅ Shipped: per-task isolated
+  workspace (two tasks never collide; `..`, absolute and out-of-workspace
+  symlink paths refused), an allow-listed command only, a scrubbed
+  environment, and a timeout that kills the whole process group
+  (`task` subcommands). It executes a subprocess but deploys nothing.
+- **DS05 - Durable queue and traceable results.** ✅ Shipped: a SQLite
+  queue with leases and an append-only execution journal that survive a
+  restart; a duplicate enqueue is never a second job, an interruption
+  never a false success, a moved base blocks promotion (`queue`
+  subcommands).
+- **DS06 - Interchangeable AI provider.** ✅ Shipped (fake half): a
+  deterministic fake provider behind a safety contract - timeout /
+  malformed / quota become bounded outcomes, a budget stops the step,
+  the suggestion is inert data that grants nothing and deploys nothing
+  (`provider suggest`). The real provider is a user decision.
+- **DS07 - Coordinated incidents with HYDRA-UMC-OPS-AGENT.** ✅ Shipped:
+  an HMAC-authenticated incident transport with replay / impersonation /
+  overload / version checks and a full submit → diagnosis → post-deploy
+  verification round trip that reconciles after a dropped connection
+  (`incident verify`).
+- **DS08 - First fully controlled repair cycle.** ✅ Shipped: a gated
+  repro→incident→patch→regression→build-test→approval→isolated-install→verify
+  state machine that blocks a tampered or misdirected candidate and
+  rolls back on a failed post-install check (`repair check-candidate`).
+- **DS09 - Stable operation/restoration.** ✅ Shipped: operational
+  health checks over the queue and disk, and a verified state
+  backup/restore that refuses a backup for another instance or a
+  corrupted one (`ops` subcommands).
+- **DS10 - Delivery package and honest maturity evaluation.** ✅
+  Shipped: `deliver manifest` records a sha256 for every shipped file
+  and reads back the real CLI surface, version and test count; `deliver
+  evaluate` reports each of the ten deliveries against real evidence
+  (DS06 is `partial` - only the fake ships), lists seven limitations
+  plainly, and reports an `overall_maturity` that is hard-coded `functional`.
+
+**Maturity.** The plan is complete; the maturity is `functional`: the software is built and covered by tests, but it has not been verified on real hardware or services, which is a separate, later step. What is in this repository is a working, tested implementation of - a configuration schema, validated profiles,
+dry-run plans, one bounded runner, a durable queue, a fake provider, a
+signed transport, a gated repair cycle, verified backups, and an
+evaluation that refuses to over-claim. Nothing here provisions a host,
+runs a deploy, wires the pieces into a worker loop, or has touched
+target hardware. `deliver evaluate` says exactly this, and its
+`known_limitations` list is the honest to-do. See
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for what each delivery is
+scoped to include and explicitly exclude.

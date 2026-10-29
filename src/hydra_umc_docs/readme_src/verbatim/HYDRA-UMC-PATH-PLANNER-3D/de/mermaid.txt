@@ -1,0 +1,9 @@
+```mermaid
+flowchart TB
+    GOAL["Schwarmziel / Mission"] --> PLAN["3D PATH-PLANNER"]
+    PLAN --> COLL["Kollisionsprüfung (Kugeln)"]
+    VIS["Vision Sicherheitszonen"] --> COLL
+    TWIN["Robotereinschränkungen (URDF)"] --> COLL
+    COLL -. Sauber .-> OPT["Trajektorienoptimierer (S-Kurve)"]
+    OPT -.-> SYNC["SWARM-SYNC Dispatch"]
+```

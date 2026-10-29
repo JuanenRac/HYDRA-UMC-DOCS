@@ -1,0 +1,50 @@
+### Requirements
+- [Node.js](https://nodejs.org/) (v20 or higher recommended)
+- npm
+
+### Installation
+```bash
+npm install
+```
+
+### Development Mode
+Runs the aggregation server directly with `tsx` (no bundler):
+- **Windows:** double-click `dev.bat` or run `npm run dev`
+- **Linux/Mac:** run `./dev.sh` or `npm run dev`
+
+### Production Build
+Bundles the server into a single deployable file with esbuild:
+- **Windows:** double-click `build.bat` or run `npm run build`
+- **Linux/Mac:** run `./build.sh` or `npm run build`
+
+Then start it with:
+```bash
+npm start
+```
+
+The server listens on `0.0.0.0:8000` - `GET /health` is a fast liveness
+check with no downstream probing (what `hydra-umc.project.json`'s own
+`service.health_path` points at), while `GET /status` is the real deep
+diagnostic that reports the Gateway's own version plus the
+name/protocol/endpoint/reachability of each child bridge it fronts.
+
+Real example - an allowlisted command against a child that isn't running,
+an unauthorized operation, and a malformed request:
+
+```bash
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" \
+  -d '{"protocol":"OPC-UA","operation":"read","target":"ns=2;s=Line1.Status"}'
+# 502 {"status":"downstream_unreachable","reason":"TCP connect to opcua-server:4840 timed out after 2000ms"}
+
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" \
+  -d '{"protocol":"OPC-UA","operation":"write","target":"ns=2;s=Line1.SetPoint"}'
+# 403 {"status":"rejected_unauthorized","reason":"operation \"write\" is not allowlisted for OPC-UA"}
+
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" -d '{"protocol":"OPC-UA"}'
+# 400 {"error":"protocol, operation and target are required strings"}
+```
+
+### Versioning
+`npm run build` only bundles the server and never changes the version; `python tools/hydra_project_tool.py bump` raises it
+into minor (and minor into major) past 9 rather than ever reaching a
+two-digit segment (`0.0.9` -> `0.1.0`, not `0.0.10`).

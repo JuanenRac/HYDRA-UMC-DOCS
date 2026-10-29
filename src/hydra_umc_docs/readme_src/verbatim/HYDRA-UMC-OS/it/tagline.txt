@@ -1,0 +1,1 @@
+Lo strato di piattaforma riproducibile di un nodo HYDRA-UMC su Raspberry Pi OS

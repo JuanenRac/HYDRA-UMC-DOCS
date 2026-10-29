@@ -1,0 +1,44 @@
+Richiede il toolchain Rust (`cargo`/`rustc`, installabile via [rustup](https://rustup.rs)) e Python 3.10+ (solo per `bump_version.py`).
+
+```bash
+# Linux / macOS
+./build.sh   # `cargo test` ({tests} test), poi `cargo build --release`
+./run.sh     # esegue target/release/hydra-umc-physics-replica, stampa nome + version + ruolo
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` non cambiano mai la versione (solo `python tools/hydra_project_tool.py bump` la alza), eseguono la vera suite di test, e poi costruiscono un binario release.
+
+I veri sottocomandi `fk` e `validate-limits` necessitano di un file URDF:
+
+```bash
+./run.sh fk --urdf arm.urdf --joints "shoulder=0,elbow=0"
+# shoulder: x=0.000000 y=0.000000 z=0.200000
+# elbow: x=0.300000 y=0.000000 z=0.200000
+
+./run.sh validate-limits --urdf arm.urdf --joints "shoulder=3.0,elbow=0.2"
+# LIMIT VIOLATION: joint 'shoulder' = 3.000000 (allowed [-1.570000, 1.570000])
+```
+
+Il vero sottocomando `fk-checked` si rifiuta di calcolare una posa quando un giunto è fuori intervallo - a differenza di `fk` da solo, che la calcola comunque:
+
+```bash
+./run.sh fk-checked --urdf arm.urdf --joints "shoulder=0.5,elbow=0.2"
+# shoulder: x=0.000000 y=0.000000 z=0.200000
+# elbow: x=0.263275 y=0.143828 z=0.200000
+
+./run.sh fk-checked --urdf arm.urdf --joints "shoulder=0.5,elbow=5.0"
+# LIMIT VIOLATION: joint 'elbow' = 5.000000 (allowed [-2.000000, 2.000000]) - refusing to compute an unreachable pose
+
+./run.sh fk --urdf arm.urdf --joints "shoulder=0.5,elbow=5.0"
+# elbow: x=0.263275 y=0.143828 z=0.200000   <- calcolato comunque; questo è il divario che fk-checked chiude
+```
+
+`fk` esce con `0` in caso di successo, `2` se `--urdf`/`--joints` non è valido. `fk-checked` esce con `0` (posa reale), `1` (violazione di limite), o `2` (input non valido). `validate-limits` esce con `0` (nessuna violazione), `1` (violazioni trovate), o `2` (input non valido).
+
+Vedi [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) per il riferimento completo della riga di comando, con ogni caso di errore reale (argomenti mancanti/malformati, un file URDF illeggibile) catturato da un'esecuzione reale del binario di release.

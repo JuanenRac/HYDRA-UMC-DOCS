@@ -1,0 +1,2 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — jeder `--cli`-Unterbefehl, mit echter Beispielausgabe.
+- **[docs/FIRST_BOOT_CONFIG.md](docs/FIRST_BOOT_CONFIG.md)** — der echte `firstrun.sh`-Mechanismus, den dieses Tool nachbildet, und warum.

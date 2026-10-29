@@ -1,0 +1,4 @@
+* **Phase 1 :** (fait, `-journal`) Un journal persistant en JSON par lignes, chaîné par hachage, de chaque transition et demande de récupération. Reste : les réponses de l'orchestrateur en champs structurés.
+* **Phase 2 :** Une sonde plus rapide : une boucle par nœud avec des connexions gRPC persistantes et des en-têtes par entrée pour la sonde HTTP.
+* **Phase 3 :** Une observabilité propre (un point d'accès de métriques) et un rechargement du registre des nœuds sans redémarrage.
+* **Phase 4 :** Un test de contrat contre un vrai HYDRA-UMC-SERVER et un bail (lease) pour qu'un seul réparateur agisse à la fois.

@@ -1,0 +1,3 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — 目的、五个目标组成部分、目标架构，以及生态系统关系。
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — 每个子命令、其参数标志，以及退出码合约。
+- **[docs/CONTRACTS.md](docs/CONTRACTS.md)** — 五份合约逐字段的真实结构。

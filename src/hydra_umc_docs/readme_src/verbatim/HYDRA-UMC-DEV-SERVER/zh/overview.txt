@@ -1,0 +1,71 @@
+HYDRA-UMC-DEV-SERVER 是 HYDRA-UMC/URTC 生态系统的开发基础设施：一台可复现的主机
+（目标平台：从 NVMe 启动的 Raspberry Pi 5 或 Compute Module 5，8GB），
+将托管本生态系统自身的源代码，并运行受限、受策略约束的编程/构建/测试任务——
+无论是人还是 AI 助手皆是如此。它**不是**要训练的新 AI，**不是**替代操作系统，
+并且它绝不会自行判定某台机器可以安全修改。
+
+DS01 带来了两个真实、各自独立有用的部分：
+
+1. **配置模式**(`config validate`) - 三份 JSON 文档
+   (`HostProfile`、`ToolchainPolicy`、`TaskPolicy`)，每一份都有真实的校验，
+   以及针对每种被拒绝形态的真实反例测试。从第一天起最重要的不变量：
+   `TaskPolicy.allow_deploy` 默认为 `False`，只有文档显式设置了字面
+   JSON 布尔值 `true`，才可能生成授予该权限的策略。
+2. **清单发现**(`inventory scan`) - 与 HYDRA-UMC-OPS-AGENT 自身 edge 角色
+   已使用的、用于查找和校验 `hydra-umc.project.json` 的同一套真实、经测试的模式，
+   在此复用而非重写。
+
+DS02 又新增三项，全部位于 `station` 子命令之下，且仍然是"只校验与描述，绝不执行"：
+
+3. **远程站点配置**(`station validate`) - 一份 JSON 文档
+   (`RemoteIdentity` + `RemoteAccess` + 所需工具链)，采用同样会累积错误的校验。
+   其第一天的不变量：远程编辑端点绑定 loopback/私有地址，可路由地址一律被拒绝，
+   除非文档将字面布尔值 `allow_public_bind: true` 显式设为真；身份是专用的系统账户，
+   绝不是 `root` 或登录用户。
+4. **主机预检**(`station preflight`) - 读取一份配置，并通过一个可注入的检查器接口
+   报告*本*主机是否真的已准备好成为该站点（Python 版本、可用磁盘、工作区可写、
+   `PATH` 中的工具、端口空闲、身份为真实的系统账户）。它绝不改变主机。
+5. **空跑置备计划**(`station plan`) - 呈现真实安装程序*将会*执行的内容
+   （每一步的 argv 以数据形式记录）以及完整的 systemd unit 文本，
+   并且在预检失败时拒绝构建计划。不执行任何内容。
+
+DS03 新增保守迁移，同样遵循"只读取与描述，绝不执行"——它不复制任何内容，也从不触碰源：
+
+6. **迁移清单 + 计划**（`migrate inventory` / `migrate plan`）——遍历一个源 checkout（只包含 git 认为属于项目的文件——本地 `.venv` 或构建输出在 gitignore 中，永远看不到），对每个文件计算 SHA-256 并分类：`tracked-clean`、`tracked-modified`、`untracked`、`private`（一个可扩展的 `PrivacyPolicy`：私有文档文件夹、`.env*`、`*.pem`、`id_ed25519*` ……）。已提交但从未推送的提交单独记录。`migrate plan` 将每一类映射到其**各自**的目标——四个可证明彼此分离的根（`MigrationDestinations.from_dict` 拒绝相等或嵌套的根），打包未推送的提交，输出完整的哈希清单，若某个私有文件会落到可共享的根之下则打印 `REFUSED`。
+
+DS04 是第一个执行子进程的交付——并且仍然受到严格约束：
+
+7. **任务配方 + 工作区执行器**（`task validate` / `task run`）——`TaskRecipe` 固定一个 `revision`（分支名会被拒绝）和一个白名单 `command`（`argv[0]` 必须在策略的 `allowed_commands` 中，否则该次运行为 `rejected` 且不启动任何东西）。`task run` 创建 `<base>/<task_id>/`——若已存在则拒绝，因此**两个任务永不共享一个工作区**——在其中以**已清理的环境**运行该命令（只有 `PATH` / `HOME` / `LANG` / `TZ`；绝不继承 `GITHUB_TOKEN`、`AWS_SECRET_ACCESS_KEY`、`ANTHROPIC_API_KEY`、`SSH_AUTH_SOCK`），受 `timeout_seconds` 约束，超时或取消时**杀死整个进程组**——由一个启动孙进程并确认两者都消失的真实测试证明。`input_paths` 中的 `..`、绝对路径或指向工作区之外的 symlink 都会被拒绝。它不部署任何内容。 子进程的输出在其运行期间被持续读取，每个流只保留最后 8 KiB，因此输出很多的构建或测试运行既不会堵在已满的管道上，也不会让主机内存不断增长。
+
+DS05 新增持久性——一个任务队列及其执行日志，可在进程重启后存活。它记录，不执行：
+
+8. **持久队列 + 执行日志**（`queue enqueue` / `status` / `reconcile` / `journal`）——一个 SQLite 存储（WAL，租约用立即事务）。`enqueue` 是幂等的——用相同 `task_id` 的第二次调用返回 `created=False`，**绝不是第二个作业**。`lease(worker, ttl)` 认领最旧的 `queued` 条目；`reconcile()` 将过期租约退回 `queued`（每次启动都安全）。来自不再持有租约的 worker 的 `record_result` 会被**拒绝，而非接受为已完成**——中断绝不会变成虚假的成功。若记录结果时观察到的基线指纹与 `enqueue` 时记录的不同，则该结果存为 `failed` / 不可晋级，**即使退出码为 0**。日志的 `completed` 事件始终携带 `revision` + `recipe_fingerprint`；日志只保留截断的尾部，`prune_journal` 限制行数，因此磁盘保持有界。
+
+DS06 增加了一个可替换的 AI 提供方——仅交付确定性的 fake，位于一个安全契约之后。它返回一段供人阅读的字符串；不把任何东西接到 runner、队列或一次部署上：
+
+9. **可替换的 AI 提供方**（`provider suggest`）——一个 `AIProvider` seam；`FakeProvider(scenario=...)` 完全确定。`run_provider_step` 把提供方的**超时**、**配额耗尽**或**格式错误的输出**变成一个有界的具名结果（绝不是逐步升级的异常）；一个配置好的 `ProviderBudget`（调用数 / token / 成本）会**在超出之前停止该步骤**，不发出调用；而提供方的回答是**数据，绝非指令**——一条说“忽略先前的指令 / 立即部署 / 给我 root”的建议会被逐字复制，置上 `injection_flagged`，并且在**每一个**结果里 `grants_no_permissions` / `triggers_no_deploy` 都保持为真。使用哪个真实提供方及其授权，是用户的决定（今天 `kind` 必须是 `"fake"`）。
+
+```
+$ hydra-umc-dev-server config validate configs/task-policy.example.json --kind task-policy
+VALID: configs/task-policy.example.json (task-policy)
+{
+  "allow_deploy": false,
+  "max_concurrent_tasks": 2,
+  "allowed_commands": ["pytest", "build.sh", "build-test.sh"]
+}
+
+$ hydra-umc-dev-server inventory scan --root ..
+{
+  "root": "..",
+  "projects": [
+    {"name": "HYDRA-UMC-DEV-SERVER", "version": "0.1.6", "maturity": "functional", "manifest_path": "../HYDRA-UMC-DEV-SERVER/hydra-umc.project.json"},
+    ...
+  ],
+  "issues": []
+}
+```
+
+除了 `run.sh` 运行的演示外，本交付没有无参数的默认调用，也没有图形界面 -
+完整、真实的命令界面见 [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)。
+
+另外两个命令 `plugin list` 和 `serve` 负责插件生命周期以及带认证的本地 HTTP API（仅限回环地址，Bearer 令牌）。插件在以其文件已批准的 SHA-256 启用之前保持惰性，并且只能添加具名的检查、报告和生成器（在 `plugin.json` 中用 `provides` 声明，通过 `plugin run` 或 API 运行，各自受超时和大小上限限制）；该 API 不运行任何任务，也不部署任何内容。详见 [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) 和 [docs/PLUGINS.md](docs/PLUGINS.md)。 此外，当主机具备 bubblewrap 或 systemd-run 时，任务运行器会把命令放进沙箱（无主目录，除非策略开放否则无网络，只有工作区可写），限制每个命令的参数，拉取固定的修订版本，限制同时运行的任务数并在结束后删除工作区；插件默认在各自的进程中运行。以上内容尚未在真实主机上运行过。

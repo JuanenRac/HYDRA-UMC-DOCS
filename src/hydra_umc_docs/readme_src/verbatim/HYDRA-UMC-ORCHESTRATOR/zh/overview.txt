@@ -1,0 +1,14 @@
+**HYDRA-UMC-ORCHESTRATOR** 是 HYDRA-UMC 生态系统的高层协调层。它的目标是将多个 HydraNode(Kinematic Brain、Vision Node 和 Cognitive Node)作为一个统一的集群来管理。
+
+计划中:全局任务规划、跨车队的负载均衡,以及为避免物理碰撞而在机器人之间进行的实时同步。目前它用状态机跟踪任务并交给 JOB-DISPATCHER;它不同步机器人、不防止碰撞,也不保证任何精度。
+
+### 关键特性：
+* 🧭 **分配只有一个所有者：** 配置了 `--job-dispatcher-url` 后，由 JOB-DISPATCHER 决定哪台机器人接收任务，而本编排器拥有任务本身（生命周期、收尾与恢复）。此时手动指定节点的 `POST /missions/:id/dispatch` 会被以 409 拒绝，并提示使用 `POST /missions/:id/auto-dispatch`；没有 job-dispatcher 时，手动 dispatch 与以前一样可用。*(已实现)*
+* 📜 **与 job-dispatcher 的书面契约,用两个真实进程核验:** `docs/JOB_DISPATCHER_CONTRACT.md` 写明谁拥有什么(dispatcher 拥有把工作分配给机器人;本编排器拥有任务:其生命周期、收尾和恢复)以及双方逐步向对方承诺什么。`tools/verify_dispatcher_contract.py` 启动真实的 dispatcher(Go,来自相邻的检出目录)和真实的编排器,并让任务经过它们:任务是一个待处理的作业,手动指派被拒绝,由 dispatcher 选择机器人,完成和失败会关闭作业,而恢复节点会收回它的工作并拦截丢失尝试的迟到报告。缺少 Go、dispatcher 或已构建的编排器时跳过(退出码 0)。*(已实现,23 项检查)*
+* 🕸️ **集群协调：** 跨多个控制器编排最多 32+ 台独立机械臂。 *（计划中）*
+* ⚖️ **负载均衡：** 自动将任务分配给最空闲或最适合的机器人。
+* 🛡️ **集中式安全：** 全局 E-STOP 管理与全车队健康监控。 *（计划中）*
+* 📡 **统一 API：** 为应用程序和 Studio 与整个工厂交互提供单一入口点。 *（计划中）*
+* 🧩 **真实 v0 —— 任务状态机：** `mission.rs` 通过 `Pending -> Dispatched -> InProgress -> Completed`（外加 `Cancelled`/`Failed` 两个终止状态）跟踪每个任务，具备幂等取消和节点被报告为不可达/无效时的真实恢复——见下方 `mission-demo`。纯内存逻辑——运行或测试都不需要与 JOB-DISPATCHER/NODE-HEALING 的实时 gRPC 对端。
+* 🧱 **默认安全，迟到的报告无法覆盖交接结果（v0）：** API 默认只监听 `127.0.0.1:8114`，使用其他地址需要 bearer 令牌（`--token` / `ORCHESTRATOR_TOKEN`；设置后除 `GET /health` 外的所有路由都要求它）或显式的 `--allow-anonymous`；超过 64 KB 的请求体会被以 `413` 拒绝。每次派发都会让任务的 `attempt` 加一；携带过期 `attempt`（或已不再持有该任务的节点名称）的 `start`/`complete`/`fail` 会被以 `409` 拒绝，且不会改动任务，因此被宣告不可用、之后从网络分区中恢复的节点无法覆盖任务被交接到的节点（`--require-attempt` 可将该字段设为必填）。任务注册表和发件箱在替换旧文件之前会被强制写入磁盘；随附的 systemd 单元现在为进程提供可写的状态目录（此前 `ProtectSystem=strict` 使默认的 `data` 目录只读，重启后什么都保留不下来）；`docker-compose.yml` 现在启动真正的服务（`serve` 命令、健康检查、必填令牌、固定镜像，只发布编排器，且只绑定宿主机回环地址）。*（已实现）*
+* 🔭 **可读的运维（可选）：** `GET /stats` 还显示最旧的未确认关闭已等待多久（`oldestPendingCloseAgeSeconds`），以及对 JOB-DISPATCHER 调用的最近一次成功与失败；`--log-format json` 每行日志写一个 JSON 对象；`--keep-finished N` 会忘记关闭已确认的最旧的已结束任务，使 `missions.json` 不会无限增长；文件带有 `schema_version`，由更新版本写入的文件会被拒绝；关闭时会告诉 JOB-DISPATCHER 正在关闭哪一次尝试。全部默认关闭或保持不变。 *(已实现)*

@@ -1,0 +1,98 @@
+HYDRA-UMC-OPS-AGENT es el coordinador de incidencias de mantenimiento
+del ecosistema HYDRA-UMC/URTC. Es dueño de un único ciclo de vida real -
+**evidencia → diagnóstico → cambio aprobado por una persona → despliegue
+canario vía HYDRA-UMC-UPDATER → verificación** - sin reimplementar la
+inferencia, las actualizaciones ni la lógica de seguridad del MCU que ya
+existen en otras partes del ecosistema. Este proyecto ya envía cinco de
+las seis etapas de ese ciclo de vida: **la evidencia**, **el
+diagnóstico**, **el cambio aprobado por una persona**, **el despliegue
+canario** y **la verificación**.
+
+Dos roles, un solo paquete, todavía sin transporte de red entre ellos:
+
+1. **Rol edge** (`edge collect`) - se ejecuta directamente en la máquina
+   observada (una célula CM5 real, o la propia estación de trabajo de
+   un desarrollador). Escanea cada checkout hermano en busca de su
+   propio `hydra-umc.project.json`, opcionalmente comprueba una o más
+   unidades systemd y endpoints HTTP de salud, y deriva una
+   `MaintenanceIncident` real por cada problema REAL que encuentra - un
+   escaneo limpio produce cero incidencias, nunca una "todo OK"
+   sintética. Todas las incidencias de la misma ejecución comparten un
+   único ID de correlación.
+2. **Rol control-plane** (`control show`) - se ejecuta en una máquina de
+   desarrollo y renderiza un archivo de snapshot guardado, de solo
+   lectura: inventario de proyectos, resultados de comprobaciones de
+   salud, y todas las incidencias ordenadas de más a menos graves. Nunca
+   modifica el archivo que lee, y esta entrega tampoco "resuelve" ni
+   reconoce ninguna incidencia desde aquí.
+3. **Diagnóstico** (`control diagnose`) - también se ejecuta en el rol
+   control-plane. Envía una incidencia ya redactada a un proveedor de
+   IA (cualquier proveedor - `anthropic` y OpenAI vienen integrados de
+   serie, ver [docs/DIAGNOSIS.md](docs/DIAGNOSIS.md)) y obtiene de
+   vuelta una explicación de causa raíz propuesta en texto plano - una
+   sugerencia para que la lea una persona, nunca una decisión.
+4. **Cambio aprobado por una persona** (`control propose` / `approve` /
+   `reject`) - un `ChangeProposal` real e inmutable (un diff unificado,
+   una descripción, una justificación) que transita de `pending` a
+   `approved`/`rejected` EXACTAMENTE UNA VEZ, siempre atribuido a una
+   persona real con nombre. Ver
+   [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md).
+5. **Despliegue canario** (`control deploy-canary`) - se niega a
+   ejecutarse contra nada que no sea una propuesta `approved`. Aplica el
+   diff a un clon de staging independiente, ejecuta el propio comando
+   real de build-test del proyecto objetivo ahí, y solo promueve
+   (guardando el checkout anterior como copia de seguridad real) si eso
+   pasa - el checkout real nunca se toca en ningún otro caso.
+6. **Verificación** (`control verify`) - vuelve a ejecutar la
+   comprobación real exacta que originalmente produjo una incidencia,
+   usando las propias funciones de la Entrega 1, para confirmar que
+   está de verdad resuelta.
+
+```
+$ hydra-umc-ops-agent edge collect \
+    --node-name cm5-cell-3 --projects-root /home/pi/HYDRA-UMC \
+    --systemd-unit hydra-umc-server.service \
+    --http-health-url http://127.0.0.1:8090/health \
+    --out snapshot.json
+Wrote snapshot to snapshot.json (1 incident(s)).
+
+$ hydra-umc-ops-agent control show snapshot.json
+Node: cm5-cell-3  (collected 2026-01-01T10:15:03+00:00)
+
+Projects found: 27
+  - HYDRA-UMC-SERVER v0.1.0 (functional)
+  ...
+
+Service health checks: 1
+  - hydra-umc-server.service: NOT ACTIVE (failed)
+
+Incidents: 1
+  [CRITICAL] hydra-umc-server.service: systemd unit is not active: failed  (id=7c2c1e4a-...)
+
+$ ANTHROPIC_API_KEY=sk-ant-... hydra-umc-ops-agent control diagnose \
+    snapshot.json --incident-id 7c2c1e4a-...
+{
+  "incidentId": "7c2c1e4a-...",
+  "explanation": "Likely cause: the service crashed on startup...",
+  "disclaimer": "This is an AI-generated suggestion, not a decision. ..."
+}
+
+$ hydra-umc-ops-agent control propose snapshot.json --incident-id 7c2c1e4a-... \
+    --project-name HYDRA-UMC-SERVER --description "Increase retry count to 3" \
+    --diff-file fix.diff --rationale "gives up too early" --out proposal.json
+$ hydra-umc-ops-agent control keygen --name ana --key-out ana.pem --public-out ana.pub
+$ hydra-umc-ops-agent control approve proposal.json --approved-by ana --key ana.pem \
+    --live-root /home/pi/HYDRA-UMC/HYDRA-UMC-SERVER
+$ hydra-umc-ops-agent control deploy-canary proposal.json \
+    --live-root /home/pi/HYDRA-UMC/HYDRA-UMC-SERVER --build-test-command "bash build-test.sh" \
+    --approvers approvers.json --service-unit hydra-umc-server.service \
+    --health-url http://127.0.0.1:3000/health
+$ hydra-umc-ops-agent control verify snapshot.json --incident-id 7c2c1e4a-... --node-name cm5-cell-3
+```
+
+Ver [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md) para el flujo
+completo y real de operador de arriba.
+
+En esta entrega no existe ninguna invocación por defecto/sin argumentos
+ni GUI - ver [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) para la
+superficie de comandos completa y real.

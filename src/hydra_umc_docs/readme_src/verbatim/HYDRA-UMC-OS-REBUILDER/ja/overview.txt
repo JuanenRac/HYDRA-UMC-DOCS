@@ -1,0 +1,59 @@
+HYDRA-UMC-OS-REBUILDERは、実際のCM5導入が最終的に必ず必要とする質問に
+答えるWindows/Linuxデスクトップツールです - デフォルトはウィンドウ型
+GUI、`--cli` で完全なCLIも利用可能: **「エコシステムの各プロジェクトの
+最新の実バージョンをすでにインストール済みの、新しいSDカード/eMMC
+イメージを構築し、書き込む前にWi-Fi/ユーザー/ホスト名/SSHを設定させて
+ほしい」**。
+
+**イメージの内容:** 計画されたバージョンのプロジェクトのコピーが `/opt/hydra-umc/<名前>` に置かれ、各プロジェクト自身のビルドが生成したものが含まれます。サービス用ユーザーや systemd ユニットは作成せず、`/etc/hydra-umc` も用意しないため、初回起動でサービスが自動的に起動することはありません。HYDRA-UMC-OS のプロビジョニングスクリプトは引き続きボード上で実行する必要があります。
+
+実際に3つのことを行います：
+
+1. **GitHubを確認する。** HYDRA-UMC/URTCエコシステム内で、自身の
+   `hydra-umc.project.json` が `"deployment_target": "cm5"` を宣言して
+   いるすべてのリポジトリは動的に検出され（固定リストは一切使わない）、
+   その現在公開されているバージョンが読み取られます - これは
+   `hydra-umc-updater` を実際のライブラリとして依存することで実現して
+   おり、その独自の検出コードから静かに乖離しかねない第二の実装を作ら
+   ないためです。
+2. **実際のイメージを構築する。** 固定された、チェックサムで検証済みの
+   Raspberry Pi OSベースイメージをダウンロードし、ループマウントして、
+   検出された各プロジェクトを**そのプロジェクト自身の `build.sh`** を
+   イメージのchroot内で実行することでインストール/更新します - どの
+   プロジェクトのビルド手順も再実装することはありません。
+3. **実際の初回起動設定を書き込む。** ホスト名、`passlib` で実際にハッシュ
+   化されたパスワードを持つ新しいユーザー、Wi-Fi、タイムゾーン、キー
+   ボードレイアウト、SSH - これはRaspberry Pi Imager自身の「OS
+   Customisation」画面がRaspberry Pi OS（Trixie以降）イメージ上で
+   使用しているのと同じ実際の `firstrun.sh` の仕組みであり、結果として
+   できあがるSDカードはRaspberry Pi Imager自身が生成したものとまったく
+   同じように動作します。詳細は
+   [docs/FIRST_BOOT_CONFIG.md](docs/FIRST_BOOT_CONFIG.md) を参照して
+   ください。
+4. **公開前に自分自身の出力をスキャンします。** 構築されたイメージが最終
+   的なパスに移動される前に、マウントされたrootfsに実際のWi-Fiパスワード
+   が `wpa_supplicant.conf`/NetworkManagerの接続プロファイルに残されて
+   いないか、実際の秘密鍵、空でないシェル履歴、取り残された `.env`
+   ファイルがないかを確認します - 実際の発見があれば、クリーンアップの
+   失敗時と同様に公開が完全にブロックされます。チェックサム検証はこれ
+   まで入力(ベースイメージ)のみを対象としていました - これはビルド自体
+   が出力に残すものに対する初めてのチェックです。
+
+```
+$ hydra-umc-os-rebuilder --cli status
+HYDRA-UMC-SERVER 0.4.8 (api/node)
+HYDRA-UMC-VISION-STREAMER 0.0.3 (service/python)
+HYDRA-UMC-GATEWAY-INDUSTRIAL 0.0.3 (api/node)
+...
+TOTAL=27
+
+$ hydra-umc-os-rebuilder --cli config --out ./boot \
+    --hostname hydra-umc-cm5 --username hydra-umc --password '変更してください' \
+    --wifi-ssid マイネットワーク --wifi-password 'wifiパスワード' --wifi-country JP
+CONFIG_WRITTEN out=boot firstrun=firstrun.sh
+```
+
+引数なしで実行すると、同じ情報がQt Quickデスクトップシェルで開きます -
+HYDRA-UMC-UPDATERと同じビジュアル言語（同じダークパレット、タイポグラフィ、
+コンポーネントセット）を再利用し、エコシステム状態・イメージ作成・初回
+起動設定の3つのタブに分かれています。

@@ -1,0 +1,1 @@
+- **[docs/API.md](docs/API.md)** — die echte HTTP-API-Referenz: die schnelle `GET /health`-Liveness-Sonde, jedes Feld der `GET /status`-Antwort, die `403`/`429`/`504`/`502`-Grenzen von `POST /command`, und jede Konfigurations-Umgebungsvariable, direkt aus `src/server.ts`/`src/probes.ts` dokumentiert.

@@ -1,0 +1,51 @@
+Una vera ricerca di percorsi privi di collisioni, non solo uno scheletro
+che compila: pianifica un percorso a partire da un file di scenario JSON
+e stampa il risultato.
+
+```bash
+# Windows
+build.bat
+run.bat scenarios/example.json
+
+# Linux / macOS
+./build.sh
+./run.sh scenarios/example.json
+```
+
+`build.sh`/`build.bat` non cambiano mai la versione (solo `python tools/hydra_project_tool.py bump` la alza) e poi eseguono
+`cargo build --release`. `run.sh`/`run.bat` eseguono direttamente il binario
+risultante, inoltrando qualsiasi argomento (il percorso dello scenario).
+
+Uno scenario è un file JSON con `start`, `goal`, `obstacles` (una lista
+di sfere `{center, radius}`), un `workspace` (limiti `min`/`max`), e
+opzionalmente `seed` (la ricerca è totalmente deterministica per seme) e
+`config` (`max_iterations`, `step_size`, `goal_bias`, `goal_threshold`,
+`robot_radius`, `max_duration_ms` - tutti opzionali, con valori
+predefiniti ragionevoli; `max_duration_ms` limita il tempo di ricerca
+in base all'orologio reale, indipendentemente da `max_iterations`). Il
+risultato viene stampato come JSON: `{"status": "ok", "path": [...]}`
+oppure `{"status": "error", "reason": "..."}` (`start_inside_obstacle`,
+`goal_outside_workspace`, `no_path_found`, `time_limit_exceeded`, ecc. -
+vedi il `PlanError` di `src/rrt.rs` per l'elenco completo e onesto,
+incluso il caso in cui semplicemente non esiste alcun percorso, non solo
+uno che la ricerca non ha trovato in tempo).
+
+Un `frame` opzionale (un nome breve, al massimo 64 byte) indica il sistema di coordinate in cui è scritto lo scenario. È solo un'etichetta: viene riportata nel risultato e non modifica mai una coordinata.
+
+Un secondo sottocomando reale riverifica un percorso già calcolato (un
+semplice array JSON di waypoint `{x, y, z}`) rispetto agli
+ostacoli/workspace attuali di uno scenario, senza eseguire una nuova
+ricerca:
+
+```bash
+./run.sh validate scenarios/example.json path.json
+# {"status": "safe"}
+# oppure: {"status": "unsafe", "issues": [{"SegmentIntersectsObstacle": {"from_index": 0, "to_index": 1}}]}
+```
+
+```bash
+cargo test   # geometria + collisione ostacoli, il PRNG, il
+             # pianificatore RRT (incluso il suo vero limite di tempo
+             # sull'orologio) e la riverifica di sicurezza di validate.rs -
+             # {tests} test in totale
+```

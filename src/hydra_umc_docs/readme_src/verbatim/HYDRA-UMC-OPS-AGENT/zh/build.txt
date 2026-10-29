@@ -1,0 +1,33 @@
+```bash
+chmod +x build.sh   # 仅需一次
+./build.sh          # 创建 .venv，pip install -e ".[dev]"，编译检查 + 测试
+./run.sh                                          # 真实演示：针对一个一次性示例项目执行
+                                                   # edge collect，然后执行 control show
+./run.sh edge collect --node-name n --projects-root DIR --out FILE
+./run.sh control show snapshot.json
+pip install -e ".[ai-anthropic]"                  # 或 .[ai-openai] —— 仅 control diagnose 需要
+ANTHROPIC_API_KEY=sk-ant-... ./run.sh control diagnose snapshot.json --incident-id <id>
+./run.sh control propose snapshot.json --incident-id <id> --project-name 名称 --description "..." --diff-file fix.diff --rationale "..." --out proposal.json
+./run.sh control keygen --name you --key-out you.pem --public-out you.pub
+./run.sh control approve proposal.json --approved-by you --key you.pem --live-root PATH
+./run.sh control deploy-canary proposal.json --live-root PATH --build-test-command "bash build-test.sh" --approvers approvers.json
+pip install -e ".[signing]"                       # needed to sign and to verify approvals (cryptography)
+pip install -e ".[sdk]"                           # 仅在需要复检清单事件的 base_commit 时才需要
+./run.sh control verify snapshot.json --incident-id <id>
+```
+
+在 Windows 上：先 `build.bat`，然后 `run.bat`（不带参数时执行同一演示）/
+`run.bat edge collect ...` / 上面任意一个 `control ...` 子命令。
+`build-test.sh`/`.bat` 执行与本项目自身 CI 相同的编译检查(仅 Python 语法)，不会改动项目版本或 CHANGELOG——但它自身并**不**运行测试套件；CI 会将 `pytest` 作为单独的、更晚的一个步骤来运行。要在本地运行完整的测试套件，请执行 `./build.sh`/`build.bat`(或直接执行 `pytest tests/`)。
+
+**故障排查**
+
+- `edge collect` 在每次运行中都报告 `systemdAvailable: false`：这台主机确实在 `PATH` 中没有 `systemctl`（每一台非 Linux 的开发机，以及某些精简版 Linux 容器都是如此）——这是预期中诚实的降级行为，而非缺陷。见 [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)。
+- `control show` 以 `ERROR: ...` 失败：快照文件不存在、不是有效的 JSON，或不是真正的快照对象——重新运行 `edge collect` 并检查其自身的 `--out` 路径。
+- `control diagnose` 以 `ERROR: the optional '<provider>' package is
+  not installed` 失败：根据 `--provider` 执行 `pip install -e
+  ".[ai-anthropic]"` 或 `".[ai-openai]"`。
+- `control diagnose` 以 `ERROR: no ... API key available` 失败：在运行前先设置 `ANTHROPIC_API_KEY`/`OPENAI_API_KEY`。
+- `control deploy-canary` 以 `ERROR: refusing to deploy ...` 失败：该提案尚未处于 `approved` 状态——先执行 `control approve`。
+- `control deploy-canary` 失败并提示 `ERROR: ... signed approval` / `not a registered approver` / `expired` / `approved for commit`：批准缺失、使用了不在注册表中的密钥、已过期,或是针对检出目录的另一个状态给出的。请用 `control approve --key 你的密钥 --live-root 路径` 重新批准。通过编辑文件批准的提案,或在批准尚未签名之前批准的提案,永远不会被接受。
+- `control deploy-canary` 报告 `promoted: false`：查看结果 JSON 中的 `buildOutput`——暂存环境的构建确实失败了，真实检出从未被触碰。见 [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md)。

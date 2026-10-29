@@ -1,0 +1,4 @@
+* **Phase 1:** (done, `-journal`) A persistent, hash-chained JSON-lines journal of every transition and recovery request. Still to come: the decisions of the Orchestrator's answers as structured fields.
+* **Phase 2:** A faster probe: one loop per node with persistent gRPC connections, and headers per entry for the HTTP probe.
+* **Phase 3:** Its own observability (a metrics endpoint) and a reload of the node registry without a restart.
+* **Phase 4:** A contract test against a real HYDRA-UMC-SERVER and a lease so that only one healer acts at a time.

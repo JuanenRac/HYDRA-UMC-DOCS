@@ -1,0 +1,31 @@
+### Requisitos
+- [Node.js](https://nodejs.org/) (v20 ou superior recomendado)
+- npm
+
+### Instalação
+```bash
+npm install
+```
+
+### Modo de desenvolvimento
+Executa o servidor OPC-UA diretamente com o `tsx` (sem empacotador):
+- **Windows:** faça duplo clique em `dev.bat` ou execute `npm run dev`
+- **Linux/Mac:** execute `./dev.sh` ou `npm run dev`
+
+### Compilação de produção
+Empacota o servidor num único ficheiro implementável com o esbuild:
+- **Windows:** faça duplo clique em `build.bat` ou execute `npm run build`
+- **Linux/Mac:** execute `./build.sh` ou `npm run build`
+
+Depois arranque-o com:
+```bash
+npm start
+```
+
+O servidor escuta em `0.0.0.0:4840` (a porta OPC-UA por omissão registada na IANA)
+no endpoint `opc.tcp://<host>:4840/HYDRA-UMC-OPCUA-SERVER` - aponte qualquer cliente
+OPC-UA (UAExpert, Ignition, Siemens TIA Portal, ...) para ele para
+navegar no espaço de endereços.
+
+### Versionamento
+`npm run build` apenas empacota o servidor. A versão só é subida por `python tools/hydra_project_tool.py bump` (através de `bump_manifest_version.py`), um "conta-quilómetros" em base 10: patch +1 por bump, com transporte para minor (e de minor para major) depois de 9, em vez de alguma vez chegar a um segmento de dois dígitos (`0.0.9` -> `0.1.0`, não `0.0.10`).

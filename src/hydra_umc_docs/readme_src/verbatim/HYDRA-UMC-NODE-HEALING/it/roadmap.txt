@@ -1,0 +1,4 @@
+* **Fase 1:** (fatto, `-journal`) Un giornale persistente in JSON per righe, concatenato con hash, di ogni transizione e richiesta di recupero. Manca: le risposte dell'orchestratore come campi strutturati.
+* **Fase 2:** Una sonda più veloce: un ciclo per nodo con connessioni gRPC persistenti e intestazioni per voce per la sonda HTTP.
+* **Fase 3:** Un'osservabilità propria (un endpoint di metriche) e il ricaricamento del registro dei nodi senza riavvio.
+* **Fase 4:** Un test di contratto contro un vero HYDRA-UMC-SERVER e un lease perché agisca un solo riparatore alla volta.

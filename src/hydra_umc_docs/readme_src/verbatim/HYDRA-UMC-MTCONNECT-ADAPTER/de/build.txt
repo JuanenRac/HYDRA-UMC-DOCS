@@ -1,0 +1,34 @@
+### Voraussetzungen
+- [Node.js](https://nodejs.org/) (v20 oder höher empfohlen)
+- npm
+
+### Installation
+```bash
+npm install
+```
+
+### Entwicklungsmodus
+Startet den Adapter direkt mit `tsx` (ohne Bundler):
+- **Windows:** Doppelklick auf `dev.bat` oder `npm run dev` ausführen
+- **Linux/Mac:** `./dev.sh` oder `npm run dev` ausführen
+
+### Produktions-Build
+Bündelt den Adapter mit esbuild in eine einzige einsetzbare Datei:
+- **Windows:** Doppelklick auf `build.bat` oder `npm run build` ausführen
+- **Linux/Mac:** `./build.sh` oder `npm run build` ausführen
+
+Dann starten mit:
+```bash
+npm start
+```
+
+Der Adapter lauscht auf `0.0.0.0:5000` - jeder MTConnect-Agent/Collector
+kann `GET http://<host>:5000/probe` (statisches Gerätemodell),
+`GET http://<host>:5000/current` (aktuelle DataItem-Werte) und
+`GET http://<host>:5000/sample?from=<sequence>` (echte, ehrliche
+Streaming-Puffer-Semantik - siehe `docs/API.md`) abfragen.
+
+Um einen echten Roboter zu melden, setzen Sie `HYDRA_UMC_SERVER_URL`. HYDRA-UMC-SERVER beantwortet `GET /api/settings` nur einem angemeldeten Konto; geben Sie dem Adapter daher auch Zugangsdaten: `HYDRA_UMC_SERVER_TOKEN` (ein vom Server bereits ausgestelltes Token) oder `HYDRA_UMC_SERVER_USER` und `HYDRA_UMC_SERVER_PASSWORD` (der Adapter meldet sich selbst an und erneut, wenn die Sitzung abläuft). Ohne eines von beiden wird die Quelle als nicht verfügbar gemeldet (`SOURCE_UNAVAILABLE`). `HYDRA_UMC_MTCONNECT_HOST` schränkt die Lauschadresse ein (Standard `0.0.0.0`), etwa auf `127.0.0.1` hinter einem lokalen Reverse-Proxy. Antworten des Servers werden bis zu 4 MiB gelesen.
+
+### Versionierung
+`npm run build` bündelt nur den Server. Die Version wird nur von `python tools/hydra_project_tool.py bump` erhöht (über `bump_manifest_version.py`).

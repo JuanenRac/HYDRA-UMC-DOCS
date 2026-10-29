@@ -1,0 +1,26 @@
+```bash
+chmod +x build.sh   # einmalig
+./build.sh          # erstellt .venv, pip install -e ".[dev]", Prüfung + Tests
+./run.sh contracts validate tests/fixtures/tool_request.valid.json --contract ToolRequest
+./run.sh --version
+```
+
+Unter Windows: `build.bat`, dann `run.bat contracts validate ...` /
+`run.bat --version`. `build-test.sh`/`.bat` führt dieselbe nicht-
+mutierende Python-Syntaxprüfung aus, die auch der eigene CI-Workflow
+dieses Projekts ausführt, ohne die Projektversion oder das CHANGELOG
+anzurühren - sie führt NICHT die Testsuite aus; führe
+`./build.sh`/`build.bat` (oder direkt `pytest tests/`) für die
+vollständige lokale Testsuite aus.
+
+**Fehlerbehebung**
+
+- `contracts validate` beendet sich mit Code `1` und `INVALID: ...`:
+  lies die Meldung - sie nennt das genaue Feld und den Grund, nicht nur,
+  dass etwas fehlgeschlagen ist. Siehe
+  [docs/CONTRACTS.md](docs/CONTRACTS.md) für die reale, erwartete Form
+  jedes der fünf Verträge.
+- Ein Test in `tests/adversarial/` schlägt fehl: Das ist das wörtliche
+  Austrittskriterium dieser Phase 0 selbst - behandle jeden dortigen
+  Fehlschlag als echte Regression der Injection-Abwehrgrenze, niemals
+  als einen zu lockernden Test.

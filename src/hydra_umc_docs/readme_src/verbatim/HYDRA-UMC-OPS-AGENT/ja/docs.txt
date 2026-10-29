@@ -1,0 +1,4 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — すべてのサブコマンド、そのフラグ、終了コード契約。
+- **[docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md)** — `MaintenanceIncident`/`NodeSnapshot` の本物の JSON 形。
+- **[docs/DIAGNOSIS.md](docs/DIAGNOSIS.md)** — 納品 2 自身の本物の契約、プロバイダー、認証情報、安全境界。
+- **[docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md)** — 納品 3-5 自身の本物の契約、ステージング/適用/検証/昇格の完全な流れ、そして本物のオペレーターフローの例。

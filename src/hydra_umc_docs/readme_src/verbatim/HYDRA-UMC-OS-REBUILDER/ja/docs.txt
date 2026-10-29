@@ -1,0 +1,2 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — 実際のサンプル出力付きの、すべての `--cli` サブコマンド。
+- **[docs/FIRST_BOOT_CONFIG.md](docs/FIRST_BOOT_CONFIG.md)** — このツールが再現する実際の `firstrun.sh` の仕組みと、その理由。

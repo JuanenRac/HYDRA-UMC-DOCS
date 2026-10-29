@@ -1,0 +1,30 @@
+### ARCHITECTURE ET DÉCISIONS DE CONCEPTION
+
+- **Les approbations sont asymétriques et liées au correctif.** Un cycle de réparation vérifie candidats et approbations uniquement avec des clés publiques Ed25519 (un secret HMAC partagé doit aussi se trouver du côté qui vérifie, donc qui pourrait vérifier pourrait aussi falsifier ; `allow_symmetric_keys` le conserve en option volontaire). Une approbation nomme le correctif qu'elle approuve (`approved_patch_ref`) et porte une expiration (`expires_at`, UTC) ; les deux sont signés, et un cycle refuse une approbation pour un autre correctif, sans eux ou expirée.
+- **Le bac à sable a été exécuté sur un vrai noyau.** Le bac à sable `systemd-run` a été exécuté sur un hôte Linux avec systemd (tests/test_sandbox_real_host.py) : une tâche écrit dans son espace de travail et nulle part ailleurs, ne peut pas lire le répertoire personnel de l'utilisateur du service, n'a pas de réseau et est tuée par le noyau quand elle prend cinq fois son `MemoryMax`. L'exécution a révélé deux défauts que les tests de ligne de commande ne pouvaient pas voir : un espace de travail sous `/tmp` ou `/var/tmp` faisait échouer l'unité (statut 226) tant qu'il n'est pas lié (`BindPaths`), et un espace sous `/home`, `/root` ou `/run/user` n'est pas atteignable du tout, donc il est maintenant refusé avec la raison avant tout lancement. Les tests sont ignorés, en disant pourquoi, sur un hôte sans bac à sable utilisable ; bubblewrap n'a pas été exécuté. Si le paquet optionnel `cryptography` est installé, la dérivation de la clé publique et la signature passent par lui (temps constant) au lieu du code pur de la RFC 8032 ; `signing_backend()` dit lequel.
+- **Aucune tâche n'a de permission de déploiement par défaut.** C'est le
+  critère d'acceptation littéral de DS01, imposé par la valeur par
+  défaut de la dataclass `TaskPolicy` elle-même - pas seulement énoncé
+  en prose - et couvert par un test dédié pour chaque façon dont un
+  document pourrait tenter de le glisser (un champ absent, mal
+  orthographié, ou une valeur non booléenne).
+- **Un collecteur signale un échec réel et honnête - il ne devine
+  jamais.** Le fait que `scan_project_manifests()` renvoie un
+  `ManifestScanIssue` pour un manifeste présent mais cassé, plutôt que
+  de le laisser tomber silencieusement, est le schéma déjà établi dans
+  cet écosystème (voir le propre `inventory.py` de HYDRA-UMC-OPS-AGENT) -
+  réutilisé ici, pas réinventé.
+- **La propriété de l'état et les relations entre projets ne sont pas à
+  redéfinir par ce dépôt.** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+  et [docs/OPS_INTEGRATION.md](docs/OPS_INTEGRATION.md) documentent la
+  propre table des propriétaires d'état de ce dépôt et son regroupement
+  des 17 relations entre projets en
+  nécessaires/optionnelles/développement uniquement.
+- **stdlib uniquement pour cette livraison.** `config validate` et
+  `inventory scan` n'ont besoin d'aucune dépendance tierce - une
+  livraison future n'en ajoute une que lorsque son propre code en a
+  véritablement besoin (un pilote de file durable pour DS05, un SDK de
+  fournisseur d'IA pour DS06), jamais de manière spéculative.
+- **Rien n'est déployé ici.** L'exécuteur lance une seule commande autorisée dans un espace de travail par tâche (dans un bac à sable si l'hôte en a un),
+  la file est un fichier SQLite local, et les seuls appels réseau sont la récupération facultative par git d'une révision épinglée et l'API locale en loopback.
+  Aucune tâche n'a le droit de déployer, et rien n'a encore tourné sur le Raspberry Pi 5/CM5 cible.

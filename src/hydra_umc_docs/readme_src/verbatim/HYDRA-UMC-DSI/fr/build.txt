@@ -1,0 +1,25 @@
+Nécessite le [SDK Flutter](https://docs.flutter.dev/get-started/install) (canal stable). Ce dépôt est compilé/vérifié avec Flutter 3.47.0. Seuls `linux/` et `windows/` sont configurés comme plateformes dans ce dépôt (pas de dossiers `android/`, `ios/`, `web/` ni `macos/`) - Linux est la vraie cible (le système d'exploitation même du CM5) ; Windows existe uniquement pour pouvoir compiler, exécuter et tester la logique de cette application sur une machine sans chaîne d'outils Linux.
+
+### Scripts de compilation
+
+```bash
+./build.sh          # Git Bash / WSL, ou build.bat pour cmd/PowerShell - flutter pub get + flutter build windows (vérification sur machine de développement)
+./build_linux.sh    # Doit s'exécuter SUR une vraie machine Linux (ou le CM5 lui-même) - flutter pub get + flutter build linux (la vraie cible de déploiement)
+./run_dev.sh         # Git Bash / WSL, ou run_dev.bat pour cmd/PowerShell - mode simulation bureau (flutter run), sans besoin du matériel
+```
+
+Les 3 scripts de compilation (`build.sh`/`build.bat`/`build_linux.sh`) ne changent pas la version de l'application - voir [Versionnement](#-versionnement) ci-dessous. `run_dev.sh`/`run_dev.bat` ne le font pas - un `flutter run` de boucle de développement n'est pas une « vraie compilation » au sens de cette politique.
+
+### Compilation manuelle
+
+```bash
+flutter pub get
+flutter analyze                  # analyse statique - aucun compilateur nécessaire
+flutter test                     # tests de widgets
+dart run tool/bump_version.dart  # incrémente la version, comme le font build.sh/build.bat/build_linux.sh
+flutter build windows            # test de fumée sur machine de développement - produit build/windows/x64/runner/Release/hydra_umc_dsi.exe
+flutter build linux              # la cible RÉELLE - doit s'exécuter sur une vraie machine Linux, produit build/linux/*/release/bundle/
+flutter run -d windows           # ou -d linux sur une vraie machine Linux, pour une boucle de développement en direct en simulation bureau
+```
+
+**Note d'honnêteté sur la vérification Linux :** `flutter build linux --release` a maintenant été réellement exécuté sur ce code, depuis un vrai environnement Ubuntu 24.04 sous WSL2 avec une vraie chaîne d'outils de bureau Linux (`cmake`, `ninja-build`, `libgtk-3-dev`, `clang`) - il compile proprement et produit un vrai `build/linux/x64/release/bundle/hydra_umc_dsi`, confirmé comme démarrant réellement (il a tourné sous un vrai affichage X11 et est resté actif, pas seulement un code de sortie 0), pas seulement `flutter build windows` comme substitut de test de fumée. Ce que cela ne couvre **pas** : l'espace utilisateur de WSL2 est x86_64, pas le vrai aarch64 du Raspberry Pi OS de la CM5, et le flux d'autodémarrage de `kiosk/hydra-umc-dsi.service` n'a toujours jamais tourné sur une vraie machine Linux. Voir la section 7 de `docs/ARCHITECTURE.md` pour la liste exacte de ce qui a été vérifié ou non, et « Suites Connues » ci-dessous pour ce qui reste à faire.

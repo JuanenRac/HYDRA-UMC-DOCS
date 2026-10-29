@@ -1,0 +1,4 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — 各サブコマンド、そのフラグ、終了コード契約。
+- **[docs/CONFIG_SCHEMA.md](docs/CONFIG_SCHEMA.md)** — `HostProfile`/`ToolchainPolicy`/`TaskPolicy`の実際のJSON形状。
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — 目的、2つの作業モード、初期範囲、ディスク構成。
+- **[docs/OPS_INTEGRATION.md](docs/OPS_INTEGRATION.md)** — 完全な17関係マップと状態所有権表。

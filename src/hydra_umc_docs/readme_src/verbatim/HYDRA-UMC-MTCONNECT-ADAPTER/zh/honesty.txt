@@ -1,0 +1,5 @@
+**诚实核查 - 今天真正能运行的部分：** 单位换算(`src/units.ts`)、质量/时间戳/错误码映射(`src/dataitem.ts`)、轮询/缓存(`src/reader.ts`)、由真实 HYDRA-UMC-SERVER 支持的机器读取器(`src/hydraServerReader.ts`)，以及 HTTP 服务器(`src/server.ts`)都是真实的并经过测试(11 个文件共 {tests} 个测试通过，其中包括通过 `supertest` 对一个真实监听套接字发出的真实 HTTP 请求——而不仅仅是编译检查)。设备模型被硬编码为恰好一个 HydraNode(`hydra_umc_1`)——这证明了 HTTP 接口和 XML 结构从端到端都符合规范，但一个真正监控多台机器人的部署需要根据 HYDRA-UMC-SERVER 自身的实时机器人列表来生成，而这一点目前尚未实现。所输出的 XML 已经过验证，结构符合规范(命名空间、`Device`/`DataItem` id、共享的 `instanceId`),但尚未针对真实的第三方 MTConnect Agent 或采集器进行过实际联调测试。具体已交付的内容请见 `CHANGELOG.md`。
+
+---
+
+> **安全与安防现状:**本生态系统不是经认证的安全系统。目前尚无硬件 E-STOP 通路,没有由固件强制执行的限位或联锁,也没有经过验证的运动指令;固件映像使用 CRC32 和共享密钥的 HMAC-SHA256 校验,而非非对称签名;TLS 与双向 TLS 均为可选项,默认关闭;自制电路板尚未组装或测试。在依赖此处任何说法来保障人身安全之前,请先阅读[安全基线](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md)和[威胁模型](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md)。

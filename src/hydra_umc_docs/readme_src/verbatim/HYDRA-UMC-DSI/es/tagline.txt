@@ -1,0 +1,1 @@
+Una interfaz táctil nativa para la pantalla DSI del Compute Module 5

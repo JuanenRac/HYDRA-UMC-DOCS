@@ -1,0 +1,9 @@
+```mermaid
+flowchart TD
+    HYDRA["HYDRA-SERVER"] --> PUB["MQTT Publish"]
+    PUB --> TOPIC["hydra/swarm/robot_1/joints"]
+    PUB --> TOPIC2["hydra/swarm/robot_1/tool"]
+    SUB["External Client"] -- Subscribe --> TOPIC
+    SUB -- Publish Command --> CMD["hydra/swarm/robot_1/cmd/jog"]
+    CMD --> HYDRA
+```

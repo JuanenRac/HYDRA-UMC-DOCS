@@ -1,0 +1,61 @@
+```bash
+chmod +x build.sh   # uma única vez
+./build.sh          # cria o .venv, pip install -e ".[dev,gui]", verifica a compilação de tudo, executa o pytest
+./run.sh                                # GUI com janela (por defeito)
+./run.sh --cli status                   # a versão real mais recente no GitHub de cada projeto do ecossistema
+./run.sh --cli config --out ./boot ...  # escreve a configuração de primeiro arranque (ver docs/CLI_REFERENCE.md para cada flag)
+./run.sh --cli build-image --out FILE   # constrói uma .img pronta a gravar (só Linux/root)
+./run.sh --cli profile-freeze --name cm5-production --out profiles/cm5-production.json  # fixa uma combinação testada real
+./run.sh --cli profile-diff --manifest profiles/cm5-production.json                     # o que mudou desde que foi congelada
+./run.sh --cli profile-update --manifest profiles/cm5-production.json --project X       # volta a congelar apenas X, deixa o resto fixado
+./run.sh --cli profile-set-required-resources --manifest profiles/cm5-production.json --project X --resource dist/index.html  # define o que X tem de produzir
+./run.sh --cli profile-build --manifest profiles/cm5-production.json --out FILE         # constrói a partir EXATAMENTE desse perfil congelado
+```
+
+No Windows: `build.bat` e depois `run.bat` (GUI) / `run.bat --cli status` /
+`run.bat --cli config ...`. O `build-image` continua a precisar de um anfitrião
+Linux real com root de qualquer das formas - ver
+[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md).
+
+**Resolução de problemas**
+
+- O `--cli build-image` termina com `BUILD_BLOCKED reason=...`: leia o motivo -
+  nomeia a peça exata em falta (não é Linux, não é root, ou uma ferramenta
+  concreta em falta no `PATH`) em vez de uma falha genérica.
+- O `--cli config` levanta um erro de validação: o nome do anfitrião/utilizador/
+  código de país Wi-Fi que indicou não corresponde à forma real e estreita que
+  esses campos exigem - ver a validação do próprio `firstboot_config.py`.
+- O `--cli config`/`build-image` recusa com «no login path at all»: o SSH foi
+  desativado sem configurar também uma conta - configure uma, ou passe
+  `acknowledge_no_remote_access=True` (GUI/API) se houver outra forma de entrar
+  com certeza. Ver `describe_recovery_procedure()`.
+- O `profile-build` recusa um projeto com «no real, resolved commit SHA»: o
+  manifesto congelado é anterior a um repositório ter sido renomeado ou tornado
+  privado - volte a congelar o perfil (`profile-freeze`) contra o ecossistema
+  atual em direto.
+- O `profile-build` recusa com «missing N required resource(s)»: um projeto
+  definido com `profile-set-required-resources` teve o seu próprio `build.sh`
+  executado, mas um caminho relativo declarado continua a não existir em disco
+  depois - uma construção real e incompleta, nunca salva por um ficheiro
+  deixado noutro sítio; a imagem não é promovida.
+- O separador Estado do ecossistema da GUI fica vazio: verifique a sua rede -
+  esta ferramenta precisa de uma ligação real a `github.com`/
+  `raw.githubusercontent.com` para o `status`/descoberta, tal como o próprio
+  `hydra-umc-updater`.
+- **A contagem de projetos continua a diminuir em atualizações repetidas (p.
+  ex. 42 -> 9 -> 0), mesmo depois de reiniciar a aplicação** - um erro real,
+  anteriormente não reportado: resolver o SHA de commit real de cada projeto
+  gasta uma chamada à `api.github.com` POR PROJETO, num orçamento *sem
+  autenticação* de 60 pedidos POR HORA partilhado com tudo o resto que esta
+  ferramenta (e o `hydra-umc-updater`) faz - com mais de 50 projetos reais do
+  ecossistema, uma única atualização pode esgotá-lo, e é a própria janela horária
+  do GitHub (não o estado desta aplicação) que tem de se repor, algo que um
+  reinício não resolve. Corrigido para o reportar com honestidade em vez de
+  listar em silêncio menos projetos: o aviso âmbar sob a lista de projetos
+  nomeia agora exatamente quantos projetos foram resolvidos antes do muro e
+  quando o limite do GitHub se repõe (ver
+  `ecosystem_plan.GitHubRateLimitedError`). Defina uma variável de ambiente
+  `GITHUB_TOKEN` (um token de acesso pessoal simples do GitHub, sem âmbitos para
+  repositórios públicos) antes de lançar esta ferramenta para aumentar o
+  orçamento para 5000/hora - tanto a listagem de repositórios como a resolução
+  do SHA de commit por projeto o respeitam agora de forma consistente.

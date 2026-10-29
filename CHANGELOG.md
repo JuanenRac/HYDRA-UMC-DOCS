@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The READMEs of fourteen more repositories are written from one source each:** the development server, the touch screen app, the industrial gateway, the local technician, the MQTT broker, the MTConnect adapter, node healing, the OPC-UA server, the ops agent, the orchestrator, the OS image rebuilder, the OS layer, the path planner and the physics replica now have a source in `readme_src/repos`, with the prose of their earlier READMEs kept in `readme_src/verbatim` and the shared sentences of the services in `readme_src/service_kit.py`.
+
 - **The layout of the README is checked in the CI:** the validator runs `tools/universal_readme_check.py` and lists, as a warning, what differs from the universal layout of the README.
 
 ## [0.0.4] - Added the "Project status" traffic-light table to the README generator

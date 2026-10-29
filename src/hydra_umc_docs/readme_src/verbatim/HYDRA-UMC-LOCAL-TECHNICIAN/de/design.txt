@@ -1,0 +1,42 @@
+### ARCHITEKTUR UND DESIGN-ENTSCHEIDUNGEN
+
+- **Die KI erhält niemals Autorität durch das Generieren einer
+  Antwort.** Jede Design-Entscheidung dieser Lieferung existiert, um
+  genau dieses eine Prinzip zu schützen - siehe
+  [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) für das vollständige
+  Modell.
+- **Ein Werkzeug muss registriert sein, bevor es jemals aufgerufen
+  werden kann.** `TOOL_MATRIX` in `policy/tool_matrix.py` ist die
+  vollständige, feste Liste; dass `lookup_tool()` `None` zurückgibt, ist
+  eine bedingungslose Ablehnung, niemals ein Fall, in dem eine
+  Standard-Risikostufe geraten wird.
+- **Nicht vertrauenswürdiger Inhalt kann niemals zu einem Befehl
+  werden.** Die Abwehr ist architektonisch (ein Typ ohne jede Methode,
+  die ein Werkzeug erzeugt), kein Filter, der versucht,
+  "anweisungsähnlichen" Text zu erkennen - ein von vornherein
+  aussichtsloses Spiel gegen eine entschlossene Prompt-Injection. Siehe
+  `tests/adversarial/test_injection_defense.py`, das wörtliche
+  Austrittskriterium dieser Phase 0 selbst.
+- **Die normative Quelle eines Vertrags ist seine JSON-Schema-Datei.**
+  Die Feldlisten und Validatoren in `contracts.py` werden Feld für Feld
+  aus `contracts/*.schema.json` kopiert, nach derselben Konvention wie
+  `validation.py` von HYDRA-UMC-SDK - keine zweite, unabhängige
+  Wahrheitsquelle.
+- **Die Schwärzung von Geheimnissen ist eine gemeinsame Kopie.** `knowledge/redaction.py` ist die von HYDRA-UMC-SDK gepflegte Schwärzung (`tools/canonical/redaction.py`), identisch mit der des Ops-Agenten und gegen dieselben gemeinsamen Fälle geprüft (`tests/redaction_vectors.json`).
+- **Jede Tool-Anfrage lässt sich auditieren.** Mit `--audit-log PFAD` (oder `HYDRA_UMC_LOCAL_TECHNICIAN_AUDIT_LOG`, oder `auditLog` in der Konfigurationsdatei) wird jede Anfrage vor der Ausführung in ein nur anfügbares JSONL-Journal geschrieben und ihr Ergebnis danach, geschwärzt, jede Zeile per SHA-256 mit der vorigen verkettet, nach Größe rotiert. Eine Anfrage, die sich nicht aufzeichnen lässt, wird nicht ausgeführt; `audit-verify PFAD` prüft die Kette. Standardmäßig aus.
+- **`PRIVILEGED_CHANGE` und `PHYSICAL_ACTION` bleiben nicht
+  implementiert.** Ein bewusstes, dauerhaftes Tor, bis ein dediziertes
+  Design, ein separater Autorisierungspfad und, für physische Aktion,
+  echte Verriegelungen existieren - kein Versehen, das später
+  nachgeholt wird.
+- **Wissensabruf ist begrenzt und auf der Positivliste, niemals
+  blind.** `knowledge.search` indiziert nur eine bereits auf der
+  Positivliste stehende Wurzel (`resolve_knowledge_source()` von
+  `orchestrator/allowlist.py`), und der Durchlauf selbst ist durch eine
+  echte Dateianzahl- und Dateigrößengrenze begrenzt - "niemals blind auf
+  der gesamten Festplatte trainiert" gilt auch für eine Wurzel, die ein
+  Betreiber bereits als sicher eingestuft hat.
+- **Diese Lieferung deklariert, ruft ab und validiert nur - sie handelt
+  noch nicht.** Es existiert nirgendwo in diesem Repository eine
+  Inferenz-Engine, eine echte Werkzeugausführung oberhalb von OBSERVE
+  oder eine Integration mit HYDRA-UMC-SERVER.

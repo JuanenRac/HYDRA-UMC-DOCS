@@ -1,0 +1,4 @@
+* **Fase 1:** Sincronização do Digital Twin com telemetria de hardware em tempo real e latência abaixo de 10 ms.
+* **Fase 2:** Integração da Physics Replica com simuladores de nível industrial (Isaac Sim) e suporte a corpos deformáveis.
+* **Fase 3:** Padrões de recuperação automatizada do Node Healing para failover descentralizado e deteção precoce da degradação de sensores.
+* **Fase 4:** Suporte à simulação de corpos deformáveis (cabos e tubos de vácuo) e geração fotorrealista de dados sintéticos.

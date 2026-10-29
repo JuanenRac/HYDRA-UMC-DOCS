@@ -1,0 +1,51 @@
+### Prérequis
+- [Node.js](https://nodejs.org/) (v20 ou supérieur recommandé)
+- npm
+
+### Installation
+```bash
+npm install
+```
+
+### Mode Développement
+Exécute le serveur d'agrégation directement avec `tsx` (sans bundler) :
+- **Windows :** double-cliquer sur `dev.bat` ou exécuter `npm run dev`
+- **Linux/Mac :** exécuter `./dev.sh` ou `npm run dev`
+
+### Build de Production
+Regroupe le serveur en un seul fichier déployable avec esbuild :
+- **Windows :** double-cliquer sur `build.bat` ou exécuter `npm run build`
+- **Linux/Mac :** exécuter `./build.sh` ou `npm run build`
+
+Puis démarrez-le avec :
+```bash
+npm start
+```
+
+Le serveur écoute sur `0.0.0.0:8000` - `GET /health` est une vérification
+de vivacité rapide sans sonde vers les enfants (c'est ce que pointe le
+propre `service.health_path` de `hydra-umc.project.json`), tandis que
+`GET /status` est le vrai diagnostic profond qui rapporte la version
+propre du Gateway ainsi que le nom/protocole/endpoint/accessibilité de
+chaque passerelle enfant qu'il représente.
+
+Exemple réel - une commande autorisée contre un enfant qui ne tourne pas,
+une opération non autorisée, et une requête malformée :
+
+```bash
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" \
+  -d '{"protocol":"OPC-UA","operation":"read","target":"ns=2;s=Line1.Status"}'
+# 502 {"status":"downstream_unreachable","reason":"TCP connect to opcua-server:4840 timed out after 2000ms"}
+
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" \
+  -d '{"protocol":"OPC-UA","operation":"write","target":"ns=2;s=Line1.SetPoint"}'
+# 403 {"status":"rejected_unauthorized","reason":"operation \"write\" is not allowlisted for OPC-UA"}
+
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" -d '{"protocol":"OPC-UA"}'
+# 400 {"error":"protocol, operation and target are required strings"}
+```
+
+### Gestion des versions
+`npm run build` ne fait que regrouper le serveur et ne change jamais la version ; `python tools/hydra_project_tool.py bump` la fait monter (via `bump_manifest_version.py`) - un « compteur kilométrique » en base 10 : patch +1 par bump,
+avec report vers minor (et de minor vers major) au-delà de 9 plutôt que
+d'atteindre un segment à deux chiffres (`0.0.9` -> `0.1.0`, pas `0.0.10`).

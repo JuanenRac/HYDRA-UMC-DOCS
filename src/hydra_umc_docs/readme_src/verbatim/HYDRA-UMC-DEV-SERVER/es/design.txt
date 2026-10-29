@@ -1,0 +1,30 @@
+### ARQUITECTURA Y DECISIONES DE DISEÑO
+
+- **Las aprobaciones son asimétricas y van ligadas al parche.** Un ciclo de reparación verifica candidatos y aprobaciones solo con claves públicas Ed25519 (un secreto HMAC compartido tiene que estar también en el lado que verifica, así que quien pudiera verificar podría falsificar; `allow_symmetric_keys` lo conserva como opción voluntaria). Una aprobación nombra el parche que aprueba (`approved_patch_ref`) y lleva una caducidad (`expires_at`, UTC); ambos van firmados, y un ciclo rechaza una aprobación de otro parche, sin ellos o caducada.
+- **El sandbox se ha ejecutado en un kernel real.** El sandbox `systemd-run` se ha ejecutado en un host Linux con systemd (tests/test_sandbox_real_host.py): una tarea escribe en su espacio de trabajo y en ningún otro sitio, no puede leer el directorio personal del usuario del servicio, no tiene red y el kernel la mata cuando usa cinco veces su `MemoryMax`. Ejecutarlo descubrió dos fallos que las pruebas de la línea de órdenes no podían ver: un espacio de trabajo bajo `/tmp` o `/var/tmp` hacía fallar la unidad (estado 226) hasta que se monta con `BindPaths`, y uno bajo `/home`, `/root` o `/run/user` no es alcanzable, así que ahora se rechaza con el motivo antes de ejecutar nada. Las pruebas se omiten, diciendo por qué, en un host sin sandbox utilizable; bubblewrap no se ha ejecutado. Si el paquete opcional `cryptography` está instalado, derivar la clave pública y firmar pasan por él (tiempo constante) en lugar del código puro de RFC 8032; `signing_backend()` dice cuál.
+- **Ninguna tarea tiene permiso de despliegue por defecto.** Es el
+  criterio de aceptación literal de DS01, forzado por el propio valor
+  por defecto del dataclass `TaskPolicy` - no solo dicho en prosa - y
+  cubierto por una prueba dedicada para cada forma en que un documento
+  podría intentar colarlo (un campo ausente, mal escrito, o un valor no
+  booleano).
+- **Un recolector informa de un fallo real y honesto - nunca adivina.**
+  Que `scan_project_manifests()` devuelva un `ManifestScanIssue` para un
+  manifiesto presente pero roto, en vez de descartarlo en silencio, es
+  el patrón ya establecido en este ecosistema (ver el propio
+  `inventory.py` de HYDRA-UMC-OPS-AGENT) - reutilizado aquí, no
+  reinventado.
+- **La propiedad de estado y las relaciones entre proyectos no las
+  redecide este repositorio.** [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+  y [docs/OPS_INTEGRATION.md](docs/OPS_INTEGRATION.md) documentan la
+  propia tabla de propietarios de estado de este repositorio y su
+  agrupación de las 17 relaciones entre proyectos en
+  necesarias/opcionales/solo-desarrollo.
+- **Solo stdlib en esta entrega.** `config validate` e `inventory scan`
+  no necesitan ninguna dependencia externa - una entrega futura añade
+  una solo cuando su propio código realmente la necesite (un driver de
+  cola durable para DS05, un SDK de proveedor de IA para DS06), nunca
+  de forma especulativa.
+- **Aquí no se despliega nada.** El ejecutor corre una sola orden permitida en un espacio de trabajo por tarea (dentro de un sandbox si el equipo lo tiene),
+  la cola es un fichero SQLite local, y las únicas llamadas de red son la descarga opcional con git de una revisión fijada y la API local en loopback.
+  Ninguna tarea tiene permiso de despliegue y nada se ha ejecutado todavía en la Raspberry Pi 5/CM5 de destino.

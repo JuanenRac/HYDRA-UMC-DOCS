@@ -1,0 +1,32 @@
+### Requirements
+- [Node.js](https://nodejs.org/) (v18 or higher recommended)
+- npm
+
+### Installation
+```bash
+npm install
+```
+
+### Development Mode
+Runs the broker directly with `tsx` (no bundler):
+- **Windows:** double-click `dev.bat` or run `npm run dev`
+- **Linux/Mac:** run `./dev.sh` or `npm run dev`
+
+### Production Build
+Bundles the broker into a single deployable file with esbuild:
+- **Windows:** double-click `build.bat` or run `npm run build`
+- **Linux/Mac:** run `./build.sh` or `npm run build`
+
+Then start it with:
+```bash
+npm start
+```
+
+The broker listens on `0.0.0.0:1883` (plain MQTT/TCP, the IANA-registered
+default port) - point any MQTT client (`mosquitto_sub`, Home Assistant,
+MQTT Explorer, ...) at `<host>:1883`.
+
+### Versioning
+`npm run build` only bundles the server and never changes the version; `python tools/hydra_project_tool.py bump` raises it
+into minor (and minor into major) past 9 rather than ever reaching a
+two-digit segment (`0.0.9` -> `0.1.0`, not `0.0.10`).

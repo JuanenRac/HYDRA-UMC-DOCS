@@ -1,0 +1,56 @@
+HYDRA-UMC-OPS-AGENT 是 HYDRA-UMC/URTC 生态系统的维护事件协调器。它拥有唯一一条真实的生命周期——**证据 → 诊断 → 经人工批准的变更 → 通过 HYDRA-UMC-UPDATER 的金丝雀部署 → 验证**——而不重新实现生态系统其他地方已经存在的推理、更新或 MCU 安全逻辑。本项目如今已交付该生命周期六个阶段中的五个：**证据**、**诊断**、**经人工批准的变更**、**金丝雀部署**与**验证**。
+
+两个角色，一个软件包，二者之间尚无网络传输：
+
+1. **边缘角色**(`edge collect`) —— 直接在被观测的机器上运行(一台真实的 CM5 单元，或开发者自己的工作站)。扫描每一个同级检出目录，查找其自身的 `hydra-umc.project.json`，可选地检查一个或多个 systemd 单元和 HTTP 健康端点，并为发现的每一个真实问题派生出一个真实的 `MaintenanceIncident`——一次干净的扫描会产生零个事件，绝不会合成一个"一切正常"的假事件。同一次运行产生的所有事件共享同一个关联 ID。
+2. **控制面角色**(`control show`) —— 在开发主机上运行，只读地渲染一个已保存的快照文件：项目清单、健康检查结果，以及按严重程度从高到低排序的所有事件。它从不修改自己读取的文件，本次交付也不会从这里"解决"或确认任何事件。
+3. **诊断**(`control diagnose`) —— 同样运行在控制面角色上。把一个已脱敏的事件发送给某个 AI 提供方(任意提供方——`anthropic` 与 OpenAI 已内置，见 [docs/DIAGNOSIS.md](docs/DIAGNOSIS.md))，并取回一段以纯文本形式给出的、建议性的根因说明——供人阅读的一条建议，绝不是一个决定。
+4. **经人工批准的变更**(`control propose` / `approve` / `reject`) —— 一份真实、不可变的 `ChangeProposal`(一份统一格式的 diff、一段描述、一段理由)，会从 `pending` 状态精确地转变**恰好一次**为 `approved`/`rejected`，且始终归属于一位具名的真实个人。见 [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md)。
+5. **金丝雀部署**(`control deploy-canary`) —— 除非目标提案处于 `approved` 状态，否则拒绝执行。它把 diff 应用到一个独立的暂存克隆上，在那里执行目标项目自身真实的 build-test 命令，只有在该命令通过后才会提升(将之前的检出保留为真实备份)——在其他任何情况下，真实的检出目录都绝不会被触碰。
+6. **验证**(`control verify`) —— 使用交付 1 自身的函数，重新执行最初产生某个事件的那条确切的真实检查，以确认它是否真的已经解决。
+
+```
+$ hydra-umc-ops-agent edge collect \
+    --node-name cm5-cell-3 --projects-root /home/pi/HYDRA-UMC \
+    --systemd-unit hydra-umc-server.service \
+    --http-health-url http://127.0.0.1:8090/health \
+    --out snapshot.json
+Wrote snapshot to snapshot.json (1 incident(s)).
+
+$ hydra-umc-ops-agent control show snapshot.json
+Node: cm5-cell-3  (collected 2026-01-01T10:15:03+00:00)
+
+Projects found: 27
+  - HYDRA-UMC-SERVER v0.1.0 (functional)
+  ...
+
+Service health checks: 1
+  - hydra-umc-server.service: NOT ACTIVE (failed)
+
+Incidents: 1
+  [CRITICAL] hydra-umc-server.service: systemd unit is not active: failed  (id=7c2c1e4a-...)
+
+$ ANTHROPIC_API_KEY=sk-ant-... hydra-umc-ops-agent control diagnose \
+    snapshot.json --incident-id 7c2c1e4a-...
+{
+  "incidentId": "7c2c1e4a-...",
+  "explanation": "Likely cause: the service crashed on startup...",
+  "disclaimer": "This is an AI-generated suggestion, not a decision. ..."
+}
+
+$ hydra-umc-ops-agent control propose snapshot.json --incident-id 7c2c1e4a-... \
+    --project-name HYDRA-UMC-SERVER --description "Increase retry count to 3" \
+    --diff-file fix.diff --rationale "gives up too early" --out proposal.json
+$ hydra-umc-ops-agent control keygen --name ana --key-out ana.pem --public-out ana.pub
+$ hydra-umc-ops-agent control approve proposal.json --approved-by ana --key ana.pem \
+    --live-root /home/pi/HYDRA-UMC/HYDRA-UMC-SERVER
+$ hydra-umc-ops-agent control deploy-canary proposal.json \
+    --live-root /home/pi/HYDRA-UMC/HYDRA-UMC-SERVER --build-test-command "bash build-test.sh" \
+    --approvers approvers.json --service-unit hydra-umc-server.service \
+    --health-url http://127.0.0.1:3000/health
+$ hydra-umc-ops-agent control verify snapshot.json --incident-id 7c2c1e4a-... --node-name cm5-cell-3
+```
+
+上面的完整真实操作员流程见 [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md)。
+
+本次交付中不存在任何默认/无参数调用方式，也没有图形界面——完整、真实的命令面见 [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)。

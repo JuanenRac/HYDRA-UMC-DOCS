@@ -1,0 +1,33 @@
+### 必要条件
+- [Node.js](https://nodejs.org/)（v20 以上を推奨）
+- npm
+
+### インストール
+```bash
+npm install
+```
+
+### 開発モード
+`tsx` を使用して OPC-UA サーバーを直接実行します（バンドラーなし）：
+- **Windows：** `dev.bat` をダブルクリックするか、`npm run dev` を実行
+- **Linux/Mac：** `./dev.sh` または `npm run dev` を実行
+
+### プロダクションビルド
+esbuild を使用してサーバーを単一のデプロイ可能なファイルにバンドル
+します：
+- **Windows：** `build.bat` をダブルクリックするか、`npm run build` を実行
+- **Linux/Mac：** `./build.sh` または `npm run build` を実行
+
+その後、次のコマンドで起動します：
+```bash
+npm start
+```
+
+サーバーは `0.0.0.0:4840`（IANA に登録されたデフォルトの OPC-UA
+ポート）でリッスンし、エンドポイントは
+`opc.tcp://<host>:4840/HYDRA-UMC-OPCUA-SERVER` です——任意の OPC-UA
+クライアント（UAExpert、Ignition、Siemens TIA Portal など）をこの
+エンドポイントに向けることで、アドレス空間を参照できます。
+
+### バージョン管理
+`npm run build` はサーバーをバンドルするだけです。バージョンを上げるのは `python tools/hydra_project_tool.py bump`（`bump_manifest_version.py` 経由）だけで、ビルドは変更しません。

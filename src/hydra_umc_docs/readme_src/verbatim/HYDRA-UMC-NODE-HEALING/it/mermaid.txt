@@ -1,0 +1,10 @@
+```mermaid
+flowchart TB
+    MONITOR["Monitor salute sciame"] -- Heartbeat --> N1["Nodo 1"]
+    MONITOR -- Heartbeat --> N2["Nodo 2"]
+    N1 -- Timeout/Errore --> DETECT["Guasto rilevato"]
+    DETECT --> DIAG["Motore diagnostico"]
+    DIAG -- Critico --> FAIL["FAILOVER: Sposta i lavori al Nodo 2"]
+    DIAG -- Recuperabile --> RESET["SOFT-REBOOT: Riavvia servizio"]
+    FAIL --> ORCH["HYDRA-ORCHESTRATOR"]
+```

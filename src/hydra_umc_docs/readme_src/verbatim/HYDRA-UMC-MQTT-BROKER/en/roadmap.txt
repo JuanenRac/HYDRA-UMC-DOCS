@@ -1,0 +1,4 @@
+* **Phase 1:** OPC-UA Pub/Sub implementation for high-speed data exchange and legacy protocol bridging.
+* **Phase 2:** MQTT Broker cluster for massive IoT device management and high concurrency.
+* **Phase 3:** MTConnect adapter support for multi-vendor CNC and PLC machinery integration.
+* **Phase 4:** Support for Sparkplug B specification for industrial IoT alignment and unified telemetry bridge.

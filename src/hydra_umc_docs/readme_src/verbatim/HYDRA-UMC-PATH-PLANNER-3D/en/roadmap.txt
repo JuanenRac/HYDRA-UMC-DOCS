@@ -1,0 +1,4 @@
+* **Phase 1:** Deterministic swarm synchronization over TSN and sub-ms jitter reduction.
+* **Phase 2:** 3D Path planning with dynamic obstacle avoidance in multi-robot cells.
+* **Phase 3:** Multi-robot job dispatching optimization using real-time resource availability.
+* **Phase 4:** Support for non-holonomic mobile base path planning (JuanenBOT) and heterogeneous fleet integration.

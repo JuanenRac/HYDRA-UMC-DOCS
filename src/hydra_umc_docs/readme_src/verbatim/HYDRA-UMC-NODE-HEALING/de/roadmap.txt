@@ -1,0 +1,4 @@
+* **Phase 1:** (erledigt, `-journal`) Ein persistentes, per Hash verkettetes JSON-Lines-Journal jedes Übergangs und jeder Wiederherstellungsanfrage. Offen: die Antworten des Orchestrators als strukturierte Felder.
+* **Phase 2:** Eine schnellere Prüfung: eine Schleife pro Knoten mit dauerhaften gRPC-Verbindungen und Header pro Eintrag für die HTTP-Prüfung.
+* **Phase 3:** Eigene Beobachtbarkeit (ein Metrik-Endpunkt) und ein Neuladen des Knotenregisters ohne Neustart.
+* **Phase 4:** Ein Vertragstest gegen einen echten HYDRA-UMC-SERVER und ein Lease, damit immer nur ein Healer handelt.

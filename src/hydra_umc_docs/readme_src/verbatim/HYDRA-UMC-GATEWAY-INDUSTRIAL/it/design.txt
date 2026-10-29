@@ -1,0 +1,32 @@
+### ARCHITETTURA E DECISIONI DI PROGETTAZIONE
+
+* **Perché è il genitore di integrazione, non un pari, dei suoi 3 figli.** HYDRA-UMC-OPCUA-SERVER, HYDRA-UMC-MQTT-BROKER e HYDRA-UMC-MTCONNECT-ADAPTER traducono tutti lo STESSO stato sottostante di HYDRA-UMC-SERVER in 3 protocolli industriali diversi - possedere il routing/l'autenticazione condivisi in un unico posto evita 3 traduzioni indipendenti e potenzialmente incoerenti dello stesso stato.
+* **Perché 3 adattatori di protocollo separati, non un gateway che fa tutto.** OPC-UA, MQTT e MTConnect sono strutturalmente diversi (address space contro topic pub/sub contro flussi XML device/agent) - un processo per protocollo significa che un client MQTT lento o rotto non influenza mai quello OPC-UA, e ciascuno può essere abilitato/disabilitato indipendentemente per deployment.
+* **Perché il punto di ingresso stampa solo identità/versione, e termina dopo che un listener di health-check si avvia.** Fase di andamiaje: dimostrare che il processo si avvia e resta attivo (non solo gira ed esce, a differenza della maggior parte degli altri scheletri Node di questo ecosistema) precede la vera logica di traduzione di protocollo, dato che un vero gateway è per natura un servizio di lunga durata.
+* **Come si inserisce nel resto dell'ecosistema.** Il genitore di integrazione della famiglia Gateway Industriale - espone lo stato proprio di HYDRA-UMC-SERVER a sistemi di stabilimento (MES/SCADA/storici) che parlano OPC-UA, MQTT o MTConnect invece dell'API REST/WebSocket propria di questo ecosistema.
+* **`GET /health` è un controllo di vitalità rapido e separato - `GET /status` non viene più usato per questo.** `/status` è un vero diagnostico approfondito che può legittimamente richiedere ~2s per ogni figlio non raggiungibile; puntando direttamente lì, lo scanner di stato dell'intero ecosistema di HYDRA-UMC-SERVER (`/api/ecosystem/status`, che concede solo ~800ms per sonda) segnalava questo gateway come DOWN ogni volta che i suoi figli erano irraggiungibili, anche quando il processo del gateway stesso era sano. `/health` risponde `{ gateway, version, status: "ok" }` senza alcuna sonda verso i figli, e il proprio `service.health_path` di `hydra-umc.project.json` punta lì invece che a `/status`.
+* **`GET /status` esegue un controllo reale e in tempo reale ad ogni richiesta.** `src/probes.ts` effettua una connessione TCP reale per OPC-UA/MQTT e una richiesta HTTP `GET` reale per MTConnect verso ciascun figlio - `reachable`/`latencyMs`/`error` per figlio e un `allReachable` aggregato vengono calcolati al momento della richiesta, non restituiti da un elenco statico o in cache. Verificato end-to-end: i 3 figli reali sono stati avviati, `/status` li ha segnalati tutti raggiungibili, uno di essi è stato poi realmente terminato, e la chiamata successiva a `/status` ha correttamente contrassegnato solo quel figlio come non raggiungibile con un vero `ECONNREFUSED`. Host/porta/URL di ciascun figlio sono configurabili tramite variabili d'ambiente, con lo stesso nome di servizio già usato da `docker-compose.yml` come predefinito.
+* **Perché la allowlist di `POST /command` è a rifiuto predefinito, non a permesso predefinito.** Un gateway industriale che inoltra qualsiasi stringa di operazione ricevuta è un rischio nel momento in cui un figlio espone un vero percorso di scrittura - partire da "niente è permesso a meno che non sia esplicitamente elencato" significa che aggiungere un'operazione pericolosa (una scrittura di nodo OPC-UA, una pubblicazione di configurazione retained MQTT) è sempre una decisione deliberata e rivedibile in futuro, mai un predefinito accidentale oggi.
+* **Perché l'autorizzazione viene controllata prima del backpressure in `CommandDispatcher.dispatch()`.** Un comando non autorizzato deve essere rifiutato sempre allo stesso modo indipendentemente da quanto sia occupato il gateway in quel momento - se la capacità fosse controllata per prima, un'operazione non permessa potrebbe a volte passare come "accepted" (uno slot era libero) o a volte apparire come "solo occupato" (non lo era), facendo trapelare informazioni sul carico del gateway attraverso quella che dovrebbe essere una decisione puramente di autorizzazione.
+* **Perché l'esecutore di comandi predefinito riutilizza le sonde di raggiungibilità invece di uno stub che ha sempre successo.** `src/probes.ts` risponde già davvero a "questo figlio è davvero lì" - riutilizzarlo significa che `POST /command` fallisce onestamente (`502 downstream_unreachable`) contro un figlio spento, invece di riportare `accepted` per un comando che non sarebbe mai potuto arrivare da nessuna parte.
+
+### INTEGRAZIONE DEI 3 BRIDGE FIGLI
+
+Questo è un vero repo di integrazione, non solo documentazione -
+`docker-compose.yml` avvia questo Gateway insieme ai suoi tre figli
+(**HYDRA-UMC-OPCUA-SERVER**, **HYDRA-UMC-MQTT-BROKER**,
+**HYDRA-UMC-MTCONNECT-ADAPTER**) come un'unica rete Docker, assumendo che
+i quattro repo siano clonati come cartelle sorelle (la disposizione già
+usata dall'org GitHub di questo ecosistema):
+
+Il compose richiede un `.env` con `GATEWAY_JWT_SECRET`, `MQTT_AUTH_JSON` e `MQTT_ACL_JSON` (vedi `.env.example`): un gateway e un broker di produzione non si avviano aperti.
+
+```bash
+docker compose up --build
+```
+
+Questo avvia i 4 servizi sulle stesse porte che ciascuno usa già in modo
+indipendente: questo Gateway su `8000`, OPC-UA su `4840`, MQTT su `1883`,
+MTConnect su `5000`. `GET http://localhost:8000/status` riporta la
+versione propria del Gateway e quali figli si aspetta di poter
+raggiungere.

@@ -1,0 +1,18 @@
+Le Consegne 1-5 (questa versione) spediscono **evidenza**, **diagnosi**,
+**cambiamento approvato da una persona**, **distribuzione canary** e
+**verifica** - il vero ciclo di vita già nominato nel proprio manifesto
+e CHANGELOG di questo progetto. Cosa resta:
+
+- **Consegna 6 - Integrazione voce/notifiche - davvero BLOCCATA, non
+  semplicemente rimandata.** Il piano era mostrare un incidente critico,
+  o un canary completato, tramite HYDRA-UMC-VOICE-UI. L'indagine reale
+  del suo proprio codice (`gateway.py`) ha trovato che è un gateway
+  limitato, in INGRESSO, da trascrizione a intento (un Watch invia
+  testo, riceve una risposta), senza alcuna vera superficie di notifica
+  in uscita oggi. Costruirne una qui avrebbe significato inventare un
+  punto di integrazione che VOICE-UI stesso non ha - il proprio standard
+  anti-fabbricazione di questo progetto non lo permette. Da rivisitare
+  quando VOICE-UI (o un successore) svilupperà una vera capacità
+  propria di "annuncio in ingresso dell'assistente".
+- Un vero trasporto tra i ruoli edge e control-plane (oggi, spostare un
+  file di snapshot tra i due è un passaggio manuale).

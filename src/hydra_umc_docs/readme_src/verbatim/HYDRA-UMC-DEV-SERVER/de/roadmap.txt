@@ -1,0 +1,61 @@
+Diese Version bringt DS01 bis DS10: der Zehn-Lieferungen-Plan ist
+komplett. Jede Lieferung, in Reihenfolge:
+
+- **DS02 - Reproduzierbare Remote-Station.** ✅ Geliefert: ein
+  validiertes Remote-Stationsprofil, eine schreibgeschützte
+  Host-Vorabprüfung und ein Trockenlauf-Provisionierungsplan
+  (`station`-Unterbefehle). Kein Host wird verändert und kein Schritt
+  ausgeführt.
+- **DS03 - Konservative Migration.** ✅ Geliefert: hasht und
+  klassifiziert jede Datei eines Quell-Checkouts und plant jede Klasse
+  (sauber / geändert / untracked / privat) in ihr eigenes getrenntes
+  Ziel, mit einem Bundle für die ungepushten Commits (`migrate`-
+  Unterbefehle). Sie kopiert nichts und rührt die Quelle nie an. Einen
+  genehmigten Plan auszuführen ist eine spätere Lieferung.
+- **DS04 - Workspace und begrenzter Runner.** ✅ Geliefert: pro-Task
+  isolierter Workspace (zwei Aufgaben kollidieren nie; `..`-, absolute
+  und aus dem Workspace herausführende Symlink-Pfade abgelehnt), nur ein
+  Befehl aus der Allow-Liste, eine bereinigte Umgebung, und ein Timeout,
+  das die ganze Prozessgruppe killt (`task`-Unterbefehle). Es führt
+  einen Subprozess aus, stellt aber nichts bereit.
+- **DS05 - Dauerhafte Warteschlange und nachvollziehbare Ergebnisse.**
+  ✅ Geliefert: eine SQLite-Warteschlange mit Leases und ein
+  Append-only-Ausführungsjournal, die einen Neustart überstehen; ein
+  doppeltes Enqueue ist nie ein zweiter Job, eine Unterbrechung nie ein
+  falscher Erfolg, eine geänderte Basis blockiert die Promotion
+  (`queue`-Unterbefehle).
+- **DS06 - Austauschbarer KI-Provider.** ✅ Geliefert (Fake-Hälfte): ein
+  deterministischer Fake-Provider hinter einem Sicherheitsvertrag -
+  Timeout / fehlerhaft / Kontingent werden begrenzte Ergebnisse, ein
+  Budget stoppt den Schritt, der Vorschlag ist inerte Daten, die nichts
+  gewähren und nichts bereitstellen (`provider suggest`). Der echte
+  Provider ist eine Nutzerentscheidung.
+- **DS07 - Koordinierte Vorfälle mit HYDRA-UMC-OPS-AGENT.** ✅
+  Geliefert: ein HMAC-authentifizierter Incident-Transport mit Replay-/
+  Impersonation-/Überlast-/Versionsprüfungen und einem vollständigen
+  Round Trip Einreichen → Diagnose → Post-Deploy-Verifikation, der sich
+  nach einem Verbindungsabbruch abgleicht (`incident verify`).
+- **DS08 - Erster vollständig kontrollierter Reparaturzyklus.** ✅
+  Geliefert: eine Zustandsmaschine mit Gates
+  repro->Vorfall->Patch->Regression->Build-Test->Genehmigung->isolierte
+  Installation->Verifikation, die einen manipulierten oder
+  fehlgeleiteten Kandidaten blockiert und bei fehlgeschlagener
+  Nachinstallationsprüfung zurückrollt (`repair check-candidate`).
+- **DS09 - Stabiler Betrieb/Wiederherstellung.** ✅ Geliefert:
+  operative Health-Checks über Warteschlange und Platte, und ein
+  verifiziertes Zustands-Backup/Restore, das ein Backup einer anderen
+  Instanz oder ein beschädigtes ablehnt (`ops`-Unterbefehle).
+- **DS10 - Lieferpaket und ehrliche Reifegradbewertung.** ✅ Geliefert:
+  `deliver manifest` erfasst einen sha256 pro geliefeter Datei und liest
+  die reale CLI-Oberfläche, die Version und die Testanzahl zurück;
+  `deliver evaluate` meldet jede der zehn Lieferungen gegen reale
+  Evidenz (DS06 ist `partial` - nur der Fake wird geliefert), listet
+  sieben Grenzen klar auf und meldet ein `overall_maturity`, das im Code
+  fest auf `functional` steht.
+
+**Reifegrad.** Der Plan ist komplett; der Reifegrad ist `functional`: Die Software ist gebaut und durch Tests abgedeckt, aber nicht auf realer Hardware oder realen Diensten verifiziert - das ist ein eigener, späterer Schritt. In diesem Repository steht eine lauffähige, getestete Umsetzung von Verträgen und Grenzen. Nichts hier provisioniert einen Host, führt ein
+Deployment aus, verbindet die Teile zu einer Worker-Schleife oder hat
+reale Hardware berührt. `deliver evaluate` sagt genau das, und seine
+`known_limitations`-Liste ist die ehrliche To-do-Liste. Siehe
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) dafür, was jede Lieferung
+explizit ein- und ausschließt.

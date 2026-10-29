@@ -1,0 +1,27 @@
+```bash
+chmod +x build.sh   # una sola vez
+./build.sh          # crea .venv, pip install -e ".[dev]", comprobación + pruebas
+./run.sh                                  # demo real: inventory scan contra este
+                                           # workspace de GitHub, luego config validate
+./run.sh inventory scan --root DIR
+./run.sh config validate configs/task-policy.example.json --kind task-policy
+```
+
+En Windows: `build.bat`, luego `run.bat` (misma demo sin argumentos) /
+`run.bat inventory scan ...` / `run.bat config validate ...`.
+`build-test.sh`/`.bat` hace la misma comprobación de sintaxis Python no
+mutante que ya hace el propio workflow de CI, sin tocar la versión del
+proyecto ni el CHANGELOG - NO ejecuta la suite de pruebas; ejecuta
+`./build.sh`/`build.bat` (o `python -m unittest discover -s tests` directamente) para la suite
+de pruebas local completa.
+
+**Resolución de problemas**
+
+- `config validate` sale con código `1` y `INVALID: ...`: lee el
+  mensaje - lista todos los campos que fallaron, no solo el primero.
+  Revisa [docs/CONFIG_SCHEMA.md](docs/CONFIG_SCHEMA.md) para la forma
+  exacta esperada.
+- `inventory scan` reporta un problema en un directorio que esperabas
+  limpio: ese directorio tiene un `hydra-umc.project.json` presente pero
+  ilegible, mal formado, o le falta un campo requerido - un directorio
+  sin manifiesto alguno nunca se reporta como un problema.

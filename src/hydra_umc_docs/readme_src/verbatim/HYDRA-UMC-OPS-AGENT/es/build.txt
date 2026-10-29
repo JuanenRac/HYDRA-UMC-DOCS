@@ -1,0 +1,50 @@
+```bash
+chmod +x build.sh   # una sola vez
+./build.sh          # crea .venv, pip install -e ".[dev]", compile-check + tests
+./run.sh                                          # demo real: edge collect contra un proyecto
+                                                   # de ejemplo desechable, luego control show
+./run.sh edge collect --node-name n --projects-root DIR --out FILE
+./run.sh control show snapshot.json
+pip install -e ".[ai-anthropic]"                  # o .[ai-openai] - solo necesario para control diagnose
+ANTHROPIC_API_KEY=sk-ant-... ./run.sh control diagnose snapshot.json --incident-id <id>
+./run.sh control propose snapshot.json --incident-id <id> --project-name NOMBRE --description "..." --diff-file fix.diff --rationale "..." --out proposal.json
+./run.sh control keygen --name you --key-out you.pem --public-out you.pub
+./run.sh control approve proposal.json --approved-by you --key you.pem --live-root PATH
+./run.sh control deploy-canary proposal.json --live-root PATH --build-test-command "bash build-test.sh" --approvers approvers.json
+pip install -e ".[signing]"                       # needed to sign and to verify approvals (cryptography)
+pip install -e ".[sdk]"                           # solo necesario para recomprobar el base_commit de un incidente de manifiesto
+./run.sh control verify snapshot.json --incident-id <id>
+```
+
+En Windows: `build.bat`, y luego `run.bat` (misma demo si se llama sin
+argumentos) / `run.bat edge collect ...` / cualquiera de los
+subcomandos `control ...` de arriba. `build-test.sh`/`.bat` realiza la
+misma comprobación de compilación (solo sintaxis Python), sin mutar
+nada, que la propia CI de este proyecto realiza - NO ejecuta la
+suite de tests por sí solo; la CI ejecuta `pytest` como un paso
+separado, posterior. Ejecuta `./build.sh`/`build.bat` (o `pytest
+tests/` directamente) para la suite de tests completa en local.
+
+**Solución de problemas**
+
+- `edge collect` reporta `systemdAvailable: false` en cada ejecución:
+  este host de verdad no tiene `systemctl` en `PATH` (toda máquina de
+  desarrollo que no sea Linux, y algunos contenedores Linux mínimos) -
+  es la degradación honesta esperada, no un fallo. Ver
+  [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md).
+- `control show` falla con `ERROR: ...`: el archivo de snapshot no
+  existe, no es JSON válido, o no es un objeto de snapshot real -
+  vuelve a ejecutar `edge collect` y revisa su propia ruta `--out`.
+- `control diagnose` falla con `ERROR: the optional '<provider>' package
+  is not installed`: ejecuta `pip install -e ".[ai-anthropic]"` o
+  `".[ai-openai]"`, según `--provider`.
+- `control diagnose` falla con `ERROR: no ... API key available`: define
+  `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` antes de ejecutarlo.
+- `control deploy-canary` falla con `ERROR: refusing to deploy ...`: la
+  propuesta todavía no está `approved` - ejecuta primero `control
+  approve`.
+- `control deploy-canary` falla con `ERROR: ... signed approval` / `not a registered approver` / `expired` / `approved for commit`: falta la aprobación, se hizo con una clave que no está en el registro, ha caducado o se dio para otro estado del checkout. Vuelve a aprobar con `control approve --key TUCLAVE --live-root RUTA`. Una propuesta aprobada editando el fichero, o antes de que las aprobaciones se firmaran, nunca se acepta.
+- `control deploy-canary` reporta `promoted: false`: lee `buildOutput`
+  en el JSON de resultado - el build de staging falló de verdad, y el
+  checkout real nunca se tocó. Ver
+  [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md).

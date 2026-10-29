@@ -1,0 +1,55 @@
+Bare invocation stays a minimal skeleton (prints identity, exits 0); the
+real mission state machine is exercisable today via `mission-demo`.
+
+```bash
+# Windows
+build.bat
+run.bat
+run.bat mission-demo
+
+# Linux / macOS
+./build.sh
+./run.sh
+./run.sh mission-demo
+```
+
+`build.sh`/`build.bat` never change the version (only `python tools/hydra_project_tool.py bump` raises it) and then run `cargo build --release`.
+`run.sh`/`run.bat` execute the resulting binary directly.
+
+`mission-demo` runs a real scenario end-to-end against `mission.rs`'s
+`MissionRegistry` and prints every real transition:
+
+```text
+[orchestrator] mission-1: dispatched -> InProgress(node=node-a)
+[orchestrator] mission-2: dispatched -> Dispatched(node=node-a)
+[orchestrator] mission-3: dispatched -> InProgress(node=node-b)
+[orchestrator] node-a reported UNREACHABLE by NODE-HEALING - recovering its missions
+[orchestrator] mission-1: requeued -> Pending
+[orchestrator] mission-2: requeued -> Pending
+[orchestrator] mission-3: unaffected (different node) -> InProgress(node=node-b)
+[orchestrator] mission-2: cancel() -> Cancelled -> Cancelled
+[orchestrator] mission-2: cancel() again (idempotent) -> AlreadyCancelled -> Cancelled
+[orchestrator] mission-3: complete() -> Completed(node=node-b)
+[orchestrator] mission-4: fail() -> Failed(no healthy node accepted redispatch after 3 attempts)
+[orchestrator] final registry state:
+  mission-1: Pending (terminal=false)
+  mission-2: Cancelled (terminal=true)
+  mission-3: Completed(node=node-b) (terminal=true)
+  mission-4: Failed(no healthy node accepted redispatch after 3 attempts) (terminal=true)
+```
+
+```bash
+cargo test   # {tests} tests: mission.rs's transitions/invalid-transition
+             # rejections/idempotent cancel/node-failure recovery, plus
+             # outbox.rs's crash-safe persistence, job_dispatcher.rs's
+             # real HTTP client, and server.rs's HTTP handlers
+```
+
+As the ecosystem's integration parent, this repo also ships a real
+`docker-compose.yml` that builds and runs itself together with its 3
+children (SWARM-SYNC, JOB-DISPATCHER, NODE-HEALING; PATH-PLANNER-3D, a command-line tool, stays behind the `tools` profile),
+checked out as sibling folders:
+
+```bash
+docker compose up --build
+```

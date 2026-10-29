@@ -1,0 +1,1 @@
+- **[docs/API.md](docs/API.md)** — the real HTTP API reference: the fast `GET /health` liveness probe, every `GET /status` response field, the `POST /command` `403`/`429`/`504`/`502` boundary, and every configuration env var, documented straight from `src/server.ts`/`src/probes.ts`.

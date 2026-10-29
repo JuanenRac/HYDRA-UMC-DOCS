@@ -1,0 +1,44 @@
+Requer a cadeia de ferramentas Rust (`cargo`/`rustc`, instalada via [rustup](https://rustup.rs)) e Python 3.10+ (apenas para o `bump_version.py`).
+
+```bash
+# Linux / macOS
+./build.sh   # `cargo test` ({tests} testes) e depois `cargo build --release`
+./run.sh     # executa target/release/hydra-umc-physics-replica, imprime nome + versão + papel
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` nunca alteram a versão (só `python tools/hydra_project_tool.py bump` a sobe), executam a suíte de testes real e depois compilam um binário de lançamento.
+
+Os subcomandos reais `fk` e `validate-limits` precisam de um ficheiro URDF:
+
+```bash
+./run.sh fk --urdf arm.urdf --joints "shoulder=0,elbow=0"
+# shoulder: x=0.000000 y=0.000000 z=0.200000
+# elbow: x=0.300000 y=0.000000 z=0.200000
+
+./run.sh validate-limits --urdf arm.urdf --joints "shoulder=3.0,elbow=0.2"
+# LIMIT VIOLATION: joint 'shoulder' = 3.000000 (allowed [-1.570000, 1.570000])
+```
+
+O subcomando real `fk-checked` recusa-se a calcular qualquer pose quando uma junta está fora de gama - ao contrário do `fk` simples, que a calcula na mesma:
+
+```bash
+./run.sh fk-checked --urdf arm.urdf --joints "shoulder=0.5,elbow=0.2"
+# shoulder: x=0.000000 y=0.000000 z=0.200000
+# elbow: x=0.263275 y=0.143828 z=0.200000
+
+./run.sh fk-checked --urdf arm.urdf --joints "shoulder=0.5,elbow=5.0"
+# LIMIT VIOLATION: joint 'elbow' = 5.000000 (allowed [-2.000000, 2.000000]) - refusing to compute an unreachable pose
+
+./run.sh fk --urdf arm.urdf --joints "shoulder=0.5,elbow=5.0"
+# elbow: x=0.263275 y=0.143828 z=0.200000   <- computed anyway; this is the gap fk-checked closes
+```
+
+O `fk` termina com `0` em caso de êxito e com `2` perante um valor inválido de `--urdf`/`--joints`. O `fk-checked` termina com `0` (pose real), `1` (violação de limite) ou `2` (entrada inválida). O `validate-limits` termina com `0` (sem violações), `1` (violações encontradas) ou `2` (entrada inválida).
+
+Consulte o [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) para a referência completa dos comandos, incluindo cada caso de erro real (argumentos em falta/malformados, um ficheiro URDF ilegível) capturado de uma execução real do binário de lançamento.

@@ -1,0 +1,82 @@
+HYDRA-UMC-DEV-SERVERはHYDRA-UMC/URTCエコシステムのための開発インフラである。
+再現可能なホスト（対象: NVMeから起動するRaspberry Pi 5またはCompute Module 5、
+8GB）が、このエコシステム自身のソースコードをホストし、境界が明確で
+ポリシーによって制御されたプログラミング/ビルド/テストのタスクを実行する -
+人間とAIアシスタントの両方にとって。これは訓練すべき新しいAIでは**なく**、
+代替オペレーティングシステムでも**なく**、あるマシンが変更しても安全だと
+自らが判断することも決してない。
+
+DS01は、それぞれ独立して有用な2つの実物をもたらした:
+
+1. **設定スキーマ**(`config validate`) - 3つのJSON文書
+   (`HostProfile`、`ToolchainPolicy`、`TaskPolicy`)、それぞれに実際の
+   検証と、拒否されるべき各形状に対する実際の否定的テストがある。
+   初日から最も重要な不変条件: `TaskPolicy.allow_deploy` はデフォルトで
+   `False` であり、文書がJSONのリテラルなブール値 `true` を設定した場合にのみ、
+   その権限を持つポリシーが生成され得る。
+2. **マニフェスト発見**(`inventory scan`) - HYDRA-UMC-OPS-AGENT自身のedge
+   役割がすでに `hydra-umc.project.json` の発見と検証に使っているのと
+   同じ実物でテスト済みのパターンを、書き直さずここで再利用している。
+
+DS02はさらに3つを追加する。すべて `station` サブコマンドの下にあり、
+すべて依然として「検証し記述するだけで、決して実行しない」:
+
+3. **リモートステーションプロファイル**(`station validate`) - 1つのJSON文書
+   (`RemoteIdentity` + `RemoteAccess` + 必要なツールチェーン)で、
+   同じくエラーを蓄積する検証を行う。初日の不変条件: リモート編集の
+   エンドポイントはループバック/プライベートにバインドし、ルーティング可能な
+   アドレスは、文書がリテラルなブール値 `allow_public_bind: true` を
+   設定しない限り拒否される。アイデンティティは専用のシステムアカウントであり、
+   決して `root` やログインユーザーではない。
+4. **ホスト事前チェック**(`station preflight`) - プロファイルを読み取り、
+   注入可能なインスペクタ・インターフェースを通じて、*この*ホストが
+   実際にそのステーションになる準備ができているかを報告する（Pythonの
+   バージョン、空きディスク、ワークスペースの書き込み可否、`PATH` 上の
+   ツール、ポートの空き、アイデンティティが実在のシステムアカウントか）。
+   ホストを決して変更しない。
+5. **ドライランのプロビジョニング計画**(`station plan`) - 実際のインストーラが
+   *行うであろう*内容（各ステップのargvをデータとして記録）と、systemd
+   unitの完全なテキストを提示し、事前チェックに失敗したホストでは計画の
+   構築自体を拒否する。何も実行されない。
+
+DS03は保守的な移行を追加する。同じく「読み取り記述するだけ、決して実行しない」ルールで、何もコピーせず、ソースには決して触れない:
+
+6. **移行インベントリ + 計画** (`migrate inventory` / `migrate plan`) —ソースのチェックアウトを走査し(gitがプロジェクトの一部とみなすファイルのみ —ローカルの `.venv` やビルド出力はgit-ignoreされ決して見えない)、各ファイルのSHA-256を計算して分類する: `tracked-clean`、`tracked-modified`、`untracked`、`private`(拡張可能な `PrivacyPolicy`: プライベート文書フォルダ、`.env*`、`*.pem`、`id_ed25519*` …)。作成されたがプッシュされていないコミットは別途記録される。`migrate plan` は各クラスを、証明可能に分離された4つのルートのうち**それぞれ**の宛先にマッピングし(`MigrationDestinations.from_dict` は等しいまたは入れ子のルートを拒否する)、未プッシュのコミットをバンドルし、完全なハッシュマニフェストを出力し、プライベートファイルが共有可能なルート配下に解決される場合は `REFUSED` を出力する。
+
+DS04はサブプロセスを実行する最初の提供物であり、依然として厳しく境界付けられている:
+
+7. **タスクレシピ + ワークスペースランナー** (`task validate` / `task run`) - `TaskRecipe` は `revision` を固定し(ブランチ名は拒否される)、許可リストの `command` を持つ(`argv[0]` はポリシーの `allowed_commands` に含まれていなければならず、さもなければ実行は `rejected` となり何も起動されない)。`task run` は `<base>/<task_id>/` を作成し - 既に存在するものは拒否するので**2つのタスクがワークスペースを共有することはない** - そこで**サニタイズされた環境**でコマンドを実行する(`PATH` / `HOME` / `LANG` / `TZ` のみ。継承された `GITHUB_TOKEN`、`AWS_SECRET_ACCESS_KEY`、`ANTHROPIC_API_KEY`、`SSH_AUTH_SOCK` は決してない)。`timeout_seconds` で境界付けられ、期限切れまたはキャンセル時に**プロセスグループ全体をkill**する - 孫プロセスを起動して両方が消えることを確認する実際のテストで証明済み。`input_paths` 内の `..`、絶対パス、ワークスペース外へのsymlinkは拒否される。何もデプロイしない。 子プロセスの出力は実行中に継続的に読み取られ、各ストリームの最後の 8 KiB だけが保持されるため、出力の多いビルドやテスト実行が満杯のパイプで止まることも、ホストのメモリを増大させることもありません。
+
+DS05は永続性を追加する - タスクキューとその実行ジャーナルがプロセス再起動を生き延びる。実行せず、記録する:
+
+8. **永続キュー + 実行ジャーナル** (`queue enqueue` / `status` / `reconcile` / `journal`) - SQLiteストア(WAL、リースには即時トランザクション)。`enqueue` は冪等 - 同じ `task_id` での2回目の呼び出しは `created=False` を返し、**決して2つ目のジョブにならない**。`lease(worker, ttl)` は最も古い `queued` エントリを要求する。`reconcile()` は期限切れのリースを `queued` に戻す(起動のたびに安全)。リースをもう保持していないワーカーからの `record_result` は**拒否され、完了とは受理されない** - 中断が偽の成功になることは決してない。結果時に観測されたベースのフィンガープリントが `enqueue` 時のものと異なる場合、結果は `failed` / 昇格不可として保存される(**終了コードが0でも**)。ジャーナルの `completed` イベントは常に `revision` + `recipe_fingerprint` を持つ。ジャーナルは切り詰めた末尾のみを保持し、`prune_journal` が行数を制限するので、ディスクは境界内に保たれる。
+
+DS06 は交換可能な AI プロバイダーを追加する - 提供されるのは決定論的なフェイクのみで、セキュリティ契約の背後にある。人間が読む文字列を返すだけで、runner・キュー・デプロイには何も接続しない:
+
+9. **交換可能な AI プロバイダー** (`provider suggest`) - `AIProvider` のシーム。`FakeProvider(scenario=...)` は完全に決定論的。`run_provider_step` はプロバイダーの**タイムアウト**・**クォータ枯渇**・**不正な出力**を、境界のある名前付きの結果に変える(エスカレートする例外には決してならない)。設定された `ProviderBudget`(呼び出し数 / トークン / コスト)は**超過する前にステップを止め**、呼び出しは行わない。そしてプロバイダーの回答は**データであり、決して指示ではない** - 「前の指示を無視 / 今すぐデプロイ / root をよこせ」と言う提案は逐語的にコピーされ、`injection_flagged` が立ち、**すべての**結果で `grants_no_permissions` / `triggers_no_deploy` は真のまま。どの実プロバイダーを使うか、その認可はユーザーの判断(今日は `kind` が `"fake"` でなければならない)。
+
+```
+$ hydra-umc-dev-server config validate configs/task-policy.example.json --kind task-policy
+VALID: configs/task-policy.example.json (task-policy)
+{
+  "allow_deploy": false,
+  "max_concurrent_tasks": 2,
+  "allowed_commands": ["pytest", "build.sh", "build-test.sh"]
+}
+
+$ hydra-umc-dev-server inventory scan --root ..
+{
+  "root": "..",
+  "projects": [
+    {"name": "HYDRA-UMC-DEV-SERVER", "version": "0.1.6", "maturity": "functional", "manifest_path": "../HYDRA-UMC-DEV-SERVER/hydra-umc.project.json"},
+    ...
+  ],
+  "issues": []
+}
+```
+
+`run.sh` が実行するデモ以外に引数なしのデフォルト起動は存在せず、この
+提供物にはGUIもない - 完全で実際のコマンド面については
+[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) を参照。
+
+さらに 2 つのコマンド `plugin list` と `serve` が、プラグインのライフサイクルと認証付きローカル HTTP API（ループバックのみ、Bearer トークン）を扱います。プラグインは、ファイルの承認済み SHA-256 で有効化されるまで動作せず、名前付きのチェック、レポート、ジェネレーターを追加することしかできません（`plugin.json` の `provides` で宣言し、`plugin run` または API で実行し、それぞれタイムアウトとサイズ上限があります）。API はタスクを実行せず、何もデプロイしません。詳しくは [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)、[docs/PLUGINS.md](docs/PLUGINS.md) を参照してください。 さらに、タスクランナーはホストに bubblewrap または systemd-run があればコマンドをサンドボックスで包み(ホームなし、ポリシーが許可しない限りネットワークなし、書き込み可能なのは作業領域のみ)、各コマンドの引数を制限し、固定されたリビジョンを取得し、同時実行数を制限し、終了後に作業領域を削除します。プラグインは既定で独自のプロセスで動きます。これらはまだ実機で実行されていません。

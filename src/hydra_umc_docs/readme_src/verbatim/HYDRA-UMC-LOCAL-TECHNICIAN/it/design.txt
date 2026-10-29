@@ -1,0 +1,41 @@
+### ARCHITETTURA E DECISIONI DI PROGETTAZIONE
+
+- **L'IA non ottiene mai autorità generando una risposta.** Ogni
+  decisione di progettazione di questa consegna esiste per proteggere
+  questo unico principio - vedi
+  [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) per il modello
+  completo.
+- **Uno strumento deve essere registrato prima di poter mai essere
+  chiamato.** `TOOL_MATRIX` di `policy/tool_matrix.py` è l'elenco
+  completo e fisso; che `lookup_tool()` restituisca `None` è un rifiuto
+  incondizionato, mai un caso in cui indovinare un livello di rischio
+  predefinito.
+- **Il contenuto non affidabile non può mai diventare un comando.** La
+  difesa è architetturale (un tipo senza alcun metodo che produca uno
+  strumento), non un filtro che tenta di riconoscere testo "simile a
+  un'istruzione" - un gioco perso in partenza contro un'injection di
+  prompt determinata. Vedi
+  `tests/adversarial/test_injection_defense.py`, il criterio di uscita
+  letterale della stessa Fase 0.
+- **La fonte normativa di un contratto è il suo file JSON Schema.** Gli
+  elenchi di campi e i validatori di `contracts.py` sono copiati da
+  `contracts/*.schema.json`, campo per campo, seguendo la stessa
+  convenzione di `validation.py` di HYDRA-UMC-SDK - non una seconda
+  fonte di verità indipendente.
+- **L'oscuramento dei segreti è una copia condivisa.** `knowledge/redaction.py` è l'oscuramento mantenuto da HYDRA-UMC-SDK (`tools/canonical/redaction.py`), identico a quello dell'agente operativo e verificato con gli stessi casi comuni (`tests/redaction_vectors.json`).
+- **Ogni richiesta di strumento può essere verificata.** Con `--audit-log PERCORSO` (o `HYDRA_UMC_LOCAL_TECHNICIAN_AUDIT_LOG`, o `auditLog` nel file di configurazione) ogni richiesta viene scritta in un giornale JSONL di sola aggiunta prima dell'esecuzione e il suo esito dopo, oscurato, ogni riga concatenata alla precedente con il suo SHA-256 e ruotata per dimensione. Una richiesta che non si può registrare non viene eseguita; `audit-verify PERCORSO` controlla la catena. Disattivato per impostazione predefinita.
+- **`PRIVILEGED_CHANGE` e `PHYSICAL_ACTION` restano non implementati.**
+  Una porta deliberata e permanente finché non esistano un design
+  dedicato, un percorso di autorizzazione separato e, per l'azione
+  fisica, veri interlock - non una svista da completare più avanti.
+- **Il recupero di conoscenza è limitato e in whitelist, mai alla
+  cieca.** `knowledge.search` indicizza solo una radice già in whitelist
+  (`resolve_knowledge_source()` di `orchestrator/allowlist.py`), e la
+  scansione stessa è limitata da un vero limite di numero di file e di
+  dimensione per file - "mai addestrato alla cieca su tutto il disco"
+  vale anche per una radice che un operatore ha già deciso essere
+  sicura.
+- **Questa consegna dichiara, recupera e valida soltanto - non agisce
+  ancora.** Non esiste ancora un motore di inferenza, né una vera
+  esecuzione di strumenti oltre OBSERVE, né un'integrazione con
+  HYDRA-UMC-SERVER in nessuna parte di questo repository.

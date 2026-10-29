@@ -1,0 +1,75 @@
+### ARQUITETURA E DECISÕES DE DESENHO
+
+- **Um incidente é derivado, nunca declarado.** Os métodos `IncidentBatch.add_*`
+  devolvem `None` quando aquilo que examinaram estava de facto saudável. Não
+  existe nenhum caminho de código que fabrique um incidente a partir de uma
+  observação limpa, nem nenhum que descarte em silêncio um incidente real.
+- **Uma fronteira de protocolo degrada com honestidade, nunca adivinha.**
+  O `check_systemd_unit_health()` levanta um `SystemdUnavailableError` distinto
+  no instante em que o `systemctl` não está no `PATH` - o que acontece sempre
+  nesta máquina de desenvolvimento e em qualquer anfitrião sem systemd - em
+  vez de reportar um estado «inativo» inventado. O `check_http_health()`
+  mantém uma falha de rede real (`status_code is None`) distinguível de uma
+  resposta HTTP real mas não saudável.
+- **A redação é a peça de código mais crítica para a segurança aqui.**
+  O `log_redaction.py` é uma transformação de texto pura, sem dependências,
+  coberta por si própria antes de qualquer outra coisa a consumir. Uma
+  correspondência de nome de chave tem de procurar o nome do segredo como
+  substring de um token identificador real (`DB_PASSWORD`, `api-key`), não como
+  palavra delimitada por `\b` - o `_` é um carácter de palavra em regex, pelo
+  que um `\bpassword\b` ingénuo nunca corresponde a `DB_PASSWORD`. O
+  `MaintenanceIncident.to_dict()` volta a correr o `redact_secrets()` sobre o
+  `symptom` no momento da serialização, embora cada chamador já o tenha
+  redigido a montante - defesa em profundidade para o campo com mais
+  probabilidade de transportar uma linha de registo copiada e colada.
+- **O contrato `MaintenanceIncident`/`NodeSnapshot` está fixado de propósito,
+  campo a campo, num «CONTRATO MINIMO» explícito.** Veja
+  [docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md). Uma entrega posterior
+  que fale com um fornecedor de IA real ou com um sistema de tickets nunca
+  deveria precisar de traduzir entre duas formas incompatíveis.
+- **O diagnóstico é agnóstico quanto ao fornecedor por desenho.** O
+  `diagnose_incident()` depende apenas de um Protocol `AIProvider` mínimo -
+  nunca se fixa no núcleo da lógica um fornecedor de IA real e nomeado. Dois
+  fornecedores reais (`anthropic`, OpenAI) vêm como extras opcionais; quem
+  chama pode passar qualquer outro objeto que implemente o mesmo contrato de
+  um só método.
+- **Uma implementação canário nunca toca no checkout em produção até uma
+  compilação real já ter provado que a alteração funciona.** O
+  `deploy_canary()` recusa-se a correr de todo a menos que o `status` da
+  própria proposta seja `approved`; depois prepara o diff num clone local
+  independente e só promove (troca por dois renomeamentos, checkout anterior
+  guardado como cópia de segurança real) se o comando de compilação-e-teste
+  desse projeto sair de facto com `0` - o mesmo padrão atómico-por-verificação
+  que o `install.py` do próprio HYDRA-UMC-UPDATER já usa.
+- **Uma proposta é decidida exatamente uma vez.** O `approve_change()`/
+  `reject_change()` levantam cada um um `InvalidTransitionError` perante tudo
+  o que não seja uma proposta `pending` - uma segunda decisão nunca substitui
+  em silêncio a primeira, e cada decisão é atribuída a um nome real e não
+  vazio.
+- **Uma aprovação é uma assinatura, não um campo.** O `approve_change()` assina, com a chave privada Ed25519 do próprio aprovador, uma declaração do que exatamente é aprovado: a proposta, o SHA-256 do diff, quem aprova, até quando, o commit da cópia a que se destina e se os caminhos protegidos são permitidos. O `deploy_canary()` só a aceita se a assinatura for válida face a um registo de chaves *públicas* de aprovadores, pelo que quem apenas consegue escrever o ficheiro da proposta não pode aprovar nada. Um diff é também recusado se contiver algo com a forma de um segredo real ou tocar em ficheiros de CI, build-test ou de serviço sem o dizer; o build-test corre com um ambiente mínimo; um serviço pode ser parado e verificado em redor da troca, com reversão automática; e cada proposta, aprovação, implantação, reversão e limpeza é acrescentada a um diário de auditoria encadeado por hash. Consulte [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md).
+- **A verificação volta a correr a MESMA verificação real, nunca uma mais
+  laxa.** O `verify_incident_resolved()` chama diretamente o
+  `check_http_health()`/`check_systemd_unit_health()`/
+  `check_project_manifest()` da própria Entrega 1 - não existe em lado nenhum
+  deste projeto uma segunda implementação de verificações de saúde que derive
+  por conta própria. Um incidente de manifesto com um `base_commit:` real
+  (melhor esforço, capturado na deteção) é além disso confrontado com o
+  controlo de «sucesso aparente» `compare_runs()` partilhado do HYDRA-UMC-SDK -
+  o commit do próprio checkout tem de ter avançado de facto, não apenas o
+  ficheiro parecer corrigido em disco. Veja
+  [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md).
+- **A Entrega 6 está bloqueada, não ignorada.** O contrato real do
+  HYDRA-UMC-VOICE-UI (`gateway.py`) é uma passagem de entrada, limitada, de
+  transcrição para intenção, sem nenhuma superfície real de notificação de
+  saída hoje - inventar uma aqui teria significado fabricar uma integração que
+  não existe, o que o padrão deste projeto não permite. Veja a secção ROTEIRO
+  abaixo.
+- **Só a biblioteca padrão no núcleo.** O `edge collect`/`control show`/
+  `control propose`/`control approve`/`control reject`/`control verify` não
+  precisam de nenhuma dependência - `urllib.request` para a verificação HTTP,
+  `subprocess`/`shutil.which` para a verificação do systemd, `git` (um binário
+  externo real, não um pacote Python) para a fase de implementação canário e
+  para a captura do `base_commit:` de um incidente de manifesto. Só o
+  `control diagnose` (um extra `ai-*`) e a reverificação com `compare_runs()`
+  de um incidente de manifesto (o extra `sdk`) precisam de uma dependência
+  opcional, cada uma só para o que realmente a usa.

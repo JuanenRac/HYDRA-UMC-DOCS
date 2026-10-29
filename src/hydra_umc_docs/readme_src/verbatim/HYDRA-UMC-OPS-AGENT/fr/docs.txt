@@ -1,0 +1,4 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — chaque sous-commande, ses flags, et le contrat des codes de sortie.
+- **[docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md)** — la forme JSON réelle de `MaintenanceIncident`/`NodeSnapshot`.
+- **[docs/DIAGNOSIS.md](docs/DIAGNOSIS.md)** — le contrat réel, les fournisseurs, les identifiants et la frontière de sécurité propres à la Livraison 2.
+- **[docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md)** — le contrat réel, la séquence complète stage/apply/verify/promote, et un vrai flux d'opérateur pour les Livraisons 3-5.

@@ -1,0 +1,63 @@
+### ARQUITETURA DE ORQUESTRAÇÃO
+
+> As setas contínuas existem hoje (a API HTTP, o JOB-DISPATCHER e o NODE-HEALING a chamar `POST /nodes/:node/recover`). As setas a tracejado estão planeadas, não implementadas: nenhum código chama o PATH-PLANNER-3D nem o SWARM-SYNC.
+
+### ARQUITETURA E DECISÕES DE DESIGN
+
+> As camadas internas abaixo são o design planeado para a lógica que ficará
+> por trás deste ponto de entrada - consulte «🔧 COMPILAÇÃO E EXECUÇÃO» mais
+> adiante para ver o que realmente funciona hoje: uma máquina de estados de
+> missões real, pura e em memória (`mission.rs`), ainda sem qualquer par de
+> rede em direto com quem falar.
+
+**Camadas internas planeadas**, a construir de forma incremental sobre a
+máquina de estados real que já existe:
+* **Camada de API** — recebe pedidos de missão de alto nível dos Studios/Apps
+  e traduz-os em ações ao nível da frota.
+* **Integração da fila de missões** — real agora, não planeada: entrega as
+  missões aceites ao JOB-DISPATCHER sobre o mesmo transporte HTTP/JSON real
+  que o próprio `server.rs` usa (`submit_job`/`close_job`/`requeue_job`/
+  `run_dispatch` do `src/job_dispatcher.rs`, ligados a todos os handlers
+  reais do ciclo de vida das missões), e acompanha o seu ciclo de vida na
+  frota com a máquina de estados real `Mission`/`MissionRegistry` do
+  `mission.rs`, durável perante um reinício real do processo (`--data-dir`,
+  por defeito `data/missions.json` - uma missão recarregada a meio do voo
+  passa a `Unknown` e é recolocada em `Pending`, nunca dada em silêncio como
+  concluída). Esta camada nunca usou gRPC e nunca esteve planeada para usar -
+  o contrato `HealthService` partilhado de `proto/hydra_common.proto` é uma
+  questão à parte (a sonda real de saúde da frota do próprio
+  HYDRA-UMC-NODE-HEALING), não a entrega deste repositório ao JOB-DISPATCHER.
+* **Despacho sincronizado por PTP** — coordena os tempos com o SWARM-SYNC para
+  que vários robôs que executam a mesma missão não colidam, segundo as
+  verificações do PATH-PLANNER-3D.
+* **Agregação de saúde da frota** — consome os sinais por nó do NODE-HEALING
+  numa única vista de toda a frota e chama
+  `MissionRegistry::recover_node_unavailable()` (já real) à medida que cada
+  sinal chega; este é também o caminho que um E-STOP global percorreria para
+  chegar a todos os nós de uma só vez.
+
+### Porquê Rust para este serviço em concreto
+Este processo é o que tem mais autoridade sobre a frota: é o que emitiria um
+E-STOP global e arbitraria qual robô recebe qual missão. Esse papel exige
+coordenação determinista e de baixa latência — sem pausas de coletor de lixo
+que possam atrasar uma paragem crítica para a segurança — e segurança de
+memória/tipos em tempo de compilação, pois uma falha ou uma corrida de dados
+aqui não fica local: pode deixar todo o enxame sem o seu coordenador a meio
+de uma missão. Dois dos filhos deste orquestrador (JOB-DISPATCHER,
+NODE-HEALING) usam Go, que serve bem os seus trabalhos mais simples e mais
+isolados; não é o compromisso de que este processo «cérebro» precisa.
+
+### Decisões de design
+* **Único processo com um `docker-compose.yml` de toda a família.** Como pai
+  de integração do SWARM-SYNC, PATH-PLANNER-3D, JOB-DISPATCHER e
+  NODE-HEALING, este repositório é o lugar natural para descrever como toda a
+  família corre em conjunto — o repositório de cada filho continua focado em
+  si mesmo.
+* **Expõe uma «API unificada» para Apps/Studios.** Em vez de cada cliente
+  (apps móveis, Studios de secretária) falar diretamente com 4 serviços filhos
+  separados, todos falam com um único ponto de entrada estável aqui, que fica
+  livre de encaminhar para a implementação de filho que mudar por baixo.
+* **Porque é que o `cancel()` é idempotente em vez de dar erro numa missão já cancelada.** Um pedido de cancelamento pode legitimamente chegar duas vezes - um cliente que repete após uma resposta perdida, um operador que volta a clicar em cancelar antes de ver a confirmação. Tratar a segunda chamada como um sucesso (`AlreadyCancelled`, não um erro) significa que quem chama nunca tem de distinguir «o meu cancelamento funcionou» de «o cancelamento de outra pessoa já funcionou» - ambos são o mesmo bom resultado. Cancelar uma missão `Completed`/`Failed` continua a ser recusado: é uma situação genuinamente diferente e não idempotente (desfazer trabalho concluído), não uma repetição.
+* **Porque é que a recuperação perante a falha de um nó recoloca em `Pending` em vez de falhar a missão logo.** Um nó que reporta `UNREACHABLE` pode estar a meio de um reinício em vez de ter desaparecido para sempre (ver a lógica de repetição limitada do próprio `HYDRA-UMC-NODE-HEALING`, que já absorve as falhas de rede transitórias antes de sequer reportar um nó como em baixo) - por isso uma missão apanhada nesse nó recebe uma nova oportunidade noutro nó através de `Pending`, em vez de ser marcada como `Failed` ao primeiro sinal de problemas. O `fail()` continua a existir para quando o redespacho realmente fica sem opções.
+
+Para todos os exemplos reais de `mission-demo`/CLI (capturados de um binário realmente compilado), consulte o [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md). Para o próprio contrato gRPC `hydra.common.v1` partilhado - o que define, porque vive neste repositório e como cada linguagem gera os seus próprios bindings a partir dele - consulte o [`proto/README.md`](proto/README.md).

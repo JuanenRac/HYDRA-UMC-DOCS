@@ -1,0 +1,31 @@
+### ARCHITEKTUR UND DESIGN-ENTSCHEIDUNGEN
+
+- **Freigaben sind asymmetrisch und an den Patch gebunden.** Ein Reparaturzyklus prüft Kandidaten und Freigaben nur mit öffentlichen Ed25519-Schlüsseln (ein gemeinsames HMAC-Geheimnis muss auch auf der prüfenden Seite liegen, wer prüfen könnte, könnte also auch fälschen; `allow_symmetric_keys` behält es als Opt-in). Eine Freigabe nennt den Patch, den sie freigibt (`approved_patch_ref`), und trägt ein Ablaufdatum (`expires_at`, UTC); beides ist signiert, und ein Zyklus lehnt eine Freigabe für einen anderen Patch, ohne diese Angaben oder abgelaufen ab.
+- **Die Sandbox wurde auf einem echten Kernel ausgeführt.** Die `systemd-run`-Sandbox wurde auf einem Linux-Host mit systemd ausgeführt (tests/test_sandbox_real_host.py): Eine Aufgabe schreibt in ihren Arbeitsbereich und sonst nirgends, kann das Home des Dienstbenutzers nicht lesen, hat kein Netzwerk und wird vom Kernel beendet, wenn sie das Fünffache ihres `MemoryMax` braucht. Das Ausführen deckte zwei Fehler auf, die die Befehlszeilen-Tests nicht sehen konnten: Ein Arbeitsbereich unter `/tmp` oder `/var/tmp` ließ die Einheit scheitern (Status 226), bis er per `BindPaths` eingebunden wird, und einer unter `/home`, `/root` oder `/run/user` ist gar nicht erreichbar und wird nun mit Begründung abgelehnt, bevor etwas läuft. Auf einem Host ohne brauchbare Sandbox werden die Tests mit Begründung übersprungen; bubblewrap wurde nicht ausgeführt. Ist das optionale Paket `cryptography` installiert, laufen Ableitung des öffentlichen Schlüssels und Signieren darüber (zeitkonstant) statt über den reinen RFC-8032-Code; `signing_backend()` sagt, welcher.
+- **Keine Aufgabe hat standardmäßig eine Deployment-Berechtigung.** Das
+  ist das wörtliche Abnahmekriterium von DS01, erzwungen durch den
+  eigenen Standardwert der `TaskPolicy`-Dataclass - nicht nur in Prosa
+  behauptet - und durch einen eigenen Test für jede Art abgedeckt, wie
+  ein Dokument versuchen könnte, es einzuschleusen (ein fehlendes,
+  falsch geschriebenes oder nicht-boolesches Feld).
+- **Ein Collector meldet ein reales, ehrliches Scheitern - er rät
+  niemals.** Dass `scan_project_manifests()` für ein vorhandenes, aber
+  defektes Manifest ein `ManifestScanIssue` zurückgibt, statt es
+  stillschweigend zu verwerfen, ist das in diesem Ökosystem bereits
+  etablierte Muster (siehe das eigene `inventory.py` von
+  HYDRA-UMC-OPS-AGENT) - hier wiederverwendet, nicht neu erfunden.
+- **Zustandseigentum und Beziehungen zwischen Projekten sind nicht von
+  diesem Repository neu zu entscheiden.**
+  [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) und
+  [docs/OPS_INTEGRATION.md](docs/OPS_INTEGRATION.md) dokumentieren die
+  eigene Zustandseigentümer-Tabelle dieses Repositorys und dessen
+  Gruppierung der 17 Projektbeziehungen in
+  notwendig/optional/nur-Entwicklung.
+- **Nur stdlib für diese Lieferung.** `config validate` und `inventory
+  scan` benötigen keine externe Abhängigkeit - eine spätere Lieferung
+  fügt eine erst hinzu, wenn deren eigener Code sie wirklich braucht
+  (ein Treiber für die dauerhafte Warteschlange bei DS05, ein
+  KI-Provider-SDK bei DS06), nie spekulativ.
+- **Hier wird nichts ausgerollt.** Der Läufer führt einen einzigen erlaubten Befehl in einem Arbeitsbereich je Aufgabe aus (in einer Sandbox, wenn der Rechner eine hat),
+  die Warteschlange ist eine lokale SQLite-Datei, und die einzigen Netzwerkaufrufe sind der optionale git-Abruf einer festgelegten Revision und die lokale API auf Loopback.
+  Keine Aufgabe darf ausrollen, und auf dem Ziel-Raspberry-Pi 5/CM5 lief noch nichts.

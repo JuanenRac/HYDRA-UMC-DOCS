@@ -1,0 +1,32 @@
+### ARCHITECTURE & DÉCISIONS DE CONCEPTION
+
+* **Pourquoi c'est le parent d'intégration, pas un pair, de ses 3 enfants.** HYDRA-UMC-OPCUA-SERVER, HYDRA-UMC-MQTT-BROKER et HYDRA-UMC-MTCONNECT-ADAPTER traduisent tous le MÊME état sous-jacent de HYDRA-UMC-SERVER vers 3 protocoles industriels différents - posséder le routage/l'authentification partagés à un seul endroit évite 3 traductions indépendantes et potentiellement incohérentes du même état.
+* **Pourquoi 3 adaptateurs de protocole séparés, pas une passerelle qui fait tout.** OPC-UA, MQTT et MTConnect sont structurellement différents (espace d'adressage contre sujets pub/sub contre flux XML device/agent) - un processus par protocole signifie qu'un client MQTT lent ou cassé n'affecte jamais celui d'OPC-UA, et chacun peut être activé/désactivé indépendamment selon le déploiement.
+* **Pourquoi le point d'entrée n'imprime qu'identité/version, et se termine après la mise en place d'un listener de health-check.** Étape d'andamiaje : prouver que le processus démarre et reste actif (pas seulement s'exécute et se termine, contrairement à la plupart des autres squelettes Node de cet écosystème) précède la vraie logique de traduction de protocole, une vraie passerelle étant par nature un service de longue durée.
+* **Comment cela s'intègre dans le reste de l'écosystème.** Le parent d'intégration de la famille Passerelle Industrielle - expose le propre état de HYDRA-UMC-SERVER aux systèmes d'atelier (MES/SCADA/historiens) qui parlent OPC-UA, MQTT ou MTConnect plutôt que la propre API REST/WebSocket de cet écosystème.
+* **`GET /health` est une vérification de vivacité rapide et distincte - `GET /status` n'est plus utilisé pour ça.** `/status` est un vrai diagnostic profond qui peut légitimement prendre ~2s par enfant inaccessible ; pointé directement dessus, le propre scanner d'état d'écosystème de HYDRA-UMC-SERVER (`/api/ecosystem/status`, qui n'accorde qu'environ 800ms par sonde) signalait ce gateway comme DOWN dès que ses enfants étaient inaccessibles, alors même que le processus du gateway était sain. `/health` répond `{ gateway, version, status: "ok" }` sans aucune sonde vers les enfants, et le propre `service.health_path` de `hydra-umc.project.json` pointe désormais vers cette route plutôt que vers `/status`.
+* **`GET /status` effectue une vérification réelle et en direct à chaque requête.** `src/probes.ts` réalise une vraie connexion TCP pour OPC-UA/MQTT et une vraie requête HTTP `GET` pour MTConnect vers chaque enfant - `reachable`/`latencyMs`/`error` par enfant et un `allReachable` agrégé sont calculés au moment de la requête, et non renvoyés depuis une liste statique ou en cache. Vérifié de bout en bout : les 3 enfants réels ont été démarrés, `/status` les a tous signalés comme accessibles, l'un d'eux a ensuite été réellement arrêté, et l'appel suivant à `/status` a correctement basculé uniquement cet enfant en inaccessible avec un vrai `ECONNREFUSED`. L'hôte/port/URL de chaque enfant est configurable via des variables d'environnement, avec pour valeur par défaut le nom de service que `docker-compose.yml` utilise déjà.
+* **Pourquoi la liste d'autorisation de `POST /command` est par défaut-refus, pas par défaut-autorisation.** Une passerelle industrielle qui relaie n'importe quelle chaîne d'opération qu'on lui donne est un risque dès l'instant où un enfant expose un vrai chemin d'écriture - partir de « rien n'est autorisé sauf mention explicite » signifie qu'ajouter une opération dangereuse (une écriture de nœud OPC-UA, une publication de config retenue MQTT) est toujours une décision délibérée et révisable plus tard, jamais un défaut accidentel aujourd'hui.
+* **Pourquoi l'autorisation est vérifiée avant le backpressure dans `CommandDispatcher.dispatch()`.** Une commande non autorisée doit être rejetée de la même façon quelle que soit l'occupation actuelle de la passerelle - si la capacité était vérifiée en premier, une opération interdite pourrait parfois se faufiler comme « acceptée » (un créneau était libre) ou parfois se lire comme « juste occupée » (il ne l'était pas), fuitant des informations de timing sur la charge de la passerelle à travers ce qui devrait être une décision purement d'autorisation.
+* **Pourquoi l'exécuteur de commande par défaut réutilise les sondes d'accessibilité plutôt qu'un bouchon qui réussit toujours.** `src/probes.ts` répond déjà réellement à « cet enfant est-il vraiment là » - le réutiliser signifie que `POST /command` échoue honnêtement (`502 downstream_unreachable`) contre un enfant à l'arrêt, plutôt que de rapporter `accepted` pour une commande qui n'aurait jamais pu aller nulle part.
+
+### INTÉGRATION DES 3 PASSERELLES ENFANTS
+
+C'est un vrai dépôt d'intégration, pas seulement de la documentation -
+`docker-compose.yml` démarre ce Gateway avec ses trois enfants
+(**HYDRA-UMC-OPCUA-SERVER**, **HYDRA-UMC-MQTT-BROKER**,
+**HYDRA-UMC-MTCONNECT-ADAPTER**) en un seul réseau Docker, en supposant
+que les quatre dépôts sont clonés en tant que dossiers frères (la
+disposition déjà utilisée par l'org GitHub de cet écosystème) :
+
+Le compose exige un `.env` avec `GATEWAY_JWT_SECRET`, `MQTT_AUTH_JSON` et `MQTT_ACL_JSON` (voir `.env.example`) : une passerelle et un broker de production ne démarrent pas ouverts.
+
+```bash
+docker compose up --build
+```
+
+Cela démarre les 4 services sur les mêmes ports que chacun utilise déjà
+seul : ce Gateway sur `8000`, OPC-UA sur `4840`, MQTT sur `1883`,
+MTConnect sur `5000`. `GET http://localhost:8000/status` rapporte la
+version propre du Gateway et les enfants qu'il s'attend à pouvoir
+joindre.

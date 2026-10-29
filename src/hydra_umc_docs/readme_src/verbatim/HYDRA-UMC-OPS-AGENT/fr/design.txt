@@ -1,0 +1,80 @@
+### ARCHITECTURE ET DÉCISIONS DE CONCEPTION
+
+- **Un incident est dérivé, jamais déclaré.** Les méthodes `add_*` de
+  `IncidentBatch` renvoient `None` quand ce qu'elles ont examiné était
+  effectivement sain. Aucun chemin de code ne fabrique un incident à
+  partir d'une observation propre, et aucun ne rejette silencieusement
+  un incident réel.
+- **Une frontière de protocole se dégrade honnêtement, elle ne devine
+  jamais.** `check_systemd_unit_health()` lève un `SystemdUnavailableError`
+  propre dès l'instant où `systemctl` n'est pas dans le `PATH` - ce qui
+  arrive à chaque fois sur cette machine de développement, et sur tout
+  hôte sans systemd - au lieu de rapporter un statut "inactive" inventé.
+  `check_http_health()` garde une vraie panne réseau (`status_code is
+  None`) distincte d'une vraie réponse HTTP mais non saine.
+- **La rédaction est la pièce de code la plus critique pour la sécurité
+  ici.** `log_redaction.py` est une transformation de texte pure et sans
+  dépendance, couverte par ses propres tests avant que quoi que ce soit
+  d'autre ne la consomme. Une correspondance de nom de clé doit
+  rechercher le nom du secret comme sous-chaîne d'un vrai jeton
+  identifiant (`DB_PASSWORD`, `api-key`), pas comme un mot délimité par
+  `\b` - `_` est un caractère de mot en expression régulière, donc un
+  `\bpassword\b` naïf ne correspond jamais à `DB_PASSWORD`.
+  `MaintenanceIncident.to_dict()` relance `redact_secrets()` sur
+  `symptom` au moment de la sérialisation, même si l'appelant l'a déjà
+  rédigé en amont - défense en profondeur pour le champ le plus
+  susceptible de porter une ligne de log copiée-collée.
+- **Le contrat `MaintenanceIncident`/`NodeSnapshot` est figé à dessein,
+  champ par champ, sur un "CONTRATO MINIMO" explicite.** Voir
+  [docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md). Une livraison
+  future qui parle à un vrai fournisseur d'IA ou à un système de tickets
+  ne devrait jamais avoir à traduire entre deux formes incompatibles.
+- **Le diagnostic est indépendant du fournisseur par conception.**
+  `diagnose_incident()` ne dépend que d'un Protocol minimal `AIProvider`
+  - aucun fournisseur d'IA réel n'est jamais figé dans le code. Deux
+  fournisseurs réels (`anthropic`, OpenAI) sont livrés comme extras
+  optionnels ; un appelant peut passer tout autre objet implémentant ce
+  même contrat à une seule méthode.
+- **Un déploiement canari ne touche jamais le checkout réel avant qu'un
+  vrai build n'ait déjà prouvé que le changement fonctionne.**
+  `deploy_canary()` refuse de s'exécuter tant que le `status` de la
+  proposition donnée n'est pas `approved`, puis met en staging le diff
+  dans un clone local indépendant et ne promeut (échange à deux
+  renommages, checkout précédent conservé comme vraie sauvegarde) que si
+  la propre commande de build-test de ce projet se termine vraiment avec
+  le code `0` - le même patron atomique-par-vérification que le propre
+  `install.py` de HYDRA-UMC-UPDATER utilise déjà.
+- **Une proposition est décidée exactement une fois.**
+  `approve_change()`/`reject_change()` lèvent chacune
+  `InvalidTransitionError` sur tout ce qui n'est pas une proposition
+  `pending` - une seconde décision n'écrase jamais silencieusement la
+  première, et chaque décision est attribuée à un nom réel, non vide.
+- **Une approbation est une signature, pas un champ.** `approve_change()` signe, avec la clé privée Ed25519 de l'approbateur lui-même, une déclaration de ce qui est exactement approuvé : la proposition, le SHA-256 du diff, qui approuve, jusqu'à quand, le commit du checkout visé et si les chemins protégés sont autorisés. `deploy_canary()` ne l'accepte que si la signature est valide face à un registre de clés *publiques* d'approbateurs ; qui peut seulement écrire le fichier de la proposition ne peut donc rien approuver. Un diff est aussi refusé s'il contient quelque chose ayant la forme d'un vrai secret ou s'il touche des fichiers de CI, de build-test ou de service sans le dire ; le build-test s'exécute avec un environnement minimal ; un service peut être arrêté et contrôlé autour de l'échange avec retour arrière automatique ; et chaque proposition, approbation, déploiement, retour arrière et purge est ajouté à un journal d'audit chaîné par hachage. Voir [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md).
+- **La vérification relance la MÊME vérification réelle, jamais une plus
+  laxiste.** `verify_incident_resolved()` appelle directement les
+  propres `check_http_health()`/`check_systemd_unit_health()`/
+  `check_project_manifest()` de la Livraison 1 - il n'existe nulle part
+  dans ce projet une seconde implémentation de vérification de santé,
+  dérivant indépendamment. Un incident de manifeste portant un vrai
+  `base_commit:` (capturé au mieux à la détection) est en plus vérifié
+  face au contrôle partagé `compare_runs()` de HYDRA-UMC-SDK - le
+  commit du checkout doit avoir réellement bougé, pas seulement le
+  fichier qui paraît corrigé sur disque. Voir
+  [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md).
+- **La Livraison 6 est bloquée, pas simplement sautée.** Le propre
+  contrat réel de HYDRA-UMC-VOICE-UI (`gateway.py`) est une passerelle
+  bornée, ENTRANTE, de transcription vers intention, sans aucune
+  surface réelle de notification sortante aujourd'hui - en inventer une
+  ici aurait signifié fabriquer une intégration qui n'existe pas, ce que
+  le propre standard anti-fabrication de ce projet n'autorise pas. Voir
+  la section FEUILLE DE ROUTE ci-dessous.
+- **Bibliothèque standard uniquement pour le cœur.** `edge collect`/
+  `control show`/`control propose`/`control approve`/`control reject`/
+  `control verify` n'ont besoin d'aucune dépendance - `urllib.request`
+  pour la vérification HTTP, `subprocess`/`shutil.which` pour celle de
+  systemd, `git` (un vrai binaire externe, pas un paquet Python) pour
+  l'étape de déploiement canari et pour la capture du `base_commit:`
+  d'un incident de manifeste. Seuls `control diagnose` (un extra `ai-*`)
+  et la revérification `compare_runs()` d'un incident de manifeste
+  (l'extra `sdk`) ont besoin d'une dépendance optionnelle, chacun
+  uniquement pour ce qui l'utilise réellement.

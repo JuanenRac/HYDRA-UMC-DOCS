@@ -1,0 +1,4 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — every subcommand, its flags, and the exit-code contract.
+- **[docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md)** — the real `MaintenanceIncident`/`NodeSnapshot` JSON shape.
+- **[docs/DIAGNOSIS.md](docs/DIAGNOSIS.md)** — Delivery 2's own real contract, providers, credentials and safety boundary.
+- **[docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md)** — Deliveries 3-5's own real contract, the full stage/apply/verify/promote sequence, and a real operator flow example.

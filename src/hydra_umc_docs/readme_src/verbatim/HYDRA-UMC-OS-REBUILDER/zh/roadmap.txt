@@ -1,0 +1,10 @@
+- 为非树莓派基础镜像支持 cloud-init 作为替代的首次启动机制，与当前的
+  `firstrun.sh` 路径并存。
+- 增量镜像更新（在现有 `.img` 上打补丁而非完全重建），一旦出现超出从零
+  构建的真实需求即实现。
+- 为 `status` 提供 `--json` 输出模式，便于脚本化使用。
+- 独立打包的图形界面可执行文件（PyInstaller），遵循与
+  HYDRA-UMC-SUITE 自身 `build_exe.bat`/`.sh` 相同的约定，实现无需
+  `pip`/venv 步骤的双击安装。
+- 为 `acknowledge_no_remote_access` 提供 GUI 复选框 - 目前 GUI 会如实显示 `FirstBootConfigError` 的真实消息（不崩溃，也不是静默无操作），但没有专门的控件来表示同意，只有 CLI/API 可以。
+- 基于 `profile_manifest.py` 的 GUI 面板（在桌面界面中冻结/比较/更新，而不只是 CLI）。

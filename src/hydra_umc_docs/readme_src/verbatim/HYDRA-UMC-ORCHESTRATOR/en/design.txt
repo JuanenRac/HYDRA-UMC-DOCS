@@ -1,0 +1,61 @@
+### ORCHESTRATION ARCHITECTURE
+
+> Solid arrows exist today (the HTTP API, JOB-DISPATCHER, and NODE-HEALING calling `POST /nodes/:node/recover`). Dotted arrows are planned, not implemented: no code calls PATH-PLANNER-3D or SWARM-SYNC.
+
+### ARCHITECTURE & DESIGN DECISIONS
+
+> The internal layers below are the planned design for the logic that will
+> sit behind this entry point - see "🔧 BUILD & RUN" further down for what
+> actually runs today: a real, pure in-memory mission state machine
+> (`mission.rs`), still without any live network peer to talk to.
+
+**Planned internal layers**, to be built out incrementally on top of the
+real state machine that already exists:
+* **API layer** — receives high-level mission requests from Studios/Apps
+  and translates them into fleet-level actions.
+* **Mission queue integration** — real now, not planned: hands accepted
+  missions off to JOB-DISPATCHER over the same real HTTP/JSON transport
+  `server.rs` itself uses (`src/job_dispatcher.rs`'s own `submit_job`/
+  `close_job`/`requeue_job`/`run_dispatch`, wired into every real
+  mission-lifecycle handler), and tracks their lifecycle across the
+  fleet using the real `Mission`/`MissionRegistry` state machine in
+  `mission.rs`, durable across a real process restart (`--data-dir`,
+  `data/missions.json` by default - a mission reloaded mid-flight
+  becomes `Unknown` and is requeued to `Pending`, never silently assumed
+  complete). This layer never used gRPC and was never planned to -
+  `proto/hydra_common.proto`'s own shared `HealthService` contract is a
+  separate concern (HYDRA-UMC-NODE-HEALING's own real fleet-health
+  probe), not this repo's own JOB-DISPATCHER hand-off.
+* **PTP-synced dispatch** — coordinates timing with SWARM-SYNC so multiple
+  robots executing the same mission stay collision-free per
+  PATH-PLANNER-3D's checks.
+* **Fleet health aggregation** — consumes NODE-HEALING's per-node signals
+  into a single fleet-wide view and calls `MissionRegistry::recover_node_unavailable()`
+  (already real) once each signal arrives; this is also the path a global
+  E-STOP would travel through to reach every node at once.
+
+### Why Rust for this specific service
+This process is the one with the most authority over the fleet: it is what
+would issue a global E-STOP and arbitrate which robot gets which mission.
+That role needs deterministic, low-latency coordination — no garbage
+collector pauses that could delay a safety-critical stop — and
+compile-time memory/type safety, since a crash or a data race here does
+not stay local: it can leave the whole swarm without its coordinator
+mid-mission. Two of this orchestrator's own children (JOB-DISPATCHER,
+NODE-HEALING) use Go instead, a good fit for their simpler, more isolated
+jobs; it is not the trade-off this particular "brain" process needs.
+
+### Design decisions
+* **Only process with a family-wide `docker-compose.yml`.** As the
+  integration parent of SWARM-SYNC, PATH-PLANNER-3D, JOB-DISPATCHER and
+  NODE-HEALING, this repository is the natural place to describe how the
+  whole family runs together — each child's own repo stays focused on
+  itself.
+* **Exposes a "Unified API" for Apps/Studios.** Rather than every client
+  (mobile apps, desktop Studios) talking to 4 separate child services
+  directly, they talk to one stable entry point here, which stays free to
+  route to whichever child implementation changes underneath it.
+* **Why `cancel()` is idempotent instead of erroring on an already-cancelled mission.** A cancel request can legitimately arrive twice - a client retrying after a dropped response, an operator clicking cancel again before seeing confirmation. Treating the second call as a success (`AlreadyCancelled`, not an error) means the caller never has to distinguish "my cancel worked" from "someone else's cancel already worked" - both are the same good outcome. Cancelling a `Completed`/`Failed` mission is still refused: that is a genuinely different, non-idempotent situation (undoing finished work), not a retry.
+* **Why node-failure recovery requeues to `Pending` instead of failing the mission outright.** A node reporting `UNREACHABLE` might be mid-restart rather than permanently gone (see `HYDRA-UMC-NODE-HEALING`'s own bounded-retry logic, which already absorbs transient blips before ever reporting a node down at all) - so a mission caught on that node gets a fresh shot at a different node via `Pending`, rather than being marked `Failed` on the first sign of trouble. `fail()` still exists for when redispatch genuinely runs out of options.
+
+For every real `mission-demo`/CLI example (captured from an actual built binary), see [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md). For the shared `hydra.common.v1` gRPC contract itself - what it defines, why it lives in this repo, and how each language generates its own bindings from it - see [`proto/README.md`](proto/README.md).

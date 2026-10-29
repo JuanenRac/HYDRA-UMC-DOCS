@@ -1,0 +1,119 @@
+HYDRA-UMC-LOCAL-TECHNICIAN es una IA local especializada para el propio
+ecosistema HYDRA-UMC: observa, explica, diagnostica y propone
+mantenimiento para los servicios y nodos del propio ecosistema - nunca
+entrena un nuevo modelo fundacional, y nunca actúa generando texto. Su
+plataforma objetivo es la CM5, usando el acelerador Hailo-10H una vez
+instalado, pero la Fase 0 no necesita ninguno de los dos: todo en esta
+entrega es Python puro validando datos puros.
+
+**Principio no negociable:** la IA nunca obtiene autoridad generando una
+respuesta. La política, los permisos y la confirmación humana deciden
+cada acción real - nunca las propias palabras del modelo.
+
+Esta entrega trae ocho piezas reales y de utilidad independiente:
+
+1. **Política de niveles de riesgo** (`policy/risk_levels.py`) - seis
+   niveles ordenados, de `INFORM` a `PHYSICAL_ACTION`, cada uno con una
+   política real y probada (si puede leer una herramienta, si puede
+   mutar, si requiere confirmación, si está implementado). Los dos
+   niveles superiores están declarados solo por completitud del
+   contrato - genuinamente no implementados en ningún lugar de este
+   código.
+2. **Matriz de herramientas** (`policy/tool_matrix.py`) - una lista
+   blanca fija de diez nombres reales de herramienta de nivel
+   `OBSERVE`. Un nombre de herramienta ausente de este diccionario nunca
+   puede llamarse, punto - las 10 ya están conectadas a un manejador
+   real (ver los puntos 5 y 6 más abajo).
+3. **Contratos reales** (`contracts/*.schema.json` + `contracts.py`) -
+   `ToolRequest`, `ToolResult`, `MaintenanceProposal`, `EvidenceBundle` y
+   `PatchVerificationReport`, cada uno con un archivo JSON Schema
+   normativo y un validador Python solo-stdlib copiado de él campo a
+   campo.
+4. **Límite de defensa contra inyección** (`knowledge/trust.py` +
+   `knowledge/redaction.py`) - el contenido no confiable (un README, una
+   línea de log, un mensaje de commit) siempre se envuelve como
+   `UntrustedText`, un tipo sin ningún método que pueda producir jamás
+   una llamada a herramienta. La única forma real de construir un
+   `ToolRequest` toma campos ya tipados y ya separados, y rechaza
+   cualquier nombre de herramienta no registrado o no implementado antes
+   de que el objeto llegue a existir.
+5. **Orquestador de herramientas** (`orchestrator/dispatch.py` +
+   `orchestrator/allowlist.py`, Fase 3) - `dispatch_tool_request()`
+   ejecuta de verdad un `ToolRequest` ya validado y devuelve un
+   `ToolResult` real: `service.status` (`systemctl is-active` real),
+   `storage.usage` (`shutil.disk_usage`), `network.port_status` (una
+   sonda de socket real), `network.connectivity` (una petición HTTP GET
+   real que informa del código de estado propio del endpoint - una
+   comprobación genuinamente distinta de `network.port_status`, la misma
+   distinción real que traza el propio `inventory.py` de
+   HYDRA-UMC-OPS-AGENT entre una conexión TCP básica y un GET real de
+   salud), `system.temperature` (la ruta sysfs real de la zona térmica de
+   Linux), `manifest.read` (una lectura real de `hydra-umc.project.json`),
+   `logs.read` (una cola acotada y saneada de un archivo de log en lista
+   blanca), `process.list` (una coincidencia de subcadena real y en
+   lista blanca contra `/proc/<pid>/cmdline`), y `update.pending`
+   (reutiliza el propio descubrimiento real en GitHub y la comparación
+   de versiones de HYDRA-UMC-UPDATER, dependencia opcional). Ninguna de
+   estas acepta directamente una ruta/host/puerto/URL/nombre de
+   unidad/patrón en bruto - solo un nombre simbólico corto resuelto a
+   través de un `OrchestratorConfig` fijo, así que el propio texto de un
+   documento envenenado nunca puede nombrar un objetivo real arbitrario,
+   solo un nombre ya en la lista blanca.
+   Lo que devuelve un manejador está acotado y redactado en la frontera: la línea de comandos de un proceso, un extracto de conocimiento y las líneas de log de un paquete de evidencia pasan por la misma redacción de secretos que `logs.read`, `manifest.read` solo devuelve cuatro cadenas cortas y `network.connectivity` informa de una redirección en lugar de seguirla.
+6. **Índice de conocimiento recuperable** (`knowledge/index.py`, Fase 1)
+   - un motor de búsqueda TF-IDF local y real
+   (tokenize/build_index/search), portado sin cambios del ya probado
+   `index.py` de HYDRA-UMC-DOCS-QA, más una nueva ingesta acotada para
+   fuentes Markdown (fragmentos por encabezado) y JSON (un archivo
+   completo por fragmento - un manifiesto o esquema de contrato nunca se
+   divide de forma útil a mitad de objeto). Conectado como la décima
+   herramienta, `knowledge.search`, a través del nuevo
+   `resolve_knowledge_source()` de `orchestrator/allowlist.py`: quien
+   llama solo puede nombrar una fuente simbólica ya en lista blanca,
+   nunca una ruta en bruto, y cada coincidencia real devuelta sigue
+   envuelta como `UntrustedText` antes de salir del manejador. El propio
+   recorrido está acotado (número de archivos, tamaño por archivo)
+   incluso para una raíz legítimamente en lista blanca - nunca a ciegas,
+   nunca todo el disco.
+7. **Escalado: evidencia y propuestas** (`escalation/`, Fase 4) -
+   `evidence.assemble_evidence_bundle()` convierte un lote real de
+   `ToolResult` ya ejecutados y ya validados en un `EvidenceBundle` real,
+   siguiendo el mismo patrón que el `incident.py` de HYDRA-UMC-OPS-AGENT:
+   derivación pura a partir de datos ya observados, nunca una llamada a
+   IA. `proposal.propose_maintenance()` es un constructor/validador real
+   de `MaintenanceProposal` - deliberadamente NO un generador, ya que
+   todavía no existe motor de inferencia y el principio no negociable de
+   este proyecto descarta inventar un diagnóstico. Hoy solo un operador
+   humano aporta `diagnosis`/`steps`/`rollback`; la única salvaguarda
+   real que añade este módulo es que cada entrada de `citedEvidence`
+   debe coincidir literalmente con el campo `evidence` de un resultado
+   de herramienta ya observado, o la propuesta se rechaza de plano.
+   `confirmationRequired` nunca es configurable por quien llama - es
+   siempre exactamente lo que ya dice la política de
+   `policy/risk_levels.py` para el riesgo declarado de la propuesta.
+   Nada en este código puede actuar sobre un `MaintenanceProposal`
+   todavía.
+8. **Superficie CLI** (`cli.py`, primera porción real de la Fase 5) -
+   `tools list`/`tools call` y `escalation evidence`/`escalation
+   propose` dan a cada pieza anterior una línea de comandos real por
+   primera vez (hasta ahora solo eran alcanzables desde un test). No
+   añade autoridad propia: `tools call` construye un `ToolRequest` con
+   el mismo `build_tool_request_from_model_output()` que ya usa cada
+   test y lo ejecuta con el mismo `dispatch_tool_request()` - solo
+   alcanza herramientas de nivel OBSERVE, porque nada por encima de
+   OBSERVE está implementado en este código. `--config` carga un
+   `OrchestratorConfig` real desde un archivo JSON (o recurre a
+   `default_config()`); sigue sin haber forma de nombrar una ruta/host/
+   puerto en bruto directamente en la línea de comandos.
+
+```
+$ hydra-umc-local-technician contracts validate tests/fixtures/tool_request.valid.json --contract ToolRequest
+VALID: tests/fixtures/tool_request.valid.json (ToolRequest)
+
+$ hydra-umc-local-technician contracts validate tests/fixtures/tool_request.invalid.json --contract ToolRequest
+INVALID: tests/fixtures/tool_request.invalid.json (ToolRequest): ...
+```
+
+No hay invocación por defecto/sin argumentos ni interfaz gráfica en esta
+entrega - ver [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) para la
+superficie de comandos real y completa.

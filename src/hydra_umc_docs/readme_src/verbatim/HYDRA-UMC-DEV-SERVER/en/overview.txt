@@ -1,0 +1,136 @@
+HYDRA-UMC-DEV-SERVER is development infrastructure for the HYDRA-UMC/URTC
+ecosystem: a reproducible host (target: a Raspberry Pi 5 or Compute
+Module 5, 8GB, NVMe-booted) that will host this ecosystem's own source
+code and run bounded, policy-gated programming/build/test tasks - people
+and AI assistants alike. It is **not** a new AI to train, **not** a
+replacement operating system, and it never decides on its own that a
+machine is safe to change.
+
+DS01 shipped two real, independently useful pieces:
+
+1. **Configuration schema** (`config validate`) - three JSON documents
+   (`HostProfile`, `ToolchainPolicy`, `TaskPolicy`), each with real
+   validation and a real negative test for every rejected shape. The one
+   invariant that matters most from day one: `TaskPolicy.allow_deploy`
+   defaults to `False`, and only a document that sets the literal JSON
+   boolean `true` can ever produce a policy with it enabled.
+2. **Manifest discovery** (`inventory scan`) - the same real, tested
+   pattern HYDRA-UMC-OPS-AGENT's own edge role already uses to find and
+   validate a `hydra-umc.project.json`, reused here rather than
+   reimplemented.
+
+DS02 adds three more, all under the `station` subcommand and all still
+"validate and describe, never act":
+
+3. **Remote-station profile** (`station validate`) - one JSON document
+   (`RemoteIdentity` + `RemoteAccess` + required toolchains) with the
+   same error-accumulating validation. Its own day-one invariant: the
+   remote-editing endpoint binds loopback/private, and a routable
+   address is refused unless the document sets the literal boolean
+   `allow_public_bind: true`; the identity is a dedicated system
+   account, never `root` or a login user.
+4. **Host preflight** (`station preflight`) - reads a profile and
+   reports, through an injectable inspector seam, whether *this* host is
+   actually ready to become that station (Python version, free disk,
+   workspace writable, tools on `PATH`, port free, identity is a real
+   system account). It never changes the host.
+5. **Dry-run provisioning plan** (`station plan`) - renders what a real
+   installer *would* do (each step's argv captured as data) plus the
+   full systemd unit text, and refuses to build a plan at all over a
+   failed preflight. Nothing is executed.
+
+DS03 adds conservative migration, same "read and describe, never act"
+rule - it copies nothing and never touches the source:
+
+6. **Migration inventory + plan** (`migrate inventory` / `migrate
+   plan`) - walks a source checkout (only the files git considers part
+   of the project - a local `.venv` / build output is git-ignored and
+   never seen), SHA-256s every file, and classifies each one:
+   `tracked-clean`, `tracked-modified`, `untracked`, `private` (a
+   widenable `PrivacyPolicy`: the private-docs folder, `.env*`, `*.pem`,
+   `id_ed25519*`, ...). Commits made but never pushed are recorded
+   separately. `migrate plan` maps each class to its **own** of four
+   provably-separate destinations (`MigrationDestinations.from_dict`
+   refuses equal or nested roots), bundles the unpushed commits, emits a
+   full hash manifest, and prints `REFUSED` if a private file would ever
+   resolve under a shareable root.
+
+DS04 is the first delivery that executes a subprocess - and it stays
+tightly gated:
+
+7. **Bounded task recipe + workspace runner** (`task validate` / `task
+   run`) - a `TaskRecipe` pins a `revision` (a bare branch name is
+   refused) and an allow-listed `command` (`argv[0]` must be in the task
+   policy's `allowed_commands`, or the run is `rejected` and nothing
+   spawns). `task run` allocates `<base>/<task_id>/` - refusing one that
+   already exists, so **two tasks never share a workspace** - runs the
+   command there with a **scrubbed environment** (only `PATH` / `HOME` /
+   `LANG` / `TZ`; never an inherited `GITHUB_TOKEN`,
+   `AWS_SECRET_ACCESS_KEY`, `ANTHROPIC_API_KEY`, `SSH_AUTH_SOCK`),
+   bounded by `timeout_seconds`, and on timeout or cancel **kills the
+   whole process group** - proven by a real test that spawns a
+   child-of-a-child and confirms both are gone. A `..`, an absolute
+   path, or an out-of-workspace symlink in the recipe's `input_paths` is
+   refused. It deploys nothing. The child's output is read continuously while it runs and only the last 8 KiB of each stream is kept, so a verbose build or test run can neither block on a full pipe nor grow the host's memory.
+
+DS05 adds durability - a task queue and its execution journal that
+survive a process restart. It records, it does not run:
+
+8. **Durable queue + execution journal** (`queue enqueue` / `status` /
+   `reconcile` / `journal`) - a SQLite store (WAL, immediate
+   transactions for the lease). `enqueue` is idempotent - a second call
+   with the same `task_id` returns `created=False`, **never a second
+   job**. `lease(worker, ttl)` claims the oldest `queued` entry;
+   `reconcile()` returns an expired lease to `queued` (safe on every
+   startup). A `record_result` from a worker that no longer holds the
+   lease is **rejected, not accepted as done** - an interruption never
+   becomes a false success. If the base fingerprint observed at result
+   time differs from the one recorded at `enqueue`, the result is stored
+   `failed` / not promotable **even on exit code 0**. The `completed`
+   journal event always carries `revision` + `recipe_fingerprint`; the
+   journal keeps only truncated tails and `prune_journal` caps rows, so
+   disk stays bounded.
+
+DS06 adds an interchangeable AI provider - only the deterministic fake,
+behind a safety contract. It hands back a string a human reads; it wires
+nothing to the runner, the queue, or a deploy:
+
+9. **Interchangeable AI provider** (`provider suggest`) - an `AIProvider`
+   seam; `FakeProvider(scenario=...)` is fully deterministic. `run_provider_step`
+   turns a provider **timeout**, **quota exhaustion** or **malformed
+   output** into a bounded named outcome (never an escalating
+   exception); a configured `ProviderBudget` (calls / tokens / cost)
+   **stops the step before it exceeds**, no call made; and the
+   provider's answer is **data, never instructions** - a suggestion that
+   says "ignore previous instructions / deploy now / grant me root" is
+   copied verbatim, `injection_flagged` is set, and
+   `grants_no_permissions` / `triggers_no_deploy` stay true for **every**
+   outcome. Which real provider to use, and its authorization, is a user
+   decision (`kind` must be `"fake"` today).
+
+```
+$ hydra-umc-dev-server config validate configs/task-policy.example.json --kind task-policy
+VALID: configs/task-policy.example.json (task-policy)
+{
+  "allow_deploy": false,
+  "max_concurrent_tasks": 2,
+  "allowed_commands": ["pytest", "build.sh", "build-test.sh"]
+}
+
+$ hydra-umc-dev-server inventory scan --root ..
+{
+  "root": "..",
+  "projects": [
+    {"name": "HYDRA-UMC-DEV-SERVER", "version": "0.1.6", "maturity": "functional", "manifest_path": "../HYDRA-UMC-DEV-SERVER/hydra-umc.project.json"},
+    ...
+  ],
+  "issues": []
+}
+```
+
+There is no default/bare invocation beyond the demo `run.sh` performs,
+and no GUI in this delivery - see
+[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) for the full, real command
+surface.
+
+Two more commands, `plugin list` and `serve`, cover the plugin lifecycle and an authenticated local HTTP API (loopback only, bearer token). A plugin stays inert until it is enabled against the approved SHA-256 of its files and can only add named checks, reports and generators (declared with `provides` in `plugin.json`, run by `plugin run` or over the API, each bounded by a timeout and a size limit); the API runs no task and deploys nothing. See [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) and [docs/PLUGINS.md](docs/PLUGINS.md). Since then the task runner wraps the command in a bubblewrap or systemd-run sandbox when the host has one (no home, no network unless the policy opens it, only the workspace writable), limits the arguments of each command, fetches the pinned revision, limits the tasks that run at once and removes the workspace afterwards, and plugins run in their own process by default. None of this has run on a real host yet.

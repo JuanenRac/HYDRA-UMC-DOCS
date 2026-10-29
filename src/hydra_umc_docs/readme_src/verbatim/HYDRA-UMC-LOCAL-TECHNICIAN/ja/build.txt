@@ -1,0 +1,24 @@
+```bash
+chmod +x build.sh   # 一度だけ
+./build.sh          # .venv を作成、pip install -e ".[dev]"、コンパイルチェック + テスト
+./run.sh contracts validate tests/fixtures/tool_request.valid.json --contract ToolRequest
+./run.sh --version
+```
+
+Windows の場合: `build.bat`、続いて `run.bat contracts validate ...` /
+`run.bat --version`。`build-test.sh`/`.bat` は本プロジェクト自身のCI
+ワークフローが実行するのと同じ非変更の Python 構文コンパイルチェックを
+行い、プロジェクトバージョンや CHANGELOG には一切触れません - これは
+テストスイート自体を実行**しません**。完全なローカルテストスイートには
+`./build.sh`/`build.bat`（または直接 `pytest tests/`）を実行してください。
+
+**トラブルシューティング**
+
+- `contracts validate` が終了コード `1` と `INVALID: ...` で終了する場合:
+  メッセージを読んでください - 何かが失敗したことだけでなく、正確な
+  フィールドと理由が示されます。5つの契約それぞれの実際の期待される形に
+  ついては [docs/CONTRACTS.md](docs/CONTRACTS.md) を確認してください。
+- `tests/adversarial/` 内のテストが失敗する場合: これはフェーズ0自身の
+  文字通りの終了基準です - そこでの失敗は常にインジェクション防御境界の
+  実際の後退として扱ってください。決して緩めるべきテストとして扱っては
+  いけません。

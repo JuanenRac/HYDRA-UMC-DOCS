@@ -1,0 +1,4 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — jeder Unterbefehl, seine Flags und der Exit-Code-Vertrag.
+- **[docs/CONFIG_SCHEMA.md](docs/CONFIG_SCHEMA.md)** — die reale JSON-Form von `HostProfile`/`ToolchainPolicy`/`TaskPolicy`.
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — Zweck, die beiden Arbeitsmodi, anfänglicher Umfang und Festplattenorganisation.
+- **[docs/OPS_INTEGRATION.md](docs/OPS_INTEGRATION.md)** — die vollständige 17-Beziehungs-Karte und die Zustandseigentümer-Tabelle.

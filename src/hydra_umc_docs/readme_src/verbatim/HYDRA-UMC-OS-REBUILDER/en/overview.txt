@@ -1,0 +1,56 @@
+HYDRA-UMC-OS-REBUILDER is a Windows/Linux desktop tool - windowed GUI by
+default, full CLI with `--cli` - that answers the question a real CM5
+deployment always eventually needs answered: **"build me a fresh SD
+card/eMMC image, with the most current real version of every ecosystem
+project already on it, and let me set Wi-Fi/user/hostname/SSH before I
+write it."**
+
+**What the image contains:** the project checkouts under `/opt/hydra-umc/<name>` at the planned versions and whatever each project's own build produced there. It does not create service users or systemd units and does not set up `/etc/hydra-umc`, so no service starts by itself on first boot; the provisioning scripts of HYDRA-UMC-OS still have to be run on the board.
+
+It does three real things:
+
+1. **Checks GitHub.** Every repository in the HYDRA-UMC/URTC ecosystem
+   whose own `hydra-umc.project.json` declares
+   `"deployment_target": "cm5"` is discovered dynamically (never a fixed
+   list) and its current published version read - by depending on
+   `hydra-umc-updater` as a real library for this, not a second,
+   independently-drifting reimplementation of its own discovery code.
+2. **Builds a real image.** Downloads a pinned, checksum-verified
+   Raspberry Pi OS base image, loop-mounts it, and installs/updates each
+   discovered project by running **that project's own `build.sh`** inside
+   the image's own chroot - never a reimplementation of any one project's
+   own build steps.
+3. **Writes real first-boot configuration.** Hostname, a new user with a
+   real `passlib`-hashed password, Wi-Fi, timezone, keyboard layout and
+   SSH - the exact same `firstrun.sh` mechanism Raspberry Pi Imager's own
+   "OS Customisation" screen uses on a Raspberry Pi OS (Trixie+) image,
+   so the resulting SD card behaves exactly like one Raspberry Pi Imager
+   itself would have produced. See
+   [docs/FIRST_BOOT_CONFIG.md](docs/FIRST_BOOT_CONFIG.md).
+4. **Scans its own output before promoting it.** Before the built image is
+   ever moved to its final path, the mounted rootfs is checked for a real
+   Wi-Fi password left in `wpa_supplicant.conf`/a NetworkManager
+   connection profile, a real private SSH key, a non-empty shell history,
+   or a stray `.env` file - any real finding blocks promotion outright,
+   the same way a cleanup failure already does. Checksum verification
+   only ever covered the INPUT base image; this is the first check on
+   what the build itself leaves behind in the OUTPUT.
+
+```
+$ hydra-umc-os-rebuilder --cli status
+HYDRA-UMC-SERVER 0.4.8 (api/node)
+HYDRA-UMC-VISION-STREAMER 0.0.3 (service/python)
+HYDRA-UMC-GATEWAY-INDUSTRIAL 0.0.3 (api/node)
+...
+TOTAL=27
+
+$ hydra-umc-os-rebuilder --cli config --out ./boot \
+    --hostname hydra-umc-cm5 --username hydra-umc --password 'change-me' \
+    --wifi-ssid MyNetwork --wifi-password 'wifi-pass' --wifi-country ES
+CONFIG_WRITTEN out=boot firstrun=firstrun.sh
+```
+
+Running it with no arguments opens the same information in a Qt Quick
+desktop shell - reusing HYDRA-UMC-UPDATER's own visual language (same
+dark palette, typography and component set) across three tabs: Ecosystem
+Status, Build Image, and First-Boot Config.

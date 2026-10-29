@@ -1,0 +1,25 @@
+需要 [Flutter SDK](https://docs.flutter.dev/get-started/install)（stable 渠道）。本仓库基于 Flutter 3.47.0 构建/验证。本仓库中只配置了 `linux/` 和 `windows/` 两个平台（没有 `android/`、`ios/`、`web/` 或 `macos/` 文件夹）——Linux 是真正的目标平台（CM5 自身的操作系统）;Windows 的存在纯粹是为了让本应用自身的逻辑能够在没有 Linux 工具链的机器上构建、运行和测试。
+
+### 构建脚本
+
+```bash
+./build.sh          # Git Bash / WSL，或使用 build.bat 用于 cmd/PowerShell —— flutter pub get + flutter build windows（开发机验证）
+./build_linux.sh    # 必须在真实的 Linux 机器上运行（或 CM5 本身）—— flutter pub get + flutter build linux（真正的部署目标）
+./run_dev.sh         # Git Bash / WSL，或使用 run_dev.bat 用于 cmd/PowerShell —— 桌面模拟模式（flutter run），无需硬件
+```
+
+全部 3 个构建脚本（`build.sh`/`build.bat`/`build_linux.sh`）都不会更改应用的版本号——见下文[版本管理](#-版本管理)。`run_dev.sh`/`run_dev.bat` 不会——在该策略下,开发循环中的 `flutter run` 不算“真正的构建”。
+
+### 手动构建
+
+```bash
+flutter pub get
+flutter analyze                  # 静态分析——无需编译器
+flutter test                     # 组件测试
+dart run tool/bump_version.dart  # 递增版本号，与 build.sh/build.bat/build_linux.sh 所做的相同
+flutter build windows            # 开发机冒烟测试——生成 build/windows/x64/runner/Release/hydra_umc_dsi.exe
+flutter build linux              # 真正的目标平台——必须在真实的 Linux 机器上运行，生成 build/linux/*/release/bundle/
+flutter run -d windows           # 或在真实 Linux 机器上使用 -d linux，用于实时桌面模拟开发循环
+```
+
+**关于 Linux 验证的诚实说明：** `flutter build linux --release` 现在已经真正针对这份代码运行过了,来自一个真实的 Ubuntu 24.04 WSL2 环境,配备真实的 Linux 桌面工具链(`cmake`、`ninja-build`、`libgtk-3-dev`、`clang`)——干净构建成功,生成了一个真实的 `build/linux/x64/release/bundle/hydra_umc_dsi`,并确认它确实能够启动(在真实的 X11 显示环境下运行并保持存活,而不只是退出码为 0),而不再只是用 `flutter build windows` 作为冒烟测试替代方案。这次验证**没有**覆盖的部分:WSL2 的用户空间是 x86_64,并非 CM5 真实的 aarch64 树莓派操作系统,而且 `kiosk/hydra-umc-dsi.service` 的自启动流程仍然从未在任何真实 Linux 主机上运行过。具体哪些已验证、哪些未验证的确切清单,见 `docs/ARCHITECTURE.md` 第 7 节,剩余工作见下方的"已知后续事项"。

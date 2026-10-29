@@ -1,0 +1,25 @@
+```bash
+chmod +x build.sh   # uma só vez
+./build.sh          # cria o .venv, pip install -e ".[dev]", verificação de compilação + testes
+./run.sh                                  # demonstração real: inventory scan contra este
+                                           # espaço de trabalho do GitHub, depois config validate
+./run.sh inventory scan --root DIR
+./run.sh config validate configs/task-policy.example.json --kind task-policy
+```
+
+No Windows: `build.bat` e depois `run.bat` (a mesma demonstração sem argumentos) /
+`run.bat inventory scan ...` / `run.bat config validate ...`.
+O `build-test.sh`/`.bat` faz a mesma verificação não alteradora de sintaxe Python
+que o fluxo de CI deste projeto faz, sem tocar na versão do projeto nem no CHANGELOG -
+NÃO executa a suite de testes em si; execute `./build.sh`/`build.bat` (ou
+`python -m unittest discover -s tests` diretamente) para a suite de testes local completa.
+
+**Resolução de problemas**
+
+- O `config validate` termina com `1` e `INVALID: ...`: leia a mensagem - lista
+  todos os campos que falharam, não apenas o primeiro. Consulte
+  [docs/CONFIG_SCHEMA.md](docs/CONFIG_SCHEMA.md) para a forma exata esperada.
+- O `inventory scan` reporta um problema num diretório que esperava limpo:
+  esse diretório tem um `hydra-umc.project.json` presente mas ilegível,
+  malformado ou sem um campo obrigatório - um diretório sem nenhum manifesto
+  nunca é reportado como problema.

@@ -1,0 +1,49 @@
+A real collision-free path search, not just a skeleton that compiles: it
+plans a route through a JSON scenario file and prints the result.
+
+```bash
+# Windows
+build.bat
+run.bat scenarios/example.json
+
+# Linux / macOS
+./build.sh
+./run.sh scenarios/example.json
+```
+
+`build.sh`/`build.bat` never change the version (only `python tools/hydra_project_tool.py bump` raises it) and then run `cargo build --release`.
+`run.sh`/`run.bat` execute the resulting binary directly, forwarding any
+arguments (the scenario path) to it.
+
+A scenario is a JSON file with `start`, `goal`, `obstacles` (a list of
+`{center, radius}` spheres), a `workspace` (`min`/`max` bounds), and an
+optional `seed` (the search is fully deterministic per seed) and `config`
+(`max_iterations`, `step_size`, `goal_bias`, `goal_threshold`,
+`robot_radius`, `max_duration_ms` - all optional, sane defaults otherwise;
+`max_duration_ms` bounds search time by the wall clock, independent of
+`max_iterations`). The result is printed as JSON:
+`{"status": "ok", "path": [...]}` or
+`{"status": "error", "reason": "..."}` (`start_inside_obstacle`,
+`goal_outside_workspace`, `no_path_found`, `time_limit_exceeded`, etc. -
+see `src/rrt.rs`'s `PlanError` for the full, honest list, including the
+case where no path exists at all, not just one the search failed to find
+in time).
+
+An optional `frame` (a short name, at most 64 bytes) records the coordinate frame the scenario is written in. It is only a label: it is echoed in the result and never changes a coordinate.
+
+A second real subcommand re-checks an already-computed path (a bare JSON
+array of `{x, y, z}` waypoints) for safety against a scenario's current
+obstacles/workspace, without running a new search:
+
+```bash
+./run.sh validate scenarios/example.json path.json
+# {"status": "safe"}
+# or: {"status": "unsafe", "issues": [{"SegmentIntersectsObstacle": {"from_index": 0, "to_index": 1}}]}
+```
+
+```bash
+cargo test   # geometry + obstacle collision math, the PRNG, the RRT
+             # planner (including its real wall-clock time limit),
+             # validate.rs's own safety re-check, and shrink.rs's real
+             # failing-scenario minimization - {tests} tests total
+```

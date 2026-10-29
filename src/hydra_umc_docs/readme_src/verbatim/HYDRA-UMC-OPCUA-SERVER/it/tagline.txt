@@ -1,0 +1,1 @@
+🛠️ Mappatura degli oggetti HydraState su spazi di indirizzamento OPC-UA standardizzati

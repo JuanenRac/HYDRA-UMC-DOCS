@@ -1,0 +1,4 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — 每个子命令、其参数以及退出码契约。
+- **[docs/CONFIG_SCHEMA.md](docs/CONFIG_SCHEMA.md)** — `HostProfile`/`ToolchainPolicy`/`TaskPolicy` 的真实 JSON 结构。
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — 目的、两种工作模式、初始范围与磁盘布局。
+- **[docs/OPS_INTEGRATION.md](docs/OPS_INTEGRATION.md)** — 完整的 17 项关系图谱与状态归属表。

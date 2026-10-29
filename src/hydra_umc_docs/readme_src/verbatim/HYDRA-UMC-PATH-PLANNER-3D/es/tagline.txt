@@ -1,0 +1,1 @@
+📐 Optimizador de Trayectorias 3D Multi-Robot y Motor de Evitación de Colisiones

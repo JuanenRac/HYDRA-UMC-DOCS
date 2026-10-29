@@ -1,0 +1,17 @@
+**HYDRA-UMC-OPCUA-SERVER** は、ゲートウェイの中核となる産業モデリング
+モジュールです。内部の動的な HydraState（JSON）を、構造化された発見
+可能な OPC-UA アドレス空間へと変換します。
+
+Ignition、Siemens TIA Portal、Rockwell FactoryTalk のような産業用
+自動化ソフトウェアが、標準の PLC タグであるかのようにロボット変数を
+参照、読み取り、書き込みできるようにします。
+
+### 主な機能：
+* 🛠️ **動的な情報モデリング：** アクティブなロボットと工具に基づいて OPC-UA ツリーを自動生成します。
+* 🔄 **ロボット一覧と 2 つのフラグ：** ロボット一覧（`Name` と `Online` を持つ `Robot_<id>` オブジェクト）は読み取り専用です。`SwarmOnline` と `MaintenanceMode` も読み取り専用です（書き込みはシステムの他の部分に効果がないため拒否されます）。`SwarmOnline` は、一覧の取得が一度完了するまで `BadWaitingForInitialData` です。関節やエフェクターを制御するノードはありません。
+* 🧭 **型付きモデル、ロール、ライブ信号:** セルは `HydraCellType`、各ロボットは `Objects/Robots` フォルダー下の `HydraRobotType` です(名前空間 1 の NodeId は変わりません。モデルはファイル `nodeset/HydraUmc.NodeSet2.xml` で、テストがコードと同一に保ちます)。`Online` はオペレーター画面のスイッチにすぎません。`Live` はロボットが `HYDRA_UMC_OPCUA_LIVE_WINDOW_MS` 以内に HYDRA-UMC-SERVER へパッチを送ったかどうか、`LastUpdate` はその時刻を示し、`HYDRA_UMC_OPCUA_SOURCE=stream`(ポーリングの代わりに WebSocket)が必要で、それ以外は `BadWaitingForInitialData` です。セッションは OPC UA のロールを持ちます。匿名は `Anonymous`、閲覧者は `Observer`、管理者はさらに `ConfigureAdmin` で、書き込めるロールはありません。*(node-opcua のクライアントで試験済み、SCADA では未検証)*
+* 🔖 **バージョン管理された名前空間と安定した NodeId：** 実際の明示的な名前空間 URI と、明示的な文字列 NodeId——アドレス空間の更新によって、クライアントが依存するパスが密かに変わることはありません。*(実装済み)*
+* 🔐 **セッションごとの書き込み認可：** 匿名セッションと認証済みセッションを区別する、実際の動的なチェック——すべてのクライアントがデフォルトで書き込みアクセス権を得られるわけではありません。*(実装済み)*
+* 📡 **サブスクリプションサポート：** OPC-UA のパブリッシュ・サブスクライブ機構を用いた高効率なデータ更新。*（エンドツーエンドでテスト済み：実際のサブスクリプションがデータ変更通知を届ける）*
+* 🩺 **運用(すべて任意):** `OPCUA_HEALTH_PORT` は別のリスナーを起動します(`OPCUA_HEALTH_HOST` で変えない限りループバックのみ)。`GET /health` と `GET /metrics`(セッション、サブスクリプション、ログイン失敗、ロボット、一覧を読めるか)を提供します。一覧を読めない間、ロボットの `Online` 変数は単なる `false` ではなく Uncertain 品質の `false` になります。`OPCUA_VIEWER_USERNAME`/`OPCUA_VIEWER_PASSWORD` は読み取り専用アカウントを追加し、`OPCUA_ALLOW_ANONYMOUS=0` は匿名セッションを拒否します。一覧の設定はエコシステム共通の `HYDRA_UMC_SERVER_*` の名前も受け付けます。すべて既定では無効または変更なしです。 *(実装済み)*
+* 🛡️ **暗号化：** すべての実際のセッションで Signed または Signed+Encrypted（Basic256Sha256、Aes128_Sha256_RsaOaep、または Aes256_Sha256_RsaPss）が必須です - 暗号化されていない `SecurityPolicy.None` 接続は単に非推奨なのではなく、実際に拒否されます。

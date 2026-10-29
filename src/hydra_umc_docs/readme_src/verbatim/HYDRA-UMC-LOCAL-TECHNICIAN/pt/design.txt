@@ -1,0 +1,36 @@
+### ARQUITETURA E DECISÕES DE DESENHO
+
+- **A IA nunca ganha autoridade por gerar uma resposta.** Cada decisão de
+  desenho desta entrega existe para proteger este único princípio - veja
+  [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) para o modelo completo.
+- **Uma ferramenta tem de estar registada antes de poder ser chamada.** O
+  `TOOL_MATRIX` do `policy/tool_matrix.py` é a lista completa e fixa; o
+  `lookup_tool()` devolver `None` é uma recusa incondicional, nunca um caso
+  para adivinhar um nível de risco por omissão.
+- **O conteúdo não fiável nunca pode tornar-se um comando.** A defesa é
+  arquitetural (um tipo sem nenhum método que produza ferramentas), não um
+  filtro que tenta reconhecer texto «com ar de instrução» - um jogo perdido
+  contra uma injeção de prompt determinada. Veja
+  `tests/adversarial/test_injection_defense.py`, o critério de saída literal
+  da própria Fase 0.
+- **A fonte normativa de um contrato é o seu ficheiro JSON Schema.** As
+  listas de campos e os validadores do `contracts.py` são copiados de
+  `contracts/*.schema.json`, campo a campo, seguindo a convenção do
+  `validation.py` do próprio HYDRA-UMC-SDK - não uma segunda fonte de verdade
+  independente.
+- **A redação de segredos é uma cópia partilhada.** `knowledge/redaction.py` é a redação mantida pelo HYDRA-UMC-SDK (`tools/canonical/redaction.py`), idêntica à do agente de operações e verificada com os mesmos casos comuns (`tests/redaction_vectors.json`).
+- **Cada pedido de ferramenta pode ser auditado.** Com `--audit-log CAMINHO` (ou `HYDRA_UMC_LOCAL_TECHNICIAN_AUDIT_LOG`, ou `auditLog` no ficheiro de configuração) cada pedido é escrito num diário JSONL só de acrescentar antes de correr e o seu resultado depois, redigido, cada linha encadeada à anterior pelo seu SHA-256 e rodada por tamanho. Um pedido que não possa ser registado não é executado; `audit-verify CAMINHO` verifica a cadeia. Desativado por predefinição.
+- **`PRIVILEGED_CHANGE` e `PHYSICAL_ACTION` continuam por implementar.** Uma
+  barreira deliberada e permanente até existirem um desenho dedicado, um
+  caminho de autorização separado e, no caso da ação física, bloqueios reais -
+  não um descuido a completar mais tarde.
+- **A recuperação de conhecimento é limitada e de lista de permissões, nunca
+  às cegas.** O `knowledge.search` só indexa uma raiz já presente na lista de
+  permissões (o `resolve_knowledge_source` do `orchestrator/allowlist.py`), e
+  a própria varredura é limitada por um teto real de número de ficheiros e de
+  tamanho por ficheiro - «nunca treinado às cegas sobre o disco inteiro»
+  mantém-se mesmo para uma raiz que um operador já decidiu ser segura.
+- **Esta entrega apenas declara, recupera e valida - não age.** Não há motor
+  de inferência, nem execução real de ferramentas acima de OBSERVE, nem
+  integração com o HYDRA-UMC-SERVER em lado nenhum deste repositório por
+  enquanto.

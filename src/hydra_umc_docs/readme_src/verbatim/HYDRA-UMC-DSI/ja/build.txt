@@ -1,0 +1,25 @@
+[Flutter SDK](https://docs.flutter.dev/get-started/install)（stable チャンネル）が必要です。本リポジトリは Flutter 3.47.0 に対してビルド/検証されています。本リポジトリでは `linux/` と `windows/` のみがプラットフォームとして設定されています（`android/`、`ios/`、`web/`、`macos/` フォルダはありません）——Linux が実際のターゲットです（CM5 自身の OS）。Windows は、Linux ツールチェーンのないマシンでもこのアプリ自身のロジックをビルド、実行、テストできるようにするためだけに存在します。
+
+### ビルドスクリプト
+
+```bash
+./build.sh          # Git Bash / WSL、または cmd/PowerShell 用の build.bat —— flutter pub get + flutter build windows（開発機での検証）
+./build_linux.sh    # 実際の Linux マシン（または CM5 自体）上で実行する必要があります —— flutter pub get + flutter build linux（実際のデプロイ先）
+./run_dev.sh         # Git Bash / WSL、または cmd/PowerShell 用の run_dev.bat —— デスクトップシミュレーションモード（flutter run）、ハードウェア不要
+```
+
+3 つのビルドスクリプト（`build.sh`/`build.bat`/`build_linux.sh`）はいずれもアプリのバージョンを変更しません——下記の[バージョン管理](#-バージョン管理)参照。`run_dev.sh`/`run_dev.bat` は加算しません——このポリシーの下では、開発ループの `flutter run` は「実際のビルド」ではありません。
+
+### 手動ビルド
+
+```bash
+flutter pub get
+flutter analyze                  # 静的解析——コンパイラ不要
+flutter test                     # ウィジェットテスト
+dart run tool/bump_version.dart  # バージョンを加算、build.sh/build.bat/build_linux.sh が行うのと同じ
+flutter build windows            # 開発機でのスモークテスト——build/windows/x64/runner/Release/hydra_umc_dsi.exe を生成
+flutter build linux              # 実際のターゲット——実際の Linux マシン上で実行する必要があります。build/linux/*/release/bundle/ を生成
+flutter run -d windows           # または実際の Linux マシン上で -d linux、ライブなデスクトップシミュレーション開発ループ用
+```
+
+**Linux 検証に関する正直な注記：** `flutter build linux --release` は、実際の Linux デスクトップツールチェーン(`cmake`、`ninja-build`、`libgtk-3-dev`、`clang`)を備えた本物の Ubuntu 24.04 WSL2 環境から、このコードに対して実際に実行されるようになりました——クリーンにビルドが通り、本物の `build/linux/x64/release/bundle/hydra_umc_dsi` を生成し、実際に起動することも確認済みです(実際の X11 ディスプレイ上で動作し続け、終了コード 0 だけではありません)。単なるスモークテストの代替としての `flutter build windows` にとどまりません。これが**カバーしていない**もの:WSL2 のユーザースペースは x86_64 であり、CM5 の実際の aarch64 の Raspberry Pi OS ではないこと、そして `kiosk/hydra-umc-dsi.service` の自動起動フローは依然として実際の Linux マシン上で一度も実行されていないことです。何が検証され何が検証されなかったかの正確なリストは `docs/ARCHITECTURE.md` 第 7 節を、残っている作業は下記の「既知のフォローアップ」を参照してください。

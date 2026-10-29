@@ -1,0 +1,1 @@
+- **[docs/API.md](docs/API.md)** — la référence réelle de l'API HTTP : la sonde de vivacité rapide `GET /health`, chaque champ de la réponse de `GET /status`, la limite `403`/`429`/`504`/`502` de `POST /command`, et chaque variable d'environnement de configuration, documentés directement à partir de `src/server.ts`/`src/probes.ts`.

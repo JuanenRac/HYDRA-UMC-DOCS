@@ -1,0 +1,34 @@
+### 必要条件
+- [Node.js](https://nodejs.org/)（v18 以上を推奨）
+- npm
+
+### インストール
+```bash
+npm install
+```
+
+### 開発モード
+`tsx` を使用してブローカーを直接実行します（バンドラーなし）：
+- **Windows：** `dev.bat` をダブルクリックするか、`npm run dev` を実行
+- **Linux/Mac：** `./dev.sh` または `npm run dev` を実行
+
+### プロダクションビルド
+esbuild を使用してブローカーを単一のデプロイ可能なファイルにバンドル
+します：
+- **Windows：** `build.bat` をダブルクリックするか、`npm run build` を実行
+- **Linux/Mac：** `./build.sh` または `npm run build` を実行
+
+その後、次のコマンドで起動します：
+```bash
+npm start
+```
+
+ブローカーは `0.0.0.0:1883`（プレーンな MQTT/TCP、IANA に登録された
+デフォルトポート）でリッスンします——任意の MQTT クライアント
+（`mosquitto_sub`、Home Assistant、MQTT Explorer など）を
+`<host>:1883` に向けてください。
+
+### バージョン管理
+`npm run build` はサーバーをバンドルするだけでバージョンを変更せず、`python tools/hydra_project_tool.py bump` が
+超えると major に繰り上がる）、2 桁のセグメントに到達することはあり
+ません（`0.0.9` -> `0.1.0`、`0.0.10` にはなりません）。

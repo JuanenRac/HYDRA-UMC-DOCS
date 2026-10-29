@@ -1,0 +1,10 @@
+```mermaid
+flowchart TB
+    MONITOR["Schwarm-Zustandsmonitor"] -- Heartbeat --> N1["Knoten 1"]
+    MONITOR -- Heartbeat --> N2["Knoten 2"]
+    N1 -- Timeout/Fehler --> DETECT["Fehler erkannt"]
+    DETECT --> DIAG["Diagnose-Engine"]
+    DIAG -- Kritisch --> FAIL["FAILOVER: Jobs auf Knoten 2 verschieben"]
+    DIAG -- Wiederherstellbar --> RESET["SOFT-REBOOT: Dienst neu starten"]
+    FAIL --> ORCH["HYDRA-ORCHESTRATOR"]
+```

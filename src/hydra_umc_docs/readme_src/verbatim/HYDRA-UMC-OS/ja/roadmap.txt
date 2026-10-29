@@ -1,0 +1,31 @@
+### ステータス
+
+基本エージェント、検証済みの非機密構成、強化された systemd
+ユニットとホスト側のテストが実装されます。エージェントは意図的に
+読み取り専用: 製品イメージ アセンブリと CM5 ハードウェア検証は残ります
+個別のリリースゲート。
+
+インストールのプリフライト（`provisioning/preflight_cm5.py`）は、実際のテストによって冪等性があり副作用がないことが証明されている——2回連続で実行してもバイト単位で同一の出力が得られ、このリポジトリ内のファイルには一切触れない——そして、実際のホスト非依存なバックアップ/ロールバック機構（`provisioning/rollback.py`）が、`install_local_agent.sh` が実行のたびに無条件で上書きする唯一のシステムファイルを保護する。どちらも root 権限や CM5 なしで検証されている——`tools/verify_preflight_idempotent.py` と `tools/verify_rollback.py` を参照。
+
+**WiFi 初回接続プロビジョニングも実際に動作する**（`provisioning/wifi_provision.py` / `hydra-umc-wifi-provision.service`）——まだ既知のネットワークを持たないヘッドレス CM5 のための、実際の NetworkManager AP モードのフォールバック。実際のホットスポット（`nmcli device wifi hotspot`）を起動し、オペレーターの携帯電話やノート PC がそれに接続して、小さなローカル HTTP フォームを通じて実際のターゲット SSID/パスワードを送信できるようにする。成功時には AP を停止して実際のネットワークに参加し、失敗時には AP を復元してデバイスが孤立しないようにする。この状態機械は、疑似的な NetworkManager に対して完全に単体テストされており、実際のループバックソケット上での実際のエンドツーエンド HTTP 往復も含まれる——`tools/verify_wifi_provision.py` を参照。`install_cm5_base.sh` によってインストールされるが、実際に必要とするデバイスでのみ動かすべきであるため、意図的に自動有効化はされない——アクセスポイントのパスワードと一度限りのセットアップコードは、デバイスごとに初回起動時に生成され、ジャーナルから一度だけ読み取る。`provisioning/CM5_DEPLOYMENT_SEQUENCE.md` のセクション 3 を参照。
+
+**シークレットはデバイスごとに生成され、テンプレートから流用されることはありません。** `install_server.sh` と `install_voice_ui.sh` は、env ファイルがなければ例から作成し、例の値（`JWT_SECRET`、最初の管理者パスワード、音声リレートークン）をすべてこのデバイス固有のランダム値に置き換えます（`provisioning/generate_secrets.py`。運用者がすでに選んだ値は残り、管理者パスワードは一度だけ表示されます）。例の値や短すぎるシークレットが残っていれば先へ進みません。`preflight_cm5.py` は、まだそれらを含む `/etc/hydra-umc/*.env` を拒否します。`install_industrial_gateway.sh` はスタックのシークレットを `/etc/hydra-umc/gateway.env` に書きます(root のみ、ユーザーのチェックアウトの外、compose が `--env-file` で読み込む。以前のバージョンがチェックアウトに残した `.env` はそこへ移動されます)（`provisioning/gateway_env.py`：ゲートウェイのシークレットと、マシンブリッジごとの MQTT 認証情報と ACL ルール）。Wi-Fi セットアップネットワークはソースコード内にパスワードを持たなくなりました。各デバイスが初回起動時に自分のパスワードと使い捨てのセットアップコードを生成し（ジャーナルで一度だけ読み取り、ラベルに書く）、フォームはコードを要求し（5 回間違えると 1 分間ロック）、セットアップネットワークは起動のたびに 30 分間だけ開き、フォームは大きすぎるリクエストを拒否します。`tools/verify_generate_secrets.py`、`tools/verify_gateway_env.py`、`tools/verify_wifi_provision.py` で検証しています。 ホスト名とセットアップ用ネットワーク名の末尾にも、デバイスから取った 6 文字（Raspberry Pi のシリアル番号、なければ MAC アドレス）が付くため、同じイメージから書き込んだ 2 台が同じ名前を共有することはなくなりました（`provisioning/device_identity.py`、`tools/verify_device_identity.py` で検証）。`HYDRA_UMC_DEVICE_SUFFIX=off` で固定名に戻せ、ご自身で決めた名前は変更されません。
+
+**署名鍵はインストーラーが配布します。** Voice UI が確認結果に署名する鍵(`HYDRA_UMC_VOICE_UI_RESULT_KEY`)は、`install_server.sh` と `install_voice_ui.sh` のうち先に実行された方がデバイスごとに 1 回だけ生成し、`/etc/hydra-umc/server.env` と `/etc/hydra-umc/voice-ui.env` の両方に書き込みます(古いテンプレートのファイルには行が追加されます)。あわせてサーバー用に `HYDRA_UMC_VOICE_CONFIRM_REQUIRE_SIGNATURE=1`、Voice UI 用に `HYDRA_UMC_VOICE_UI_REQUIRE_SUBJECT=1` も設定されます(`generate_secrets.py --ensure`。運用者がすでに持っている行は、どんな値でも変更されません)。`install_local_technician.sh` は各ツールの結果に署名する鍵を `/etc/hydra-umc-local-technician/result.key` に作り(`provisioning/make_result_key.py`:ランダムな 16 進 64 文字、最初のバイトから権限 0600、root のみ、表示せず、存在すれば置き換えず、シンボリックリンクはたどらない)、設定ファイルをそれに向けます。`--no-signing`(または `HYDRA_UMC_LOCAL_TECHNICIAN_SIGNING=off`)でこの行は書かれません。鍵がイメージやリポジトリに入ることはなく、2 台のデバイスが同じ鍵を共有することもありません。`tools/verify_result_keys.py` で検証済みです。
+
+**監査ジャーナル(既定は有効)。** `install_local_technician.sh` は技術者の追記専用・ハッシュ連鎖の監査ジャーナルを、`install_node_healing.sh` は監視役のジャーナルを有効にします(どちらも 5 MiB で切り替わり、5 ファイルを保持)。技術者に何を頼んだか、監視役がノードについて何を判断したかは障害後に重要な証拠なので、インストーラーは設定を有効な状態で文書化された設定ファイル(`/etc/hydra-umc-local-technician/local-technician.env`、`/etc/hydra-umc-node-healing/journal.env`)に書きます。`--no-audit` / `--no-journal`(または `HYDRA_UMC_LOCAL_TECHNICIAN_AUDIT=off`、`HYDRA_UMC_NODE_HEALING_JOURNAL=off`)はジャーナルを無効のままにし、有効な行をコメントアウトします。記録済みの内容は決して削除せず、既存の設定ファイルは上書きしません。`tools/verify_optional_journals.py` がオプションと名前を静的に確認します。実機の CM5 へのインストールはまだ行われていません。
+
+**Go サービス用に固定した Go。** ジョブディスパッチャー、ノード監視役、テレメトリコレクターはデバイス上でビルドされ、その `go.mod` は Debian アーカイブの `golang-go` より新しい Go を求めるため、それではビルドできませんでした。インストーラーは `provisioning/go_toolchain.sh` を読み込みます。go.dev の公式リリースを、固定した SHA-256 と照合してから `/usr/local/go-<バージョン>` に展開します(システムの Go には手を触れません)。`tools/verify_go_toolchain.py` は、ダウンロードを模したもの(正しいアーカイブ、壊れたもの、インストール済みのもの)でヘルパーを実行し、固定バージョンを兄弟プロジェクトの `go.mod` と比べます。実機の CM5 へのインストールはまだ行われていません。
+
+**サービスレジストリは 1 つ。** 各サービスのポート、ヘルスルート、systemd ユニットは `provisioning/ports.yaml`(プロジェクトのマニフェストから生成される SDK の `contracts/ports.yaml` のコピー)から取得します。サービスの各インストーラーは、起動後にどこを確認すればよいかを表示して終わり、`verify_cm5_runtime.sh --with-services` は実行中の各サービスのヘルスルートを確認します(読み取り専用。動いていないものはスキップ)。`tools/verify_service_registry.py` が、ヘルパー、インストーラー、実行時チェックをスタブで検証します。実機の CM5 へのインストールはまだ行われていません。
+
+### 最初のマイルストーン
+
+完了済み。上記のステータスセクションの通り(実際のコード、実際の
+テスト、実機の CM5 ハードウェアに対してはまだ検証されていない):
+
+1. ✅ CM5 用の Raspberry Pi OS ARM64 プロファイルを構築します。
+2. ✅ `hydra-umc-platform-base` と `hydra-umc-agent` をインストールします。
+3. ✅ CM5 インターフェイスを検出し、`DeviceDescriptor` と `HealthReport` を報告します。
+4. ✅ systemd を介して有効なサービスのみを開始します。
+5. ✅ ローカルで READY、DEGRADED、または FAULT を表示します。

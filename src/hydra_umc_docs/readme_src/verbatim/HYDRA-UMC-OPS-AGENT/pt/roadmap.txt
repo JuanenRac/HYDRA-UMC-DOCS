@@ -1,0 +1,18 @@
+As Entregas 1-5 (esta versão) trazem **evidências**, **diagnóstico**,
+**alteração aprovada por uma pessoa**, **implementação canário** e
+**verificação** - o ciclo de vida real já nomeado no próprio manifesto e no
+CHANGELOG deste projeto. O que falta:
+
+- **Entrega 6 - Integração de voz/notificação - genuinamente BLOQUEADA, não
+  apenas adiada.** O plano era fazer chegar um incidente crítico, ou uma
+  implementação canário concluída, através do HYDRA-UMC-VOICE-UI. A
+  investigação real do código do próprio VOICE-UI (`gateway.py`) concluiu que é
+  uma passagem LIMITADA DE ENTRADA de transcrição para intenção (um Watch
+  envia texto e recebe uma resposta), sem nenhuma superfície real de
+  notificação de saída/push hoje. Construir uma aqui significaria inventar um
+  ponto de integração que o próprio VOICE-UI não tem - o padrão de não
+  fabricação deste projeto não o permite. Volte a considerar isto quando o
+  VOICE-UI (ou um sucessor) ganhar uma capacidade real de «anúncio de
+  assistente de entrada».
+- Um transporte real entre os papéis de periferia e de plano de controlo (hoje,
+  mover um ficheiro de instantâneo entre eles é um passo manual).

@@ -1,0 +1,4 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — cada subcomando, as suas opções e o contrato de códigos de saída.
+- **[docs/CONFIG_SCHEMA.md](docs/CONFIG_SCHEMA.md)** — a forma JSON real de `HostProfile`/`ToolchainPolicy`/`TaskPolicy`.
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — propósito, os dois modos de funcionamento, âmbito inicial e disposição do disco.
+- **[docs/OPS_INTEGRATION.md](docs/OPS_INTEGRATION.md)** — o mapa completo das 17 relações e a tabela de propriedade de estado.

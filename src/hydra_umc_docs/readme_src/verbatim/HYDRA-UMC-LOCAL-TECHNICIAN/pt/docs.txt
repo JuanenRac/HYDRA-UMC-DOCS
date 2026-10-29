@@ -1,0 +1,3 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — propósito, as cinco peças-alvo, arquitetura-alvo e relações do ecossistema.
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — cada subcomando, as suas opções e o contrato de códigos de saída.
+- **[docs/CONTRACTS.md](docs/CONTRACTS.md)** — a forma real, campo a campo, dos cinco contratos.

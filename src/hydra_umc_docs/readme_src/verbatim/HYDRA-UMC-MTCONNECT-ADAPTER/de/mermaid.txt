@@ -1,0 +1,8 @@
+```mermaid
+flowchart LR
+    HYDRA["HYDRA-SERVER"] --> ADAP["MTCONNECT-ADAPTER"]
+    ADAP --> XML["XML / HTTP Stream"]
+    XML --> AGENT["MTCONNECT-AGENT"]
+    AGENT --> HTTP["HTTP GET /current"]
+    HTTP --> MONITOR["Industrie-Monitor / ERP"]
+```

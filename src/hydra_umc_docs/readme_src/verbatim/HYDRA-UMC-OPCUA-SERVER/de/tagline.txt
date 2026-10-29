@@ -1,0 +1,1 @@
+🛠️ Mapping von HydraState-Objekten auf standardisierte OPC-UA-Adressräume

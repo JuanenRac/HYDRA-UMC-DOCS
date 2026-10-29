@@ -1,0 +1,33 @@
+コンパイルできるだけの骨組みではなく、本物のウォッチドッグです：
+`nodes.example.json`（または独自のレジストリを指す `-nodes <パス>`）
+に列挙された各ノードに（HTTP のヘルス URL で、`address` を持つ項目は gRPC で）接続し、状態変化を標準出力に報告します。
+
+```bash
+# Windows
+build.bat
+run.bat -nodes nodes.example.json
+
+# Linux / macOS
+./build.sh
+./run.sh -nodes nodes.example.json
+```
+
+`build.sh`/`build.bat` はバージョンを変更せず（上げるのは `python tools/hydra_project_tool.py bump` だけです）、その後 `go build` を実行します。
+`run.sh`/`run.bat` は生成されたバイナリを直接実行します。
+
+レジストリの各エントリは、その `address` で実際に待ち受け、
+`hydra.common.v1.HealthService`（`HYDRA-UMC-ORCHESTRATOR/proto/
+hydra_common.proto` 参照）を実装する本物のサービスを必要とします——
+サンプルのポートではまだ何も稼働していないため、最初のポーリング
+周期では3つとも `UNKNOWN -> UNREACHABLE` と表示されるのが予想されます
+（現在は `RetryPolicy` の上限付き試行がすべて尽きた後にのみそうなり、
+最初の dial では判定されません——上記の「上限付きリトライ」機能を
+参照）。これは今日時点で正しく誠実な結果です（このリポジトリ自身の
+検知ロジックを除けば、エコシステムのすべてのノードはまだ足場段階に
+あります）。応答はするが自身を正しく識別できないノードは、代わりに
+即座に `UNKNOWN -> INVALID` と表示されます。
+
+```bash
+go test ./...   # src/config + src/watchdog、実際のループバック
+                 # ソケット上での本物の gRPC 往復テスト、モッククライアント不使用
+```

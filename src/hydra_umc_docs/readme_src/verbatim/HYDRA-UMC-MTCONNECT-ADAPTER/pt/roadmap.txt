@@ -1,0 +1,4 @@
+* **Fase 1:** implementação de OPC-UA Pub/Sub para troca de dados a alta velocidade e ponte com protocolos herdados.
+* **Fase 2:** cluster de broker MQTT para gestão massiva de dispositivos IoT e elevada concorrência.
+* **Fase 3:** suporte do adaptador MTConnect para a integração de maquinaria CNC e PLC de vários fabricantes.
+* **Fase 4:** suporte à agregação de vários dispositivos MTConnect e ao envio padronizado de telemetria XML/HTTP em fluxo.

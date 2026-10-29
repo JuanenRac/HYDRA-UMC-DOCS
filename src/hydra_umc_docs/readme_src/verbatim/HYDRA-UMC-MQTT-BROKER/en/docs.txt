@@ -1,0 +1,1 @@
+- **[docs/BRIDGE_TOPICS.md](docs/BRIDGE_TOPICS.md)** — the real, shared `hydra/bridges/<name>/...` topic catalog every external machine bridge (CNC/Laser/OpenPnP/Printer3D/ROS2) actually uses against this broker.

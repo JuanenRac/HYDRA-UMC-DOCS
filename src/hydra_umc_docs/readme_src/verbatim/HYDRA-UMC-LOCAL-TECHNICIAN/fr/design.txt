@@ -1,0 +1,38 @@
+### ARCHITECTURE ET DÉCISIONS DE CONCEPTION
+
+- **L'IA n'obtient jamais d'autorité en générant une réponse.** Chaque
+  décision de conception de cette livraison existe pour protéger ce seul
+  principe - voir [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) pour
+  le modèle complet.
+- **Un outil doit être enregistré avant de pouvoir jamais être appelé.**
+  `TOOL_MATRIX` de `policy/tool_matrix.py` est la liste complète et
+  fixe ; que `lookup_tool()` retourne `None` est un refus inconditionnel,
+  jamais un cas où deviner un niveau de risque par défaut.
+- **Le contenu non fiable ne peut jamais devenir une commande.** La
+  défense est architecturale (un type sans aucune méthode produisant un
+  outil), pas un filtre qui tente de reconnaître un texte "ressemblant à
+  une instruction" - un jeu perdu d'avance contre une injection de prompt
+  déterminée. Voir `tests/adversarial/test_injection_defense.py`, le
+  critère de sortie littéral de la Phase 0 elle-même.
+- **La source normative d'un contrat est son fichier JSON Schema.** Les
+  listes de champs et validateurs de `contracts.py` sont copiés depuis
+  `contracts/*.schema.json`, champ par champ, suivant la même convention
+  que `validation.py` de HYDRA-UMC-SDK - pas une seconde source de
+  vérité indépendante.
+- **La rédaction des secrets est une copie partagée.** `knowledge/redaction.py` est la rédaction tenue par HYDRA-UMC-SDK (`tools/canonical/redaction.py`), identique à celle de l'agent d'exploitation et vérifiée avec les mêmes cas communs (`tests/redaction_vectors.json`).
+- **Chaque requête d'outil peut être auditée.** Avec `--audit-log CHEMIN` (ou `HYDRA_UMC_LOCAL_TECHNICIAN_AUDIT_LOG`, ou `auditLog` dans le fichier de configuration), chaque requête est écrite dans un journal JSONL en ajout seul avant son exécution et son résultat après, expurgé, chaque ligne chaînée à la précédente par son SHA-256 et tournée selon la taille. Une requête qui ne peut pas être enregistrée n'est pas exécutée ; `audit-verify CHEMIN` vérifie la chaîne. Désactivé par défaut.
+- **`PRIVILEGED_CHANGE` et `PHYSICAL_ACTION` restent non implémentés.**
+  Une porte délibérée et permanente jusqu'à ce qu'existent une
+  conception dédiée, un chemin d'autorisation séparé et, pour l'action
+  physique, de réels verrouillages - pas un oubli à compléter plus tard.
+- **La récupération de connaissance est bornée et sur liste blanche,
+  jamais aveugle.** `knowledge.search` n'indexe qu'une seule racine
+  déjà sur liste blanche (`resolve_knowledge_source()` de
+  `orchestrator/allowlist.py`), et le parcours lui-même est borné par
+  une vraie limite de nombre de fichiers et de taille par fichier -
+  "jamais entraîné aveuglément sur tout le disque" reste vrai même pour
+  une racine qu'un opérateur a déjà jugée sûre.
+- **Cette livraison ne fait que déclarer, récupérer et valider - elle
+  n'agit pas encore.** Aucun moteur d'inférence, aucune exécution réelle
+  d'outil au-delà d'OBSERVE, et aucune intégration avec
+  HYDRA-UMC-SERVER n'existent nulle part dans ce dépôt pour l'instant.

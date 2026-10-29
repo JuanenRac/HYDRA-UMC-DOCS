@@ -1,0 +1,34 @@
+A real watchdog, not just a skeleton that compiles: it dials every node in
+`nodes.example.json` (or `-nodes <path>` to point at your own registry)
+(an HTTP health URL, or gRPC when the entry has an `address`) and reports state changes to stdout.
+
+```bash
+# Windows
+build.bat
+run.bat -nodes nodes.example.json
+
+# Linux / macOS
+./build.sh
+./run.sh -nodes nodes.example.json
+```
+
+`build.sh`/`build.bat` never change the version (only `python tools/hydra_project_tool.py bump` raises it) and then run `go build`. `run.sh`/`run.bat`
+execute the resulting binary directly.
+
+An entry with a `healthUrl` (`http://…`, the way to watch the services of
+this ecosystem) needs that URL to answer `2xx`; an entry with an `address`
+needs something real listening there and implementing
+`hydra.common.v1.HealthService` (see
+`HYDRA-UMC-ORCHESTRATOR/proto/hydra_common.proto`) to ever report
+healthy - with nothing running yet on any of the example ports, expect
+every node to print `UNKNOWN -> UNREACHABLE` on the first tick (now only
+after `RetryPolicy` exhausts its bounded attempts, not on the very first
+dial - see the "Bounded Retry" feature above), which is the correct,
+honest result today (every node in this ecosystem is still andamiaje
+beyond this repo's own detection logic). A node that answers but cannot
+correctly self-identify prints `UNKNOWN -> INVALID` instead, immediately.
+
+```bash
+go test ./...   # src/config + src/watchdog, real gRPC round-trips
+                 # over real loopback sockets, no mocked client
+```

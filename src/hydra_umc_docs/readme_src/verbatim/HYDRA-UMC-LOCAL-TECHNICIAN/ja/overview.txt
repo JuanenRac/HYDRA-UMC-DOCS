@@ -1,0 +1,112 @@
+HYDRA-UMC-LOCAL-TECHNICIAN は HYDRA-UMC エコシステム自身のための専用ロー
+カルAIです。エコシステム自身のサービスやノードを観察し、説明し、診断し、
+保守を提案します - 新しい基盤モデルを訓練することは決してなく、テキストを
+生成することによって行動することも決してありません。ターゲットプラット
+フォームは CM5 で、インストール後は Hailo-10H アクセラレータを使用します
+が、フェーズ0はそのどちらも必要としません。本リリースのすべては純粋な
+データを検証する純粋な Python です。
+
+**譲れない原則:** AI は応答を生成することによって権限を得ることは決して
+ありません。ポリシー、権限、人間による確認がすべての実際の行動を決定しま
+す - モデル自身の言葉では決してありません。
+
+本リリースは、独立して有用な8つの実在する要素をもたらします:
+
+1. **リスクレベル・ポリシー**（`policy/risk_levels.py`）- `INFORM` から
+   `PHYSICAL_ACTION` までの6つの順序付けられたレベルで、それぞれに実際の
+   テスト済みポリシー（ツールを読み取れるか、変更できるか、確認が必要か、
+   実装されているか）があります。上位2レベルは契約の完全性のためだけに
+   宣言されており、このコード内のどこにも実装されていません。
+2. **ツール・マトリクス**（`policy/tool_matrix.py`）- 10個の実在する
+   `OBSERVE` レベルのツール名からなる固定の許可リスト。この辞書に存在し
+   ないツール名は絶対に呼び出せません、それだけです - 10個すべてが
+   すでに実際のハンドラーに接続されています(下記の項目5と6を参照)。
+3. **実際の契約**（`contracts/*.schema.json` + `contracts.py`）-
+   `ToolRequest`、`ToolResult`、`MaintenanceProposal`、`EvidenceBundle`、
+   `PatchVerificationReport` は、それぞれに規範的なJSON Schema
+   ファイルと、そこからフィールド単位でそのままコピーされた、標準
+   ライブラリのみの Python バリデータがあります。
+4. **インジェクション防御境界**（`knowledge/trust.py` +
+   `knowledge/redaction.py`）- 信頼できないコンテンツ（README、ログ行、
+   コミットメッセージ）は常に `UntrustedText` としてラップされ、これは
+   ツール呼び出しを生成できるメソッドを一切持たない型です。この
+   コードベースで `ToolRequest` を構築する唯一の実際の方法は、すでに型付
+   けされ、すでに分離されたフィールドを受け取り、オブジェクトが存在する
+   前に、未登録または未実装のツール名を拒否します。
+5. **ツール・オーケストレーター**（`orchestrator/dispatch.py` +
+   `orchestrator/allowlist.py`、フェーズ3）- `dispatch_tool_request()`
+   はすでに検証済みの `ToolRequest` を実際に実行し、実際の `ToolResult`
+   を返します: `service.status`（実際の `systemctl is-active`）、
+   `storage.usage`（`shutil.disk_usage`）、`network.port_status`（実際の
+   ソケットプローブ）、`network.connectivity`（エンドポイント自身の実際の
+   ステータスコードを報告する実際のHTTP GET - `network.port_status` とは
+   本質的に異なるチェックであり、HYDRA-UMC-OPS-AGENT 自身の `inventory.py`
+   が単純なTCP接続と実際のヘルスGETの間で引いているのと同じ実際の区別で
+   す)、`system.temperature`（実際のLinuxサーマルゾーンsysfsパス)、
+   `manifest.read`（実際の `hydra-umc.project.json` の読み取り)、
+   `logs.read`（許可リストに載ったログファイルの範囲限定でマスキング
+   済みの末尾)、`process.list`（`/proc/<pid>/cmdline` に対する実際の
+   許可リストに載った部分文字列一致)、そして `update.pending`（
+   HYDRA-UMC-UPDATER 自身の実際のGitHub検出とバージョン比較を再利用する、
+   オプションの依存関係)。これらのいずれも生のパス・ホスト・ポート・
+   URL・ユニット名・パターンを直接受け付けません - 固定の
+   `OrchestratorConfig` を通じて解決される短いシンボル名だけであり、
+   毒された文書自身のテキストが任意の実在ターゲットを名指しすること
+   は決してなく、すでに許可リストに載った名前だけです。
+   ハンドラが返すものは境界で上限が設けられ、秘密情報が伏せられます。プロセスのコマンドライン、知識の抜粋、証拠パッケージのログ行は `logs.read` と同じ秘密情報の伏せ字処理を通り、`manifest.read` は短い文字列を 4 つだけ返し、`network.connectivity` はリダイレクトに従わず報告します。
+6. **検索可能な知識インデックス**（`knowledge/index.py`、フェーズ1）
+   - 実際のローカルTF-IDF検索エンジン(tokenize/build_index/search)で、
+   HYDRA-UMC-DOCS-QA 自身のすでにテスト済みの `index.py` から変更なし
+   で移植されており、Markdownソース(見出しで区切られた断片)とJSON
+   ソース(マニフェストや契約スキーマはオブジェクトの途中で有用に分割
+   されることは決してないため、断片ごとにファイル全体)向けの新しい
+   範囲限定の取り込みが加わっています。10番目のツール
+   `knowledge.search` として、`orchestrator/allowlist.py` の新しい
+   `resolve_knowledge_source()` を通じて接続されています: 呼び出し側は
+   すでに許可リストに載ったシンボリックなソース名だけを指定でき、生の
+   パスは決して指定できず、返される実際の一致はハンドラーを出る前に
+   常に `UntrustedText` としてラップされたままです。走査自体も
+   (ファイル数、ファイルごとのサイズで)範囲限定されており、正当に
+   許可リストに載ったルートであっても - 決して盲目的にならず、決して
+   ディスク全体にはなりません。
+7. **エスカレーション: 証拠と提案**（`escalation/`、フェーズ4）-
+   `evidence.assemble_evidence_bundle()` は、すでに実行され、すでに検証
+   済みの実際の `ToolResult` のバッチを実際の `EvidenceBundle` に変換し
+   ます - HYDRA-UMC-OPS-AGENT 自身の `incident.py` と同じパターンで、
+   すでに観測されたデータからの純粋な導出であり、AI呼び出しでは決して
+   ありません。`proposal.propose_maintenance()` は `MaintenanceProposal`
+   の実際のコンストラクタ・バリデータです - 意図的に生成器ではありませ
+   ん。推論エンジンがまだ存在せず、このプロジェクト自身の譲れない原則
+   が診断の捏造を禁じているためです。今日は人間のオペレーターだけが
+   `diagnosis`/`steps`/`rollback` を提供します。このモジュールが追加す
+   る唯一の実際の防御策は、`citedEvidence` の各エントリが実際に観測さ
+   れたツール結果自身の `evidence` フィールドと文字通り一致しなければ
+   ならないというもので、そうでなければ提案はそのまま拒否されます。
+   `confirmationRequired` は呼び出し側が設定できるものでは決してなく、
+   常に `policy/risk_levels.py` 自身のポリシーが提案の宣言されたリスク
+   について既に定めている通りの値になります。このコードのどこも
+   `MaintenanceProposal` に対してまだ行動を起こせません。
+8. **CLI表面**（`cli.py`、フェーズ5自身の最初の実際のスライス）-
+   `tools list`/`tools call` と `escalation evidence`/`escalation
+   propose` は、上記の各要素に初めて実際のコマンドラインを与えます
+   (これまではそれぞれテストからしか到達できませんでした)。独自の権限
+   は一切追加しません: `tools call` は各テストがすでに呼び出している
+   のと同じ `build_tool_request_from_model_output()` で `ToolRequest`
+   を構築し、同じ `dispatch_tool_request()` で実行します - OBSERVEを
+   超えるものはこのコードのどこにも実装されていないため、依然として
+   OBSERVEレベルのツールにしか到達できません。`--config` はJSONファイル
+   から実際の `OrchestratorConfig` を読み込みます(省略時は
+   `default_config()` にフォールバック); コマンドライン自体で生のパス・
+   ホスト・ポートを指定する方法は依然としてありません。
+
+```
+$ hydra-umc-local-technician contracts validate tests/fixtures/tool_request.valid.json --contract ToolRequest
+VALID: tests/fixtures/tool_request.valid.json (ToolRequest)
+
+$ hydra-umc-local-technician contracts validate tests/fixtures/tool_request.invalid.json --contract ToolRequest
+INVALID: tests/fixtures/tool_request.invalid.json (ToolRequest): ...
+```
+
+本リリースにはデフォルト/引数なしの呼び出しも GUI もありません -
+完全で実際のコマンド範囲については
+[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) を参照してください。

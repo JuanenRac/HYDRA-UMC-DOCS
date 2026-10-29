@@ -1,0 +1,7 @@
+```mermaid
+flowchart LR
+    URDF["URDF visuale - reale v0 (percorso albero parent/child, rami, giunti mimic e limiti)"] --> MESH["Semplificazione mesh di collisione - previsto"]
+    MESH --> SOLVE["Physics Solver (MuJoCo) - previsto"]
+    SOLVE --> DYN["Stato dinamico (Pos/Vel/Acc) - previsto"]
+    DYN --> TWIN["HYDRA-UMC-TWIN Viewport - previsto"]
+```

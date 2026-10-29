@@ -1,0 +1,10 @@
+```mermaid
+flowchart TB
+    MONITOR["Moniteur de santé de l'essaim"] -- Battement de cœur --> N1["Nœud 1"]
+    MONITOR -- Battement de cœur --> N2["Nœud 2"]
+    N1 -- Délai expiré/Erreur --> DETECT["Défaillance détectée"]
+    DETECT --> DIAG["Moteur de diagnostic"]
+    DIAG -- Critique --> FAIL["FAILOVER : Déplacer les tâches vers le nœud 2"]
+    DIAG -- Récupérable --> RESET["SOFT-REBOOT : Redémarrer le service"]
+    FAIL --> ORCH["HYDRA-ORCHESTRATOR"]
+```

@@ -1,0 +1,1 @@
+A camada de plataforma reproduzível de um nó HYDRA-UMC no Raspberry Pi OS

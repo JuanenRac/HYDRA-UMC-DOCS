@@ -1,0 +1,4 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — every subcommand, its flags, and the exit-code contract.
+- **[docs/CONFIG_SCHEMA.md](docs/CONFIG_SCHEMA.md)** — the real JSON shape of `HostProfile`/`ToolchainPolicy`/`TaskPolicy`.
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — purpose, the two working modes, initial scope, and disk layout.
+- **[docs/OPS_INTEGRATION.md](docs/OPS_INTEGRATION.md)** — the full 17-relationship map and state-ownership table.

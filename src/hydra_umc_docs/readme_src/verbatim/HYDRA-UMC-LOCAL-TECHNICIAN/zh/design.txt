@@ -1,0 +1,30 @@
+### 架构与设计决策
+
+- **AI 永远不会因生成一段回复而获得权限。** 本次交付的每一个设计决策都是为
+  了保护这一条原则而存在 - 完整模型参见
+  [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md)。
+- **工具必须先注册，才有可能被调用。** `policy/tool_matrix.py` 的
+  `TOOL_MATRIX` 是完整且固定的清单；`lookup_tool()` 返回 `None` 意味着无
+  条件拒绝，绝不是去猜测一个默认风险等级的情形。
+- **不可信内容永远不能变成一条命令。** 这种防御是架构层面的（一种没有任何
+  方法能产生工具的类型），而不是一个试图识别"看起来像指令"文本的过滤器 -
+  面对一次坚决的提示注入，那种过滤器注定输掉这场游戏。参见
+  `tests/adversarial/test_injection_defense.py`，这是第 0 阶段自身字面意义
+  上的退出标准。
+- **合约的规范性来源是它的 JSON Schema 文件。** `contracts.py` 中的字段
+  清单与校验器都是逐字段从 `contracts/*.schema.json` 复制而来，遵循与
+  HYDRA-UMC-SDK 自身 `validation.py` 相同的约定 - 而不是第二个独立的真相
+  来源。
+- **机密信息脱敏是一份共享副本。** `knowledge/redaction.py` 是 HYDRA-UMC-SDK 维护的脱敏实现(`tools/canonical/redaction.py`),与运维代理的完全一致,并用同一组共享用例(`tests/redaction_vectors.json`)检验。
+- **每个工具请求都可以审计。** 使用 `--audit-log 路径`(或 `HYDRA_UMC_LOCAL_TECHNICIAN_AUDIT_LOG`,或配置文件中的 `auditLog`)后,每个请求在执行前、其结果在执行后都会经脱敏写入只追加的 JSONL 日志,每行用 SHA-256 与上一行链接,并按大小轮转。无法记录的请求不会被执行;`audit-verify 路径` 用于检查链。默认关闭。
+- **`PRIVILEGED_CHANGE` 和 `PHYSICAL_ACTION` 仍未实现。** 这是一道刻意且
+  永久的关卡，直到出现专门的设计、独立的授权路径,以及对于物理动作而言的
+  真实联锁装置为止 - 这不是留待日后补上的疏漏。
+- **知识检索是有限且白名单化的，绝不盲目。** `knowledge.search` 只会索引
+  一个已在白名单中的根目录(`orchestrator/allowlist.py` 的
+  `resolve_knowledge_source()`)，遍历本身也受到真实的文件数量与单文件大小
+  上限约束 - "绝不会盲目地在整块磁盘上训练"这一点，即使对一个运维人员已经
+  判定为安全的根目录也同样成立。
+- **本次交付只声明、检索与校验 - 尚未采取任何行动。** 本仓库中的任何地方
+  都还不存在推理引擎、超出 OBSERVE 级别的真实工具执行,也没有与
+  HYDRA-UMC-SERVER 的集成。

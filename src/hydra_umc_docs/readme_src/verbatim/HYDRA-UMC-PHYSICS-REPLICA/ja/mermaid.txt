@@ -1,0 +1,7 @@
+```mermaid
+flowchart LR
+    URDF["Visual URDF - 実際の v0（parent/childツリー走査、分岐、mimic 関節、リミット）"] --> MESH["Collision Mesh Simplification - 計画中"]
+    MESH --> SOLVE["Physics Solver (MuJoCo) - 計画中"]
+    SOLVE --> DYN["Dynamic State (Pos/Vel/Acc) - 計画中"]
+    DYN --> TWIN["HYDRA-UMC-TWIN Viewport - 計画中"]
+```

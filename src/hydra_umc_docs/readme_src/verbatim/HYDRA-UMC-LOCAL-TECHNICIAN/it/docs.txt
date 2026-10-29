@@ -1,0 +1,3 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — scopo, i cinque pezzi target, architettura target, e relazioni con l'ecosistema.
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — ogni sottocomando, i suoi flag, e il contratto di codici di uscita.
+- **[docs/CONTRACTS.md](docs/CONTRACTS.md)** — la forma reale, campo per campo, dei cinque contratti.

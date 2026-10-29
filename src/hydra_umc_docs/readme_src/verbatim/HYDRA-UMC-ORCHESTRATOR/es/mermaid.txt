@@ -1,0 +1,10 @@
+```mermaid
+flowchart TB
+    API["API Externa (Studios / Apps)"] --> ORCH["HYDRA-ORCHESTRATOR"]
+    ORCH <--> JOB["JOB-DISPATCHER (Cola de Misiones)"]
+    JOB -.-> PATH["PATH-PLANNER-3D (Chequeo de Colisión)"]
+    PATH -.-> SYNC["SWARM-SYNC (Sincronización PTP)"]
+    SYNC -.-> NODE1["HydraNode 1 (H745)"]
+    SYNC -.-> NODE2["HydraNode 2 (H745)"]
+    HEAL["NODE-HEALING (Failover)"] --> ORCH
+```

@@ -1,0 +1,31 @@
+```bash
+chmod +x build.sh   # una tantum
+./build.sh          # crea .venv, pip install -e ".[dev,gui]", verifica compilazione, esegue pytest
+./run.sh                                # GUI in finestra (predefinita)
+./run.sh --cli status                   # versione reale GitHub più recente di ogni progetto dell'ecosistema
+./run.sh --cli config --out ./boot ...  # scrive la configurazione di primo avvio (vedi docs/CLI_REFERENCE.md per ogni opzione)
+./run.sh --cli build-image --out FILE   # costruisce un .img pronto da scrivere (solo Linux/root)
+```
+
+Su Windows: `build.bat`, poi `run.bat` (GUI) / `run.bat --cli status` /
+`run.bat --cli config ...`. `build-image` richiede comunque un vero host
+Linux con root - vedi [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md).
+
+**Risoluzione dei problemi**
+
+- `--cli build-image` termina con `BUILD_BLOCKED reason=...`: leggi il
+  motivo - indica esattamente l'elemento mancante (non Linux, non root, o
+  uno strumento specifico mancante nel `PATH`) invece di un fallimento
+  generico.
+- `--cli config` solleva un errore di validazione: l'hostname/username/
+  codice paese Wi-Fi indicato non rispetta la forma reale e rigorosa
+  richiesta da quei campi - vedi la validazione propria di
+  `firstboot_config.py`.
+- `--cli config`/`build-image` rifiuta con «no login path at all»: SSH è stato disattivato senza configurare un account - configurarne uno, oppure passare `acknowledge_no_remote_access=True` (GUI/API) se un altro accesso è sicuro. Vedere `describe_recovery_procedure()`.
+- `profile-build` rifiuta un progetto con «no real, resolved commit SHA»: il manifesto congelato precede il cambio di nome o la privatizzazione di un repository - ricongelare il profilo (`profile-freeze`) rispetto all'ecosistema reale attuale.
+- `profile-build` rifiuta con «missing N required resource(s)»: un progetto curato con `profile-set-required-resources` ha eseguito il proprio `build.sh`, ma un percorso relativo dichiarato non esiste ancora sul disco dopo - una vera build incompleta, mai salvata da un file residuo altrove; l'immagine non viene promossa.
+- La scheda Stato dell'Ecosistema della GUI resta vuota: controlla la tua
+  rete - questo strumento ha bisogno di una vera connessione a
+  `github.com`/`raw.githubusercontent.com` per `status`/la scoperta,
+  come lo stesso `hydra-umc-updater`.
+- **Il numero di progetti continua a diminuire a ogni aggiornamento (ad es. 42 -> 9 -> 0), anche dopo aver riavviato l'app** - un vero bug prima non segnalato: risolvere il vero SHA del commit di ogni progetto consuma una chiamata a `api.github.com` PER PROGETTO, su un budget *non autenticato* di 60 richieste ALL'ORA condiviso con tutto ciò che fa questo strumento (e `hydra-umc-updater`) - con oltre 50 veri progetti dell'ecosistema, un solo aggiornamento può esaurirlo, ed è la finestra oraria di GitHub (non lo stato di questa app) che deve ripartire, cosa che un riavvio non fa. Corretto per segnalarlo onestamente invece di elencare in silenzio meno progetti: il banner ambra sotto l'elenco dei progetti indica esattamente quanti progetti sono stati risolti prima del limite e quando il limite di GitHub si azzera (vedere `ecosystem_plan.GitHubRateLimitedError`). Impostare la variabile d'ambiente `GITHUB_TOKEN` (un semplice token di accesso personale GitHub, nessun permesso necessario per i repository pubblici) prima di avviare questo strumento per portare il budget a 5000/ora - sia l'elenco dei repository sia la risoluzione dello SHA per progetto lo rispettano ora in modo coerente.

@@ -1,0 +1,52 @@
+Une véritable recherche de trajectoire sans collision, pas seulement un
+squelette qui compile : elle planifie une route à partir d'un fichier de
+scénario JSON et affiche le résultat.
+
+```bash
+# Windows
+build.bat
+run.bat scenarios/example.json
+
+# Linux / macOS
+./build.sh
+./run.sh scenarios/example.json
+```
+
+`build.sh`/`build.bat` ne changent jamais la version (seule `python tools/hydra_project_tool.py bump` la fait monter) puis exécutent
+`cargo build --release`. `run.sh`/`run.bat` exécutent directement le binaire
+résultant, en transmettant tout argument (le chemin du scénario).
+
+Un scénario est un fichier JSON avec `start`, `goal`, `obstacles` (une
+liste de sphères `{center, radius}`), un `workspace` (bornes
+`min`/`max`), et optionnellement `seed` (la recherche est entièrement
+déterministe par graine) et `config` (`max_iterations`, `step_size`,
+`goal_bias`, `goal_threshold`, `robot_radius`, `max_duration_ms` - tous
+optionnels, avec des valeurs par défaut raisonnables sinon ;
+`max_duration_ms` borne le temps de recherche par l'horloge réelle,
+indépendamment de `max_iterations`). Le résultat est affiché en JSON :
+`{"status": "ok", "path": [...]}` ou
+`{"status": "error", "reason": "..."}` (`start_inside_obstacle`,
+`goal_outside_workspace`, `no_path_found`, `time_limit_exceeded`, etc. -
+voir le `PlanError` de `src/rrt.rs` pour la liste complète et honnête, y
+compris le cas où aucune trajectoire n'existe du tout, pas seulement une
+que la recherche n'a pas trouvée à temps).
+
+Un `frame` optionnel (un nom court, 64 octets au maximum) indique le repère dans lequel le scénario est écrit. Ce n'est qu'une étiquette : elle est reprise dans le résultat et ne modifie jamais une coordonnée.
+
+Une seconde sous-commande réelle revérifie une trajectoire déjà calculée
+(un simple tableau JSON de points `{x, y, z}`) par rapport aux
+obstacles/à l'espace de travail actuels d'un scénario, sans relancer de
+recherche :
+
+```bash
+./run.sh validate scenarios/example.json path.json
+# {"status": "safe"}
+# ou : {"status": "unsafe", "issues": [{"SegmentIntersectsObstacle": {"from_index": 0, "to_index": 1}}]}
+```
+
+```bash
+cargo test   # geometrie + collision d'obstacles, le PRNG, le
+             # planificateur RRT (y compris sa vraie limite de temps par
+             # horloge) et la revérification de sécurité de validate.rs -
+             # {tests} tests au total
+```

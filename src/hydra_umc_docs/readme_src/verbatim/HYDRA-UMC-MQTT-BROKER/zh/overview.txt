@@ -1,0 +1,21 @@
+**HYDRA-UMC-MQTT-BROKER** 为 HYDRA-UMC 生态系统提供了一个轻量级的异步
+消息传递接口。它使外部 IoT 设备、仪表盘和家庭自动化系统（如 Home
+Assistant）能够订阅机器人遥测数据并发布指令。
+
+它实现了 MQTT 3.1.1 标准（通过 Aedes，已实测验证——见下方"架构"部分），以最小的开销提供高效的数据分发，非常适合移动
+应用程序或低带宽的远程监控。
+
+### 关键特性：
+* 🔌 **外部机器桥接:** `HYDRA-UMC-BRIDGE-CNC`/`-LASER`/`-OPENPNP`/`-PRINTER3D`/`-ROS2` 各自通过自己的 `hydra/bridges/<name>/...` 主题连接到本代理——参见 `docs/BRIDGE_TOPICS.md`。*(已实现)*
+* 📡 **发布/订阅遥测：** 关节角度、工具状态和系统健康状况的亚毫秒级分发。（计划中：机器人状态尚未经过代理；目前只有机床桥接器的 `hydra/bridges/<name>/...` 主题）
+* 🛠️ **发现支持：** mDNS 和 Home Assistant 自动发现，便于设置。*（计划中——尚未实现；`src/server.ts` 目前只是一个纯 TCP 监听器，没有任何发现服务）*
+* 🔐 **主题安全：** 真实、可验证的按客户端 ID 前缀划分的 ACL，用于读写特定的机器人主题——带通配符的 SUBSCRIBE 永远无法获得比其规则更宽的访问权限。*(已实现)*
+* 🪪 **客户端认证：** 可选的真实 MQTT CONNECT 用户名/密码认证（`MQTT_AUTH_JSON`）为 ACL 提供经过验证的会话身份——同时也会强制执行每个凭据自身要求的 `clientIdPrefix`,这样一个有效但权限较低的凭据就不能简单地选择另一个权限更高的客户端 ID 来继承其 ACL 权限。*(已实现；应与 ACL 配合使用)*
+* 📏 **载荷大小限制：** 对 PUBLISH 载荷大小的真实、可选的上限，可通过 `MAX_PAYLOAD_BYTES` 配置。*(已实现)*
+* ⚡ **WebSocket 支持：** 面向浏览器端客户端的 MQTT over WebSocket——同一个 broker 实例上真实存在、可选启用的第二个监听器，与现有的纯 TCP 监听器并存(`wsPort` 选项 / `MQTT_WS_PORT` 环境变量，默认端口 8083)。*（已实现）*
+* ⏳ **保留消息过期：** 面向保留(retained)消息的真实、可选 TTL(`retainedTtlMs` 选项 / `MQTT_RETAINED_TTL_MS` 环境变量)——超过该期限的保留状态会被主动清除，而不是永远发送给此后的每一个订阅者。*（已实现）*
+* 🛡️ **生产策略：** 生产环境启动（Dockerfile 设置的 `NODE_ENV=production`）在以下情况会拒绝运行：没有 `MQTT_AUTH_JSON` 和 `MQTT_ACL_JSON`、密码少于 16 个字符或为示例值、没有覆盖每个凭据前缀的 ACL 规则；`MQTT_ALLOW_ANONYMOUS=1` 表示有意运行开放的实验室代理。ACL 按凭据所证明的身份（其自身的 `clientIdPrefix`）而不是客户端自选的客户端 ID 来评估；除非 `MQTT_RETAINED_TTL_MS` 另有设置，保留消息 24 小时后过期；`MQTT_BIND_HOST` / `MQTT_METRICS_HOST` 选择监听器绑定的网卡。*（已实现）*
+* 🔐 **非回环地址必须使用 TLS：** 当明文 MQTT 监听器对本机以外开放（默认绑定所有接口）且未配置 TLS 时，生产环境启动会拒绝运行；可用 `MQTT_BIND_HOST` 绑定到 `127.0.0.1`、配置 TLS，或用 `MQTT_ALLOW_PLAINTEXT=1` 有意接受受信任的网络。每次启动都会对不在回环地址上的明文监听器发出警告。*(已实现)*
+* 📊 **Prometheus 指标：** 真实、可选的 `GET /metrics` 监听器(`metricsPort` 选项 / `MQTT_METRICS_PORT` 环境变量，默认端口 9883)，以标准 Prometheus 文本格式报告已连接客户端数、收到的消息总数，以及总的进/出字节数。*（已实现）*
+* 🔒 **TLS：** 真实、可选的 TLS 上的 MQTT（`MQTT_TLS_CERT` / `MQTT_TLS_KEY`，端口 8883，另可通过 `MQTT_WSS_PORT` 提供安全 WebSocket）以及可选的双向 TLS（`MQTT_TLS_CA` 配合 `MQTT_TLS_REQUIRE_CLIENT_CERT=1`）。*（已实现）*
+* 🧰 **哈希密码、证书身份与慢速客户端限制（均为可选）：** `MQTT_AUTH_JSON` 中的密码可以存为 `scrypt$...`（用 `npm run hash-password` 生成；明文密码仍然可用，哈希在事件循环之外计算）；`MQTT_TLS_CERT_IDENTITY=1`（配合双向 TLS）用已验证客户端证书的 CN 识别客户端（该 CN 必须是其客户端 ID 的前缀），并在无需密码的情况下应用该名称的 ACL；`MQTT_CONNECT_TIMEOUT_MS`、`MQTT_KEEPALIVE_LIMIT_SECONDS` 和 `MQTT_QUEUE_LIMIT` 限制连接在被关闭前可以占用多长时间、多贪婪。全部默认关闭。 *(已实现)*

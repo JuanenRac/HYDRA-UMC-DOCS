@@ -1,0 +1,25 @@
+Requer o [SDK do Flutter](https://docs.flutter.dev/get-started/install) (canal stable). Este repositório é compilado/verificado com o Flutter 3.47.0. Só `linux/` e `windows/` estão configurados como plataformas neste repositório (sem pastas `android/`, `ios/`, `web/` nem `macos/`) - o Linux é o alvo real (o próprio sistema operativo do CM5); o Windows existe apenas para que a lógica desta aplicação possa ser compilada, executada e testada numa máquina sem cadeia de ferramentas Linux.
+
+### Scripts de compilação
+
+```bash
+./build.sh          # Git Bash / WSL, ou build.bat para cmd/PowerShell - flutter pub get + flutter build windows (verificação na máquina de desenvolvimento)
+./build_linux.sh    # Tem de correr NUM Linux real (ou no próprio CM5) - flutter pub get + flutter build linux (o alvo de implementação real)
+./run_dev.sh         # Git Bash / WSL, ou run_dev.bat para cmd/PowerShell - modo de simulação de desktop (flutter run), sem hardware
+```
+
+Os 3 scripts de compilação (`build.sh`/`build.bat`/`build_linux.sh`) não alteram a versão da aplicação - veja [Versionamento](#-versionamento) abaixo. `run_dev.sh`/`run_dev.bat` não o fazem - um `flutter run` do ciclo de desenvolvimento não é uma "compilação real" segundo essa política.
+
+### Compilação manual
+
+```bash
+flutter pub get
+flutter analyze                  # análise estática - sem necessidade de compilador
+flutter test                     # testes de widgets
+dart run tool/bump_version.dart  # sobe a versão, tal como o build.sh/build.bat/build_linux.sh fazem
+flutter build windows            # teste rápido na máquina de desenvolvimento - produz build/windows/x64/runner/Release/hydra_umc_dsi.exe
+flutter build linux              # o alvo REAL - tem de correr num Linux real, produz build/linux/*/release/bundle/
+flutter run -d windows           # ou -d linux num Linux real, para um ciclo de desenvolvimento com simulação de desktop em direto
+```
+
+**Nota de honestidade sobre a verificação em Linux:** o `flutter build linux --release` foi já realmente executado contra este código, a partir de um ambiente Ubuntu 24.04 WSL2 real com uma cadeia de ferramentas de desktop Linux real (`cmake`, `ninja-build`, `libgtk-3-dev`, `clang`) - compila limpo e produz um `build/linux/x64/release/bundle/hydra_umc_dsi` genuíno, cujo arranque está confirmado (correu sob um ecrã X11 real e manteve-se vivo, não apenas um código de saída a passar), e não apenas o `flutter build windows` como substituto do teste rápido. O que isto **não** cobre: o espaço de utilizador do WSL2 é x86_64, não o Raspberry Pi OS aarch64 real do CM5, e o fluxo de arranque automático de `kiosk/hydra-umc-dsi.service` continua a nunca ter corrido em nenhuma caixa Linux real. Veja `docs/ARCHITECTURE.md`, secção 7, para a lista exata do que foi e não foi verificado, e "Seguimentos conhecidos" abaixo para o que falta.

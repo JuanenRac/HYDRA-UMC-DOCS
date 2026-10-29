@@ -1,0 +1,53 @@
+裸调用仍然是一个最小骨架（打印身份信息，退出码 0）；真实的任务状态机
+今天已经可以通过 `mission-demo` 体验。
+
+```bash
+# Windows
+build.bat
+run.bat
+run.bat mission-demo
+
+# Linux / macOS
+./build.sh
+./run.sh
+./run.sh mission-demo
+```
+
+`build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升），然后执行 `cargo build --release`。
+`run.sh`/`run.bat` 直接执行生成的二进制文件。
+
+`mission-demo` 会针对 `mission.rs` 的 `MissionRegistry` 完整运行一个真实
+场景，并打印每一次真实的状态转换：
+
+```text
+[orchestrator] mission-1: dispatched -> InProgress(node=node-a)
+[orchestrator] mission-2: dispatched -> Dispatched(node=node-a)
+[orchestrator] mission-3: dispatched -> InProgress(node=node-b)
+[orchestrator] node-a reported UNREACHABLE by NODE-HEALING - recovering its missions
+[orchestrator] mission-1: requeued -> Pending
+[orchestrator] mission-2: requeued -> Pending
+[orchestrator] mission-3: unaffected (different node) -> InProgress(node=node-b)
+[orchestrator] mission-2: cancel() -> Cancelled -> Cancelled
+[orchestrator] mission-2: cancel() again (idempotent) -> AlreadyCancelled -> Cancelled
+[orchestrator] mission-3: complete() -> Completed(node=node-b)
+[orchestrator] mission-4: fail() -> Failed(no healthy node accepted redispatch after 3 attempts)
+[orchestrator] final registry state:
+  mission-1: Pending (terminal=false)
+  mission-2: Cancelled (terminal=true)
+  mission-3: Completed(node=node-b) (terminal=true)
+  mission-4: Failed(no healthy node accepted redispatch after 3 attempts) (terminal=true)
+```
+
+```bash
+cargo test   # {tests} 个测试：mission.rs 的每一次状态转换、每一次非法转换的
+             # 拒绝、幂等取消、节点故障后的恢复，加上 outbox.rs 的
+             # 抗崩溃持久化、job_dispatcher.rs 的真实 HTTP 客户端，
+             # 以及 server.rs 的 HTTP 处理器
+```
+
+作为生态系统的集成父项目，本仓库还提供了一个真实的 `docker-compose.yml`，
+可将本项目与其 3 个子项目（SWARM-SYNC、JOB-DISPATCHER、NODE-HEALING，作为同级文件夹检出；PATH-PLANNER-3D 是命令行工具，位于 `tools` 配置文件之后）一同构建和运行：
+
+```bash
+docker compose up --build
+```

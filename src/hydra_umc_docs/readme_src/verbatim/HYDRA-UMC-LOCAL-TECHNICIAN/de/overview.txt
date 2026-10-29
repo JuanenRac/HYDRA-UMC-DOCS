@@ -1,0 +1,128 @@
+HYDRA-UMC-LOCAL-TECHNICIAN ist eine spezialisierte lokale KI für das
+HYDRA-UMC-Ökosystem selbst: Sie beobachtet, erklärt, diagnostiziert und
+schlägt Wartung für die eigenen Dienste und Knoten des Ökosystems vor -
+sie trainiert niemals ein neues Foundation-Modell und handelt niemals
+durch das Generieren von Text. Ihre Zielplattform ist die CM5, mit dem
+Hailo-10H-Beschleuniger sobald installiert, aber Phase 0 braucht keines
+von beidem: Alles in dieser Lieferung ist reines Python, das reine Daten
+validiert.
+
+**Nicht verhandelbares Prinzip:** Die KI erhält niemals Autorität durch
+das Generieren einer Antwort. Richtlinie, Berechtigungen und menschliche
+Bestätigung entscheiden über jede reale Aktion - niemals die eigenen
+Worte des Modells.
+
+Diese Lieferung bringt acht reale, unabhängig nützliche Bausteine:
+
+1. **Risikostufen-Richtlinie** (`policy/risk_levels.py`) - sechs
+   geordnete Stufen, von `INFORM` bis `PHYSICAL_ACTION`, jede mit einer
+   realen, getesteten Richtlinie (kann sie ein Werkzeug lesen, kann sie
+   mutieren, erfordert sie Bestätigung, ist sie implementiert). Die
+   beiden obersten Stufen sind nur der Vertragsvollständigkeit halber
+   deklariert - in diesem Code tatsächlich nirgendwo implementiert.
+2. **Werkzeug-Matrix** (`policy/tool_matrix.py`) - eine feste
+   Positivliste von zehn realen `OBSERVE`-Stufen-Werkzeugnamen. Ein
+   Werkzeugname, der in diesem Dictionary fehlt, kann niemals aufgerufen
+   werden, Punkt - alle 10 sind bereits mit einem echten Handler
+   verbunden (siehe Punkte 5 und 6 unten).
+3. **Reale Verträge** (`contracts/*.schema.json` + `contracts.py`) -
+   `ToolRequest`, `ToolResult`, `MaintenanceProposal`, `EvidenceBundle`
+   und `PatchVerificationReport`, jeweils mit einer normativen
+   JSON-Schema-Datei und einem passenden, Feld für Feld daraus
+   kopierten, nur auf der Standard-
+   bibliothek basierenden Python-Validator.
+4. **Injection-Abwehrgrenze** (`knowledge/trust.py` +
+   `knowledge/redaction.py`) - nicht vertrauenswürdiger Inhalt (ein
+   README, eine Log-Zeile, eine Commit-Nachricht) wird immer als
+   `UntrustedText` eingehüllt, ein Typ ohne jede Methode, die jemals
+   einen Werkzeugaufruf erzeugen könnte. Der einzige reale Weg, eine
+   `ToolRequest` zu konstruieren, nimmt bereits typisierte, bereits
+   getrennte Felder entgegen und verweigert jeden nicht registrierten
+   oder nicht implementierten Werkzeugnamen, bevor das Objekt überhaupt
+   existiert.
+5. **Werkzeug-Orchestrator** (`orchestrator/dispatch.py` +
+   `orchestrator/allowlist.py`, Phase 3) - `dispatch_tool_request()`
+   führt einen bereits validierten `ToolRequest` real aus und liefert
+   ein reales `ToolResult`: `service.status` (echtes
+   `systemctl is-active`), `storage.usage` (`shutil.disk_usage`),
+   `network.port_status` (eine echte Socket-Sonde),
+   `network.connectivity` (ein echter HTTP-GET, der den eigenen realen
+   Statuscode des Endpunkts meldet - eine tatsächlich andere Prüfung als
+   `network.port_status`, dieselbe reale Unterscheidung, die das eigene
+   `inventory.py` von HYDRA-UMC-OPS-AGENT bereits zwischen einer reinen
+   TCP-Verbindung und einem echten Health-GET zieht), `system.temperature`
+   (der reale Linux-Thermalzonen-sysfs-Pfad), `manifest.read` (ein
+   echtes Lesen von `hydra-umc.project.json`), `logs.read` (ein
+   begrenztes, geschwärztes Ende einer auf der Positivliste stehenden
+   Log-Datei), `process.list` (ein echter, auf der Positivliste
+   stehender Teilstring-Abgleich gegen `/proc/<pid>/cmdline`), und
+   `update.pending` (nutzt die eigene reale GitHub-Erkennung und den
+   Versionsvergleich von HYDRA-UMC-UPDATER wieder, optionale
+   Abhängigkeit). Keines davon akzeptiert direkt einen rohen
+   Pfad/Host/Port/URL/Einheitennamen/Muster - nur einen kurzen
+   symbolischen Namen, aufgelöst über ein festes `OrchestratorConfig`,
+   sodass der eigene Text eines vergifteten Dokuments niemals ein
+   beliebiges reales Ziel benennen kann, sondern nur einen bereits auf
+   der Positivliste stehenden Namen.
+   Was ein Handler zurückgibt, wird an der Grenze begrenzt und geschwärzt: die Befehlszeile eines Prozesses, ein Wissensauszug und die Logzeilen eines Evidenzpakets durchlaufen dieselbe Geheimnis-Schwärzung wie `logs.read`, `manifest.read` liefert nur vier kurze Zeichenketten, und `network.connectivity` meldet eine Weiterleitung, statt ihr zu folgen.
+6. **Abrufbarer Wissensindex** (`knowledge/index.py`, Phase 1) - eine
+   reale, lokale TF-IDF-Suchmaschine (tokenize/build_index/search),
+   unverändert portiert aus dem bereits getesteten `index.py` von
+   HYDRA-UMC-DOCS-QA, plus eine neue begrenzte Aufnahme für
+   Markdown-Quellen (nach Überschrift segmentierte Abschnitte) und
+   JSON-Quellen (eine ganze Datei pro Abschnitt - ein Manifest oder ein
+   Vertragsschema wird niemals sinnvoll mitten im Objekt geteilt).
+   Verbunden als zehntes Werkzeug, `knowledge.search`, über das neue
+   `resolve_knowledge_source()` von `orchestrator/allowlist.py`: ein
+   Aufrufer kann nur eine bereits auf der Positivliste stehende
+   symbolische Quelle benennen, niemals einen rohen Pfad, und jeder
+   real zurückgegebene Treffer bleibt als `UntrustedText` eingehüllt,
+   bevor er den Handler verlässt. Der Durchlauf selbst ist begrenzt
+   (Dateianzahl, Dateigröße), selbst für eine legitim auf der
+   Positivliste stehende Wurzel - niemals blind, niemals die gesamte
+   Festplatte.
+7. **Eskalation: Nachweise und Vorschläge** (`escalation/`, Phase 4) -
+   `evidence.assemble_evidence_bundle()` wandelt einen realen Stapel
+   bereits ausgeführter, bereits validierter `ToolResult`s in ein reales
+   `EvidenceBundle` um - nach demselben Muster wie das eigene
+   `incident.py` von HYDRA-UMC-OPS-AGENT: reine Ableitung aus bereits
+   beobachteten Daten, niemals ein KI-Aufruf. `proposal.propose_maintenance()`
+   ist ein realer Konstruktor/Validator für `MaintenanceProposal` -
+   bewusst KEIN Generator, da noch keine Inferenz-Engine existiert und
+   das nicht verhandelbare Prinzip dieses Projekts das Erfinden einer
+   Diagnose ausschließt. Heute liefert nur ein menschlicher Bediener
+   `diagnosis`/`steps`/`rollback`; die eine reale Absicherung, die dieses
+   Modul zusätzlich hinzufügt, ist, dass jeder Eintrag in
+   `citedEvidence` wortwörtlich dem `evidence`-Feld eines real bereits
+   beobachteten Werkzeugergebnisses entsprechen muss, sonst wird der
+   Vorschlag von vornherein abgelehnt. `confirmationRequired` ist
+   niemals vom Aufrufer einstellbar - es ist immer genau das, was die
+   Richtlinie in `policy/risk_levels.py` für die deklarierte Risikostufe
+   des Vorschlags bereits festlegt. Nichts in diesem Code kann bisher
+   auf ein `MaintenanceProposal` einwirken.
+8. **CLI-Oberfläche** (`cli.py`, Phase 5's eigene erste reale Scheibe) -
+   `tools list`/`tools call` und `escalation evidence`/`escalation
+   propose` geben jedem Baustein oben zum ersten Mal eine echte
+   Befehlszeile (bisher war jeder von ihnen nur aus einem Test heraus
+   erreichbar). Fügt keine eigene Autorität hinzu: `tools call` baut
+   einen `ToolRequest` über dasselbe `build_tool_request_from_model_output()`,
+   das jeder Test bereits aufruft, und führt ihn über dasselbe
+   `dispatch_tool_request()` aus - erreicht weiterhin nur ein
+   OBSERVE-Stufen-Werkzeug, da nichts oberhalb von OBSERVE irgendwo in
+   diesem Code implementiert ist. `--config` lädt ein reales
+   `OrchestratorConfig` aus einer JSON-Datei (oder greift auf
+   `default_config()` zurück); es gibt weiterhin keine Möglichkeit,
+   einen rohen Pfad/Host/Port direkt auf der Befehlszeile zu nennen.
+
+```
+$ hydra-umc-local-technician contracts validate tests/fixtures/tool_request.valid.json --contract ToolRequest
+VALID: tests/fixtures/tool_request.valid.json (ToolRequest)
+
+$ hydra-umc-local-technician contracts validate tests/fixtures/tool_request.invalid.json --contract ToolRequest
+INVALID: tests/fixtures/tool_request.invalid.json (ToolRequest): ...
+```
+
+In dieser Lieferung gibt es weder einen Standard-/argumentlosen Aufruf
+noch eine grafische Oberfläche - siehe
+[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) für die vollständige,
+reale Befehlsoberfläche.

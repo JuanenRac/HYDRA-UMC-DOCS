@@ -1,0 +1,1 @@
+🛠️ Interface XML/HTTP padronizada para a monitorização de máquinas-ferramenta

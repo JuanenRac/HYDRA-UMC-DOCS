@@ -1,0 +1,59 @@
+Questa versione porta da DS01 a DS10: il piano di dieci consegne è
+completo. Ogni consegna, in ordine:
+
+- **DS02 - Stazione remota riproducibile.** ✅ Consegnato: un profilo di
+  stazione remota validato, un controllo preliminare dell'host in sola
+  lettura, e un piano di provisioning a secco (sottocomandi `station`).
+  Nessun host viene cambiato e nessun passo viene eseguito.
+- **DS03 - Migrazione conservativa.** ✅ Consegnato: calcola l'hash e
+  classifica ogni file di un checkout sorgente e pianifica ogni classe
+  (pulito / modificato / non tracciato / privato) verso la sua propria
+  destinazione separata, con un bundle per i commit non inviati
+  (sottocomandi `migrate`). Non copia nulla e non tocca mai il sorgente.
+  Eseguire un piano approvato e' una consegna successiva.
+- **DS04 - Workspace ed esecutore limitato.** ✅ Consegnato: workspace
+  isolato per task (due task non collidono mai; percorsi `..`, assoluti
+  e symlink fuori dal workspace rifiutati), solo un comando di lista
+  consentita, un ambiente ripulito, e un timeout che uccide l'intero
+  gruppo di processi (sottocomandi `task`). Esegue un sottoprocesso ma
+  non distribuisce nulla.
+- **DS05 - Coda durevole e risultati tracciabili.** ✅ Consegnato: una
+  coda SQLite con lease e un diario di esecuzione append-only che
+  sopravvivono a un riavvio; un enqueue duplicato non è mai un secondo
+  job, un'interruzione mai un falso successo, una base cambiata blocca
+  la promozione (sottocomandi `queue`).
+- **DS06 - Provider IA intercambiabile.** ✅ Consegnato (metà fake): un
+  provider fittizio deterministico dietro un contratto di sicurezza -
+  timeout / malformato / quota diventano esiti delimitati, un budget
+  ferma il passo, il suggerimento è dato inerte che non concede nulla e
+  non distribuisce nulla (`provider suggest`). Il provider reale è una
+  decisione dell'utente.
+- **DS07 - Incidenti coordinati con HYDRA-UMC-OPS-AGENT.** ✅
+  Consegnato: un trasporto di incidenti autenticato con HMAC con
+  controlli replay / impersonificazione / sovraccarico / versione e un
+  giro completo invio → diagnosi → verifica post-deploy che si
+  riconcilia dopo una caduta di rete (`incident verify`).
+- **DS08 - Primo ciclo di riparazione completamente controllato.** ✅
+  Consegnato: una macchina a stati a cancelli
+  repro->incidente->patch->regressione->build-test->approvazione->installazione
+  isolata->verifica che blocca un candidato manomesso o mal indirizzato
+  e fa rollback se la verifica post-installazione fallisce
+  (`repair check-candidate`).
+- **DS09 - Operazione/ripristino stabile.** ✅ Consegnato: controlli
+  di salute operativa sulla coda e sul disco, e un backup/restore di
+  stato verificato che rifiuta un backup di un'altra istanza o uno
+  corrotto (sottocomandi `ops`).
+- **DS10 - Pacchetto di consegna e valutazione onesta della maturità.**
+  ✅ Consegnato: `deliver manifest` registra un sha256 per ogni file
+  consegnato e rilegge la superficie CLI reale, la versione e il numero
+  di test; `deliver evaluate` riporta ognuna delle dieci consegne contro
+  evidenze reali (DS06 è `partial` - viene consegnato solo il fake),
+  elenca sette limiti con chiarezza, e riporta un `overall_maturity`
+  fissato a `functional` nel codice.
+
+**Maturità.** Il piano è completo; la maturità è `functional`: il software è costruito e coperto da test, ma non è stato verificato su hardware o servizi reali, che è un passo separato e successivo. Questo repository contiene un'implementazione funzionante e testata di contratti e limiti. Nulla qui prepara un host, esegue un deploy, unisce i pezzi
+in un worker loop, o ha toccato hardware reale. `deliver evaluate` dice
+esattamente questo, e la sua lista `known_limitations` è la lista di cose
+da fare onesta. Vedi
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) per ciò che ogni consegna
+include ed esclude esplicitamente.

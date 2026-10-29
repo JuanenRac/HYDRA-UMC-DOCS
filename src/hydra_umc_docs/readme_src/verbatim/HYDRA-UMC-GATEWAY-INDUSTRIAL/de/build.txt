@@ -1,0 +1,52 @@
+### Voraussetzungen
+- [Node.js](https://nodejs.org/) (v20 oder höher empfohlen)
+- npm
+
+### Installation
+```bash
+npm install
+```
+
+### Entwicklungsmodus
+Startet den Aggregationsserver direkt mit `tsx` (ohne Bundler):
+- **Windows:** Doppelklick auf `dev.bat` oder `npm run dev` ausführen
+- **Linux/Mac:** `./dev.sh` oder `npm run dev` ausführen
+
+### Produktions-Build
+Bündelt den Server mit esbuild in eine einzige einsetzbare Datei:
+- **Windows:** Doppelklick auf `build.bat` oder `npm run build` ausführen
+- **Linux/Mac:** `./build.sh` oder `npm run build` ausführen
+
+Dann starten mit:
+```bash
+npm start
+```
+
+Der Server lauscht auf `0.0.0.0:8000` - `GET /health` ist eine schnelle
+Liveness-Prüfung ohne Sonden zu den Kindern (worauf der eigene
+`service.health_path` von `hydra-umc.project.json` zeigt), während
+`GET /status` die echte Tiefendiagnose ist und die eigene Version des
+Gateways sowie Name/Protokoll/Endpoint/Erreichbarkeit jeder Kinder-Brücke
+meldet, für die es steht.
+
+Echtes Beispiel - ein erlaubter Befehl gegen ein nicht laufendes Kind,
+eine nicht autorisierte Operation und eine fehlerhafte Anfrage:
+
+```bash
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" \
+  -d '{"protocol":"OPC-UA","operation":"read","target":"ns=2;s=Line1.Status"}'
+# 502 {"status":"downstream_unreachable","reason":"TCP connect to opcua-server:4840 timed out after 2000ms"}
+
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" \
+  -d '{"protocol":"OPC-UA","operation":"write","target":"ns=2;s=Line1.SetPoint"}'
+# 403 {"status":"rejected_unauthorized","reason":"operation \"write\" is not allowlisted for OPC-UA"}
+
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" -d '{"protocol":"OPC-UA"}'
+# 400 {"error":"protocol, operation and target are required strings"}
+```
+
+### Versionierung
+`npm run build` bündelt nur den Server und ändert die Version nie; `python tools/hydra_project_tool.py bump` erhöht sie
+mit Übertrag auf minor (und von minor auf major) über 9 hinaus, anstatt
+je ein zweistelliges Segment zu erreichen (`0.0.9` -> `0.1.0`, nicht
+`0.0.10`).

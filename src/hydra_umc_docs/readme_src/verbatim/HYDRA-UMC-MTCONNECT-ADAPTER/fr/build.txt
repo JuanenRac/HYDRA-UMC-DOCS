@@ -1,0 +1,34 @@
+### Prérequis
+- [Node.js](https://nodejs.org/) (v20 ou supérieur recommandé)
+- npm
+
+### Installation
+```bash
+npm install
+```
+
+### Mode Développement
+Exécute l'adaptateur directement avec `tsx` (sans bundler) :
+- **Windows :** double-cliquer sur `dev.bat` ou exécuter `npm run dev`
+- **Linux/Mac :** exécuter `./dev.sh` ou `npm run dev`
+
+### Build de Production
+Regroupe l'adaptateur en un seul fichier déployable avec esbuild :
+- **Windows :** double-cliquer sur `build.bat` ou exécuter `npm run build`
+- **Linux/Mac :** exécuter `./build.sh` ou `npm run build`
+
+Puis démarrez-le avec :
+```bash
+npm start
+```
+
+L'adaptateur écoute sur `0.0.0.0:5000` - tout Agent/collecteur MTConnect
+peut interroger `GET http://<host>:5000/probe` (modèle statique de
+l'appareil), `GET http://<host>:5000/current` (dernières valeurs de
+DataItem) et `GET http://<host>:5000/sample?from=<sequence>` (sémantique
+réelle et honnête de tampon de streaming - voir `docs/API.md`).
+
+Pour rapporter un vrai robot, définissez `HYDRA_UMC_SERVER_URL`. HYDRA-UMC-SERVER ne répond à `GET /api/settings` qu'à un compte connecté ; donnez donc aussi un identifiant à l'adaptateur : `HYDRA_UMC_SERVER_TOKEN` (un jeton que le serveur a déjà émis), ou `HYDRA_UMC_SERVER_USER` et `HYDRA_UMC_SERVER_PASSWORD` (l'adaptateur se connecte lui-même et se reconnecte quand la session expire). Sans aucun des deux, la source est signalée comme indisponible (`SOURCE_UNAVAILABLE`). `HYDRA_UMC_MTCONNECT_HOST` restreint l'adresse d'écoute (`0.0.0.0` par défaut), par exemple à `127.0.0.1` derrière un proxy inverse local. Les réponses du serveur sont lues jusqu'à 4 Mio.
+
+### Gestion des versions
+`npm run build` ne fait que regrouper le serveur. La version n'est augmentée que par `python tools/hydra_project_tool.py bump` (via `bump_manifest_version.py`), un « compteur kilométrique » en base 10 : patch +1 par bump, avec report sur minor (et de minor sur major) après 9 au lieu d'atteindre un segment à deux chiffres (`0.0.9` -> `0.1.0`, pas `0.0.10`).

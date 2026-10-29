@@ -1,0 +1,21 @@
+**HYDRA-UMC-GATEWAY-INDUSTRIAL** 是 HYDRA-UMC 生态系统与外部工业标准
+之间的通信桥梁。它使微工厂能够与第三方 PLC、SCADA 系统和基于云的
+IIoT 平台进行交互。
+
+目前它是 OPC-UA 服务器、MQTT 代理和 MTConnect 适配器前面唯一的状态界面：
+检查它们各自是否在运行并作出响应，并接受一组允许列表内的命令，这些命令
+唯一的作用是检查目标是否可达。把内部机器人状态翻译到它们的地址空间是
+计划中的工作，以便 Hydra 集群在生产车间中永远不会成为一座孤岛。
+
+### 关键特性：
+* 🌐 **多标准支持：** 集成的 OPC-UA、MQTT 和 MTConnect 接口。
+* 🛡️ **工业级安全：** 该网关自身 HTTP API 上真实的 TLS 1.2+,通过真实证书文件(`TLS_CERT_PATH`/`TLS_KEY_PATH`)按需启用;再设置 `TLS_CLIENT_CA_PATH` 即成为真正的双向 TLS——任何未出示该 CA 签发证书的调用方,其 TLS 握手本身就会被拒绝——详见 [`docs/API.md`](docs/API.md#security-tls--mutual-tls)。
+* 🔬 **更深入的检查与可选控制：** `GATEWAY_PROBE_MODE=protocol` 让 `GET /status` 用各自的协议对话，而不只是打开 TCP 连接（OPC UA 的 Hello 必须得到确认，MQTT 的 CONNECT 必须得到应答，MTConnect 的 `/probe` 必须是设备文档）；`GATEWAY_STRICT_TARGETS=1` 检查目标是 NodeId 或代理路径；`GATEWAY_REQUIRE_TLS_FOR_AUTH=1` 拒绝来自其他机器的明文 HTTP 凭据；`GATEWAY_CERT_ALLOWED_CN` 让已验证的客户端证书无需令牌即可下达命令；`GATEWAY_METRICS=1` 提供 `GET /metrics`。每个响应都带有安全头，停止时会干净地关闭审计日志。除安全头外全部默认关闭。 *(已实现)*
+* 🔄 **状态映射：** 将 Hydra 内部的 JSON 状态实时转换为标准化的工业地址空间。 *（计划中：目前网关只汇总三个服务的可达性，不转换任何数据）*
+* ⚡ **高可靠性：** 专为 24/7 工业级正常运行时间优化的轻量级专用桥接。
+* 🚦 **真实 v0 —— 命令白名单 + 背压：** `POST /command` 受到按协议默认拒绝的白名单、有上限的并发限制以及真实超时的保护——具体今天实际强制执行的内容见下方「诚实说明」。
+* 🔐 **按命令的调用方身份认证：** `POST /command` 还支持可选的 `GATEWAY_JWT_SECRET`——一旦设置,每个请求都必须携带有效的 `Authorization: Bearer <token>`(HS256,算法显式固定),否则会在到达白名单之前就被拒绝。与 mTLS 相互独立:这里识别的是"谁发出了命令",mTLS(如果配置)识别的是 TLS 对端。
+* 🎫 **按协议和操作划分的 scope：** 令牌必须在 `scope` 中写明它可以做什么（`mqtt:publish`、`opc-ua:read`、`mtconnect:read`、`<协议>:*` 或 `*`）；有效但没有该命令 scope 的令牌会被以 403 拒绝。`GATEWAY_REQUIRE_SCOPES=0` 接受任何有效令牌，`GATEWAY_CERT_SCOPES` 为列表中的客户端证书授予 scope。compose 文件只通过 TLS 发布 MQTT broker（`MQTT_TLS_DIR`）。*(已实现)*
+* 🧱 **生产策略与诚实的结果：** 网关在任何环境下（compose 设置 `NODE_ENV=production`），没有真实的 `GATEWAY_JWT_SECRET`（32 个字符以上，且不是示例值）时都会拒绝启动（`GATEWAY_ALLOW_ANONYMOUS=1` 表示有意运行开放的实验室网关）。默认执行器只探测子服务，因此以结果 `probe_only`（未执行任何操作）返回 `501`，而不是 `accepted`；MQTT `publish` 只能发往网关自己的命名空间（`hydra/gateway/#`，或 `GATEWAY_MQTT_PUBLISH_TOPICS`），绝不能发往桥接器的命令主题（`hydra/bridges/...`）或 `$SYS`；`GATEWAY_BIND_HOST` 选择绑定的网卡。令牌必须带有 `exp` 和 `sub`（若设置了 `GATEWAY_JWT_AUDIENCE` 还需 `aud`）；除非 `GATEWAY_BIND_HOST` 另有指定，网关只监听 127.0.0.1。*（已实现）*
+
+**诚实说明——今天实际运行的内容：** `POST /command { protocol, operation, target }` 是真实的：该操作必须已明确列入其协议的白名单（否则返回 `403`——v0 只允许读取/发布类操作，不允许任何会写入正在运行的 PLC 的操作），同时运行的命令数量不超过一个上限（超出则返回 `429`），未在规定时间内完成的命令会被报告为超时（`504`）而不是被无限期挂起。默认的执行路径复用了本项目自身真实的可达性探测——诚实地说明它还没有执行真正的 OPC-UA/MQTT/MTConnect 协议层写操作，因为这三个子服务目前也都还没有暴露真正的命令 API。具体已交付内容请参见 `CHANGELOG.md`。

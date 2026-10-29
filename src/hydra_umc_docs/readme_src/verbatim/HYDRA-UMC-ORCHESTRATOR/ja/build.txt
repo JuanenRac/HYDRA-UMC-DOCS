@@ -1,0 +1,57 @@
+素の呼び出しは引き続き最小限のスケルトンのままです(識別情報を表示し、
+終了コード 0 で終了)。実際のミッション状態機械は、今日 `mission-demo`
+経由ですでに試すことができます。
+
+```bash
+# Windows
+build.bat
+run.bat
+run.bat mission-demo
+
+# Linux / macOS
+./build.sh
+./run.sh
+./run.sh mission-demo
+```
+
+`build.sh`/`build.bat` はバージョンを変更せず（上げるのは `python tools/hydra_project_tool.py bump` だけです）、
+その後 `cargo build --release` を実行します。`run.sh`/`run.bat` は
+生成されたバイナリを直接実行します。
+
+`mission-demo` は `mission.rs` の `MissionRegistry` に対して実際の
+シナリオをエンドツーエンドで実行し、実際の状態遷移をすべて表示します：
+
+```text
+[orchestrator] mission-1: dispatched -> InProgress(node=node-a)
+[orchestrator] mission-2: dispatched -> Dispatched(node=node-a)
+[orchestrator] mission-3: dispatched -> InProgress(node=node-b)
+[orchestrator] node-a reported UNREACHABLE by NODE-HEALING - recovering its missions
+[orchestrator] mission-1: requeued -> Pending
+[orchestrator] mission-2: requeued -> Pending
+[orchestrator] mission-3: unaffected (different node) -> InProgress(node=node-b)
+[orchestrator] mission-2: cancel() -> Cancelled -> Cancelled
+[orchestrator] mission-2: cancel() again (idempotent) -> AlreadyCancelled -> Cancelled
+[orchestrator] mission-3: complete() -> Completed(node=node-b)
+[orchestrator] mission-4: fail() -> Failed(no healthy node accepted redispatch after 3 attempts)
+[orchestrator] final registry state:
+  mission-1: Pending (terminal=false)
+  mission-2: Cancelled (terminal=true)
+  mission-3: Completed(node=node-b) (terminal=true)
+  mission-4: Failed(no healthy node accepted redispatch after 3 attempts) (terminal=true)
+```
+
+```bash
+cargo test   # {tests} 件のテスト：mission.rs の全状態遷移・不正な遷移の拒否・
+             # 冪等なキャンセル・ノード障害後のリカバリーに加え、
+             # outbox.rs のクラッシュに強い永続化、job_dispatcher.rs の
+             # 実際のHTTPクライアント、server.rs のHTTPハンドラー
+```
+
+エコシステムの統合親プロジェクトとして、本リポジトリは実際の
+`docker-compose.yml` も提供しており、これにより本プロジェクトをその
+3 つの子プロジェクト（SWARM-SYNC、JOB-DISPATCHER、NODE-HEALING、兄弟フォルダとしてチェックアウト。PATH-PLANNER-3D はコマンドラインツールで、`tools` プロファイルの後ろにあります）とともにビルド・実行
+できます：
+
+```bash
+docker compose up --build
+```

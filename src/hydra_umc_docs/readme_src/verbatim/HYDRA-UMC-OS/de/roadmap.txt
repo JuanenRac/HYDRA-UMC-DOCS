@@ -1,0 +1,53 @@
+### Status
+
+Der Basisagent, seine validierte, nicht geheime Konfiguration, eine gehärtete systemd-Unit
+und Host-seitige Tests sind implementiert. Der Agent ist bewusst
+schreibgeschützt: Produktions-Image-Assemblierung und CM5-Hardwarevalidierung bleiben bestehen
+separate Freigabetore.
+
+Die Installations-Preflight-Prüfung (`provisioning/preflight_cm5.py`)
+erweist sich durch einen echten Test als idempotent und frei von
+Nebenwirkungen - zwei aufeinanderfolgende Durchläufe erzeugen eine
+byteidentische Ausgabe und greifen auf keine Datei innerhalb dieses
+Repositorys zu - und ein echter, hostunabhängiger
+Backup-/Rollback-Mechanismus (`provisioning/rollback.py`) schützt die eine
+Systemdatei, die `install_local_agent.sh` bei jedem Lauf bedingungslos
+überschreibt. Beide werden ohne Root-Rechte oder eine CM5 verifiziert -
+siehe `tools/verify_preflight_idempotent.py` und
+`tools/verify_rollback.py`.
+
+**Die WiFi-Erstkontakt-Bereitstellung ist ebenfalls real**
+(`provisioning/wifi_provision.py` / `hydra-umc-wifi-provision.service`):
+ein echter NetworkManager-AP-Modus-Fallback für eine kopflose CM5 ohne
+bekanntes Netzwerk - baut einen echten Hotspot auf (`nmcli device wifi
+hotspot`), dem sich das Telefon/Laptop eines Bedieners anschließen kann,
+um die echte Ziel-SSID/das Passwort über ein kleines lokales
+HTTP-Formular zu übermitteln, baut den AP bei Erfolg ab und verbindet
+sich mit dem echten Netzwerk, stellt ihn bei einem Fehler wieder her,
+damit das Gerät nie ausgesperrt bleibt. Die Zustandsmaschine ist
+vollständig unit-getestet gegen einen simulierten NetworkManager,
+einschließlich eines echten End-zu-End-HTTP-Roundtrips über einen
+echten Loopback-Socket - siehe `tools/verify_wifi_provision.py`. Wird
+von `install_cm5_base.sh` installiert, aber bewusst nicht automatisch
+aktiviert, da es nur auf einem Gerät laufen soll, das es wirklich braucht: Das Passwort seines Zugangspunkts und ein einmaliger Einrichtungscode werden für jedes Gerät beim ersten Start erzeugt und einmal aus dem Journal gelesen - siehe `provisioning/CM5_DEPLOYMENT_SEQUENCE.md` Abschnitt 3.
+
+**Geheimnisse werden pro Gerät erzeugt, nie aus einer Vorlage übernommen.** `install_server.sh` und `install_voice_ui.sh` legen ihre Env-Dateien aus dem Beispiel an, wenn sie fehlen, und ersetzen jeden Beispielwert (`JWT_SECRET`, das Passwort des ersten Administrators, das Voice-Relay-Token) durch einen Zufallswert dieses Geräts (`provisioning/generate_secrets.py`; was der Betreiber schon gewählt hat, bleibt, und das Administratorpasswort wird einmal ausgegeben) und brechen dann ab, wenn ein Beispielwert oder ein zu kurzes Geheimnis übrig bleibt; `preflight_cm5.py` lehnt eine `/etc/hydra-umc/*.env` ab, die noch eines enthält. `install_industrial_gateway.sh` schreibt die Geheimnisse des Stacks nach `/etc/hydra-umc/gateway.env` (nur root, außerhalb des Checkouts des Benutzers, von compose mit `--env-file` gelesen; eine von einer früheren Version im Checkout hinterlassene `.env` wird dorthin verschoben) (`provisioning/gateway_env.py`: das Gateway-Geheimnis sowie je Maschinen-Bridge eine MQTT-Zugangsdaten und eine ACL-Regel). Das Einrichtungs-WLAN hat kein Passwort mehr im Quellcode: Jedes Gerät erzeugt beim ersten Start sein eigenes Passwort und einen einmaligen Einrichtungscode (einmal im Journal ablesen, für das Etikett), das Formular verlangt den Code (nach fünf falschen eine Minute gesperrt), das Einrichtungsnetz ist nach jedem Start nur 30 Minuten offen, und das Formular lehnt zu große Anfragen ab. Geprüft durch `tools/verify_generate_secrets.py`, `tools/verify_gateway_env.py` und `tools/verify_wifi_provision.py`. Auch der Hostname und der Name des Einrichtungsnetzwerks enden mit sechs Zeichen, die vom Gerät stammen (Seriennummer des Raspberry Pi, sonst MAC-Adresse), sodass zwei Geräte vom selben Image nicht mehr denselben Namen teilen (`provisioning/device_identity.py`, geprüft von `tools/verify_device_identity.py`); `HYDRA_UMC_DEVICE_SUFFIX=off` behält die festen Namen bei, und ein selbst gewählter Name wird nie verändert.
+
+**Signaturschlüssel, vom Installer verteilt.** Der Schlüssel, mit dem die Voice UI das Ergebnis einer Bestätigung signiert (`HYDRA_UMC_VOICE_UI_RESULT_KEY`), wird für das Gerät einmal von `install_server.sh` oder `install_voice_ui.sh` erzeugt, je nachdem, welcher zuerst läuft, und in `/etc/hydra-umc/server.env` und `/etc/hydra-umc/voice-ui.env` geschrieben (einer Datei aus einer älteren Vorlage wird die Zeile hinzugefügt), zusammen mit `HYDRA_UMC_VOICE_CONFIRM_REQUIRE_SIGNATURE=1` für den Server und `HYDRA_UMC_VOICE_UI_REQUIRE_SUBJECT=1` für die Voice UI (`generate_secrets.py --ensure`; eine Zeile, die der Betreiber schon hat, wird mit jedem Wert nie geändert). `install_local_technician.sh` erzeugt den Schlüssel, der das Ergebnis jedes Werkzeugs signiert, in `/etc/hydra-umc-local-technician/result.key` (`provisioning/make_result_key.py`: 64 zufällige Hexadezimalzeichen, Modus 0600 ab dem ersten Byte, nur root, nie ausgegeben, nach dem Anlegen nie ersetzt, nie über einen symbolischen Link verfolgt) und lässt die Einstellungsdatei darauf zeigen; `--no-signing` (oder `HYDRA_UMC_LOCAL_TECHNICIAN_SIGNING=off`) lässt die Zeile weg. Kein Schlüssel liegt je im Image oder im Repository, und zwei Geräte teilen nie einen. Geprüft durch `tools/verify_result_keys.py`.
+
+**Audit-Journale, standardmäßig an.** `install_local_technician.sh` schaltet das nur anhängende, per Hash verkettete Audit-Journal des Technikers ein und `install_node_healing.sh` das Journal des Wächters (beide rotieren bei 5 MiB und behalten 5 Dateien): was dem Techniker aufgetragen wurde und was der Wächter über einen Knoten entschieden hat, ist der Beleg, der nach einem Ausfall zählt, daher schreiben die Installer die Einstellung aktiv in eine dokumentierte Einstellungsdatei (`/etc/hydra-umc-local-technician/local-technician.env`, `/etc/hydra-umc-node-healing/journal.env`). `--no-audit` / `--no-journal` (oder `HYDRA_UMC_LOCAL_TECHNICIAN_AUDIT=off`, `HYDRA_UMC_NODE_HEALING_JOURNAL=off`) lässt ein Journal aus und kommentiert eine aktive Zeile aus, ohne je Aufgezeichnetes zu löschen; eine vorhandene Einstellungsdatei wird nie überschrieben. `tools/verify_optional_journals.py` prüft die Optionen und Namen statisch; mit ihnen wurde noch nichts auf einer echten CM5 installiert.
+
+**Ein festgelegtes Go für die Go-Dienste.** Der Job-Dispatcher, der Knoten-Wächter und der Telemetrie-Collector werden auf dem Gerät gebaut, und ihr `go.mod` verlangt ein neueres Go als das `golang-go` des Debian-Archivs, das sie nicht bauen konnte. Ihre Installer laden jetzt `provisioning/go_toolchain.sh`: ein Upstream-Release von go.dev, vor dem Entpacken nach `/usr/local/go-<Version>` gegen seine festgelegte SHA-256 geprüft (das System-Go bleibt unberührt). `tools/verify_go_toolchain.py` führt den Helfer mit einem nachgestellten Download aus (ein gutes Archiv, ein beschädigtes, ein bereits installiertes) und vergleicht die Festlegung mit dem `go.mod` der Schwesterprojekte; auf einer echten CM5 wurde damit noch nichts installiert.
+
+**Ein Dienstregister.** Port, Gesundheitsroute und systemd-Unit jedes Dienstes stammen aus `provisioning/ports.yaml` (Kopie der `contracts/ports.yaml` des SDK, aus den Projektmanifesten erzeugt). Jeder Installer eines Dienstes endet mit dem Hinweis, wo nach dem Start nachzusehen ist, und `verify_cm5_runtime.sh --with-services` prüft die Gesundheitsroute jedes laufenden Dienstes (nur lesend; was nicht läuft, wird übersprungen). `tools/verify_service_registry.py` prüft Helfer, Installer und die Laufzeitprüfung mit Attrappen; auf einem echten CM5 wurde damit noch nichts installiert.
+
+### Erster Meilenstein
+
+Abgeschlossen, gemäß dem Status-Abschnitt oben (echter Code, echte
+Tests, noch nicht gegen echte CM5-Hardware verifiziert):
+
+1. ✅ Erstellen Sie ein Raspberry Pi OS ARM64-Profil für CM5.
+2. ✅ Installieren Sie `hydra-umc-platform-base` und `hydra-umc-agent`.
+3. ✅ CM5-Schnittstellen erkennen und einen `DeviceDescriptor` und einen `HealthReport` melden.
+4. ✅ Starten Sie nur aktivierte Dienste über systemd.
+5. ✅ Zeigen Sie lokal BEREIT, DEGRADED oder FEHLER an.

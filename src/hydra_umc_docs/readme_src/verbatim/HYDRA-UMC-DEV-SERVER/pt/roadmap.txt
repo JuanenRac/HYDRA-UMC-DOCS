@@ -1,0 +1,56 @@
+Esta versão entrega a DS01 até à DS10 - o plano de dez entregas está
+concluído. Cada entrega, por ordem:
+
+- **DS02 - Estação remota reproduzível.** ✅ Entregue: um perfil de estação
+  remota validado, uma verificação prévia do anfitrião só de leitura e um plano de aprovisionamento
+  simulado (subcomandos `station`). Nenhum anfitrião é alterado e nenhum
+  passo é executado.
+- **DS03 - Migração conservadora.** ✅ Entregue: calcular o hash e classificar cada
+  ficheiro de uma cópia de origem e planear cada classe (limpo / modificado /
+  não acompanhado / privado) para o seu próprio destino separado, com um pacote
+  para os commits por enviar (subcomandos `migrate`). Não copia nada e
+  nunca toca na origem. Executar um plano aprovado é uma entrega posterior.
+- **DS04 - Espaço de trabalho e executor limitado.** ✅ Entregue: espaço de trabalho
+  isolado por tarefa (duas tarefas nunca colidem; caminhos `..`, absolutos e de ligações
+  simbólicas para fora do espaço de trabalho recusados), apenas um comando da lista de permitidos, um ambiente
+  depurado e um tempo limite que mata todo o grupo de processos
+  (subcomandos `task`). Executa um subprocesso mas não implementa nada.
+- **DS05 - Fila durável e resultados rastreáveis.** ✅ Entregue: uma fila SQLite
+  com concessões e um diário de execução só de acrescento que sobrevivem a um
+  reinício; um enfileiramento duplicado nunca é um segundo trabalho, uma interrupção
+  nunca um falso êxito, uma base movida bloqueia a promoção (subcomandos
+  `queue`).
+- **DS06 - Fornecedor de IA intermutável.** ✅ Entregue (a metade simulada): um
+  fornecedor simulado determinístico por detrás de um contrato de segurança - tempo limite /
+  malformado / quota tornam-se resultados limitados, um orçamento pára o passo,
+  a sugestão é dado inerte que não concede nada e não implementa nada
+  (`provider suggest`). O fornecedor real é uma decisão do utilizador.
+- **DS07 - Incidentes coordenados com o HYDRA-UMC-OPS-AGENT.** ✅ Entregue:
+  um transporte de incidentes autenticado com HMAC, com verificações de repetição / personificação /
+  sobrecarga / versão e uma ida e volta completa de submissão → diagnóstico → verificação
+  pós-implementação que reconcilia após uma ligação caída
+  (`incident verify`).
+- **DS08 - Primeiro ciclo de reparação totalmente controlado.** ✅ Entregue: uma
+  máquina de estados com portas reprodução→incidente→correção→regressão→build-test→aprovação→instalação isolada→verificação
+  que bloqueia um candidato adulterado ou mal dirigido e
+  reverte perante uma verificação pós-instalação falhada (`repair check-candidate`).
+- **DS09 - Operação/restauro estáveis.** ✅ Entregue: verificações de saúde
+  operacional sobre a fila e o disco, e uma cópia de segurança/restauro
+  verificados do estado que recusa uma cópia de outra instância ou uma
+  corrompida (subcomandos `ops`).
+- **DS10 - Pacote de entrega e avaliação honesta de maturidade.** ✅
+  Entregue: o `deliver manifest` regista um sha256 para cada ficheiro entregue
+  e lê de volta a superfície real da CLI, a versão e o número de testes; o `deliver
+  evaluate` reporta cada uma das dez entregas contra prova real
+  (a DS06 é `partial` - só o simulado é entregue), lista sete limitações
+  com clareza e reporta uma `overall_maturity` fixada no código como `functional`.
+
+**Maturidade.** O plano está concluído; a maturidade é `functional`: o software está construído e coberto por testes, mas não foi verificado em hardware nem em serviços reais, o que é um passo separado e posterior. O que há neste repositório é uma implementação funcional e testada de - um esquema de configuração, perfis validados,
+planos simulados, um executor limitado, uma fila durável, um fornecedor simulado, um
+transporte assinado, um ciclo de reparação com portas, cópias de segurança verificadas e uma
+avaliação que se recusa a afirmar de mais. Nada aqui aprovisiona um anfitrião,
+executa uma implementação, liga as peças num ciclo de trabalhador nem tocou
+em hardware de destino. O `deliver evaluate` di-lo exatamente, e a sua
+lista `known_limitations` é a lista honesta de tarefas por fazer. Veja
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para o que cada entrega inclui
+e exclui explicitamente.

@@ -1,0 +1,36 @@
+Un vrai watchdog, pas seulement un squelette qui compile : il contacte
+chaque nœud de `nodes.example.json` (ou `-nodes <chemin>` pour pointer
+vers votre propre registre) (par URL de santé HTTP, ou par gRPC quand l'entrée a une `address`) et signale les changements d'état
+sur stdout.
+
+```bash
+# Windows
+build.bat
+run.bat -nodes nodes.example.json
+
+# Linux / macOS
+./build.sh
+./run.sh -nodes nodes.example.json
+```
+
+`build.sh`/`build.bat` ne changent jamais la version (seule `python tools/hydra_project_tool.py bump` la fait monter) puis
+exécutent `go build`. `run.sh`/`run.bat` exécutent directement le binaire
+résultant.
+
+Chaque entrée du registre a besoin de quelque chose de réel à l'écoute
+sur son `address` et implémentant `hydra.common.v1.HealthService` (voir
+`HYDRA-UMC-ORCHESTRATOR/proto/hydra_common.proto`) pour un jour se
+signaler en bonne santé - rien ne tournant encore sur les ports
+d'exemple, on s'attend à voir `UNKNOWN -> UNREACHABLE` dès le premier
+cycle pour les trois (désormais seulement après épuisement des tentatives
+bornées de `RetryPolicy`, pas dès le premier dial - voir la
+caractéristique « Réessais bornés » ci-dessus), ce qui est le résultat
+correct et honnête aujourd'hui (chaque nœud de l'écosystème en est encore
+au stade d'andamiaje au-delà de la propre logique de détection de ce
+dépôt). Un nœud qui répond mais ne peut pas s'auto-identifier
+correctement affiche plutôt `UNKNOWN -> INVALID`, immédiatement.
+
+```bash
+go test ./...   # src/config + src/watchdog, allers-retours gRPC
+                 # réels sur de vraies sockets loopback, sans client simulé
+```

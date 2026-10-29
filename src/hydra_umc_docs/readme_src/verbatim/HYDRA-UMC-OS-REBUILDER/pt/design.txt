@@ -1,0 +1,57 @@
+### ARQUITETURA E DECISÕES DE DESIGN
+
+- **Chave SSH da máquina fixada na primeira utilização e sem país Wi-Fi por omissão.** Uma compilação remota recusa uma máquina cuja chave não fixou e mostra a impressão digital SHA-256 da chave; introduza essa impressão digital (verificada na própria máquina) e a chave fica fixada: daí em diante só essa chave é aceite e uma diferente é recusada como chave alterada. O código de país Wi-Fi da imagem deixou de ter valor por omissão (`--wifi-country` / o campo do país é obrigatório com uma rede Wi-Fi), porque define as regras de rádio do país onde a máquina vai estar.
+- **O `ecosystem_plan.py` nunca reimplementa a descoberta do GitHub.**
+  Depende do `hydra-umc-updater` como pacote Python real
+  (`hydra_umc_updater.github_client.discover_remote_projects()`) em vez de uma
+  segunda cópia da sua lógica de validação de manifestos/repetição/backoff - uma
+  correção ou melhoria feita aí beneficia esta ferramenta automaticamente.
+- **O `image_builder.py` nunca reimplementa a compilação de um projeto.** Cada
+  projeto do ecossistema é clonado e colocado no seu próprio SHA de commit real
+  e imutável (resolvido a partir do GitHub no momento do planeamento, nunca um
+  nome de ramo mutável que se pudesse mover entre o planeamento e a
+  construção) e compilado executando o SEU PRÓPRIO `build.sh`, em chroot no
+  rootfs de destino - o mesmo princípio de «delegar no script de compilação de
+  cada projeto» que o próprio `install.py` do `hydra-umc-updater` já documenta.
+  A versão reportada para cada projeto instalado é lida de volta do seu próprio
+  manifesto DEPOIS de o `build.sh` ter corrido, e não do valor pré-obtido do
+  plano - esse passo de compilação sobe a versão por si, a convenção universal
+  deste ecossistema.
+- **A fronteira de plataforma Linux/root é sempre verificada primeiro.** O
+  `check_build_platform()` é a primeiríssima coisa que o `build_image()` faz -
+  uma construção que não faz nada em silêncio num anfitrião não suportado
+  (Windows, um utilizador Linux sem root, um `losetup`/`chroot` em falta) seria
+  pior do que uma que se recusa a arrancar com um motivo claro.
+- **O `firstboot_config.py` é um gerador puro, sem efeitos secundários.** Só
+  produz conteúdo de ficheiros em texto simples (uma cadeia `firstrun.sh`, uma
+  cadeia de remendo do `cmdline.txt`) - nunca toca numa imagem ou sistema de
+  ficheiros reais, pelo que continua trivialmente testável sem root nem uma
+  imagem real. Só o `image_builder.py` é responsável por escrever de facto esse
+  conteúdo numa partição de arranque real.
+- **Uma configuração de primeiro arranque que deixaria o operador de fora é
+  recusada, não construída.** Desativar o SSH sem configurar nenhuma conta
+  deixa as imagens base oficiais desta ferramenta (sem utilizador por defeito
+  no Trixie e posteriores) sem nenhum caminho de login - recusado a menos que
+  `acknowledge_no_remote_access=True` o aceite explicitamente.
+  O `describe_recovery_procedure()` indica o caminho de recuperação real para o
+  que a configuração deixar em aberto.
+- **Um perfil congelado é uma receita real e persistida, nunca voltada a
+  obter.** O `freeze_profile()`/`profile-build` do `profile_manifest.py` fixa
+  cada projeto no SHA de commit exato em que foi testado - uma construção
+  posterior nunca substitui em silêncio o que o GitHub chame «mais recente» nesse
+  momento. O `diff_profile()` compara um perfil congelado com o ecossistema em
+  direto projeto a projeto (não como um único booleano), já que os próprios
+
+  de versionamento semântico e nunca podem ser, por si, um sinal honesto de
+  compatibilidade.
+- **Hash de palavra-passe SHA-512-crypt real, não o módulo `crypt` da biblioteca
+  padrão.** O `crypt` só envolve a chamada de libc do *próprio anfitrião*
+  (apenas Unix, e removido por completo no Python 3.13) - o `passlib` produz o
+  formato real `$6$...` byte a byte idêntico que o `chpasswd -e` espera, em
+  todas as plataformas em que esta própria ferramenta corre, incluindo o
+  Windows. O hash usa 500000 rondas, e não as 5000 por defeito do glibc, que
+  datam do ano 2000, pelo que atacar uma cópia da imagem ou de `/etc/shadow`
+  custa muito mais; o yescrypt (`$y$`) que o próprio dispositivo prefere não
+  pode ser produzido de forma portável a partir do Python no Windows.
+- **As palavras-passe já não viajam como argumentos.** `--password` e `--wifi-password` continuam a funcionar, mas uma linha de comandos é visível a todos os utilizadores da máquina e o `sudo` escreve-a no registo de autenticação; a CLI lê-as por isso também de `HYDRA_UMC_FIRSTBOOT_PASSWORD` / `HYDRA_UMC_FIRSTBOOT_WIFI_PASSWORD` ou, com `--secrets-stdin`, de um objeto JSON (`{"password": "...", "wifiPassword": "..."}`) na entrada padrão. A compilação remota (SSH) da interface envia-as assim e já não as põe no comando executado.
+- **O chroot está completo e a compilação remota fica fixada.** A compilação monta `/proc`, `/sys`, `/dev` e `/dev/pts` na imagem e dá-lhe a resolução de nomes do equipamento enquanto os projetos são compilados (o `resolv.conf` próprio da imagem é reposto no fim), para que `pip`, `npm` e `go` cheguem à rede a partir do chroot. Uma compilação remota por SSH instala esta ferramenta a partir da etiqueta da versão em execução (`HYDRA_UMC_REBUILDER_REMOTE_REF` indica outra etiqueta ou commit) e compila a partir do perfil congelado do plano revisto (`profile-build`) em vez de voltar a descobrir o ecossistema no equipamento remoto. Nada disto correu ainda num equipamento Linux real com root.

@@ -1,0 +1,27 @@
+```bash
+chmod +x build.sh   # 一度だけ
+./build.sh          # .venvを作成し、pip install -e ".[dev]"、チェック + テストを実行
+./run.sh                                  # 実際のデモ: このGitHubワークスペースに対して
+                                           # inventory scanを実行し、次にconfig validate
+./run.sh inventory scan --root DIR
+./run.sh config validate configs/task-policy.example.json --kind task-policy
+```
+
+Windowsでは: `build.bat`、次に `run.bat`（引数なしの場合は同じデモ）/
+`run.bat inventory scan ...` / `run.bat config validate ...`。
+`build-test.sh`/`.bat` は、プロジェクト自身のCIワークフローが行うのと同じ、
+変更を伴わないPython構文チェックを実行し、プロジェクトのバージョンや
+CHANGELOGには一切触れない - これ自体はテストスイートを実行**しない**。
+完全なローカルテストスイートには `./build.sh`/`build.bat`
+（または直接 `python -m unittest discover -s tests`）を実行すること。
+
+**トラブルシューティング**
+
+- `config validate` が終了コード `1` で `INVALID: ...` を返す:
+  メッセージを読むこと - 最初のものだけでなく、失敗したすべての
+  フィールドが列挙されている。期待される正確な形状については
+  [docs/CONFIG_SCHEMA.md](docs/CONFIG_SCHEMA.md) を参照。
+- `inventory scan` が、問題ないと思っていたディレクトリで問題を報告する:
+  そのディレクトリには存在するが読み取り不能、形式不正、または必須
+  フィールドが欠落した `hydra-umc.project.json` がある - マニフェストが
+  全く存在しないディレクトリが問題として報告されることは決してない。

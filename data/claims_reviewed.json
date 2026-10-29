@@ -95,11 +95,6 @@
    "bccc09a524ca": ", | - | the routes over real HTTP, the token roles and every limit",
    "e0fe7b2e8060": "docs/API.md - every route, its role, its limits and its errors"
   },
-  "HYDRA-UMC-DEV-SERVER": {
-   "2788d20ed33f": "safety contract ( ) - only the deterministic",
-   "58b4483a1e2b": "authenticated incident transport for the round trip with",
-   "6a2ea2fd0f77": "a file drop: an unregistered identity, a bad signature, a node"
-  },
   "HYDRA-UMC-DSI": {
    "34b43b6beb3f": "Atomic command sync ( 's own ) - every write (play/pause/stop/jog/valve/pump/speed/vision) uses the real endpo",
    "ab32386fc0e3": "— iOS/iPadOS control app (Flutter) with real-time WebSocket sync; speaks the exact same contract as this panel"
@@ -145,7 +140,6 @@
    "384fa1954593": "Delivery 2's own real contract, providers, credentials and safety boundary."
   },
   "HYDRA-UMC-OS": {
-   "8030e777be18": "Installers of the CM5 (one per service), first boot, diagnostics, recovery, backup and restore of the settings",
    "d9cdfe793512": "— the real headless backend (REST/WebSocket) every control client actually talks to; the authenticated service"
   },
   "HYDRA-UMC-PHYSICS-REPLICA": {

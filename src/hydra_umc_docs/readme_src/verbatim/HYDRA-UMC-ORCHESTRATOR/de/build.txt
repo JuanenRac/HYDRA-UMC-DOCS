@@ -1,0 +1,59 @@
+Der nackte Aufruf bleibt ein minimales Grundgerüst (gibt Identität aus,
+beendet sich mit 0); der echte Missions-Zustandsautomat lässt sich schon
+heute über `mission-demo` ausprobieren.
+
+```bash
+# Windows
+build.bat
+run.bat
+run.bat mission-demo
+
+# Linux / macOS
+./build.sh
+./run.sh
+./run.sh mission-demo
+```
+
+`build.sh`/`build.bat` ändern die Version nie (nur `python tools/hydra_project_tool.py bump` erhöht sie) und führen anschließend
+`cargo build --release` aus. `run.sh`/`run.bat` führen die resultierende
+Binärdatei direkt aus.
+
+`mission-demo` führt ein echtes Szenario Ende-zu-Ende gegen den
+`MissionRegistry` aus `mission.rs` aus und gibt jede echte Zustandsänderung
+aus:
+
+```text
+[orchestrator] mission-1: dispatched -> InProgress(node=node-a)
+[orchestrator] mission-2: dispatched -> Dispatched(node=node-a)
+[orchestrator] mission-3: dispatched -> InProgress(node=node-b)
+[orchestrator] node-a reported UNREACHABLE by NODE-HEALING - recovering its missions
+[orchestrator] mission-1: requeued -> Pending
+[orchestrator] mission-2: requeued -> Pending
+[orchestrator] mission-3: unaffected (different node) -> InProgress(node=node-b)
+[orchestrator] mission-2: cancel() -> Cancelled -> Cancelled
+[orchestrator] mission-2: cancel() again (idempotent) -> AlreadyCancelled -> Cancelled
+[orchestrator] mission-3: complete() -> Completed(node=node-b)
+[orchestrator] mission-4: fail() -> Failed(no healthy node accepted redispatch after 3 attempts)
+[orchestrator] final registry state:
+  mission-1: Pending (terminal=false)
+  mission-2: Cancelled (terminal=true)
+  mission-3: Completed(node=node-b) (terminal=true)
+  mission-4: Failed(no healthy node accepted redispatch after 3 attempts) (terminal=true)
+```
+
+```bash
+cargo test   # {tests} Tests: die Zustandsänderungen/Ablehnungen ungültiger
+             # Zustandsänderungen/idempotente Stornierung/Wiederherstellung
+             # nach Knotenausfall aus mission.rs, plus die absturzsichere
+             # Persistenz von outbox.rs, den echten HTTP-Client von
+             # job_dispatcher.rs und die HTTP-Handler von server.rs
+```
+
+Als übergeordnetes Integrations-Repo des Ökosystems liefert dieses Repo auch
+eine echte `docker-compose.yml`, die diesen Dienst zusammen mit seinen 3
+Kindern (SWARM-SYNC, JOB-DISPATCHER, NODE-HEALING; PATH-PLANNER-3D, ein Kommandozeilenwerkzeug, bleibt hinter dem Profil `tools`) startet,
+die als Geschwisterordner erwartet werden:
+
+```bash
+docker compose up --build
+```

@@ -1,0 +1,6 @@
+Use the non-versioning build check before a release build:
+
+| Action | Windows | Linux / macOS |
+|---|---|---|
+| Build check (no version or CHANGELOG change) | `build-test.bat` | `./build-test.sh` |
+| Run / development (when provided) | `run*.bat` or `dev*.bat` | `./run*.sh` or `./dev*.sh` |

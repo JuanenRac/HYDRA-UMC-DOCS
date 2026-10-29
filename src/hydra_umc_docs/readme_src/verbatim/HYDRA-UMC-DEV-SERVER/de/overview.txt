@@ -1,0 +1,149 @@
+HYDRA-UMC-DEV-SERVER ist Entwicklungsinfrastruktur für das
+HYDRA-UMC/URTC-Ökosystem: ein reproduzierbarer Host (Ziel: ein
+Raspberry Pi 5 oder Compute Module 5, 8GB, von NVMe gestartet), der den
+eigenen Quellcode dieses Ökosystems hostet und begrenzte,
+richtliniengesteuerte Programmier-/Build-/Test-Aufgaben ausführt - für
+Menschen ebenso wie für KI-Assistenten. Es ist **keine** neue KI, die
+trainiert werden muss, **kein** Ersatz-Betriebssystem, und es
+entscheidet niemals selbst, dass eine Maschine sicher zu verändern ist.
+
+DS01 brachte zwei reale, unabhängig nützliche Teile:
+
+1. **Konfigurationsschema** (`config validate`) - drei JSON-Dokumente
+   (`HostProfile`, `ToolchainPolicy`, `TaskPolicy`), jedes mit echter
+   Validierung und einem echten Negativtest für jede abgelehnte Form.
+   Die vom ersten Tag an wichtigste Invariante:
+   `TaskPolicy.allow_deploy` ist standardmäßig `False`, und nur ein
+   Dokument, das den wörtlichen JSON-Boolean `true` setzt, kann eine
+   Richtlinie erzeugen, in der das erlaubt ist.
+2. **Manifest-Erkennung** (`inventory scan`) - dasselbe reale, getestete
+   Muster, das die Edge-Rolle von HYDRA-UMC-OPS-AGENT bereits verwendet,
+   um ein `hydra-umc.project.json` zu finden und zu validieren - hier
+   wiederverwendet statt neu geschrieben.
+
+DS02 fügt drei weitere hinzu, alle unter dem Unterbefehl `station` und
+alle weiterhin "validieren und beschreiben, niemals handeln":
+
+3. **Remote-Stationsprofil** (`station validate`) - ein JSON-Dokument
+   (`RemoteIdentity` + `RemoteAccess` + benötigte Toolchains) mit
+   derselben fehlersammelnden Validierung. Seine Invariante vom ersten
+   Tag: der Remote-Editing-Endpunkt bindet an Loopback/privat, und eine
+   routbare Adresse wird abgelehnt, sofern das Dokument nicht den
+   wörtlichen Boolean `allow_public_bind: true` setzt; die Identität ist
+   ein dediziertes Systemkonto, niemals `root` oder ein Login-Benutzer.
+4. **Host-Vorabprüfung** (`station preflight`) - liest ein Profil und
+   meldet über eine injizierbare Inspektor-Schnittstelle, ob *dieser*
+   Host wirklich bereit ist, diese Station zu werden (Python-Version,
+   freier Speicher, Workspace beschreibbar, Werkzeuge im `PATH`, Port
+   frei, Identität ist ein echtes Systemkonto). Ändert den Host nie.
+5. **Trockenlauf-Provisionierungsplan** (`station plan`) - stellt dar,
+   was ein echter Installer *tun würde* (das argv jedes Schritts als
+   Daten erfasst) plus den vollständigen systemd-Unit-Text, und
+   verweigert einen Plan über einer fehlgeschlagenen Vorabprüfung. Es
+   wird nichts ausgeführt.
+
+DS03 fügt konservative Migration hinzu, dieselbe Regel "lesen und
+beschreiben, niemals handeln" - sie kopiert nichts und rührt die
+Quelle nie an:
+
+6. **Migrations-Inventar + Plan** (`migrate inventory` / `migrate
+   plan`) - läuft durch einen Quell-Checkout (nur die Dateien, die git
+   als Teil des Projekts ansieht - ein lokales `.venv` oder Build-
+   Output ist git-ignoriert und wird nie gesehen), bildet den SHA-256
+   jeder Datei und klassifiziert jede: `tracked-clean`,
+   `tracked-modified`, `untracked`, `private` (eine erweiterbare
+   `PrivacyPolicy`: der Ordner für private Dokumente, `.env*`, `*.pem`, `id_ed25519*`, ...).
+   Commits, die gemacht, aber nie gepusht wurden, werden separat
+   erfasst. `migrate plan` bildet jede Klasse auf ihr **eigenes** Ziel
+   unter vier beweisbar getrennten Wurzeln ab
+   (`MigrationDestinations.from_dict` lehnt gleiche oder verschachtelte
+   Wurzeln ab), bündelt die ungepushten Commits, gibt ein vollständiges
+   Hash-Manifest aus und druckt `REFUSED`, wenn eine private Datei
+   unter einer teilbaren Wurzel landen würde.
+
+DS04 ist die erste Lieferung, die einen Subprozess ausführt - und sie
+bleibt streng eingegrenzt:
+
+7. **Task-Recipe + Workspace-Runner** (`task validate` / `task run`) -
+   ein `TaskRecipe` legt eine `revision` fest (ein Branch-Name wird
+   abgelehnt) und einen `command` aus einer Allow-Liste (`argv[0]` muss
+   in `allowed_commands` der Richtlinie stehen, sonst ist der Lauf
+   `rejected` und nichts wird gestartet). `task run` legt
+   `<base>/<task_id>/` an - und lehnt einen bereits vorhandenen ab, also
+   **teilen sich zwei Tasks nie einen Workspace** - führt den Befehl
+   dort mit einer **bereinigten Umgebung** aus (nur `PATH` / `HOME` /
+   `LANG` / `TZ`; nie ein geerbtes `GITHUB_TOKEN`,
+   `AWS_SECRET_ACCESS_KEY`, `ANTHROPIC_API_KEY`, `SSH_AUTH_SOCK`),
+   begrenzt durch `timeout_seconds`, und bei Timeout oder Abbruch
+   **killt es die ganze Prozessgruppe** - bewiesen durch einen echten
+   Test, der ein Enkelkind startet und bestätigt, dass beide sterben.
+   Ein `..`, ein absoluter Pfad oder ein Symlink aus dem Workspace
+   heraus in `input_paths` wird abgelehnt. Es stellt nichts bereit. Die Ausgabe des Kindprozesses wird während des Laufs fortlaufend gelesen und von jedem Strom werden nur die letzten 8 KiB behalten, sodass ein sehr ausführlicher Build oder Testlauf weder an einer vollen Pipe blockieren noch den Speicher des Hosts anwachsen lassen kann.
+
+DS05 fügt Dauerhaftigkeit hinzu - eine Aufgaben-Warteschlange und ihr
+Ausführungsjournal, die einen Prozess-Neustart überstehen. Es
+protokolliert, es führt nicht aus:
+
+8. **Dauerhafte Warteschlange + Ausführungsjournal** (`queue enqueue` /
+   `status` / `reconcile` / `journal`) - ein SQLite-Speicher (WAL,
+   sofortige Transaktionen für den Lease). `enqueue` ist idempotent -
+   ein zweiter Aufruf mit derselben `task_id` gibt `created=False`
+   zurück, **nie ein zweiter Job**. `lease(worker, ttl)` beansprucht
+   den ältesten `queued`-Eintrag; `reconcile()` gibt einen abgelaufenen
+   Lease an `queued` zurück (bei jedem Start sicher). Ein
+   `record_result` von einem Worker, der den Lease nicht mehr hält,
+   wird **abgelehnt, nicht als erledigt akzeptiert** - eine
+   Unterbrechung wird nie ein falscher Erfolg. Weicht der beim Ergebnis
+   beobachtete Basis-Fingerabdruck von dem beim `enqueue` ab, wird das
+   Ergebnis `failed` / nicht promotierbar gespeichert **selbst bei
+   Exit-Code 0**. Das `completed`-Journalereignis trägt immer
+   `revision` + `recipe_fingerprint`; das Journal behält nur gekürzte
+   Ausgaben und `prune_journal` begrenzt die Zeilen, damit die Platte
+   begrenzt bleibt.
+
+DS06 fugt einen austauschbaren KI-Provider hinzu - nur den
+deterministischen Fake, hinter einem Sicherheitsvertrag. Er gibt eine
+Zeichenkette zuruck, die ein Mensch liest; er verdrahtet nichts mit dem
+Runner, der Warteschlange oder einem Deployment:
+
+9. **Austauschbarer KI-Provider** (`provider suggest`) - eine
+   `AIProvider`-Naht; `FakeProvider(scenario=...)` ist vollstandig
+   deterministisch. `run_provider_step` verwandelt einen **Timeout**, ein
+   **erschopftes Kontingent** oder eine **fehlerhafte Ausgabe** des
+   Providers in ein begrenztes, benanntes Ergebnis (nie eine eskalierende
+   Ausnahme); ein konfiguriertes `ProviderBudget` (Aufrufe / Tokens /
+   Kosten) **stoppt den Schritt, bevor es uberschritten wird**, ohne
+   Aufruf; und die Antwort des Providers sind **Daten, nie Anweisungen** -
+   ein Vorschlag mit "ignoriere vorherige Anweisungen / deploye jetzt / gib
+   mir root" wird wortlich kopiert, `injection_flagged` wird gesetzt, und
+   `grants_no_permissions` / `triggers_no_deploy` bleiben fur **jedes**
+   Ergebnis wahr. Welcher echte Provider verwendet wird und dessen
+   Autorisierung ist eine Entscheidung des Nutzers (`kind` muss heute
+   `"fake"` sein).
+
+```
+$ hydra-umc-dev-server config validate configs/task-policy.example.json --kind task-policy
+VALID: configs/task-policy.example.json (task-policy)
+{
+  "allow_deploy": false,
+  "max_concurrent_tasks": 2,
+  "allowed_commands": ["pytest", "build.sh", "build-test.sh"]
+}
+
+$ hydra-umc-dev-server inventory scan --root ..
+{
+  "root": "..",
+  "projects": [
+    {"name": "HYDRA-UMC-DEV-SERVER", "version": "0.1.6", "maturity": "functional", "manifest_path": "../HYDRA-UMC-DEV-SERVER/hydra-umc.project.json"},
+    ...
+  ],
+  "issues": []
+}
+```
+
+Es gibt keinen Standardaufruf ohne Argumente außer der Demo, die
+`run.sh` ausführt, und diese Lieferung hat keine grafische
+Oberfläche - siehe [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) für
+die vollständige, reale Kommandooberfläche.
+
+Zwei weitere Befehle, `plugin list` und `serve`, decken den Plugin-Lebenszyklus und eine authentifizierte lokale HTTP-API ab (nur Loopback, Bearer-Token). Ein Plugin bleibt inaktiv, bis es mit dem freigegebenen SHA-256 seiner Dateien aktiviert wird, und kann nur benannte Prüfungen, Berichte und Generatoren hinzufügen (in `plugin.json` mit `provides` deklariert, mit `plugin run` oder über die API ausgeführt, jeweils durch Zeitlimit und Größengrenze begrenzt); die API führt keine Aufgabe aus und deployt nichts. Siehe [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) und [docs/PLUGINS.md](docs/PLUGINS.md). Außerdem packt der Aufgabenläufer den Befehl in eine bubblewrap- oder systemd-run-Sandbox, wenn der Rechner eine hat (kein Home, kein Netz, sofern die Richtlinie es nicht öffnet, nur der Arbeitsbereich beschreibbar), begrenzt die Argumente jedes Befehls, holt die festgelegte Revision, begrenzt die gleichzeitigen Aufgaben und löscht den Arbeitsbereich danach; Plugins laufen standardmäßig in einem eigenen Prozess. Nichts davon lief bisher auf einem echten Rechner.

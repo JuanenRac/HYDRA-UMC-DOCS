@@ -1,0 +1,41 @@
+This version ships Fase 0, Fase 1, Fase 3 and Fase 4. What remains, in phase order:
+
+- **Fase 1 - Retrievable knowledge (complete).** A local, versioned
+  index of approved documentation, manifests, contracts and runbooks -
+  never trained blindly on the whole disk. `knowledge/index.py` ports
+  HYDRA-UMC-DOCS-QA's own tested TF-IDF search unchanged and adds
+  bounded, allow-listed ingestion for Markdown and JSON sources, wired
+  as the tenth OBSERVE-level tool, `knowledge.search`.
+- **Fase 2 - Local inference engine.** A small LLM compatible with
+  Hailo-10H (candidates: Qwen2.5-1.5B-Instruct, Qwen2.5-Coder-1.5B,
+  Qwen3-1.7B-Instruct), chosen only once real Hailo compatibility,
+  latency, language quality, power draw and license are verified.
+- **Fase 3 - Tool orchestrator (complete: 9 of 9 Fase 3 tools, plus knowledge.search from Fase 1).**
+  Deterministic code wiring every real `OBSERVE`-level tool handler to
+  `TOOL_MATRIX`, with policy enforcement on every call. `service.status`,
+  `storage.usage`, `network.port_status`, `network.connectivity`,
+  `system.temperature`, `manifest.read`, `logs.read`, `process.list` and
+  `update.pending` are all real now (`orchestrator/dispatch.py`).
+- **Fase 4 - Proposals and evidence (complete).** Real `MaintenanceProposal`
+  and `EvidenceBundle` construction (`escalation/`), escalating toward
+  HYDRA-UMC-DEV-SERVER's own future Developer Node role.
+  `evidence.assemble_evidence_bundle()` derives a real bundle from
+  already-observed `ToolResult`s; `proposal.propose_maintenance()`
+  validates and grounds a human-supplied proposal against real evidence -
+  it never generates one, since no inference engine exists yet. Nothing
+  in this codebase can act on a `MaintenanceProposal` yet.
+- **Fase 5 - User interface (started: the CLI slice).** A local API
+  integrated into HYDRA-UMC-SERVER/Studio, then a CLI, then voice - never
+  bypassing the policy and confirmation boundaries Fase 0 already
+  establishes. The CLI slice is real now: `tools list`/`tools call` and
+  `escalation evidence`/`escalation propose` (`cli.py`) reach every real
+  piece above through the same already-tested, already policy-enforced
+  code path, deliberately scoped to what lives inside this one repo. The
+  HYDRA-UMC-SERVER-integrated API and voice remain separate, cross-repo
+  work for a later delivery.
+
+Fase 2, and the rest of Fase 5, do not exist in this repository yet -
+see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for what each remaining
+phase is scoped to include and explicitly exclude, and
+[docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) for the security
+invariants every phase must keep honoring.

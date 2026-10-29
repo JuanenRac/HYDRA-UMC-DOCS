@@ -1,0 +1,1 @@
+🛠️ Mapeo de Objetos HydraState a Espacios de Direcciones OPC-UA Estandarizados

@@ -1,0 +1,5 @@
+这些是本应用代码中真实存在、已验证的缺口——不是含糊的 TODO,每一项都能追溯到上文代码或文档中的具体位置:
+
+- **远程访问开关尚未独立** —— `REMOTE_API.md` 第 1 节的 `X-Hydra-Client` 值目前只识别 `suite`、`android` 和 `ios`;本应用发送的是 `dsi`,一个不被识别的值,目前从不被拦截,因此其发现请求会无条件通过。修复此问题需要在 HYDRA-UMC-STUDIO 自身的 `SystemSettings.remoteAccess` 类型及其 Config > Remote Access 标签页中添加第 4 个开关——这是对另一个仓库服务器代码的修改,不在本仓库范围内。见 `docs/ARCHITECTURE.md` 第 3 节。
+- **3D 视图没有真正的原生 3D 渲染器** —— `ui/three_d_screen.dart` 目前绘制的是一个小型等距 X/Y/Z 位置指示器,而不是嵌入 STUDIO 真正的 Three.js 场景(`webview_flutter` 没有任何 Linux 实现——完整原因见 `docs/ARCHITECTURE.md` 第 4 节)。为此屏幕实现真正的原生 3D 渲染器是未来的工作,尚未开始。
+- **仍缺少在真实 CM5 硬件上的实际运行** —— `flutter build linux` 本身现在已经过验证(真实的 Ubuntu 24.04 WSL2 工具链,二进制文件确认能够真正启动——见 `docs/ARCHITECTURE.md` 第 7 节),但 `build_linux.sh` 的完整流程以及自启动单元 `kiosk/hydra-umc-dsi.service` 仍然从未真正针对 CM5 本身或任何其他真实(非 WSL2)Linux 机器运行过。第一次在那里运行它们的人应将其视为该平台目标真正的首次硬件部署,而不是走个形式——见上文的"在真实 CM5 上运行"。

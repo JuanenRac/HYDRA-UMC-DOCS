@@ -1,0 +1,43 @@
+### Requisitos
+- [Node.js](https://nodejs.org/) (recomendada a v20 ou superior)
+- npm
+
+### Instalação
+```bash
+npm install
+```
+
+### Modo de desenvolvimento
+Executa o servidor de agregação diretamente com `tsx` (sem empacotador):
+- **Windows:** faça duplo clique em `dev.bat` ou execute `npm run dev`
+- **Linux/Mac:** execute `./dev.sh` ou `npm run dev`
+
+### Compilação de produção
+Empacota o servidor num único ficheiro implantável com o esbuild:
+- **Windows:** faça duplo clique em `build.bat` ou execute `npm run build`
+- **Linux/Mac:** execute `./build.sh` ou `npm run build`
+
+Depois inicie-o com:
+```bash
+npm start
+```
+
+O servidor escuta em `0.0.0.0:8000` - `GET /health` é uma verificação de vida rápida sem sondagem a jusante (para onde aponta o `service.health_path` do `hydra-umc.project.json`), enquanto `GET /status` é o diagnóstico profundo real que reporta a versão do próprio Gateway mais o nome/protocolo/endpoint/acessibilidade de cada ponte filha que fronteia.
+
+Exemplo real - um comando permitido contra um filho que não está a correr, uma operação não autorizada e um pedido malformado:
+
+```bash
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" \
+  -d '{"protocol":"OPC-UA","operation":"read","target":"ns=2;s=Line1.Status"}'
+# 502 {"status":"downstream_unreachable","reason":"TCP connect to opcua-server:4840 timed out after 2000ms"}
+
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" \
+  -d '{"protocol":"OPC-UA","operation":"write","target":"ns=2;s=Line1.SetPoint"}'
+# 403 {"status":"rejected_unauthorized","reason":"operation \"write\" is not allowlisted for OPC-UA"}
+
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" -d '{"protocol":"OPC-UA"}'
+# 400 {"error":"protocol, operation and target are required strings"}
+```
+
+### Versionamento
+`npm run build` apenas empacota o servidor e nunca altera a versão; `python tools/hydra_project_tool.py bump` sobe-a.

@@ -1,0 +1,23 @@
+```bash
+chmod +x build.sh   # one-time
+./build.sh          # creates .venv, pip install -e ".[dev]", compile-checks + tests
+./run.sh contracts validate tests/fixtures/tool_request.valid.json --contract ToolRequest
+./run.sh --version
+```
+
+On Windows: `build.bat`, then `run.bat contracts validate ...` /
+`run.bat --version`. `build-test.sh`/`.bat` performs the same
+non-mutating Python-syntax compile check this project's own CI workflow
+performs, without touching the project version or CHANGELOG - it does
+NOT run the test suite itself; run `./build.sh`/`build.bat` (or
+`PYTHONPATH=src python -m pytest tests` directly, or `python -m unittest discover -s tests/unit -t .` without pytest) for the full local test suite.
+
+**Troubleshooting**
+
+- `contracts validate` exits `1` with `INVALID: ...`: read the message -
+  it names the exact field and reason, not just that something failed.
+  Check [docs/CONTRACTS.md](docs/CONTRACTS.md) for the real, expected
+  shape of each of the five contracts.
+- A test in `tests/adversarial/` fails: this is Fase 0's own literal exit
+  criterion - treat any failure there as a real regression in the
+  injection-defense boundary, never as a test to relax.

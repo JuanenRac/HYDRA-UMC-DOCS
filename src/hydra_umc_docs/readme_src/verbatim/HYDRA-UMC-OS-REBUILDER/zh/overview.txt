@@ -1,0 +1,49 @@
+HYDRA-UMC-OS-REBUILDER 是一款 Windows/Linux 桌面工具 - 默认为窗口化图形
+界面，也可通过 `--cli` 使用完整命令行 - 它回答了每一次真实 CM5 部署最终
+都会遇到的问题：**"帮我构建一张全新的 SD 卡/eMMC 镜像，预装每个生态系统
+项目的最新真实版本，并让我在写入之前设置 Wi-Fi/用户/主机名/SSH。"**
+
+**镜像包含的内容：** 按计划版本放在 `/opt/hydra-umc/<名称>` 下的各项目副本，以及每个项目自身构建在那里生成的内容。它不会创建服务用户或 systemd 单元，也不会准备 `/etc/hydra-umc`，因此首次启动时不会有任何服务自动运行；HYDRA-UMC-OS 的部署脚本仍需在开发板上运行。
+
+它真正做三件事：
+
+1. **查询 GitHub。** HYDRA-UMC/URTC 生态系统中每一个自身
+   `hydra-umc.project.json` 声明了 `"deployment_target": "cm5"` 的仓库都
+   会被动态发现（绝不是固定列表），并读取其当前发布的版本 - 依赖
+   `hydra-umc-updater` 作为真实的库来完成这项工作，而不是重新实现一份可能
+   悄悄偏离其发现代码的第二实现。
+2. **构建真实镜像。** 下载一个固定版本、经过校验和验证的 Raspberry Pi OS
+   基础镜像，以环回方式挂载，并通过在镜像的 chroot 环境中运行**该项目自身
+   的 `build.sh`** 来安装/更新每个被发现的项目 - 绝不重新实现任何项目自己
+   的构建步骤。
+3. **写入真实的首次启动配置。** 主机名、一个使用 `passlib` 真实哈希密码
+   的新用户、Wi-Fi、时区、键盘布局和 SSH - 与 Raspberry Pi Imager 自身
+   "OS Customisation" 界面在 Raspberry Pi OS（Trixie 及更新版本）镜像上
+   使用的完全相同的真实 `firstrun.sh` 机制，因此最终生成的 SD 卡的行为与
+   Raspberry Pi Imager 本身生成的完全一致。参见
+   [docs/FIRST_BOOT_CONFIG.md](docs/FIRST_BOOT_CONFIG.md)。
+4. **在发布之前扫描自身的输出。** 在构建好的镜像被移动到最终路径之前，会
+   检查已挂载的 rootfs 中是否留有真实的 Wi-Fi 密码（存在于
+   `wpa_supplicant.conf` 或某个 NetworkManager 连接配置文件中）、真实的
+   SSH 私钥、非空的 shell 历史记录，或者遗留的 `.env` 文件——任何真实的
+   发现都会彻底阻止发布，就像清理失败时已经会做的那样。校验和验证过去只
+   覆盖了输入（基础镜像）；这是首次对构建过程本身在输出中留下了什么进行
+   检查。
+
+```
+$ hydra-umc-os-rebuilder --cli status
+HYDRA-UMC-SERVER 0.4.8 (api/node)
+HYDRA-UMC-VISION-STREAMER 0.0.3 (service/python)
+HYDRA-UMC-GATEWAY-INDUSTRIAL 0.0.3 (api/node)
+...
+TOTAL=27
+
+$ hydra-umc-os-rebuilder --cli config --out ./boot \
+    --hostname hydra-umc-cm5 --username hydra-umc --password '请修改' \
+    --wifi-ssid 我的网络 --wifi-password 'wifi密码' --wifi-country CN
+CONFIG_WRITTEN out=boot firstrun=firstrun.sh
+```
+
+不带任何参数运行时，会在 Qt Quick 桌面界面中打开同样的信息 - 复用与
+HYDRA-UMC-UPDATER 相同的视觉语言（相同的深色调色板、字体排印和组件集），
+分为三个标签页：生态系统状态、构建镜像、首次启动配置。

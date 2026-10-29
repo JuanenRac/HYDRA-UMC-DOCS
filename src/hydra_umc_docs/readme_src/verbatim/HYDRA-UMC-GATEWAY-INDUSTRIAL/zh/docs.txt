@@ -1,0 +1,1 @@
+- **[docs/API.md](docs/API.md)** —— 真实的 HTTP API 参考文档：快速存活探测 `GET /health`、`GET /status` 响应的每个字段、`POST /command` 的 `403`/`429`/`504`/`502` 边界，以及每个配置用环境变量，均直接从 `src/server.ts`/`src/probes.ts` 整理而成。

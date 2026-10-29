@@ -1,0 +1,1 @@
+🛠️ Standardized XML/HTTP Interface for Machine Tool Monitoring

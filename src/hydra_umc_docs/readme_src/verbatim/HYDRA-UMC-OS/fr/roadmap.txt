@@ -1,0 +1,51 @@
+### Statut
+
+L'agent de base, sa configuration non secrète validée, une unité systemd
+renforcée et des tests côté hôte sont implémentés. L'agent est délibérément
+lecture seule : l'assemblage de l'image de production et la validation matérielle CM5 restent
+portes de dégagement séparées.
+
+Le preflight d'installation (`provisioning/preflight_cm5.py`) s'avère
+idempotent et sans effet de bord grâce à un test réel - deux exécutions
+consécutives produisent une sortie identique octet pour octet et ne
+touchent aucun fichier dans ce dépôt - et un mécanisme réel de
+sauvegarde/restauration (rollback), indépendant de l'hôte
+(`provisioning/rollback.py`), protège l'unique fichier système que
+`install_local_agent.sh` écrase inconditionnellement à chaque exécution.
+Les deux sont vérifiés sans root ni CM5 - voir
+`tools/verify_preflight_idempotent.py` et `tools/verify_rollback.py`.
+
+**Le provisionnement WiFi de premier contact est réel lui aussi**
+(`provisioning/wifi_provision.py` / `hydra-umc-wifi-provision.service`) :
+un vrai repli en mode point d'accès NetworkManager pour un CM5 headless
+sans réseau connu - il active un vrai point d'accès (`nmcli device wifi
+hotspot`) auquel le téléphone/ordinateur portable d'un opérateur peut se
+connecter pour soumettre le vrai SSID/mot de passe cible via un petit
+formulaire HTTP local, désactive le point d'accès et rejoint le vrai
+réseau en cas de succès, le restaure en cas d'échec afin que l'appareil
+ne reste jamais bloqué. La machine à états est entièrement testée
+unitairement contre un faux NetworkManager, y compris un véritable
+aller-retour HTTP de bout en bout sur un vrai socket loopback - voir
+`tools/verify_wifi_provision.py`. Installé par `install_cm5_base.sh`
+mais délibérément non activé automatiquement, car il ne doit tourner que sur un appareil qui en a vraiment besoin : le mot de passe de son point d'accès et un code d'installation à usage unique sont générés pour chaque appareil au premier démarrage et lus une seule fois dans le journal - voir la section 3 de `provisioning/CM5_DEPLOYMENT_SEQUENCE.md`.
+
+**Les secrets sont générés par appareil, jamais repris d'un modèle.** `install_server.sh` et `install_voice_ui.sh` créent leurs fichiers env à partir de l'exemple lorsqu'ils manquent et remplacent chaque valeur d'exemple (`JWT_SECRET`, le mot de passe de l'administrateur initial, le jeton du relais vocal) par une valeur aléatoire de cet appareil (`provisioning/generate_secrets.py` ; ce que l'opérateur a déjà choisi est conservé, et le mot de passe administrateur n'est affiché qu'une fois), puis refusent de continuer s'il reste une valeur d'exemple ou un secret trop court ; `preflight_cm5.py` refuse un `/etc/hydra-umc/*.env` qui en porte encore. `install_industrial_gateway.sh` écrit les secrets de la pile dans `/etc/hydra-umc/gateway.env` (root seul, hors du checkout de l'utilisateur, lu par compose avec `--env-file` ; un `.env` laissé dans le checkout par une version antérieure y est déplacé) (`provisioning/gateway_env.py` : le secret de la passerelle, ainsi qu'un identifiant MQTT et une règle d'ACL par bridge de machine). Le réseau Wi-Fi de configuration n'a plus de mot de passe dans le code source : chaque appareil génère le sien et un code de configuration à usage unique à son premier démarrage (à lire une fois dans le journal, pour l'écrire sur l'étiquette), le formulaire demande le code (verrouillé une minute après cinq erreurs), le réseau de configuration n'est ouvert que 30 minutes après chaque démarrage et le formulaire refuse les requêtes trop volumineuses. Vérifié par `tools/verify_generate_secrets.py`, `tools/verify_gateway_env.py` et `tools/verify_wifi_provision.py`. Le nom d'hôte et le nom du réseau de configuration se terminent aussi par six caractères tirés de l'appareil (le numéro de série du Raspberry Pi, sinon l'adresse MAC), si bien que deux appareils flashés avec la même image ne partagent plus le même nom (`provisioning/device_identity.py`, vérifié par `tools/verify_device_identity.py`) ; `HYDRA_UMC_DEVICE_SUFFIX=off` conserve les noms fixes et un nom que vous choisissez vous-même n'est jamais modifié.
+
+**Clés de signature, distribuées par l'installateur.** La clé avec laquelle la Voice UI signe le résultat d'une confirmation (`HYDRA_UMC_VOICE_UI_RESULT_KEY`) est générée une seule fois pour l'appareil par `install_server.sh` ou `install_voice_ui.sh`, celui qui s'exécute en premier, et écrite dans `/etc/hydra-umc/server.env` et `/etc/hydra-umc/voice-ui.env` (un fichier issu d'un ancien modèle reçoit la ligne), avec `HYDRA_UMC_VOICE_CONFIRM_REQUIRE_SIGNATURE=1` pour le serveur et `HYDRA_UMC_VOICE_UI_REQUIRE_SUBJECT=1` pour la Voice UI (`generate_secrets.py --ensure` ; une ligne que l'opérateur a déjà, avec n'importe quelle valeur, n'est jamais modifiée). `install_local_technician.sh` crée la clé qui signe le résultat de chaque outil dans `/etc/hydra-umc-local-technician/result.key` (`provisioning/make_result_key.py` : 64 caractères hexadécimaux aléatoires, mode 0600 dès le premier octet, root seul, jamais affichée, jamais remplacée une fois créée, jamais suivie à travers un lien symbolique) et y fait pointer le fichier de réglages ; `--no-signing` (ou `HYDRA_UMC_LOCAL_TECHNICIAN_SIGNING=off`) laisse la ligne de côté. Aucune clé n'est jamais dans l'image ni dans le dépôt, et deux appareils n'en partagent jamais une. Vérifié par `tools/verify_result_keys.py`.
+
+**Journaux d'audit, activés par défaut.** `install_local_technician.sh` active le journal d'audit du technicien (en ajout seul, chaîné par hachage) et `install_node_healing.sh` le journal du veilleur (tous deux tournent à 5 Mio et gardent 5 fichiers) : ce qu'on a demandé au technicien et ce que le veilleur a décidé d'un nœud sont les preuves qui comptent après une panne, donc les installateurs écrivent le réglage actif dans un fichier de réglages documenté (`/etc/hydra-umc-local-technician/local-technician.env`, `/etc/hydra-umc-node-healing/journal.env`). `--no-audit` / `--no-journal` (ou `HYDRA_UMC_LOCAL_TECHNICIAN_AUDIT=off`, `HYDRA_UMC_NODE_HEALING_JOURNAL=off`) laisse un journal éteint et commente une ligne active, sans jamais supprimer ce qui a été enregistré ; un fichier de réglages existant n'est jamais écrasé. `tools/verify_optional_journals.py` vérifie statiquement les options et les noms ; rien n'a encore été installé avec eux sur une vraie CM5.
+
+**Un Go figé pour les services Go.** Le répartiteur de tâches, le veilleur de nœuds et le collecteur de télémétrie sont compilés sur l'appareil, et leur `go.mod` demande un Go plus récent que le `golang-go` de l'archive Debian, qui ne pouvait pas les compiler. Leurs installateurs chargent maintenant `provisioning/go_toolchain.sh` : une version de go.dev, vérifiée par rapport à son SHA-256 figé avant d'être décompressée dans `/usr/local/go-<version>` (le Go du système n'est pas touché). `tools/verify_go_toolchain.py` exécute l'aide avec un téléchargement simulé (une archive correcte, une corrompue, une déjà installée) et compare la version figée au `go.mod` des projets frères ; rien n'a encore été installé avec lui sur une vraie CM5.
+
+**Un seul registre de services.** Le port, la route de santé et l'unité systemd de chaque service viennent de `provisioning/ports.yaml` (copie du `contracts/ports.yaml` du SDK, généré à partir des manifestes des projets). Chaque installateur d'un service se termine en disant où regarder une fois qu'il tourne, et `verify_cm5_runtime.sh --with-services` sonde la route de santé de chaque service en marche (lecture seule ; ce qui ne tourne pas est ignoré). `tools/verify_service_registry.py` vérifie l'aide, les installateurs et la vérification d'exécution avec des simulacres ; rien n'a encore été installé avec cela sur un vrai CM5.
+
+### Première étape
+
+Terminée, selon la section État ci-dessus (code réel, tests réels, pas
+encore vérifiée contre du matériel CM5 physique) :
+
+1. ✅ Créez un profil Raspberry Pi OS ARM64 pour CM5.
+2. ✅ Installez `hydra-umc-platform-base` et `hydra-umc-agent`.
+3. ✅ Détectez les interfaces CM5 et signalez un `DeviceDescriptor` et un `HealthReport`.
+4. ✅ Démarrez uniquement les services activés via systemd.
+5. ✅ Affichez localement PRÊT, DÉGRADÉ ou DÉFAUT.

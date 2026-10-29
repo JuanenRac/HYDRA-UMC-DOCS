@@ -1,0 +1,50 @@
+コンパイルできるだけの骨組みではなく、本物の衝突のないパス探索です：
+JSON シナリオファイルからルートを計画し、結果を出力します。
+
+```bash
+# Windows
+build.bat
+run.bat scenarios/example.json
+
+# Linux / macOS
+./build.sh
+./run.sh scenarios/example.json
+```
+
+`build.sh`/`build.bat` はバージョンを変更せず（上げるのは `python tools/hydra_project_tool.py bump` だけです）、
+その後 `cargo build --release` を実行します。`run.sh`/`run.bat` は
+生成されたバイナリを直接実行し、引数（シナリオのパス）をそのまま
+渡します。
+
+シナリオは `start`、`goal`、`obstacles`(`{center, radius}` の球体の
+リスト)、`workspace`(`min`/`max` の境界)を持つ JSON ファイルで、
+オプションで `seed`(探索はシード値ごとに完全に決定論的)と
+`config`(`max_iterations`、`step_size`、`goal_bias`、
+`goal_threshold`、`robot_radius`、`max_duration_ms` - すべて省略可能で、
+省略時は妥当なデフォルト値が使われます。`max_duration_ms` は
+`max_iterations` とは独立に、実時間の壁時計で探索時間を制限します)を
+指定できます。結果は JSON として出力されます：
+`{"status": "ok", "path": [...]}` または
+`{"status": "error", "reason": "..."}`(`start_inside_obstacle`、
+`goal_outside_workspace`、`no_path_found`、`time_limit_exceeded` など -
+完全で正直な一覧は `src/rrt.rs` の `PlanError` を参照。探索が時間内に
+見つけられなかっただけでなく、そもそも経路が存在しないケースも
+含まれます)。
+
+オプションの `frame`（64 バイト以内の短い名前）は、シナリオが記述されている座標系を示します。これは単なるラベルで、結果にそのまま返され、座標を変更することはありません。
+
+2つ目の実際のサブコマンドは、既に計算済みの経路(`{x, y, z}` の
+単純な JSON 配列)を、新しい探索を実行せずに、シナリオの現在の
+障害物/ワークスペースに対して再チェックします：
+
+```bash
+./run.sh validate scenarios/example.json path.json
+# {"status": "safe"}
+# または: {"status": "unsafe", "issues": [{"SegmentIntersectsObstacle": {"from_index": 0, "to_index": 1}}]}
+```
+
+```bash
+cargo test   # 幾何学 + 障害物の衝突判定、PRNG、RRT プランナー自体
+             #(その実際の壁時計時間制限を含む)、そして validate.rs の
+             # 安全性再チェック - 合計 {tests} 個のテスト
+```

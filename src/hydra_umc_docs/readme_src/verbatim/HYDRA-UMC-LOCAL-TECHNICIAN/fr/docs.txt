@@ -1,0 +1,3 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — objectif, les cinq pièces cibles, architecture cible, et relations avec l'écosystème.
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — chaque sous-commande, ses options, et le contrat de codes de sortie.
+- **[docs/CONTRACTS.md](docs/CONTRACTS.md)** — la forme réelle, champ par champ, des cinq contrats.

@@ -1,0 +1,36 @@
+### ARCHITECTURE & DESIGN DECISIONS
+
+- **The AI never gets authority by generating a response.** Every design
+  decision in this delivery exists to protect this one principle - see
+  [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) for the full model.
+- **A tool must be registered before it can ever be called.**
+  `policy/tool_matrix.py`'s `TOOL_MATRIX` is the complete, fixed list;
+  `lookup_tool()` returning `None` is an unconditional refusal, never a
+  case to guess a default risk level for.
+- **Untrusted content can never become a command.** The defense is
+  architectural (a type with no tool-producing method), not a filter
+  that tries to recognize "instruction-like" text - a losing game
+  against a determined prompt injection. See
+  `tests/adversarial/test_injection_defense.py`, Fase 0's own literal
+  exit criterion.
+- **A contract's normative source is its JSON Schema file.**
+  `contracts.py`'s field lists and validators are copied from
+  `contracts/*.schema.json`, field-for-field, mirroring HYDRA-UMC-SDK's
+  own `validation.py` convention - not a second, independent source of
+  truth.
+- **Secret redaction is one shared copy.** `knowledge/redaction.py` is the redaction kept by HYDRA-UMC-SDK (`tools/canonical/redaction.py`), identical to the one of the ops agent and checked against the same shared cases (`tests/redaction_vectors.json`).
+- **Every tool request can be audited.** With `--audit-log PATH` (or `HYDRA_UMC_LOCAL_TECHNICIAN_AUDIT_LOG`, or `auditLog` in the configuration file) each request is written to an append-only JSONL journal before it runs and its outcome after, redacted, each line chained to the previous one by its SHA-256, rotated by size. A request that cannot be recorded is not run; `audit-verify PATH` checks the chain. Off by default.
+- **`PRIVILEGED_CHANGE` and `PHYSICAL_ACTION` stay unimplemented.** A
+  deliberate, permanent gate until a dedicated design, a separate
+  authorization path and, for physical action, real interlocks exist -
+  not an oversight to complete later.
+- **Knowledge retrieval is bounded and allow-listed, never blind.**
+  `knowledge.search` only ever indexes one already allow-listed root
+  (`orchestrator/allowlist.py`'s own `resolve_knowledge_source`), and
+  the walk itself is bounded by a real file-count and per-file size cap
+  - "never trained blindly on the whole disk" holds even for a root an
+  operator already decided is safe.
+- **This delivery only ever declares, retrieves and validates - it does
+  not act.** No inference engine, no real tool execution above OBSERVE,
+  and no HYDRA-UMC-SERVER integration exist anywhere in this repository
+  yet.

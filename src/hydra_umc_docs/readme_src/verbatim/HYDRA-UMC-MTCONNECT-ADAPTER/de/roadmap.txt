@@ -1,0 +1,4 @@
+* **Phase 1:** OPC-UA Pub/Sub-Implementierung für Hochgeschwindigkeitsdatenaustausch und Legacy-Protokoll-Bridging.
+* **Phase 2:** MQTT-Broker-Cluster für massives IoT-Gerätemanagement und hohe Parallelität.
+* **Phase 3:** MTConnect-Adapterunterstützung für die Integration von CNC- und SPS-Maschinen verschiedener Hersteller.
+* **Phase 4:** Unterstützung für MTConnect Multi-Geräte-Aggregation und standardisiertes XML/HTTP-Telemetrie-Streaming.

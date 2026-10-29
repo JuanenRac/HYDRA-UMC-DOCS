@@ -1,0 +1,16 @@
+### PHYSICS PIPELINE
+
+`URDF` (parsing) and a real, standalone kinematics step (`fk`/`validate-limits`,
+not shown as its own box below since it replaces `SOLVE`'s role for v0) are
+real today. `MESH`, the real `SOLVE` step (an actual MuJoCo/PhysX solver),
+`DYN`, and `TWIN` remain future work.
+
+### ARCHITECTURE & DESIGN DECISIONS
+
+* **Why this simulation has no `hardware/`/`firmware/`/`os/` folders.** Pure software - no board of its own, so those folders were pruned rather than left empty.
+* **Why it's a sibling, not a submodule, of HYDRA-UMC-TWIN.** The physics solver runs on its own tick rate, independent from rendering - keeping it a separate process means a slow physics step doesn't stall HYDRA-UMC-TWIN's own frame rate, and either can be swapped/upgraded (e.g. MuJoCo vs PhysX) without touching the other.
+* **How this fits the rest of the ecosystem.** A child of HYDRA-UMC-TWIN by design. Today HYDRA-UMC-TWIN does not call it: the physical plausibility check behind "if it works in the Twin, it works on the floor" is planned, not built.
+* **Why a branching URDF is read as a `Model` and `parse_urdf` still refuses it.** v0 used to parse `<joint>` elements in raw document order and treat that order as the chain, which is wrong for any spec-valid URDF that declares its joints out of tree order; every joint's real `parent`/`child` link names are now walked from the document's real root link. `parse_urdf_model` keeps the whole tree: the joints in parent-before-child order, the index of each joint's parent joint (a gripper's two fingers are both placed from the palm, not one after the other), the followers of `<mimic>` (`multiplier * master + offset`; a position given for a follower is refused, a circle of followers is refused) and the effort, velocity and soft limits. `parse_urdf` keeps its original contract, a flat serial `Chain`, and refuses a branch with a real error instead of silently keeping one branch and dropping the other. Not done: a Jacobian, inverse kinematics, and `<mimic>` on a continuous joint beyond the position it derives (see `urdf.rs`).
+* **Why `roxmltree` is the only dependency, not a full physics-engine binding yet.** Real forward kinematics and limit checking need nothing beyond reading XML attributes and doing matrix math by hand (`transform.rs`) - adding a MuJoCo/PhysX FFI binding for that would be dependency weight with no real payoff until actual rigid-body/contact simulation is being built.
+* **Why `fk-checked` is a new subcommand instead of changing `fk` in place.** `fk` is the existing low-level pure-math utility - some callers (e.g. tuning a limit itself) genuinely want the unchecked pose for an out-of-range value. `fk-checked` adds the fail-safe, limit-gated entry point real callers should use, without silently changing what `fk` has always meant.
+* **Why the joint-limits corpus (`corpus.rs`) is test-only.** It exists purely to give `limits.rs`'s and `kinematics.rs`'s regression tests one shared, real set of fixtures instead of duplicated ad hoc literals - it has no reason to ship in the release binary, so it's gated behind `#[cfg(test)]`.

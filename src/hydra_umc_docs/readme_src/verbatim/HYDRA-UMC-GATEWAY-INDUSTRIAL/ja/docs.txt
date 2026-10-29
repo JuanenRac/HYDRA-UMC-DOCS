@@ -1,0 +1,1 @@
+- **[docs/API.md](docs/API.md)** —— 実際の HTTP API リファレンス: 高速な生存確認 `GET /health`、`GET /status` レスポンスの各フィールド、`POST /command` の `403`/`429`/`504`/`502` の境界、および各設定用環境変数を、`src/server.ts`/`src/probes.ts` から直接まとめたもの。

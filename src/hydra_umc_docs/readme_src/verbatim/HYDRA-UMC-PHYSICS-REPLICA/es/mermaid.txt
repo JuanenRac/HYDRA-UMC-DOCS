@@ -1,0 +1,7 @@
+```mermaid
+flowchart LR
+    URDF["URDF Visual - real v0 (recorrido de árbol parent/child, ramas, articulaciones mimic y límites)"] --> MESH["Simplificación de Malla de Colisión - planeado"]
+    MESH --> SOLVE["Solver de Física (MuJoCo) - planeado"]
+    SOLVE --> DYN["Estado Dinámico (Pos/Vel/Acc) - planeado"]
+    DYN --> TWIN["Viewport HYDRA-UMC-TWIN - planeado"]
+```

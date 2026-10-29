@@ -1,0 +1,20 @@
+Die Lieferungen 1-5 (diese Version) liefern **Beweis**, **Diagnose**,
+**von einer Person genehmigte Änderung**, **Canary-Deployment** und
+**Verifizierung** - den echten Lebenszyklus, der bereits im eigenen
+Manifest und CHANGELOG dieses Projekts benannt ist. Was bleibt:
+
+- **Lieferung 6 - Sprach-/Benachrichtigungsintegration - wirklich
+  BLOCKIERT, nicht nur aufgeschoben.** Der Plan war, einen kritischen
+  Vorfall oder ein abgeschlossenes Canary über HYDRA-UMC-VOICE-UI
+  sichtbar zu machen. Die echte Untersuchung des eigenen Codes
+  (`gateway.py`) ergab, dass es sich um ein begrenztes, EINGEHENDES
+  Gateway von Transkript zu Intent handelt (eine Watch sendet Text,
+  erhält eine Antwort), ohne eine echte Oberfläche für ausgehende
+  Benachrichtigungen heute. Eine hier zu bauen hätte bedeutet, einen
+  Integrationspunkt zu erfinden, den VOICE-UI selbst nicht hat - der
+  eigene Anti-Fabrikations-Standard dieses Projekts erlaubt das nicht.
+  Erneut aufgreifen, sobald VOICE-UI (oder ein Nachfolger) eine echte
+  eigene Fähigkeit zur "eingehenden Assistenten-Ankündigung" entwickelt.
+- Ein echter Transport zwischen den Edge- und Control-Plane-Rollen
+  (heute ist das Verschieben einer Snapshot-Datei zwischen beiden ein
+  manueller Schritt).

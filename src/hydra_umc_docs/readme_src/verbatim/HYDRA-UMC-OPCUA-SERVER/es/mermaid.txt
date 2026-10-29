@@ -1,0 +1,7 @@
+```mermaid
+flowchart LR
+    API["API Interna de Hydra"] --> MAP["Mapeador OPC-UA"]
+    MAP --> SPACE["Árbol de Espacio de Direcciones"]
+    SPACE --> TAGS["Tags de PLC Estandarizados"]
+    TAGS --> CLIENT["PLC / SCADA Externo"]
+```

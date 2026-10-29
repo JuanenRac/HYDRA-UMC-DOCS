@@ -1,0 +1,21 @@
+```bash
+chmod +x build.sh   # 只需一次
+./build.sh          # 创建 .venv，pip install -e ".[dev]"，编译检查 + 测试
+./run.sh contracts validate tests/fixtures/tool_request.valid.json --contract ToolRequest
+./run.sh --version
+```
+
+在 Windows 上：先 `build.bat`，再 `run.bat contracts validate ...` /
+`run.bat --version`。`build-test.sh`/`.bat` 执行的是与本项目自身 CI
+工作流相同的、不产生变更的 Python 语法编译检查，不会改动项目版本号或
+CHANGELOG - 它并**不**运行测试套件；要运行完整的本地测试套件，请执行
+`./build.sh`/`build.bat`（或直接执行 `pytest tests/`）。
+
+**故障排查**
+
+- `contracts validate` 以退出码 `1` 和 `INVALID: ...` 结束：请阅读该消息 -
+  它会指明具体是哪个字段以及原因，而不只是说"有些东西失败了"。每份合约的
+  真实预期结构参见 [docs/CONTRACTS.md](docs/CONTRACTS.md)。
+- `tests/adversarial/` 中的某个测试失败：这正是第 0 阶段自身字面意义上的
+  退出标准 - 请将那里的任何失败都当作注入防御边界的真实退化，绝不要把它当
+  作一个应该放宽的测试。

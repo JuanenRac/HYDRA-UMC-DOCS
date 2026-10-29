@@ -1,0 +1,51 @@
+### 必要条件
+- [Node.js](https://nodejs.org/)（v20 以上を推奨）
+- npm
+
+### インストール
+```bash
+npm install
+```
+
+### 開発モード
+`tsx` を使用して集約サーバーを直接実行します（バンドラーなし）：
+- **Windows：** `dev.bat` をダブルクリックするか、`npm run dev` を実行
+- **Linux/Mac：** `./dev.sh` または `npm run dev` を実行
+
+### プロダクションビルド
+esbuild を使用してサーバーを単一のデプロイ可能なファイルにバンドル
+します：
+- **Windows：** `build.bat` をダブルクリックするか、`npm run build` を実行
+- **Linux/Mac：** `./build.sh` または `npm run build` を実行
+
+その後、次のコマンドで起動します：
+```bash
+npm start
+```
+
+サーバーは `0.0.0.0:8000` でリッスンします——`GET /health` は子サービスへ
+のプローブを行わない高速な生存確認です（`hydra-umc.project.json` 自身の
+`service.health_path` はここを指します）。一方 `GET /status` は本物の詳細
+診断で、本ゲートウェイ自身のバージョンと、それがフロントに立っている各子
+ブリッジの名前/プロトコル/エンドポイント/到達可能性を報告します。
+
+実際の例 —— 稼働していない子サービスに対するアローリスト内のコマンド、
+認可されていない操作、および不正な形式のリクエスト：
+
+```bash
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" \
+  -d '{"protocol":"OPC-UA","operation":"read","target":"ns=2;s=Line1.Status"}'
+# 502 {"status":"downstream_unreachable","reason":"TCP connect to opcua-server:4840 timed out after 2000ms"}
+
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" \
+  -d '{"protocol":"OPC-UA","operation":"write","target":"ns=2;s=Line1.SetPoint"}'
+# 403 {"status":"rejected_unauthorized","reason":"operation \"write\" is not allowlisted for OPC-UA"}
+
+curl -X POST http://localhost:8000/command -H "Content-Type: application/json" -d '{"protocol":"OPC-UA"}'
+# 400 {"error":"protocol, operation and target are required strings"}
+```
+
+### バージョン管理
+`npm run build` はサーバーをバンドルするだけでバージョンを変更せず、`python tools/hydra_project_tool.py bump` が
+超えると major に繰り上がる）、2 桁のセグメントに到達することはあり
+ません（`0.0.9` -> `0.1.0`、`0.0.10` にはなりません）。

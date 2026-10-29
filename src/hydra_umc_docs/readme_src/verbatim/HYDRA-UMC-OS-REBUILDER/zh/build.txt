@@ -1,0 +1,29 @@
+```bash
+chmod +x build.sh   # 仅需一次
+./build.sh          # 创建 .venv、pip install -e ".[dev,gui]"、检查编译、运行 pytest
+./run.sh                                # 窗口化图形界面（默认）
+./run.sh --cli status                   # 每个生态系统项目最新的真实 GitHub 版本
+./run.sh --cli config --out ./boot ...  # 写入首次启动配置（各选项见 docs/CLI_REFERENCE.md）
+./run.sh --cli build-image --out FILE   # 构建一份即刻可烧录的 .img（仅限 Linux/root）
+```
+
+在 Windows 上：先运行 `build.bat`，再运行 `run.bat`（图形界面）/
+`run.bat --cli status` / `run.bat --cli config ...`。`build-image` 无论
+如何都需要一台具备 root 权限的真实 Linux 主机 - 见
+[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)。
+
+**故障排查**
+
+- `--cli build-image` 以 `BUILD_BLOCKED reason=...` 退出：请阅读具体原因
+  - 它会准确指出缺失的部分（不是 Linux、没有 root，或 `PATH` 中缺少某个
+    具体工具），而不是一个笼统的失败信息。
+- `--cli config` 抛出校验错误：你给出的主机名/用户名/Wi-Fi 国家代码不符合
+  这些字段所要求的真实、严格的格式 - 参见 `firstboot_config.py` 自身的
+  校验逻辑。
+- `--cli config`/`build-image` 以“no login path at all”拒绝：禁用了 SSH 却没有配置账户 - 要么配置一个，要么在确定有其他进入方式时传入 `acknowledge_no_remote_access=True`（GUI/API）。参见 `describe_recovery_procedure()`。
+- `profile-build` 以“no real, resolved commit SHA”拒绝某个项目：冻结的清单早于某个仓库被重命名或设为私有 - 请针对当前的实际生态系统重新冻结配置（`profile-freeze`）。
+- `profile-build` 以“missing N required resource(s)”拒绝：用 `profile-set-required-resources` 整理过的项目运行了自己的 `build.sh`，但声明的相对路径之后在磁盘上仍不存在 - 这是真实的不完整构建，绝不会被别处遗留的文件挽救；镜像不会被提升。
+- 图形界面的"生态系统状态"标签页始终为空：请检查你的网络 - 本工具的
+  `status`/发现功能需要真实连接到 `github.com`/`raw.githubusercontent.com`，
+  与 `hydra-umc-updater` 本身相同。
+- **重复刷新时项目数量不断减少（例如 42 -> 9 -> 0），即使重启应用也一样** - 一个此前未被报告的真实缺陷：解析每个项目的真实提交 SHA 会为每个项目消耗一次 `api.github.com` 调用，而 *未认证* 的预算是每小时 60 次请求，并与本工具（以及 `hydra-umc-updater`）的其他所有操作共用 - 有 50 多个真实的生态系统项目时，一次刷新就可能耗尽，而需要重置的是 GitHub 自己的小时窗口（不是本应用的状态），重启无法解决。已修复为如实报告，而不是悄悄列出更少的项目：项目列表下方的琥珀色横幅会准确写出在达到上限前解析了多少个项目，以及 GitHub 的限额何时重置（参见 `ecosystem_plan.GitHubRateLimitedError`）。启动本工具之前设置环境变量 `GITHUB_TOKEN`（普通的 GitHub 个人访问令牌，公开仓库不需要任何权限）即可把预算提高到每小时 5000 次 - 仓库列表和按项目解析提交 SHA 现在都一致地使用它。

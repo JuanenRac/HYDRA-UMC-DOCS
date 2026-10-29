@@ -1,0 +1,62 @@
+HYDRA-UMC-OS-REBUILDER è uno strumento desktop Windows/Linux - GUI in
+finestra per impostazione predefinita, CLI completa con `--cli` - che
+risponde alla domanda che ogni distribuzione reale su CM5 finisce per
+porsi: **"costruiscimi un'immagine fresca di scheda SD/eMMC, con la
+versione reale più recente di ogni progetto dell'ecosistema già
+installata, e lasciami configurare Wi-Fi/utente/hostname/SSH prima di
+scriverla."**
+
+**Cosa contiene l'immagine:** le copie dei progetti in `/opt/hydra-umc/<nome>` alle versioni previste e ciò che la compilazione di ciascun progetto vi ha prodotto. Non crea utenti di servizio né unità systemd e non prepara `/etc/hydra-umc`, quindi nessun servizio parte da solo al primo avvio; gli script di provisioning di HYDRA-UMC-OS vanno comunque eseguiti sulla scheda.
+
+Fa tre cose reali:
+
+1. **Interroga GitHub.** Ogni repository dell'ecosistema HYDRA-UMC/URTC il
+   cui proprio `hydra-umc.project.json` dichiara
+   `"deployment_target": "cm5"` viene scoperto dinamicamente (mai un
+   elenco fisso) e ne viene letta la versione pubblicata attuale -
+   dipendendo da `hydra-umc-updater` come vera libreria per questo, non
+   una seconda implementazione che potrebbe divergere silenziosamente dal
+   proprio codice di scoperta.
+2. **Costruisce un'immagine reale.** Scarica un'immagine base Raspberry
+   Pi OS fissata e verificata tramite checksum, la monta in loop, e
+   installa/aggiorna ogni progetto scoperto eseguendo **il `build.sh`
+   proprio di quel progetto** all'interno del chroot dell'immagine - mai
+   una reimplementazione dei passi di build di alcun progetto.
+3. **Scrive una configurazione reale di primo avvio.** Hostname, un nuovo
+   utente con una password realmente sottoposta ad hash da `passlib`,
+   Wi-Fi, fuso orario, layout di tastiera e SSH - lo stesso meccanismo
+   reale `firstrun.sh` usato dalla schermata "OS Customisation" di
+   Raspberry Pi Imager su un'immagine Raspberry Pi OS (Trixie e
+   successive), così la scheda SD risultante si comporta esattamente come
+   una che avrebbe prodotto lo stesso Raspberry Pi Imager. Vedi
+   [docs/FIRST_BOOT_CONFIG.md](docs/FIRST_BOOT_CONFIG.md).
+4. **Analizza il proprio output prima di pubblicarlo.** Prima che
+   l'immagine costruita venga spostata nel suo percorso finale, il
+   rootfs montato viene controllato alla ricerca di una vera password
+   Wi-Fi lasciata in `wpa_supplicant.conf`/un profilo di connessione
+   NetworkManager, una vera chiave SSH privata, una cronologia della
+   shell non vuota, o un file `.env` abbandonato - qualsiasi risultato
+   reale blocca del tutto la pubblicazione, allo stesso modo di un
+   fallimento della pulizia. La verifica del checksum copriva solo
+   l'INGRESSO (l'immagine base); questo è il primo controllo su ciò che
+   la stessa costruzione lascia nell'USCITA.
+
+```
+$ hydra-umc-os-rebuilder --cli status
+HYDRA-UMC-SERVER 0.4.8 (api/node)
+HYDRA-UMC-VISION-STREAMER 0.0.3 (service/python)
+HYDRA-UMC-GATEWAY-INDUSTRIAL 0.0.3 (api/node)
+...
+TOTAL=27
+
+$ hydra-umc-os-rebuilder --cli config --out ./boot \
+    --hostname hydra-umc-cm5 --username hydra-umc --password 'da-cambiare' \
+    --wifi-ssid LaMiaRete --wifi-password 'pass-wifi' --wifi-country IT
+CONFIG_WRITTEN out=boot firstrun=firstrun.sh
+```
+
+Eseguito senza argomenti apre le stesse informazioni in una shell desktop
+Qt Quick - riutilizzando lo stesso linguaggio visivo di
+HYDRA-UMC-UPDATER (stessa palette scura, tipografia e set di componenti)
+su tre schede: Stato dell'Ecosistema, Crea Immagine e Configurazione
+Primo Avvio.

@@ -1,0 +1,1 @@
+🛠️ Interface XML/HTTP standardisée pour la surveillance des machines-outils

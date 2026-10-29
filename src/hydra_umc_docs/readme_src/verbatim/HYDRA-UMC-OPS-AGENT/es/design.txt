@@ -1,0 +1,81 @@
+### ARQUITECTURA Y DECISIONES DE DISEÑO
+
+- **Una incidencia se deriva, nunca se declara.** Los métodos `add_*` de
+  `IncidentBatch` devuelven `None` cuando lo examinado resultó estar
+  sano. No hay ningún camino de código que fabrique una incidencia a
+  partir de una observación limpia, ni ninguno que descarte
+  silenciosamente una real.
+- **Un límite de protocolo se degrada con honestidad, nunca adivina.**
+  `check_systemd_unit_health()` lanza un `SystemdUnavailableError`
+  propio en el instante en que `systemctl` no está en `PATH` - lo cual
+  ocurre siempre en esta máquina de desarrollo, y en cualquier host sin
+  systemd - en vez de reportar un estado "inactive" inventado.
+  `check_http_health()` mantiene un fallo de red real (`status_code is
+  None`) distinguible de una respuesta HTTP real pero no saludable.
+- **La redacción es la pieza de código más crítica para la seguridad
+  aquí.** `log_redaction.py` es una transformación de texto pura y sin
+  dependencias, cubierta por sus propios tests antes de que nada más la
+  consuma. Una coincidencia de nombre de clave tiene que buscar el
+  nombre del secreto como subcadena dentro de un token identificador
+  real (`DB_PASSWORD`, `api-key`), no como una palabra delimitada por
+  `\b` - `_` es un carácter de palabra en una expresión regular, así que
+  un `\bpassword\b` ingenuo nunca coincide con `DB_PASSWORD`.
+  `MaintenanceIncident.to_dict()` vuelve a ejecutar `redact_secrets()`
+  sobre `symptom` en el momento de la serialización, aunque quien la
+  llama ya la haya redactado antes - defensa en profundidad para el
+  campo con más probabilidad de llevar una línea de log copiada y
+  pegada.
+- **El contrato `MaintenanceIncident`/`NodeSnapshot` está fijado a
+  propósito, campo a campo, a un "CONTRATO MINIMO" explícito.**
+  Ver [docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md). Una
+  entrega futura que hable con un proveedor de IA real o un sistema de
+  tickets nunca debería tener que traducir entre dos formas
+  incompatibles.
+- **El diagnóstico es independiente del proveedor por diseño.**
+  `diagnose_incident()` depende solo de un Protocol mínimo `AIProvider`
+  - nunca se fija en código un proveedor de IA concreto. `anthropic` y
+  OpenAI vienen como extras opcionales reales; cualquier llamador puede
+  pasar otro objeto que implemente ese mismo contrato de un solo método.
+- **Un despliegue canario nunca toca el checkout real hasta que un build
+  real ya demostró que el cambio funciona.** `deploy_canary()` se niega
+  a ejecutarse a menos que la propuesta dada tenga `status` `approved`,
+  luego pone en staging el diff en un clon local independiente y solo
+  promueve (intercambio de dos renombrados, checkout anterior guardado
+  como copia real) si el propio comando de build-test de ese proyecto
+  de verdad termina con código `0` - el mismo patrón
+  atómico-por-verificación que ya usa el propio `install.py` de
+  HYDRA-UMC-UPDATER.
+- **Una propuesta se decide exactamente una vez.**
+  `approve_change()`/`reject_change()` lanzan `InvalidTransitionError`
+  ante cualquier cosa que no sea una propuesta `pending` - una segunda
+  decisión nunca sobrescribe silenciosamente la primera, y cada decisión
+  se atribuye a un nombre real, no vacío.
+- **Una aprobación es una firma, no un campo.** `approve_change()` firma, con la clave privada Ed25519 del propio aprobador, una declaración de exactamente qué se aprueba: la propuesta, el SHA-256 del diff, quién aprueba, hasta cuándo, el commit del checkout al que va dirigida y si se permiten rutas protegidas. `deploy_canary()` solo la acepta si la firma verifica contra un registro de claves *públicas* de aprobadores, así que quien solo pueda escribir el fichero de la propuesta no puede aprobar nada. Además se rechaza un diff que contenga algo con forma de secreto real o que toque ficheros de CI, build-test o servicios sin decirlo; el build-test se ejecuta con un entorno mínimo; un servicio puede pararse y comprobarse alrededor del intercambio con reversión automática; y cada propuesta, aprobación, despliegue, reversión y poda se añade a un diario de auditoría encadenado por hash. Ver [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md).
+- **La verificación vuelve a ejecutar la MISMA comprobación real, nunca
+  una más laxa.** `verify_incident_resolved()` llama directamente a las
+  propias `check_http_health()`/`check_systemd_unit_health()`/
+  `check_project_manifest()` de la Entrega 1 - no existe una segunda
+  implementación de comprobación de salud, independiente y propensa a
+  desviarse, en ningún lugar de este proyecto. Un incidente de manifiesto
+  con un `base_commit:` real (capturado de forma best-effort al
+  detectarlo) se comprueba además contra el control compartido
+  `compare_runs()` de HYDRA-UMC-SDK - el commit del checkout debe haberse
+  movido de verdad, no basta con que el archivo parezca arreglado en
+  disco. Ver [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md).
+- **La Entrega 6 está bloqueada, no simplemente omitida.** El propio
+  contrato real de HYDRA-UMC-VOICE-UI (`gateway.py`) es una puerta de
+  entrada acotada, de ENTRADA, de transcripción a intención, sin ninguna
+  superficie real de notificación de salida hoy - inventar una aquí
+  habría significado fabricar una integración que no existe, algo que
+  el propio estándar de no fabricar de este proyecto no permite. Ver la
+  sección HOJA DE RUTA más abajo.
+- **Solo librería estándar para el núcleo.** `edge collect`/`control
+  show`/`control propose`/`control approve`/`control reject`/`control
+  verify` no necesitan ninguna dependencia - `urllib.request` para la
+  comprobación HTTP, `subprocess`/`shutil.which` para la de systemd,
+  `git` (un binario externo real, no un paquete Python) para la etapa de
+  despliegue canario y para la captura del `base_commit:` de un
+  incidente de manifiesto. Solo `control diagnose` (un extra `ai-*`) y la
+  recomprobación `compare_runs()` de un incidente de manifiesto (el extra
+  `sdk`) necesitan una dependencia opcional, cada una solo para lo que
+  realmente la usa.

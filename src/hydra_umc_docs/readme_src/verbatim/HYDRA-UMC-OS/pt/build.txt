@@ -1,0 +1,6 @@
+Use a verificação de compilação sem versão antes de uma compilação de lançamento:
+
+| Ação | Windows | Linux / macOS |
+|---|---|---|
+| Verificação de compilação (sem alteração de versão nem de CHANGELOG) | `build-test.bat` | `./build-test.sh` |
+| Executar / desenvolvimento (quando existir) | `run*.bat` ou `dev*.bat` | `./run*.sh` ou `./dev*.sh` |

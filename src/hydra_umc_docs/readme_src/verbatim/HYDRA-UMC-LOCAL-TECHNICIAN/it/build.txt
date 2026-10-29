@@ -1,0 +1,24 @@
+```bash
+chmod +x build.sh   # una sola volta
+./build.sh          # crea .venv, pip install -e ".[dev]", verifica + test
+./run.sh contracts validate tests/fixtures/tool_request.valid.json --contract ToolRequest
+./run.sh --version
+```
+
+Su Windows: `build.bat`, poi `run.bat contracts validate ...` /
+`run.bat --version`. `build-test.sh`/`.bat` esegue la stessa verifica di
+sintassi Python non mutante che esegue già il workflow di CI di questo
+progetto, senza toccare la versione del progetto né il CHANGELOG - NON
+esegue la suite di test; esegui `./build.sh`/`build.bat` (o
+`pytest tests/` direttamente) per la suite di test locale completa.
+
+**Risoluzione dei problemi**
+
+- `contracts validate` esce con codice `1` e `INVALID: ...`: leggi il
+  messaggio - nomina il campo esatto e il motivo, non solo che qualcosa
+  è fallito. Consulta [docs/CONTRACTS.md](docs/CONTRACTS.md) per la
+  forma reale attesa di ciascuno dei cinque contratti.
+- Un test in `tests/adversarial/` fallisce: è il criterio di uscita
+  letterale della stessa Fase 0 - tratta ogni fallimento lì come una
+  vera regressione del confine di difesa contro l'injection, mai come un
+  test da allentare.

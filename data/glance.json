@@ -112,7 +112,8 @@
     "HYDRA-UMC-DEV-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 347
+        "count": 442,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-DOCS": {
@@ -128,7 +129,8 @@
     "HYDRA-UMC-DSI": {
       "hardware": "not_run",
       "tests": {
-        "count": 72
+        "count": 172,
+        "command": "flutter test"
       }
     },
     "HYDRA-UMC-EDITOR-STL": {
@@ -141,7 +143,11 @@
       }
     },
     "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
-      "hardware": "not_run"
+      "hardware": "not_run",
+      "tests": {
+        "count": 127,
+        "command": "npm test"
+      }
     },
     "HYDRA-UMC-HIL-BRIDGE": {
       "hardware": "simulated",
@@ -164,58 +170,64 @@
     "HYDRA-UMC-LOCAL-TECHNICIAN": {
       "hardware": "not_run",
       "tests": {
-        "count": 255
+        "count": 315,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-MQTT-BROKER": {
       "hardware": "not_run",
       "tests": {
-        "count": 155
+        "count": 159,
+        "command": "npm test"
       }
     },
     "HYDRA-UMC-MTCONNECT-ADAPTER": {
       "hardware": "not_run",
       "tests": {
-        "count": 115
+        "count": 122,
+        "command": "npm test"
       }
     },
     "HYDRA-UMC-NODE-HEALING": {
       "hardware": "not_run",
       "tests": {
-        "count": 98
+        "count": 115,
+        "command": "go test ./..."
       }
     },
     "HYDRA-UMC-OPCUA-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 73
+        "count": 98,
+        "command": "npm test"
       }
     },
     "HYDRA-UMC-OPS-AGENT": {
       "hardware": "not_run",
       "tests": {
-        "count": 319
+        "count": 322,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-ORCHESTRATOR": {
       "hardware": "not_run",
       "tests": {
-        "count": 143,
+        "count": 144,
         "command": "cargo test"
       }
     },
     "HYDRA-UMC-OS": {
       "hardware": "not_run",
       "tests": {
-        "count": 13,
-        "command": "python -m unittest"
+        "count": 20,
+        "command": "python -m unittest discover -s agent/tests"
       }
     },
     "HYDRA-UMC-OS-REBUILDER": {
       "hardware": "not_run",
       "tests": {
-        "count": 158,
-        "command": "pytest"
+        "count": 177,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-PATH-PLANNER-3D": {
@@ -226,7 +238,11 @@
       }
     },
     "HYDRA-UMC-PHYSICS-REPLICA": {
-      "hardware": "not_run"
+      "hardware": "not_run",
+      "tests": {
+        "count": 86,
+        "command": "cargo test"
+      }
     },
     "HYDRA-UMC-PRODUCTION-REPORTS": {
       "hardware": "not_run",

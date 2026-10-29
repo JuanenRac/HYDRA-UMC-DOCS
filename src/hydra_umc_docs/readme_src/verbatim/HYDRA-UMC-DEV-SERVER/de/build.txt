@@ -1,0 +1,30 @@
+```bash
+chmod +x build.sh   # einmalig
+./build.sh          # erstellt .venv, pip install -e ".[dev]", Prüfung + Tests
+./run.sh                                  # reale Demo: inventory scan gegen diesen
+                                           # GitHub-Workspace, dann config validate
+./run.sh inventory scan --root DIR
+./run.sh config validate configs/task-policy.example.json --kind task-policy
+```
+
+Unter Windows: `build.bat`, dann `run.bat` (gleiche Demo ohne
+Argumente) / `run.bat inventory scan ...` / `run.bat config
+validate ...`. `build-test.sh`/`.bat` führt dieselbe nicht-mutierende
+Python-Syntaxprüfung durch, die auch der eigene CI-Workflow des
+Projekts durchführt, ohne die Projektversion oder das CHANGELOG
+anzurühren - es führt NICHT die Testsuite selbst aus; führen Sie
+`./build.sh`/`build.bat` (oder direkt `python -m unittest discover -s tests`) für die
+vollständige lokale Testsuite aus.
+
+**Fehlerbehebung**
+
+- `config validate` beendet sich mit Code `1` und `INVALID: ...`: Lesen
+  Sie die Meldung - sie listet jedes fehlgeschlagene Feld auf, nicht
+  nur das erste. Siehe
+  [docs/CONFIG_SCHEMA.md](docs/CONFIG_SCHEMA.md) für die genaue
+  erwartete Form.
+- `inventory scan` meldet ein Problem in einem Verzeichnis, das Sie für
+  sauber hielten: Dieses Verzeichnis hat ein vorhandenes, aber
+  unlesbares, fehlerhaftes oder unvollständiges
+  `hydra-umc.project.json` - ein Verzeichnis ganz ohne Manifest wird
+  niemals als Problem gemeldet.

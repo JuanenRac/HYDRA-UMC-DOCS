@@ -1,0 +1,4 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — 每一个子命令、其参数，以及退出码契约。
+- **[docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md)** — `MaintenanceIncident`/`NodeSnapshot` 的真实 JSON 结构。
+- **[docs/DIAGNOSIS.md](docs/DIAGNOSIS.md)** — 交付 2 自身真实的契约、提供方、凭据与安全边界。
+- **[docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md)** — 交付 3-5 自身真实的契约、完整的 stage/apply/verify/promote 流程，以及一个真实的操作员流程示例。

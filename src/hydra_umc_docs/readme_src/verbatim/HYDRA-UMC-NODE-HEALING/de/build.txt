@@ -1,0 +1,35 @@
+Ein echter Watchdog, nicht nur ein Skelett, das kompiliert: er wählt jeden
+Knoten aus `nodes.example.json` (oder `-nodes <Pfad>` für ein eigenes
+Register) an (per HTTP-Health-URL oder, bei einem Eintrag mit `address`, per gRPC) und meldet Zustandsänderungen auf stdout.
+
+```bash
+# Windows
+build.bat
+run.bat -nodes nodes.example.json
+
+# Linux / macOS
+./build.sh
+./run.sh -nodes nodes.example.json
+```
+
+`build.sh`/`build.bat` ändern die Version nie (nur `python tools/hydra_project_tool.py bump` erhöht sie) und führen anschließend
+`go build` aus. `run.sh`/`run.bat` führen die resultierende Binärdatei
+direkt aus.
+
+Jeder Registereintrag braucht etwas Echtes, das auf seiner `address`
+lauscht und `hydra.common.v1.HealthService` implementiert (siehe
+`HYDRA-UMC-ORCHESTRATOR/proto/hydra_common.proto`), um jemals als
+gesund gemeldet zu werden - da auf den Beispiel-Ports noch nichts läuft,
+ist beim ersten Zyklus für alle drei `UNKNOWN -> UNREACHABLE` zu
+erwarten (jetzt erst nach Erschöpfung der begrenzten Versuche von
+`RetryPolicy`, nicht schon beim ersten Dial - siehe die Funktion
+"Begrenzte Retries" oben), was heute das korrekte, ehrliche Ergebnis ist
+(jeder Knoten des Ökosystems ist über die eigene Erkennungslogik dieses
+Repos hinaus noch im Andamiaje-Stadium). Ein Knoten, der antwortet, sich
+aber nicht korrekt selbst identifizieren kann, gibt stattdessen sofort
+`UNKNOWN -> INVALID` aus.
+
+```bash
+go test ./...   # src/config + src/watchdog, echte gRPC-Roundtrips
+                 # über echte Loopback-Sockets, ohne simulierten Client
+```

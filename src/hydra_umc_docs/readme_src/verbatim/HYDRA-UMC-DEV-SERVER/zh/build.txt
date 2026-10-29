@@ -1,0 +1,23 @@
+```bash
+chmod +x build.sh   # 一次性
+./build.sh          # 创建 .venv、pip install -e ".[dev]"、检查 + 测试
+./run.sh                                  # 真实演示：对此 GitHub 工作区执行
+                                           # inventory scan，然后 config validate
+./run.sh inventory scan --root DIR
+./run.sh config validate configs/task-policy.example.json --kind task-policy
+```
+
+在 Windows 上：`build.bat`，然后 `run.bat`（无参数时同样的演示）/
+`run.bat inventory scan ...` / `run.bat config validate ...`。
+`build-test.sh`/`.bat` 执行与项目自身 CI 工作流相同的非变更式 Python
+语法检查，不会改动项目版本或 CHANGELOG——它**不会**运行测试套件本身；
+运行 `./build.sh`/`build.bat`（或直接运行 `python -m unittest discover -s tests`）以执行完整的本地测试套件。
+
+**故障排查**
+
+- `config validate` 以退出码 `1` 返回 `INVALID: ...`：请阅读该消息——
+  它会列出所有失败的字段，而不仅仅是第一个。参见
+  [docs/CONFIG_SCHEMA.md](docs/CONFIG_SCHEMA.md) 查看确切的预期结构。
+- `inventory scan` 报告了一个你以为是干净的目录中的问题：该目录中存在一个
+  `hydra-umc.project.json`，但它不可读、格式错误，或缺少必需字段——
+  完全没有清单的目录从不会被报告为问题。

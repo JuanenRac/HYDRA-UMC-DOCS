@@ -1,0 +1,51 @@
+### Estado
+
+El agente base, su configuración no secreta validada, una unidad systemd
+reforzada y pruebas del lado del host están implementados. El agente es deliberadamente
+solo lectura: el ensamblaje de la imagen de producción y la validación del hardware CM5 permanecen
+como puertas de liberación separadas.
+
+La instalación preflight (`provisioning/preflight_cm5.py`) ha demostrado ser
+idempotente y libre de efectos secundarios mediante una prueba real - dos
+ejecuciones consecutivas producen una salida idéntica byte a byte y no tocan
+ningún archivo dentro de este repositorio - y un mecanismo real de copia de
+seguridad/reversión independiente del host (`provisioning/rollback.py`)
+protege el único archivo del sistema que `install_local_agent.sh`
+sobrescribe incondicionalmente en cada ejecución. Ambos se verifican sin
+root ni una CM5 - consulte `tools/verify_preflight_idempotent.py` y
+`tools/verify_rollback.py`.
+
+**El aprovisionamiento WiFi de primer contacto también es real**
+(`provisioning/wifi_provision.py` / `hydra-umc-wifi-provision.service`):
+un respaldo real en modo AP de NetworkManager para una CM5 headless sin
+red conocida todavía - levanta un hotspot real (`nmcli device wifi
+hotspot`) al que el teléfono/portátil de un operador puede unirse para
+enviar el SSID/contraseña objetivo real mediante un pequeño formulario
+HTTP local, desactiva el AP y se une a la red real en caso de éxito, lo
+restaura en caso de fallo para que el dispositivo nunca quede aislado.
+La máquina de estados está completamente probada con pruebas unitarias
+contra un NetworkManager falso, incluyendo un recorrido HTTP real de
+extremo a extremo sobre un socket loopback real - consulte
+`tools/verify_wifi_provision.py`. Instalado por `install_cm5_base.sh`
+pero deliberadamente no habilitado automáticamente, ya que solo debe ejecutarse en un dispositivo que de verdad lo necesite: la contraseña de su punto de acceso y un código de configuración de un solo uso se generan para cada dispositivo en su primer arranque y se leen una vez del journal - consulte la sección 3 de `provisioning/CM5_DEPLOYMENT_SEQUENCE.md`.
+
+**Los secretos se generan por dispositivo, nunca se toman de una plantilla.** `install_server.sh` e `install_voice_ui.sh` crean sus ficheros env a partir del ejemplo cuando faltan y sustituyen cada valor de ejemplo (`JWT_SECRET`, la contraseña del administrador inicial, el token del relé de voz) por uno aleatorio de este dispositivo (`provisioning/generate_secrets.py`; lo que el operador ya eligió se respeta, y la contraseña del administrador se imprime una sola vez), y después se niegan a continuar si queda un valor de ejemplo o un secreto corto; `preflight_cm5.py` rechaza un `/etc/hydra-umc/*.env` que aún lleve alguno. `install_industrial_gateway.sh` escribe los secretos del stack en `/etc/hydra-umc/gateway.env` (solo root, fuera del checkout del usuario, que compose lee con `--env-file`; un `.env` que dejó en el checkout una versión anterior se mueve allí) (`provisioning/gateway_env.py`: el secreto del gateway y una credencial MQTT y una regla de ACL por cada bridge de máquina). La red Wi-Fi de configuración ya no tiene una contraseña en el código fuente: cada dispositivo genera la suya y un código de configuración de un solo uso en su primer arranque (se lee una vez en el journal, para escribirlo en la etiqueta), el formulario pide el código (se bloquea un minuto tras cinco errores), la red de configuración solo está abierta 30 minutos tras cada arranque y el formulario rechaza peticiones demasiado grandes. Verificado con `tools/verify_generate_secrets.py`, `tools/verify_gateway_env.py` y `tools/verify_wifi_provision.py`. El nombre de host y el nombre de la red de configuración también terminan con seis caracteres tomados del dispositivo (el número de serie de la Raspberry Pi, o si no la dirección MAC), de modo que dos dispositivos grabados con la misma imagen ya no comparten nombre (`provisioning/device_identity.py`, comprobado por `tools/verify_device_identity.py`); `HYDRA_UMC_DEVICE_SUFFIX=off` mantiene los nombres fijos y un nombre que elijas tú nunca se cambia.
+
+**Claves de firma, repartidas por el instalador.** La clave con la que la Voice UI firma el resultado de una confirmación (`HYDRA_UMC_VOICE_UI_RESULT_KEY`) la genera una sola vez para el dispositivo `install_server.sh` o `install_voice_ui.sh`, el que se ejecute primero, y la escribe en `/etc/hydra-umc/server.env` y en `/etc/hydra-umc/voice-ui.env` (a un fichero de una plantilla anterior se le añade la línea), junto con `HYDRA_UMC_VOICE_CONFIRM_REQUIRE_SIGNATURE=1` para el servidor y `HYDRA_UMC_VOICE_UI_REQUIRE_SUBJECT=1` para la Voice UI (`generate_secrets.py --ensure`; una línea que el operador ya tenga, con cualquier valor, nunca se cambia). `install_local_technician.sh` crea la clave que firma el resultado de cada herramienta en `/etc/hydra-umc-local-technician/result.key` (`provisioning/make_result_key.py`: 64 caracteres hexadecimales aleatorios, modo 0600 desde el primer byte, solo root, nunca se imprime, nunca se sustituye una vez que existe, nunca se sigue a través de un enlace simbólico) y apunta a ella el fichero de ajustes; `--no-signing` (o `HYDRA_UMC_LOCAL_TECHNICIAN_SIGNING=off`) deja la línea fuera. Ninguna clave está nunca en la imagen ni en el repositorio, y dos dispositivos nunca comparten una. Verificado por `tools/verify_result_keys.py`.
+
+**Diarios de auditoría, activados por defecto.** `install_local_technician.sh` activa el diario de auditoría del técnico (solo se añade, encadenado por hash) e `install_node_healing.sh` el diario del vigilante (ambos rotan a 5 MiB y conservan 5 ficheros): lo que se le pidió al técnico y lo que el vigilante decidió sobre un nodo es la prueba que importa después de un fallo, así que los instaladores dejan el ajuste activo en un fichero de ajustes documentado (`/etc/hydra-umc-local-technician/local-technician.env`, `/etc/hydra-umc-node-healing/journal.env`). `--no-audit` / `--no-journal` (o `HYDRA_UMC_LOCAL_TECHNICIAN_AUDIT=off`, `HYDRA_UMC_NODE_HEALING_JOURNAL=off`) deja un diario apagado y comenta una línea activa, sin borrar nunca lo registrado; un fichero de ajustes existente no se sobrescribe. `tools/verify_optional_journals.py` comprueba de forma estática las opciones y los nombres; todavía no se ha instalado nada con ellos en una CM5 real.
+
+**Un Go fijado para los servicios Go.** El despachador de trabajos, el vigilante de nodos y el colector de telemetría se compilan en el dispositivo, y su `go.mod` pide un Go más nuevo que el `golang-go` del archivo de Debian, que no podía compilarlos. Sus instaladores ahora cargan `provisioning/go_toolchain.sh`: una versión de go.dev, comprobada contra su SHA-256 fijado antes de descomprimirla en `/usr/local/go-<versión>` (el Go del sistema no se toca). `tools/verify_go_toolchain.py` ejecuta el ayudante con una descarga simulada (un archivo correcto, uno corrupto, uno ya instalado) y compara la versión fijada con el `go.mod` de los proyectos hermanos; todavía no se ha instalado nada con él en una CM5 real.
+
+**Un solo registro de servicios.** El puerto, la ruta de salud y la unidad de systemd de cada servicio salen de `provisioning/ports.yaml` (copia del `contracts/ports.yaml` del SDK, generado a partir de los manifiestos de los proyectos). Cada instalador de un servicio termina diciendo dónde mirar cuando funcione, y `verify_cm5_runtime.sh --with-services` sondea la ruta de salud de cada servicio en marcha (solo lectura; lo que no está en marcha se omite). `tools/verify_service_registry.py` comprueba el ayudante, los instaladores y la comprobación en marcha con simulacros; todavía no se ha instalado nada con ello en una CM5 real.
+
+### Primer hito
+
+Completo, según la seccion Estado de arriba (codigo real, tests
+reales, todavia no verificado contra hardware CM5 fisico):
+
+1. ✅ Cree un perfil ARM64 del sistema operativo Raspberry Pi para CM5.
+2. ✅ Instale `hydra-umc-platform-base` y `hydra-umc-agent`.
+3. ✅ Detectar interfaces CM5 e informar un `DeviceDescriptor` y un `HealthReport`.
+4. ✅ Inicie solo los servicios habilitados a través de systemd.
+5. ✅ Muestra LISTO, DEGRADADO o FALLO localmente.

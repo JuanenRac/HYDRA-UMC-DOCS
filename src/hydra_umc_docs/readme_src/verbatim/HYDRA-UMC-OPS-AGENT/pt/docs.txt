@@ -1,0 +1,4 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — cada subcomando, as suas opções e o contrato de códigos de saída.
+- **[docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md)** — a forma JSON real de `MaintenanceIncident`/`NodeSnapshot`.
+- **[docs/DIAGNOSIS.md](docs/DIAGNOSIS.md)** — o contrato real da Entrega 2, fornecedores, credenciais e fronteira de segurança.
+- **[docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md)** — o contrato real das Entregas 3-5, a sequência completa preparar/aplicar/verificar/promover e um exemplo de fluxo real do operador.

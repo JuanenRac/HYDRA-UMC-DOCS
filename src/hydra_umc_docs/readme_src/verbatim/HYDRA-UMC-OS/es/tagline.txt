@@ -1,0 +1,1 @@
+La capa de plataforma reproducible de un nodo HYDRA-UMC sobre Raspberry Pi OS

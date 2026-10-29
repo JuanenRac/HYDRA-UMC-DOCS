@@ -1,0 +1,39 @@
+### ARQUITECTURA Y DECISIONES DE DISEÑO
+
+- **La IA nunca obtiene autoridad generando una respuesta.** Cada
+  decisión de diseño de esta entrega existe para proteger este único
+  principio - ver [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) para
+  el modelo completo.
+- **Una herramienta debe estar registrada antes de poder llamarse
+  jamás.** `TOOL_MATRIX` de `policy/tool_matrix.py` es la lista completa
+  y fija; que `lookup_tool()` devuelva `None` es un rechazo
+  incondicional, nunca un caso donde adivinar un nivel de riesgo por
+  defecto.
+- **El contenido no confiable nunca puede convertirse en un comando.**
+  La defensa es arquitectónica (un tipo sin ningún método que produzca
+  una herramienta), no un filtro que intenta reconocer texto "con forma
+  de instrucción" - un juego perdido de antemano contra una inyección de
+  prompt decidida. Ver `tests/adversarial/test_injection_defense.py`, el
+  criterio de salida literal de la propia Fase 0.
+- **La fuente normativa de un contrato es su archivo JSON Schema.** Las
+  listas de campos y validadores de `contracts.py` se copian de
+  `contracts/*.schema.json`, campo a campo, siguiendo la misma
+  convención que `validation.py` de HYDRA-UMC-SDK - no una segunda
+  fuente de verdad independiente.
+- **La redacción de secretos es una copia compartida.** `knowledge/redaction.py` es la redacción que mantiene HYDRA-UMC-SDK (`tools/canonical/redaction.py`), idéntica a la del agente de operaciones y comprobada con los mismos casos comunes (`tests/redaction_vectors.json`).
+- **Cada petición de herramienta puede auditarse.** Con `--audit-log RUTA` (o `HYDRA_UMC_LOCAL_TECHNICIAN_AUDIT_LOG`, o `auditLog` en el fichero de configuración) cada petición se escribe en un diario JSONL solo de añadir antes de ejecutarse y su resultado después, saneado, cada línea encadenada a la anterior por su SHA-256 y rotado por tamaño. Una petición que no se puede registrar no se ejecuta; `audit-verify RUTA` comprueba la cadena. Desactivado por defecto.
+- **`PRIVILEGED_CHANGE` y `PHYSICAL_ACTION` siguen sin implementarse.**
+  Una puerta deliberada y permanente hasta que exista un diseño
+  dedicado, un camino de autorización separado y, para la acción física,
+  interlocks reales - no un olvido por completar más adelante.
+- **La recuperación de conocimiento está acotada y en lista blanca,
+  nunca a ciegas.** `knowledge.search` solo indexa una raíz ya en lista
+  blanca (`resolve_knowledge_source()` de `orchestrator/allowlist.py`),
+  y el propio recorrido está acotado por un límite real de número de
+  archivos y de tamaño por archivo - "nunca entrenado a ciegas sobre
+  todo el disco" se mantiene incluso para una raíz que un operador ya
+  decidió que es segura.
+- **Esta entrega solo declara, recupera y valida - todavía no actúa.**
+  No existe motor de inferencia, ni ejecución real de herramientas por
+  encima de OBSERVE, ni integración con HYDRA-UMC-SERVER en ningún lugar
+  de este repositorio todavía.

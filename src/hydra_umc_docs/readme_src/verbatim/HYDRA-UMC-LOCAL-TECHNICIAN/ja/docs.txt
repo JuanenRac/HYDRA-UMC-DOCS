@@ -1,0 +1,3 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — 目的、5つの目標要素、目標アーキテクチャ、エコシステムとの関係。
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — 各サブコマンド、そのフラグ、終了コード契約。
+- **[docs/CONTRACTS.md](docs/CONTRACTS.md)** — 5つの契約すべての実際のフィールド単位の形。
