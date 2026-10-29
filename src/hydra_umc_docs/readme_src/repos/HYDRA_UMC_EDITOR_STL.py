@@ -76,6 +76,9 @@ def EXTRA(lg):
     trb = EXTRAS.get("troubleshooting")
     if trb:
         out["troubleshooting"] = K.table(lg, "trouble", trb)
+    be = EXTRAS.get("build_extra")
+    if be:
+        out["_build_extra"] = K.pick(be, lg)
     ov = EXTRAS.get("overview")
     if ov:
         out["overview"] = K.pick(ov, lg)
@@ -105,5 +108,8 @@ def BODY(lg, ctx):
     for key in ("interfaces", "configuration", "troubleshooting", "security"):
         if ctx.has(lg, key):
             extra[key] = ctx.v(lg, key) + (("\n\n" + extra[key]) if key in extra else "")
+    be = extra.pop("_build_extra", None)
+    if be:
+        body["build"] = body.get("build", "") + "\n\n" + be
     body.update(extra)
     return body
