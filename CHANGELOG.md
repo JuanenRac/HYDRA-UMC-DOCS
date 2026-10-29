@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The VISION-STREAMER README source no longer promises the Pi 5 ISP for USB cameras** (introduction and diagram, eight languages).
 - **A page of keys and secrets:** `docs/KEYS.md` lists every key, secret and token of the ecosystem (release signing, firmware, sessions, service tokens, MQTT, backup) with where it lives, who makes it, how it is replaced and what to do if it is lost or leaks. It holds no key material.
 - **README in the universal layout:** the README and its seven translations follow the layout that the four families share (22 sections in a fixed order), with an architecture picture and a repository-structure picture drawn from `docs/architecture.json` and `docs/structure.json`; the CI validator checks both pictures and the file tree.
 
