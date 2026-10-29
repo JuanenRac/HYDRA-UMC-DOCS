@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A page of keys and secrets:** `docs/KEYS.md` lists every key, secret and token of the ecosystem (release signing, firmware, sessions, service tokens, MQTT, backup) with where it lives, who makes it, how it is replaced and what to do if it is lost or leaks. It holds no key material.
 - **README in the universal layout:** the README and its seven translations follow the layout that the four families share (22 sections in a fixed order), with an architecture picture and a repository-structure picture drawn from `docs/architecture.json` and `docs/structure.json`; the CI validator checks both pictures and the file tree.
 
 - **The READMEs of fourteen more repositories are written from one source each:** the development server, the touch screen app, the industrial gateway, the local technician, the MQTT broker, the MTConnect adapter, node healing, the OPC-UA server, the ops agent, the orchestrator, the OS image rebuilder, the OS layer, the path planner and the physics replica now have a source in `readme_src/repos`, with the prose of their earlier READMEs kept in `readme_src/verbatim` and the shared sentences of the services in `readme_src/service_kit.py`.
