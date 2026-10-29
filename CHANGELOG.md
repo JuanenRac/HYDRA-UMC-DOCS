@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+- **The layout of the README is checked in the CI:** the validator runs `tools/universal_readme_check.py` and lists, as a warning, what differs from the universal layout of the README.
+
 ## [0.0.4] - Added the "Project status" traffic-light table to the README generator
 
 - Added the "Project status" traffic-light table to the README generator: one row each for software, tests, real hardware and documentation, with the light taken only from the maturity, the test count and the hardware statement of the data file, in the eight languages and with only the light in the State column. `make_glance.py` writes and checks it together with the "At a glance" table.
