@@ -44,14 +44,14 @@ SPEC = {
         "pt": "O **HYDRA-UMC-SDK** é a língua comum do ecossistema: os contratos JSON Schema v1, a primeira fatia OpenAPI do servidor, clientes de referência em Python, Go, TypeScript e Rust, os auxiliares de ponte que todas as pontes e o concentrador de conectores usam, e as ferramentas que mantêm idênticas as ferramentas de cada repositório. Não corre nenhum serviço próprio nem substitui nenhuma API oficial."
     },
     "test_note": {
-        "en": " The other clients have their own suites: 26 tests in Go (`go test ./...`), 104 in TypeScript (`npm test`) and 28 in Rust (`cargo test`), run by `tools/extra_build_steps.py` when the toolchain is installed. None needs hardware.",
-        "es": " Los otros clientes tienen sus propias suites: 26 pruebas en Go (`go test ./...`), 104 en TypeScript (`npm test`) y 28 en Rust (`cargo test`), que ejecuta `tools/extra_build_steps.py` si la cadena de herramientas está instalada. Ninguna necesita hardware.",
-        "de": " Los demás clientes tienen sus propias suites: 26 Tests in Go (`go test ./...`), 104 in TypeScript (`npm test`) und 28 in Rust (`cargo test`), ausgeführt von `tools/extra_build_steps.py`, wenn die Toolchain installiert ist. Keiner braucht Hardware.",
-        "fr": " Les autres clients ont leurs propres suites : 26 tests en Go (`go test ./...`), 104 en TypeScript (`npm test`) et 28 en Rust (`cargo test`), lancés par `tools/extra_build_steps.py` si la chaîne d'outils est installée. Aucun n'a besoin de matériel.",
-        "it": " Gli altri client hanno le proprie suite: 26 test in Go (`go test ./...`), 104 in TypeScript (`npm test`) e 28 in Rust (`cargo test`), eseguiti da `tools/extra_build_steps.py` se la toolchain è installata. Nessuno richiede hardware.",
-        "ja": " 他のクライアントには独自のスイートがあります。Go は 26 件（`go test ./...`）、TypeScript は 104 件（`npm test`）、Rust は 28 件（`cargo test`）で、ツールチェーンがあれば `tools/extra_build_steps.py` が実行します。ハードウェアは不要です。",
-        "zh": " 其他客户端有各自的测试集：Go 26 个（`go test ./...`）、TypeScript 104 个（`npm test`）、Rust 28 个（`cargo test`），安装了工具链时由 `tools/extra_build_steps.py` 运行。都不需要硬件。",
-        "pt": " Os outros clientes têm as suas próprias suites: 26 testes em Go (`go test ./...`), 104 em TypeScript (`npm test`) e 28 em Rust (`cargo test`), executados por `tools/extra_build_steps.py` se a cadeia de ferramentas estiver instalada. Nenhum precisa de hardware."
+        "en": " The other clients have their own suites: 28 tests in Go (`go test ./...`), 105 in TypeScript (`npm test`) and 31 in Rust (`cargo test`), run by `tools/extra_build_steps.py` when the toolchain is installed. None needs hardware.",
+        "es": " Los otros clientes tienen sus propias suites: 28 pruebas en Go (`go test ./...`), 105 en TypeScript (`npm test`) y 31 en Rust (`cargo test`), que ejecuta `tools/extra_build_steps.py` si la cadena de herramientas está instalada. Ninguna necesita hardware.",
+        "de": " Die anderen Clients haben eigene Suiten: 28 Tests in Go (`go test ./...`), 105 in TypeScript (`npm test`) und 31 in Rust (`cargo test`), ausgeführt von `tools/extra_build_steps.py`, wenn die Toolchain installiert ist. Keiner braucht Hardware.",
+        "fr": " Les autres clients ont leurs propres suites : 28 tests en Go (`go test ./...`), 105 en TypeScript (`npm test`) et 31 en Rust (`cargo test`), lancés par `tools/extra_build_steps.py` si la chaîne d'outils est installée. Aucun n'a besoin de matériel.",
+        "it": " Gli altri client hanno le proprie suite: 28 test in Go (`go test ./...`), 105 in TypeScript (`npm test`) e 31 in Rust (`cargo test`), eseguiti da `tools/extra_build_steps.py` se la toolchain è installata. Nessuno richiede hardware.",
+        "ja": " 他のクライアントには独自のスイートがあります。Go は 28 件（`go test ./...`）、TypeScript は 105 件（`npm test`）、Rust は 31 件（`cargo test`）で、ツールチェーンがあれば `tools/extra_build_steps.py` が実行します。ハードウェアは不要です。",
+        "zh": " 其他客户端有各自的测试集：Go 28 个（`go test ./...`）、TypeScript 105 个（`npm test`）、Rust 31 个（`cargo test`），安装了工具链时由 `tools/extra_build_steps.py` 运行。都不需要硬件。",
+        "pt": " Os outros clientes têm as suas próprias suites: 28 testes em Go (`go test ./...`), 105 em TypeScript (`npm test`) e 31 em Rust (`cargo test`), executados por `tools/extra_build_steps.py` se a cadeia de ferramentas estiver instalada. Nenhum precisa de hardware."
     },
     "quick_intro": {
         "en": "Requires Python 3.11 or newer. The Go, TypeScript and Rust clients are built and tested too when their toolchain is installed.",
