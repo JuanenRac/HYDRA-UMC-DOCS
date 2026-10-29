@@ -1,0 +1,8 @@
+### Porquê existe
+
+Separar o motor do painel web foi uma decisão deliberada, não uma refatoração por si só:
+
+- **Isolamento de recursos.** Uma vista 3D pesada a bloquear o separador do navegador já não partilha um processo (nem a disputa de CPU/E-S) com o código realmente responsável por mover os robôs. Se a interface web bloquear, este servidor continua a responder a comandos de paragem de emergência de qualquer outro cliente ligado.
+- **Um controlador headless a sério.** Este processo pode correr sem nunca carregar qualquer interface no anfitrião - o "cérebro" de uma célula industrial não precisa de um separador de navegador aberto para funcionar. Liberta RAM/CPU em hardware limitado (um Raspberry Pi CM5) para a parte do trabalho que realmente importa: cinemática e controlo.
+- **Ciclos de vida independentes.** A interface web pode ser reimplantada, reiniciada ou trocada a quente por uma versão mais recente sem tocar neste processo - sem tempo de paragem do controlo dos robôs só para publicar uma correção de interface.
+- **Alojamento flexível.** Este servidor foi pensado para correr no (ou mesmo ao lado do) hardware que controla; o cliente que o apresenta pode estar alojado em qualquer outro lugar, acessível pela rede exatamente como os outros clientes remotos desta mesma API.

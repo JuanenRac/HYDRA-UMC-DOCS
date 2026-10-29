@@ -1,0 +1,48 @@
+### Superficie de API y WebSocket
+
+Cada ruta, el contrato de mensajes WebSocket, la autenticación y el
+modelo de acceso remoto por cliente están documentados en
+**[`docs/REMOTE_API.md`](docs/REMOTE_API.md)** - la única fuente de
+verdad para cualquier cosa que hable con este servidor, incluido el
+propio código cliente de HYDRA-UMC STUDIO. En resumen:
+
+- API REST bajo `/api/*` - lectura/escritura de settings, comandos
+  atómicos de robot (jog/play/pause/stop/tool/valve/pump/speed/vision),
+  gestión de cuentas, subida/descarga de archivos de trabajo, envío de
+  modelos, métricas de sistema, descubrimiento.
+- Un único endpoint WebSocket `/ws` (token bearer como subprotocolo `hydra.bearer`, un token en la query string se rechaza salvo que la instalación lo vuelva a permitir) que
+  difunde snapshots completos `settings` y actualizaciones más ligeras
+  `delta` a cada cliente conectado cuando cambia el estado.
+- `POST /api/stop-all` es la parada global: una llamada, abierta a toda cuenta con sesión, detiene todos los robots y apaga todas las válvulas y bombas
+  diga lo que diga cualquier reserva, y responde un resultado por robot.
+- Bluetooth LE (apagado por defecto): un teléfono cerca de la CM5 puede leer el estado de los robots y, cuando un administrador lo permite, enviar órdenes que el servidor acusa solo después de que la misma ruta que usa un cliente de red haya respondido. Véase [`docs/BLE_GATT.md`](docs/BLE_GATT.md).
+- Autenticación JWT por bearer token en cada escritura; tres roles de
+  cuenta (`admin`, `operator`, `viewer` de solo lectura) filtran las escrituras de settings/gestión
+  de usuarios frente a la operación diaria de robots y a la mera lectura.
+- Anuncio mDNS/Bonjour `_hydra._tcp` para descubrimiento sin
+  configuración en la red local, más un `GET /api/hydra-info` plano para
+  un escaneo de subred.
+- `GET /metrics` - formato de exposición Prometheus (`prom-client`), para
+  el dashboard opcional de Grafana descrito en "📊 Monitorización" más
+  abajo.
+
+CORS está habilitado mediante una allowlist configurable
+(`CORS_ALLOWED_ORIGINS`, ver "Variables de Entorno" más abajo) ya que los
+clientes de este servidor ya no comparten necesariamente su propio origen.
+Sin configurar, se mantiene abierto fuera de `NODE_ENV=production`
+(comportamiento actual sin configuración para desarrollo local); en
+producción deniega cualquier petición de navegador de origen cruzado
+hasta que se configure la allowlist - ver el comentario sobre
+`app.use(cors(corsOptions))` en `src/server.ts` para el razonamiento
+completo.
+
+### Monitorización (Opcional)
+
+`GET /metrics` expone el uptime del proceso, los clientes WebSocket
+conectados, la latencia de escritura de `settings.json`, los comandos
+atómicos de robot por tipo, los fallos de autenticación, y las mismas
+cifras de CPU/memoria/temperatura que `GET /api/system/metrics` - todo en
+formato Prometheus. Un stack Prometheus + Grafana listo para usar (con un
+dashboard inicial) vive en **[`monitoring/`](monitoring/README.md)**:
+`docker compose up -d` desde esa carpeta y ya está en marcha. Totalmente
+opcional - nada aquí es necesario para que el servidor en sí funcione.

@@ -1,0 +1,47 @@
+### Stato
+
+Contratti JSON Schema v1, fixture valide/non valide, un client di convalida Python,
+e vengono implementati i test lato host, oltre a una vera prima porzione OpenAPI v1
+per la superficie HTTP di HYDRA-UMC-SERVER (`contracts/openapi/v1/server.openapi.json`
+- vedi [docs/CONTRACTS.md](docs/CONTRACTS.md#openapi-v1)). La pubblicazione Protobuf è un traguardo di compatibilità successivo; i client Go, TypeScript e Rust esistono già.
+
+Una matrice di compatibilità reale e automatica (`tools/verify_contract_matrix.py`)
+verifica incrociando ogni schema pubblicato con l'elenco dei contratti del
+validatore Python stesso - ha individuato e corretto una lacuna reale in cui
+`project-manifest.schema.json` (il contratto di `hydra-umc.project.json` che
+ogni repository di questo ecosistema pubblica) non aveva alcuna voce di
+validatore, e ora dimostra che ogni fixture di conformità viene giudicata
+come afferma il proprio nome file, oltre ai casi di contratto sconosciuto e
+versione di schema incompatibile.
+
+Dal primo traguardo qui sotto sono stati aggiunti altri contratti (10 in totale): un
+contratto pubblico di bridge verso macchine esterne
+`BridgeJob`/`GateDecision` (vedi
+[docs/BRIDGE_CONTRACT.md](docs/BRIDGE_CONTRACT.md)), condiviso da
+`HYDRA-UMC-BRIDGE-ROS2`/`-OPENPNP`/`-PRINTER3D`/`-CNC`/`-LASER`/`-AMR`/`-DROIDS`/`-UAV` e dotato
+di una propria forma JSON reale (`job_to_dict()`/`job_from_dict()`/
+`decision_to_dict()`), più lo stato della macchina che il bridge stesso osserva, che la porta usa al posto di quello dichiarato da chi richiede, e un'ammissione dei lavori (`JobIntake`/`IdempotencyStore`) che ignora i messaggi trattenuti e non esegue mai due volte una chiave di idempotenza; un contratto `ScenarioOutcome` più
+`compare_runs()`, una verifica condivisa "è stato davvero
+risolto" che restituisce `apparent-success` (non `regression-fixed`)
+quando un fallimento smette di riprodursi ma l'impronta di base non è
+mai cambiata; un contratto `Operation` più
+`validate_status_transition()`, il ciclo di vita condiviso di
+obiettivo/lavoro/operazione - `received`/`authorized`/`queued`/`sent`/
+`confirmed`/`terminated`/`rejected`, mai un unico contenitore
+"eseguito"; un `result` opzionale su `Operation` più
+`concludes_success()` - evidenza reale (`run_id`/`origin`/
+`observers_enabled`/`outcome`) che rifiuta di concludere il successo a
+partire da un risultato obsoleto/ripetuto o da un'esecuzione con
+osservazione disattivata; un contratto `Capability` autonomo più
+`is_capability_usable()` - il fatto che un target *dichiari* di
+supportare un `kind` di operazione è modellato come dato distinto dal
+fatto che quel supporto sia stato *recentemente e davvero verificato*
+(`last_checked_at_utc`/`checked_configuration`/`max_age_seconds`), così
+una capacità dichiarata ma mai verificata o ormai obsoleta non viene mai
+trattata silenziosamente come utilizzabile; e un
+`hydra-umc-sdk-mock-server`
+(`mock_server.py`) che serve un payload di esempio valido per ogni
+contratto noto via HTTP semplice, così una UI o un adattatore possono
+essere sviluppati prima che esista un vero hardware CM5/robot/MCU. Tutti
+e 10 i contratti hanno almeno una fixture di conformità valida e una non
+valida, verificate dalla matrice di compatibilità sopra.

@@ -1,0 +1,21 @@
+### Why This Exists
+
+Splitting the engine out of the web dashboard was a deliberate change, not
+a refactor for its own sake:
+
+- **Resource isolation.** A heavy 3D view choking the browser's own tab no
+  longer shares a process (and therefore CPU/I-O contention) with the code
+  actually responsible for moving robots. If the web UI hangs, this server
+  keeps answering emergency-stop commands from any other connected client.
+- **A real headless controller.** This process can run with zero UI ever
+  loaded on the host - the "brain" of an industrial cell doesn't need a
+  browser tab open to function. Frees up RAM/CPU on constrained hardware
+  (a Raspberry Pi CM5) for the part of the job that actually matters:
+  kinematics and control.
+- **Independent lifecycles.** The web UI can be redeployed, restarted, or
+  hot-swapped for a newer build without ever touching this process - no
+  robot-control downtime just to ship a UI fix.
+- **Flexible hosting.** This server is meant to run on (or right next to)
+  the hardware it controls; the client that renders it can be hosted
+  anywhere else entirely, reachable over the network exactly like the
+  other remote clients of this same API already are.

@@ -1,0 +1,48 @@
+HYDRA-UMC SERVER ist das eigenständige Backend, das eine
+Multi-Roboter-Mikrofabrikzelle von HYDRA-UMC steuert: eine
+Node.js/Express + WebSocket-Engine, die den Roboterzustand besitzt, ihn
+auf der Festplatte persistiert, jeden Schreibvorgang authentifiziert und
+Live-Updates an jeden verbundenen Client sendet. Sie wird ohne eigene Benutzeroberfläche oder Frontend-Build-Schritt
+ausgeliefert - sie ist ein reiner API + WebSocket-Dienst, gedacht für den
+headless-Betrieb (ohne Browser, ohne Bildschirm) auf der Maschine, die
+tatsächlich neben den Robotern steht (typischerweise ein Raspberry Pi
+CM5).
+
+Der zweite Vertrag ist vollständig: bedingte Schreibzugriffe (`If-Match` bei Befehlen und Reservierungen, `GET /api/robot/:id`), der atomare Befehl `table`, ein nur anhängbares Prüfprotokoll (`GET /api/audit`, hash-verkettet, abschaltbar) und eine WebSocket-Nachricht `claims`. Kamerapasswörter erscheinen nicht mehr in der Prozessliste oder im Protokoll. Siehe `docs/CONTRACT_V2.md`.
+
+Sie KANN optional auch das bereits gebaute Frontend von
+**[HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO)** als
+statische Dateien ausliefern, für das übliche "alles auf einer Maschine,
+ein Ursprung"-Deployment - führe einmal **`build-frontend.sh`/`.bat`**
+aus (baut STUDIO aus einem Geschwister-Checkout und kopiert das Ergebnis
+in das eigene, von Git ignorierte `public/` dieses Repos) und dieser
+Server liefert es ab dem nächsten Start unter `/` aus. Das ermöglicht es
+HYDRA-UMC-ANDROID-CONTROL, HYDRA-UMC-IOS-CONTROL und HYDRA-UMC-DSI, den
+echten 3D-Viewport von STUDIO in ihrer eigenen In-App-WebView einzubetten,
+die auf dieselbe ip:Port dieses Servers zeigt. Vollständig optional: ohne
+dieses Skript bleibt dieser Server genauso headless wie oben beschrieben
+- `public/` existiert dann einfach nicht, und alle Routen funktionieren
+weiterhin identisch.
+
+Dasselbe `build-frontend.sh`/`.bat` baut auch das eigene
+**[`admin-ui/`](admin-ui/README.md)** dieses Repos - ein kleines,
+separates Panel zur Verwaltung dieses SERVERS selbst (verbundene Geräte,
+seine eigene Log-Datei, sein eigener Port/Name, seine eigenen
+Benutzerkonten), ausgeliefert unter `/admin`. Das ist bewusst KEINE
+Robotersteuerung (die bleibt STUDIO-exklusiv) - eine gezielte,
+ausdrückliche Ausnahme vom headless-Design oben, keine Abkehr davon.
+
+Dieses Projekt war früher Teil von **[HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO)**,
+das als "hybrides Monolith" ausgeliefert wurde: ein einziger
+Node.js-Prozess, der sowohl die Roboter-Steuerungs-Engine ausführte *als
+auch* das Vite/React-Web-Dashboard bediente (mit Vites eigenem
+Entwicklungs-Middleware direkt in dieselbe Express-App eingebunden).
+Dieser Prozess wurde in zwei Teile aufgespalten:
+
+- **HYDRA-UMC SERVER** *(dieses Repository)* - die Engine:
+  Roboter-/Controller-Zustand, die REST + WebSocket-API,
+  Authentifizierung, mDNS-Erkennung, Modell-Einreichungen. Keine UI, kein
+  Bundler, kein Frontend-Build-Schritt.
+- **[HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO)** - jetzt
+  ein reiner Vite/React-Client, der über das Netzwerk mit diesem Server
+  spricht, genau wie jeder andere Client dieser API bereits.

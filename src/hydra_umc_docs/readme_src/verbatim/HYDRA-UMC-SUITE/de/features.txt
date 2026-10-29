@@ -1,0 +1,89 @@
+### Visuelles Command Deck
+
+Das Fenster hat eine dauerhafte, von Spielekonsolen inspirierte Kopfzeile mit dem offiziellen HYDRA-UMC-Symbol und der dunkelblau/cyanfarbenen Sprache von HYDRA-UMC-UPDATER. Sie zeigt den Produktnamen, den Verbindungsstatus und die Version und enthält die globale STOP-Taste und das Anwendungsmenü (Sprache, Support-Paket, Tastenkürzel, Info). Die Navigation zu den Panels ist die linke Seitenleiste. Es ist kein simuliertes Dashboard: Jedes Panel arbeitet mit den echten Servern.
+
+### 🛑 Globaler STOP
+
+Die Schaltfläche **STOP** befindet sich immer oben im Fenster, in jedem Panel. Ein Klick, ohne Bestätigung: Sie ruft `POST /api/stop-all` auf jedem verbundenen Server auf und hält alle Roboter an, auch wenn ein anderes Konto sie reserviert hat. Sie zeigt das Ergebnis: eine grüne Meldung, wenn alles angehalten wurde, und eine rote, die bis zum nächsten STOP bleibt, wenn ein Roboter nicht anhielt, der Stopp-Zustand nicht gespeichert werden konnte oder nichts den Stopp bestätigte (**STOP NICHT BESTÄTIGT**). Begrenzt der Server den Aufruf, werden die Roboter einzeln angehalten. **F12** macht dasselbe per Tastatur (aufgeführt unter **≡ > Tastenkürzel**); es ist eine einzelne Funktionstaste, drückt also nie eine fokussierte Schaltfläche und schließt nichts.
+
+### Die Qt-Quick-Oberfläche
+
+HYDRA-UMC SUITE hat eine einzige Oberfläche, geschrieben in Qt Quick (QML): ein eigenständiges `ApplicationWindow` (`assets/qml/Main.qml`), das `qt_suite.py` mit dem unveränderten `SuiteController` verbindet. Es ist dasselbe Muster wie bei HYDRA-UMC-OS-REBUILDER, HYDRA-UMC-UPDATER, URTC-TESTER, URTC-FLASHER und HYDRA-UMC-EDITOR-URDF und dieselbe Form wie HYDRA-UMC-STUDIO: eine Navigations-Seitenleiste (ein Hauptmenü plus die Untermenüs Industrial, URTC und HYDRA-UMC, in `hydra_suite/nav_items.py`) und ein Inhaltsbereich, der jeweils eines der 33 Panels zeigt. Die 3D-Ansicht und die Vorschauen zeichnet ein eigener `OffscreenRobotRenderer` (ein getrennter `QOpenGLContext`, `QOffscreenSurface` und Framebuffer, nicht das eigene `QQuickFramebufferObject` von Qt Quick, das die ganze Oberfläche vom unter Windows standardmäßigen Direct3D-11-Backend auf OpenGL zwingen würde) mit demselben Rendering-Code (`RobotGLRenderer`); das Bild wird an QML übergeben. Das frühere klassische Fenster (ein `QMainWindow` mit andockbaren Panels) wurde entfernt; alles, was es konnte, steckt in dieser Oberfläche, und `python main.py` startet sie.
+
+### Funktionen
+
+- **🔍 Netzwerkerkennung** - ein gleichzeitiger Subnetz-Scan (`GET /api/hydra-info`) und echtes mDNS/Bonjour (`_hydra._tcp`, derselbe Dienst, den `server.ts` veröffentlicht und den HYDRA-UMC-IOS-CONTROL bereits abfragt) laufen gemeinsam auf der Suche nach echten HYDRA-UMC-SERVER-Servern, dedupliziert nach Host:Port, plus manuelles Hinzufügen per Adresse für alles, was keines von beiden erreichen kann (ein anderes Subnetz, ein VPN-Tunnel).
+- **🐝 Schwarmverbindungen** - verbinde dich mit so vielen HYDRA-UMC-Servern
+  gleichzeitig, wie du willst, jeder mit seiner eigenen live
+  WebSocket-Synchronisierung; wähle, welcher für die anderen Panels
+  "aktiv" ist.
+- **📊 Übersicht** - Roboterliste pro Controller: Modell, Rolle,
+  Online-Status, Geschwindigkeit/Beschleunigung, auf einen Blick.
+- **🦾 Robotersteuerung** - ein Schieberegler je Gelenk innerhalb des Bereichs des Modells, Geschwindigkeits-/Beschleunigungsregler, Abspielen / Pause / Stopp der aufgezeichneten Trajektorie, das Werkzeug (mit Bestätigung), die Ventile und die Pumpen, alles schreibt live als atomare Befehle zurück.
+- **🔐 Reservierungen, Sicherheitsgrenzen und Live / Sim** - das Panel Robotersteuerung hat eine Zugriffsleiste: den gewählten Roboter für dieses Programm reservieren oder freigeben (wird erneuert, solange er gehalten wird), sehen, wer die anderen hält, und als Administrator einen übernehmen. Jede Reservierung, Freigabe, Jog-Freigabe und jeder Befehl trägt die Controller-ID, die dieses Programm beim Start gewählt hat, und eine Ablehnung (anderes Konto, dasselbe Konto anderswo, fehlende Controller-ID, nicht scharfgeschalteter Jog) erreicht den Bildschirm mit einem eigenen Satz. Die Größe eines Jogs und die höchste Betttemperatur werden vom Server gelesen (`GET /api/safety-limits`) und vor dem Senden geprüft; ein Administrator bearbeitet sie je Modell im Panel **Sicherheitsgrenzen**, zusammen mit der optionalen Jog-Freigabe (standardmäßig aus) und der verpflichtenden Controller-ID. Jeder Roboter hat einen Schalter **Live / Sim** (standardmäßig Live): in Sim verlässt nichts, was den Roboter bewegt oder etwas einschaltet, dieses Programm, STOP aber immer. Die Gelenk-Schieberegler folgen dem Bereich des Modells, ein Work mit Punkten außerhalb davon wird mit deren Liste abgelehnt, ein Work, dessen Punkte der Arm nicht erreicht, wird mit diesen Punkten abgelehnt und kann um die Roboterbasis skaliert geladen werden, und das Einschalten der Bettheizung fragt vorher. Schreibzugriffe sind bedingt: jeder trägt die Revision des Roboters, die dieses Programm zuletzt gesehen hat (`If-Match`); hat inzwischen jemand anderes den Roboter geändert, antwortet der Server mit 412, nichts wird ausgeführt, der Roboter wird neu gelesen und ein Hinweis sagt es (Standard prüft Reservierungen, Tisch und einmalige Befehle; Streng prüft alles außer STOP; Aus prüft nichts; die Wahl steht unter der Liste der Reservierungen; STOP wird nie geprüft). Der Jog des XY-Tischs ist ein einziger atomarer Befehl `table`, der Server schickt die Reservierungen über den WebSocket, sodass das Panel nicht abfragt, solange sie ankommen, und Administratoren lesen das nur anfügbare Audit-Protokoll mit zweifach (vom Server und hier) geprüfter SHA-256-Kette unter **Ökosystem > Audit-Protokoll**. Administratoren legen außerdem die Konten des Servers (Administrator oder Bediener) an, ändern und löschen sie unter **Ökosystem > Benutzer**. Der Bildschirm **Ökosystem > Server-Verwaltung** legt außerdem fest, wer das lokale KI-Relay nutzen darf, ob die Host-Informationen eine Anmeldung verlangen, TLS (mit dem Fingerabdruck des Zertifikats) und den Bluetooth-LE-Dienst des Servers, jeweils mit der Herkunft des Wertes. **Ökosystem > Eingereichte Modelle** listet die Modelle auf, die die URDF- und STL-Editoren an den Server eingereicht haben, und speichert das URDF eines Modells.
+- **🧊 Echtes 3D-Viewport** - OpenGL 3.3, echte STL-Meshes, echte
+  Vorwärtskinematik für alle 24 realen Robotermodelle (numerisch
+  verifiziert gegen die eigene TypeScript-Implementierung von HYDRA-UMC
+  STUDIO, bit-für-bit identische Ergebnisse) plus ein aus Primitiven
+  gebauter "Generic"-Fallback - für keinen von ihnen ein stilisierter
+  Platzhalter.
+- **📍 Trajektorienpunkte** - zeichne die Live-Pose des ausgewählten
+  Roboters auf, fahre auf Wunsch zu jedem aufgezeichneten Punkt zurück.
+- **🧭 Eine Seitenleiste, ein Inhaltsbereich** - die Panels erreicht man über die Navigation links (Hauptmenü plus die Untermenüs Industrial, URTC und HYDRA-UMC), jeweils eines, gruppiert wie in der Seitenleiste von HYDRA-UMC-STUDIO. Das Fenster startet maximiert mit seiner nativen Titelleiste, und **F11** schaltet echten Vollbildmodus um.
+- **💾 Gemerkte Server und Support-Paket** - *Merken* ist beim Hinzufügen eines Servers standardmäßig angekreuzt (entfernen Sie das Häkchen, um nichts zu speichern): Adresse, Spitzname und Benutzername kommen in die Konfigurationsdatei, das Passwort über `keyring` in den sicheren Speicher des Betriebssystems (Windows-Anmeldeinformationsverwaltung, macOS-Schlüsselbund, Secret Service des Linux-Desktops), nie in die Datei; ohne sicheren Speicher wird das Passwort erneut abgefragt. Das Anwendungsmenü exportiert ein Zip für den Support mit den Versionen, der Serverliste und dem Client-Log, ohne Passwörter, Benutzernamen oder Tokens.
+- **🌐 8 Sprachen** - English, Español, Italiano, Français, Deutsch, 简体中文,
+  日本語, Português
+  (dieselbe `language/*.lng`-Konvention wie URTC-FLASHER/URTC-TESTER), wird
+  über das Sprachmenü gewechselt (wirksam nach einem Neustart).
+- **📷 Kameras** - echte Kameraliste pro Controller (welche Kameras
+  existieren, ihr Typ, Verbindungsstatus und ein
+  echter USB/IP-(RTSP-)Quelltyp-Umschalter mit generischen, markenneutralen
+  Host-/Port-/Pfad-/Zugangsdaten-Feldern), synchronisiert mit dem echten
+  Server auf dieselbe Weise wie jedes andere Panel hier, plus echtes
+  Live-Video: Die Metadaten sind durchgehend echt, und jede Kamerakarte
+  rendert den echten MJPEG-Stream selbst (HYDRA-UMC-VISION-STREAMERs
+  eigenes `stream serve`, weitergeleitet über HYDRA-UMC-SERVERs
+  `GET /api/camera/:id/stream`) über einen echten JPEG-SOI/EOI-Marker-
+  Scan-Client (derselbe echte Ansatz, den HYDRA-UMC-ANDROID-CONTROLs
+  eigenes `MjpegStreamParser.kt` bereits verwendet), verifiziert gegen
+  echte USB- und IP-Hardware.
+- **🛠️ Werkzeug-Konfiguration, alle 11 von 11 Panels** - CNC, Laser,
+  Heizbett, Vakuumtisch, ATC (Automatischer Werkzeugwechsler), XY-Tisch,
+  Rack-Manager, Pick & Place, Kinematic Brain Stage, Flasher und Tester -
+  echte Funktionsparität mit jedem einzelnen werkzeugspezifischen
+  Bildschirm von HYDRA-UMC STUDIO, jeweils ein originalgetreuer Port
+  (einschließlich des echten, manchmal eigenwilligen Verhaltens, das
+  STUDIOs eigener Quellcode hat - absichtlich reproduziert statt hier
+  "repariert") mit eigener echter Headless-Testabdeckung. CNC/Laser/
+  Heizbett/Vakuumtisch teilen sich eine `moduleConfigComponent`-Implementierung
+  (STUDIOs eigene `CNC.tsx`/`Laser.tsx` sind bis auf den Modul-Schlüssel
+  identische Komponenten); die übrigen 7 brauchten jeweils ein eigenes,
+  eigens gebautes Panel. Heizbett und Vakuumtisch verwenden STL in `render/module_rig.py`. PnP, CNC und Laser verwenden `render/pnp_rig.py`: 7 bewegliche Meshes und 160 Einzelteile je unabhängigem Ordner. `OffscreenRobotRenderer` zeigt jede Baugruppe. Siehe [Maschinenmodelle](docs/MACHINE_ASSETS.md).
+
+---
+
+### 🧩 Auswählbare Vakuumtische
+
+Wähle im Vakuumtisch-Menü eines von sechs echten STL-Modellen: 160 × 120, 230 × 210, 230 × 250, 232 × 217, 240 × 240 oder 250 × 250 mm. Die Basis ist 15 mm dick; die Gesamthöhe mit Ausrichtungswänden beträgt 16,2 mm. Breite und Länge sind in 5-mm-Schritten einstellbar (10–5000 mm). Die Grundfläche wird skaliert, die Dicke bleibt unverändert. Die Modellauswahl stellt die ursprünglichen Maße wieder her. Benutzerdefinierte Maße werden über SERVER synchronisiert; skalierte Löcher und Kanäle dienen der Visualisierung, nicht als neu erzeugte Fertigungs-STL. Die Auswahl erhält Position, Pumpen- und Ventilzustand; Zurücksetzen wählt 160 × 120 mm und schaltet Pumpe und Ventil aus. Alte oder unbekannte Modell-IDs zeigen das erste Modell. STUDIO und beide SUITE-Oberflächen verwenden denselben Katalog und modelId in den Robotereinstellungen.
+
+[Modellhandbuch, Konfiguration und Neugenerierung](docs/VACUUM_TABLE_MODELS.md).
+
+### 🔥 Heizbettmodell
+
+Vier STL-Modelle: 100×100, 200×100, 200×200 und 255×255 mm, alle 5 mm dick. Breite/Länge in 5-mm-Schritten einstellbar (25–5000 mm); die Modellauswahl stellt die Maße wieder her, ohne die Heizung zu ändern. Nur Visualisierung, kein Elektro- oder Fertigungsentwurf.
+
+[Heizbettmodell — STL / OpenSCAD](docs/HEATED_BED_MODELS.md).
+
+### 🗄️ Konfigurierbare STL-Racks
+
+STL-Rack: Breite und Tiefe 40–1000 mm in 1-mm-Schritten; 1–24 Platinen mit festem 10-mm-Abstand. Visuelle Einstellungen, keine Roboterkalibrierung.
+
+[Konfigurierbare STL-Racks — STL / OpenSCAD](docs/RACK_MODELS.md).
+
+### 🛠️ Unabhängige Maschinenmodelle
+
+Separate STL-Kopien für JuanenPnP, JuanenCNC und JuanenLaser; LumenPnP behält das Original. Jedes Modell wird in seinem eigenen Ordner bearbeitet. Es gelten die CAD-Maße; bisherige Größeneinstellungen verzerren das Modell nicht.
+
+[Unabhängige Maschinenmodelle — STL](docs/MACHINE_ASSETS.md).
+
+Diese originalen JuanenPNP-/HYDRA-UMC-Modelle und ihre SCAD-Quellen stehen unter GPL-3.0; sie sind nicht die Maschinen-CAD-Dateien von Opulo.

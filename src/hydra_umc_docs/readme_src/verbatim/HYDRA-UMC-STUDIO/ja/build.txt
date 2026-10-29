@@ -1,0 +1,40 @@
+### 必要環境
+- [Node.js](https://nodejs.org/)（v22 以上）
+- npm
+- 稼働中の **[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** バックエンド（こちらも `npm run dev`、デフォルトポート `3000`）——本アプリは純粋なクライアントであり、これなしには通信する相手がありません。
+
+### インストール
+
+```bash
+npm install
+```
+
+### 開発モード
+
+Vite 自身の開発サーバー（純粋な `vite`、ポート `5173`）をライブリロード付きで実行します。`vite.config.ts` 自身の `server.proxy` が `/api`、`/ws`、`/WORKS` を透過的に `http://localhost:3000` へ転送するため、本アプリの相対パスの fetch/WebSocket 呼び出しは CORS 設定なしで HYDRA-UMC SERVER バックエンドに到達します——先にそのバックエンドが起動していることだけ確認してください：
+- **Windows：** `dev.bat` をダブルクリックするか、`npm run dev` を実行
+- **Linux/Mac：** `./dev.sh` または `npm run dev` を実行
+
+### 自動テスト
+
+```bash
+npm run typecheck # tsc -b --noEmit（src/）+ tsc -p tsconfig.test.json --noEmit（tests/）
+```
+
+
+### プロダクションビルド
+
+最適化された静的ビルドへコンパイルします（純粋な `vite build`——サーバーのバンドルは行わず、本アプリにはもうバックエンドコードは残っていません）：
+- **Windows：** `build.bat` をダブルクリックするか、`npm run build` を実行
+- **Linux/Mac：** `./build.sh` または `npm run build` を実行
+
+プロダクションビルドをローカルでプレビュー：
+```bash
+npm run preview
+```
+
+生成された `dist/` フォルダを任意の静的ホストにデプロイしてください。デフォルトでは、ビルドされたアプリは、このページ自身のホスト名のポート `3000` でバックエンドを探します（一般的な「すべてを CM5 上に」というデプロイ形態に一致）。別の場所にホストされた HYDRA-UMC SERVER インスタンスを指すようにするには、ビルド時に `VITE_API_BASE_URL` を設定してください（`.env.example` 参照）。すべての実際の状態とデータは、本リポジトリではなく、そのバックエンド自身の `data/` ディレクトリに永続化されます。
+
+### バージョン管理
+
+`bump_manifest_version.py`(リポジトリのルート)が `hydra-umc.project.json` と `package.json` 自身の `version` フィールド両方の唯一の所有者です—— `npm run build`(`vite build`)は意図的にコンパイルのみを行い、片方だけをインクリメントして両者がずれることが決してないようにしています。`scripts/bump-version.mjs` はレガシーなネイティブ専用のヘルパーで、参考としてのみ残されています——このリポジトリのどこからももう呼び出されません。2 桁の数字を持つセグメントには決して到達しません（`0.0.9` -> `0.1.0` であり、`0.0.10` にはなりません）。現在実行中のバージョンは **About** ダイアログでリアルタイムに確認でき（Studio のバージョンはこのアプリ自身の `package.json` から読み取られ、隣に表示されるサーバーのバージョンは `GET /api/hydra-info` から取得されます）、完全な履歴は [`CHANGELOG.md`](CHANGELOG.md) にあります。

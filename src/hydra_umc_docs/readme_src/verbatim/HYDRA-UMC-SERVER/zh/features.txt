@@ -1,0 +1,9 @@
+### 数据与持久化
+
+本服务器所拥有的一切均存放于 `data/` 目录下，首次运行时自动创建：
+
+- `data/settings.json`——完整的状态树：控制器、机器人、系统配置。绝不作为静态文件提供（明确返回 404）——只能通过经过身份验证的 `/api/settings` 路由访问。
+- `data/users.json`——账户凭证（经 scrypt 哈希加盐处理，绝不以明文存储）。同样绝不以静态方式提供。
+- `data/logs/server.log`——每一条指令的仅追加式工业日志。
+- `data/WORKS/`——已保存的机器人轨迹，默认每个机器人一个文件夹，以纯静态文件形式提供（索引及各个工作文件）。
+- `data/model_submissions.json` 及提交的模型文件夹本身——[HYDRA-UMC-EDITOR-URDF](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-URDF) 的“将完成的机器人模型直接推送到本服务器目录”流程在服务端的对应部分。

@@ -1,0 +1,120 @@
+### Multi-Robot 3D Control
+
+Manage multiple independent 6-DOF robots simultaneously, each with its own real 3D model, kinematics, and jog/trajectory state. The model picker (RobotDetail → Config tab) groups every available robot by manufacturer:
+
+- 🏭 **Source Robotics** - Parol6, Faze4 (MIT-licensed and GPL-3.0-licensed meshes respectively, see each model's own `ATTRIBUTION.txt`)
+- 🏭 **Annin Robotics** - AR3, AR4 (MIT-licensed meshes)
+- 🏭 **Universal Robots** - UR3e, UR5e, UR10e, UR16e, UR20 - official geometry, joint limits, and link kinematics pulled directly from Universal Robots' own [Universal_Robots_ROS2_Description](https://github.com/UniversalRobots/Universal_Robots_ROS2_Description) repository (BSD-3-Clause), covering the small-to-heavy payload range of their e-Series lineup
+- 🏭 **Universal Robots (classic)** - UR3, UR5, UR10 - the pre-e-Series CB lineup, official geometry/DH parameters from Universal Robots' own [universal_robot](https://github.com/ros-industrial/universal_robot) ROS-Industrial repository (BSD-3-Clause)
+- 🏭 **UFACTORY** - xArm6, Lite 6 (BSD-3-Clause meshes, official [xarm_ros2](https://github.com/xArm-Developer/xarm_ros2) geometry/kinematics)
+- 🏭 **Comau** - e.DO (BSD-3-Clause meshes, official [eDO_description](https://github.com/ianathompson/eDO_description) geometry/kinematics)
+- 🏭 **Kinova** - Gen3 Lite, Gen2 (BSD-3-Clause meshes, official [ros2_kortex](https://github.com/Kinovarobotics/ros2_kortex) geometry/kinematics)
+- 🏭 **FANUC** - M-710iC (BSD-3-Clause meshes, official [fanuc_m710ic_description](https://github.com/robot-descriptions/fanuc_m710ic_description) geometry/kinematics)
+- 🏭 **The Robot Studio** - SO-ARM100, a 5-DOF (not 6) low-cost arm (Apache-2.0 meshes, official [SO-ARM100](https://github.com/TheRobotStudio/SO-ARM100) geometry/kinematics)
+- 🏭 **AgileX** - PiPER (Apache-2.0 meshes, official [agilex_piper_arm_description](https://github.com/renesas-rdk/agilex_piper_arm_description) geometry/kinematics)
+- 🏭 **Unitree** - Z1 (BSD-3-Clause meshes, via Google DeepMind's [mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie) - each robot folder there keeps its own original manufacturer license)
+- 🏭 **Trossen Robotics** - ViperX 300, WidowX 250 (BSD-3-Clause meshes, official [interbotix_ros_manipulators](https://github.com/Interbotix/interbotix_ros_manipulators) geometry/kinematics)
+- 🏭 **Koch / Low-Cost Robot Arm** - Koch v1.1, another 5-DOF (not 6) low-cost arm (Apache-2.0 meshes, via [mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie))
+- ⚙️ **Generic** - a simplified two-link arm for any rig without a dedicated model
+
+That's 24 real robot models across 13 manufacturers, plus the Generic placeholder - see the license table further down for the exact model↔manufacturer↔license mapping this list summarizes. Every real model (everything except Generic) loads its actual STL mesh geometry per link and drives it through that manufacturer's own real joint transform chain - not a stylized placeholder. Forward/inverse kinematics are computed against each robot's own real geometry (Newton-Raphson solve for position, real per-joint limits where the robot defines any), so a recorded trajectory or a jogged Cartesian target moves the correct arm the way the physical robot actually would. Universal Robots' 5 e-Series models additionally share one common FK/IK engine (`src/examples/urKinematicsShared.ts`) and one common 3D rig renderer (`src/components/3d/URArm.tsx`), since every UR e-Series joint shares the exact same kinematic structure - only the numeric link lengths differ per model. The 3 classic UR models (UR3/UR5/UR10) share their own separate engine and renderer instead (`src/examples/urClassicKinematics.ts`, `src/components/3d/UrClassicArm.tsx`), since that older generation's joints don't all share a common local Z axis the way e-Series does.
+
+Per-robot jog controls include a rotary knob + slider for both **speed** and **acceleration** on every axis, and a full endstop/status readout alongside a live "Robot Controller Board" status card once CAN-OTA is wired to real hardware. Every knob/slider snaps to the jog **Step** value selected in its own combobox (0.1° up to 100°/mm) rather than moving continuously. Robot **A1** is a running proof of concept for a different layout: its Speed/Acceleration/J1-J6/XYZ jog controls live in a draggable floating panel on top of the 3D viewport itself (`Joystick3D.tsx` for the XYZ pad) instead of the panel below it that every other robot still uses - see `src/components/robots/A1.tsx`.
+
+### Kinematic Brain Stage
+
+A dedicated control panel for the HYDRA-UMC motherboard's own local motion subsystem - the STM32H745's directly-driven axes, separate from the distributed robot arms on STACK A:
+
+- 📐 **XY gantry** jog control for the X, Y1, Y2 (dual-Y gantry), and Z axes
+- 🔥 **Heated bed** control (SSR-switched, 230VAC)
+- 🔄 **ATC revolver** - rotary tool-index control for the E0-driven automatic tool changer
+- 🎢 **Conveyor** - installed/running/speed control for the E1-driven transport belt
+- 🛑 A full 12-endstop grid, 3 fan channels, and 10 pumps/10 valves for process fluidics
+
+### Accessory & Machine Control Panels
+
+Dedicated panels for the machines and accessories that go alongside a robot cell: **XY Table**, **ATC Tools**, **Rack Manager**, **Pick & Place** (including JuanenPnP/LumenPnP-specific configuration), **CNC** (including JuanenCNC-specific configuration), **Laser** (including JuanenLaser-specific configuration), **Vacuum Table**, and **Heated Bed**.
+
+---
+
+### 🧩 Selectable vacuum tables
+
+Choose one of six real STL models in Vacuum Table: 160 × 120, 230 × 210, 230 × 250, 232 × 217, 240 × 240 or 250 × 250 mm. Base thickness is 15 mm; total height with alignment walls is 16.2 mm. Width and length are editable in 5 mm steps (10–5000 mm). The footprint is scaled; thickness stays unchanged. Selecting a preset restores its original dimensions. Custom sizes synchronize through SERVER; scaled holes/channels are a visual layout, not a regenerated manufacturing STL. Selection preserves placement, pump and valve state; reset selects 160 × 120 mm and switches pump and valve off. Legacy/unknown model IDs display the first model. STUDIO and both SUITE interfaces use the same catalog and modelId in robot settings.
+
+[Model guide, configuration and regeneration](docs/VACUUM_TABLE_MODELS.md).
+
+### 🔥 Heated bed model
+
+Four STL presets: 100×100, 200×100, 200×200 and 255×255 mm, all 5 mm thick. Width/length adjust in 5 mm steps (25–5000 mm); selecting a preset restores its dimensions without changing heating. Visual model only, not an electrical or manufacturing design.
+
+[Heated bed model — STL / OpenSCAD](docs/HEATED_BED_MODELS.md).
+
+### 🗄️ Configurable STL racks
+
+STL rack: width and depth 40–1000 mm in 1 mm steps; 1–24 plates at a fixed 10 mm pitch. Dimensions are visual settings, not robot calibration.
+
+[Configurable STL racks — STL / OpenSCAD](docs/RACK_MODELS.md).
+
+### 🛠️ Independent machine models
+
+Independent STL copies for JuanenPnP, JuanenCNC and JuanenLaser; LumenPnP stays original. Edit each model in its own folder. CAD dimensions are used; legacy size settings do not stretch the model.
+
+[Independent machine models — STL](docs/MACHINE_ASSETS.md).
+
+These original JuanenPNP / HYDRA-UMC assets and their SCAD sources use GPL-3.0; they are not Opulo machine CAD.
+
+### Works & Trajectories
+
+Load canned example trajectories, jog-and-record your own points live, or load/save/edit/play back complex multi-point trajectories (JSON) per robot. Trajectories are portable between robot models - each recorded point is resolved through that specific robot's own real kinematics (`src/examples/robotKinematicsDispatch.ts`) at load/draw/play time, not baked against whichever robot happened to record it, so the same trajectory file drives a Parol6 and a UR10e correctly along their own real reachable geometry.
+
+### CAN-OTA Firmware Tools
+
+Flash and self-test firmware across the whole HYDRA-UMC + URTC CAN-OTA chain from one dashboard, with two dedicated entry points:
+
+- **URTC → Flasher / Tester** - for the URTC Tool Head board and its own expansion boards (matches the standalone [URTC Flasher](https://github.com/JuanenRac/URTC-FLASHER)/[URTC Tester](https://github.com/JuanenRac/URTC-TESTER) desktop tools' own protocol coverage)
+- **HYDRA-UMC → Flasher / Tester** - for the Robot Controller Board and Kinematic Brain tiers, relayed the whole way from CM5 → SPI → STM32H745 → FDCAN1 → Robot Controller Board → CAN → URTC Tool Head, with no JTAG/SWD probe and no USB-CAN dongle needed (see [HYDRA-UMC's own `docs/architecture.md`](https://github.com/JuanenRac/HYDRA-UMC/blob/main/docs/architecture.md) for the full addressing/relay design)
+
+Both can download real firmware releases straight from GitHub (`firmware_manifest.json`-based, CRC32-verified) for either the `URTC` or `HYDRA-UMC` repository. As noted above, the transport itself runs against a full built-in simulation until real STM32H745 firmware exists on real hardware to talk to.
+
+### Gamepad Support
+
+USB and Bluetooth controller integration with custom per-button/per-axis mappings, for jogging robots and accessories without a mouse/keyboard. Real-time actions (joint/table jog, E-STOP, START/STOP, playback speed) fire the same atomic `sendRobotCommand()` path the jog buttons in the robot detail panel use, not the debounced settings save - see `GamepadController.tsx`.
+
+### Camera Integration
+
+Up to 8 simultaneous live feeds (USB vision or thermal MLX90640/41/42-family sensors) with recording and inference status - the camera matrix HYDRA-UMC's own dual USB 3.0 hub subsystem is built around.
+
+### Multi-Language UI
+
+Full interface translation across **English, Spanish, German, French, Italian, Simplified Chinese, Japanese and Portuguese** (`src/locales/`), including the in-app Help menu with its step-by-step guides, the assistant, the About dialog (version/author/license), and every tab of the System Configuration dialog. Coverage isn't 100% of every screen yet - a handful of standalone accessory panels are still hardcoded English, not yet reached by translation work.
+
+### Help, Guides & Assistant
+
+The Help window has a **Step-by-step guides** tab: one guide per task (add a controller, move a robot, record a trajectory, use the cameras, flash firmware, manage users, remote access, security...), each with a level (basic, advanced, technical), a search box and a button that goes to the screen where the task is done. **Hydri**, the assistant, is a small animated mascot that floats over the dashboard: it explains the screen you are in, walks you through a task step by step, answers questions typed in words with no server and no AI model (in any of the 8 languages), can read the answers aloud with the browser's own voice, can be dragged anywhere and pinned there, and is switched on or off from the Help window. Its preferences are kept in the browser (`src/assistant/`).
+
+### ℹ️ About & System Configuration
+
+Two standalone dialogs, both reachable from the header (`Config`/`About` buttons): **About** shows the running app version (read live from `GET /api/hydra-info`), author, and license; **Config** covers server identity, controller/node management, UI theme + language, robot renaming, camera↔robot mapping with conflict detection, the custom URDF library, third-party software integrations (OpenPnP/CNC/Laser backends), per-client remote access (independent switches for SUITE/Android/iOS), user accounts, per-robot work directories, CAN-OTA transport, and gamepad mapping - each its own tab. Both are their own components (`src/components/About.tsx`, `src/components/Config.tsx`), not inlined into the main dashboard shell.
+
+### Reliability
+
+The app protects itself against two different classes of runtime failure, both born from a real production incident (a kiosk display going black after a redeploy). `src/main.tsx` listens for Vite's own `vite:preloadError` event - emitted when a browser tab left open across a redeploy tries to fetch a `React.lazy()`-loaded panel chunk (every `Dashboard.tsx` panel, content-hashed per `vite.config.ts`) that no longer exists under its old hash - and reloads the page once automatically, so a long-lived kiosk tab or a stale background tab self-heals without anyone noticing. A `sessionStorage` guard stops that from reload-looping forever if a chunk is genuinely missing for some other reason. Separately, `src/components/ErrorBoundary.tsx` wraps the `<Suspense>` panel area as a backstop for any other render crash; it's keyed by the active tab, so switching away from a crashed panel actually retries the next one instead of leaving the whole dashboard stuck on a fallback screen.
+Commands never fail silently: every jog, play, power, vision and tool command returns a typed result, an expired session is refreshed once and retried, and anything still refused is shown in a banner. The red **STOP** button is global: one click, no confirmation, it stops every robot of every controller and switches every valve and pump off in one call (`POST /api/stop-all`). It sits in the header and the footer, in the robot panel and in the remote-control overlay, and Ctrl+Shift+Space presses it from the keyboard (a chord that is not typed by accident, ignored on a held key). The answer is listed robot by robot (a warning when a robot did not stop or the server could not save the stop; robots reserved by someone else are marked); a network failure is retried once, a server over its rate limit (429) or without the route (404) is answered with the per-robot stop, and a persistent "STOP not confirmed" warning stays until a later STOP gets an answer. Joystick jogging is a held deadman control (it ends on pointer cancel, window blur, a hidden tab or after 8 seconds), a J1 move stays on the nearest equivalent angle and a jog step above 20 degrees is refused. Gamepad input follows the robot selected in the interface and is rate limited. A release firmware is checked against its sha256 before CAN-OTA flashing, bootloader images are opt-in, and imported trajectories and scenes are validated before they reach the shared state.
+
+Who may move a robot, and how far, is decided by the server for every client. A robot can be **reserved** for the account and the window (a controller id chosen per window) that asks for it: the same account on another window, or another account, is refused with a message that says which (`other-controller`, `other-account`, `controller-id-required`), the list of reservations comes from `GET /api/claims`, and an administrator can take a robot over. The size of a jog, the range of an absolute jog and the hottest heated-bed target are read from `GET /api/safety-limits` instead of being kept in the app; an administrator edits them by model in **Ecosystem > Safety limits**, together with the optional arming of the jog (off by default; when on, a button arms the jog for a limited time) and the mandatory controller id. Each robot has a **Live / Sim** switch (Live by default): in Sim, nothing that moves the robot or switches something on is sent from that window, while STOP always goes through. A Work or an example with points the arm cannot reach is refused with the list of those points, and can be scaled to the reach of the model instead. The list of reservations is also pushed by the server on the WebSocket (the `claims` message, for connections that asked for `remoteApiVersion=2`), so the access bar shows a change at once instead of waiting for its next poll; the poll only runs now and then while the pushes arrive. Writes are conditional: each one carries the revision of the robot this window last saw (`If-Match`), and when someone else changed the robot in between the server answers 412, the robot is read again and the banner says so (Standard checks reservations, the table and the one-off commands; Strict checks everything but STOP; Off checks nothing; STOP is never checked). The XY table moves with the atomic `table` command, and administrators read the append-only audit record, with its SHA-256 chain verified, in **Ecosystem > Audit record**.
+
+### Accounts & Access
+
+Every backend seeds one account on its own first-ever start - username `admin`, password `admin` - change it from **Config > Users** as soon as the server is reachable beyond a fully trusted LAN. That same tab lets an admin account create additional **operator** accounts: an operator can sign in, watch live state, and drive robots (jog/play/pause/stop/tool/valve/pump/speed), but can't overwrite global settings or manage other accounts. No account is required just to look around - the login screen's own "Continue read-only" skips straight to the dashboard with writes disabled. Full contract (roles, tokens, the `/api/users` routes) documented in [HYDRA-UMC-SERVER's own `docs/REMOTE_API.md`](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/REMOTE_API.md) sections 2a/2b. In production the first administrator comes from the deployment's bootstrap settings and the server refuses example secrets (see [HYDRA-UMC-SERVER's `docs/PRODUCTION_BOOTSTRAP.md`](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/PRODUCTION_BOOTSTRAP.md)).
+
+Each of the 5 remote clients (SUITE, Android, iOS, Watch, DSI) self-identifies via an `X-Hydra-Client` request header, so **Config > Remote Access** can allow or block each one independently instead of one combined switch for all five.
+
+### Persistent State
+
+HYDRA-UMC STUDIO itself is a pure client - it holds no state of its own beyond what's in memory for the current session. All persistence (`settings.json`, `users.json`, saved trajectories under `WORKS/`, submitted models) lives on the separate **[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** backend this app talks to over the network (see that project's own `data/` and README for the full picture) - state survives a page reload or this app's own redeploy, since neither of those touches the backend process at all. `settings.json` itself is deliberately excluded from that backend's static file serving (it holds controller IPs, CAN-OTA configuration, and full per-robot state), even though its `WORKS/` folder is served normally.
+
+The sign-in lasts as long as the browser tab: the session and its refresh token are kept in `sessionStorage`, so closing the tab ends it. The sign-in option **Keep me signed in on this device** keeps them in `localStorage` instead, across browser restarts (off by default). The production page carries a Content-Security-Policy as a meta tag (scripts only from the page itself, no inline scripts, no plugins); `HYDRA_STUDIO_CSP=off` at build time leaves it out, for a deployment that sets the header itself, and any other value is used as the policy.
+
+The same `GET`/`POST /api/settings` contract, plus a discovery endpoint (`GET /api/hydra-info`) and a `WebSocket /ws` for live push updates, is also how external clients connect to that same backend - this is what lets [HYDRA-UMC SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE) discover a running HYDRA-UMC SERVER instance on the network, read/modify its state, and see changes made from this app's own browser tab reflected live (and vice versa). Full contract in [HYDRA-UMC-SERVER's own `docs/REMOTE_API.md`](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/REMOTE_API.md).
+
+`GET /api/system/metrics` powers the Overview dashboard footer: CPU load and memory usage are always real (Node's own `os` module); temperature reads real `vcgencmd measure_temp` output when running on an actual Raspberry Pi and falls back to a clearly-flagged mock otherwise (`temp_is_real` in the response); Wi-Fi/Ethernet/Bluetooth status are read from `/sys/class/net`/`/sys/class/bluetooth` (Linux-only, `null`/unknown on any other host rather than a guessed value).

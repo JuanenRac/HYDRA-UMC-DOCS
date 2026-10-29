@@ -1,0 +1,27 @@
+**HYDRA-UMC SUITE** is a native Windows/Linux desktop application (Python
++ PySide6/Qt6) built as a mission-control center for a whole fleet of
+[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) controllers at once -
+scan the local network (or add one manually, including through an
+already-connected VPN tunnel to a HYDRA-UMC on a different physical
+network), connect to as many as are found, and jog/monitor/reconfigure
+any of them live, side by side, from one fullscreen industrial dashboard.
+
+It speaks the exact same wire protocol
+[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER) exposes -
+the same headless backend [HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO)'s
+own browser UI talks to as just another client of it - see
+[`HYDRA-UMC-SERVER/docs/REMOTE_API.md`](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/REMOTE_API.md)
+for the full contract, added specifically to support this project. A
+change made from SUITE shows up live in an open browser tab, and vice
+versa - real bidirectional sync over a WebSocket, not a one-shot import/
+export.
+
+**Honesty note, matching the rest of this ecosystem's own documentation
+convention:** this is a first real, working pass, not a finished product.
+See [`docs/ROADMAP.md`](docs/ROADMAP.md) for exactly what's genuinely
+implemented and verified end-to-end today vs. deliberately scoped out for
+later. As of this pass, every real robot model this ecosystem supports has
+real STL geometry and numerically-verified forward kinematics wired into
+the 3D viewport (Parol6, Faze4, AR3, AR4, UR3e/5e/10e/16e/20, xArm6,
+Lite 6, e.DO), plus a primitive-built "Generic" fallback for any model
+without a dedicated mesh set.

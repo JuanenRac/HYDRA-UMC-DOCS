@@ -1,0 +1,99 @@
+### Per Iniziare
+
+### Requisiti
+- Python 3.12+ (la CI usa 3.12; provato in locale anche con 3.14)
+- Un server [HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO) in esecuzione a cui connettersi
+
+### Installazione
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate      # Windows
+# source .venv/bin/activate   # Linux
+
+pip install -r requirements.txt
+```
+
+### Esecuzione
+
+```bash
+python main.py
+```
+
+Si avvia massimizzata con un minimo di 1280x720 (secondo la stessa
+specifica di design di questa app) - premi **F11** per alternare tra
+schermo intero e una normale finestra massimizzata in qualsiasi momento,
+così non ti intrappola mai realmente senza una via d'uscita. Usa il
+pannello **Servers** per scansionare la tua rete o aggiungere un server
+HYDRA-UMC SERVER per indirizzo.
+
+Premi **F12** in qualsiasi momento per inviare lo STOP globale (il pulsante **STOP** della barra superiore fa lo stesso).
+
+### Stack Tecnologico
+
+- **Framework UI:** PySide6 (Qt6) con Qt Quick (QML) - un'unica interfaccia, senza reinventare un framework di aggancio
+- **Rendering 3D:** PyOpenGL (shader GLSL core-profile) + numpy-stl
+- **Rete:** `httpx` (REST) + `websockets` (sincronizzazione in tempo
+  reale), integrato con lo stesso event loop di Qt tramite `qasync` -
+  nessun thread di lavoro separato
+- **Matematica:** NumPy (trasformazioni omogenee 4x4 per la cinematica
+  diretta)
+
+### Compilare un eseguibile standalone
+
+Due percorsi, stesso risultato (`dist/HYDRA-UMC_SUITE.exe` su Windows,
+`dist/HYDRA-UMC_SUITE` su Linux) - non serve alcuna installazione di
+Python per eseguire il risultato in entrambi i casi.
+
+**Automatizzato (consigliato):**
+
+```bash
+build_exe.bat    # Windows
+./build_exe.sh   # Linux
+```
+
+Ogni script crea/riutilizza `.venv`, installa `requirements.txt` +
+PyInstaller al suo interno, pulisce qualsiasi `build/`/`dist/` precedente,
+compila con PyInstaller (includendo `assets/` e solo le 4 sottocartelle
+di plugin Qt che questa app usa realmente - `platforms`/`styles`/
+`imageformats`/`iconengines`, non l'intero pacchetto PySide6, il che è
+ciò che mantiene il risultato nell'ordine delle decine di MB invece che
+delle centinaia), e copia `README.md`/`LICENSE`/`docs/` e i file
+editabili `language/*.lng` accanto all'eseguibile invece di congelarli al
+suo interno.
+
+**Equivalente manuale**, se vuoi vedere/controllare ogni passaggio tu
+stesso (gli stessi comandi eseguiti dagli script sopra):
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate          # Windows
+# source .venv/bin/activate      # Linux
+
+pip install -r requirements.txt
+pip install pyinstaller
+
+python -m PyInstaller --onefile --windowed --noconfirm --name "HYDRA-UMC_SUITE" ^
+    --add-data "assets;assets" ^
+    --add-data "<PySide6 install dir>\plugins\platforms;PySide6\plugins\platforms" ^
+    --add-data "<PySide6 install dir>\plugins\styles;PySide6\plugins\styles" ^
+    --add-data "<PySide6 install dir>\plugins\imageformats;PySide6\plugins\imageformats" ^
+    --add-data "<PySide6 install dir>\plugins\iconengines;PySide6\plugins\iconengines" ^
+    --hidden-import qasync --hidden-import websockets ^
+    --hidden-import PySide6.QtOpenGL --hidden-import PySide6.QtOpenGLWidgets ^
+    --hidden-import OpenGL.platform.win32 ^
+    main.py
+
+# poi copia README.md, LICENSE, docs/, e language/ accanto a dist/HYDRA-UMC_SUITE.exe
+```
+
+Su Linux (vedi `build_exe.sh` per il comando esatto e testato), usa `:`
+invece di `;` come separatore di `--add-data`, rimuovi l'hidden-import
+`OpenGL.platform.win32` (solo Windows), rimuovi `--windowed`, e nota che
+lì il percorso dei plugin si annida un livello più in profondità
+(`<PySide6 dir>/Qt/plugins/platforms` contro il `<PySide6 dir>\plugins\platforms`
+piatto di Windows) - un dettaglio di packaging della wheel stessa, non
+qualcosa scelto da nessuno dei 2 script. `HYDRA-UMC_SUITE.spec` nella
+radice del repository è lo stesso file spec generato da PyInstaller
+dall'ultima build - sicuro da eliminare e rigenerare, non mantenuto a
+mano.

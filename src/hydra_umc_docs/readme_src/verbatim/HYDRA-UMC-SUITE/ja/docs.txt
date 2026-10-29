@@ -1,0 +1,2 @@
+- **[docs/ROADMAP.md](docs/ROADMAP.md)** —— 今日の時点で実際にエンドツーエンドで検証済みのものと、意図的にまだ対象外のもの。
+- **[installer/README.md](installer/README.md)** —— Windows 用 `.exe` インストーラーと Linux 用 `.deb` パッケージのビルド方法。

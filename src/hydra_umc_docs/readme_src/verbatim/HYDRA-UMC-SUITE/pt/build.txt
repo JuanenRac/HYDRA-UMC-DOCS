@@ -1,0 +1,96 @@
+### Primeiros passos
+
+### Requisitos
+- Python 3.12+ (o CI usa 3.12; também testado localmente com 3.14)
+- Um servidor [HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO) em execução a que se ligar
+
+### Instalação
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate      # Windows
+# source .venv/bin/activate   # Linux
+
+pip install -r requirements.txt
+```
+
+### Execução
+
+```bash
+python main.py
+```
+
+Arranca maximizada com um mínimo de 1280x720 (segundo a especificação de
+desenho desta própria aplicação) - carregue em **F11** para alternar a qualquer
+momento entre ecrã inteiro e uma janela maximizada normal, para que nunca o
+prenda sem uma saída de emergência. Use o painel **Servidores** para analisar a
+rede ou acrescentar um servidor HYDRA-UMC SERVER por endereço.
+
+Carregue em **F12** a qualquer momento para enviar o STOP global (o botão **STOP** da barra superior faz o mesmo).
+
+### Stack tecnológica
+
+- **Framework de UI:** PySide6 (Qt6) com Qt Quick (QML) - uma única interface, sem reinventar uma framework de acoplamento própria
+- **Renderização 3D:** PyOpenGL (shaders GLSL de perfil core) + numpy-stl
+- **Rede:** `httpx` (REST) + `websockets` (sincronização em direto), integrados
+  com o próprio ciclo de eventos do Qt através do `qasync` - sem uma thread de
+  trabalho separada
+- **Matemática:** NumPy (transformações homogéneas 4x4 para a cinemática direta)
+
+### Compilar um executável autónomo
+
+Dois caminhos, o mesmo resultado (`dist/HYDRA-UMC_SUITE.exe` no Windows,
+`dist/HYDRA-UMC_SUITE` no Linux) - não é preciso uma instalação de Python para
+executar o resultado em nenhum dos casos.
+
+**Automático (recomendado):**
+
+```bash
+build_exe.bat    # Windows
+./build_exe.sh   # Linux
+```
+
+Cada script cria/reutiliza o `.venv`, instala o `requirements.txt` + o
+PyInstaller nele, limpa qualquer `build/`/`dist/` anterior, compila com o
+PyInstaller (empacotando o `assets/` e apenas as 4 subpastas de plugins Qt que
+esta aplicação realmente usa - `platforms`/`styles`/`imageformats`/
+`iconengines`, não todo o pacote PySide6, que é o que mantém o resultado na
+ordem das dezenas de MB em vez de centenas) e copia o `README.md`/`LICENSE`/
+`docs/` e os ficheiros editáveis `language/*.lng` para junto do executável em
+vez de os congelar lá dentro.
+
+**Equivalente manual**, se quiser ver/controlar cada passo (os mesmos comandos
+que os scripts acima executam):
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate          # Windows
+# source .venv/bin/activate      # Linux
+
+pip install -r requirements.txt
+pip install pyinstaller
+
+python -m PyInstaller --onefile --windowed --noconfirm --name "HYDRA-UMC_SUITE" ^
+    --add-data "assets;assets" ^
+    --add-data "<PySide6 install dir>\plugins\platforms;PySide6\plugins\platforms" ^
+    --add-data "<PySide6 install dir>\plugins\styles;PySide6\plugins\styles" ^
+    --add-data "<PySide6 install dir>\plugins\imageformats;PySide6\plugins\imageformats" ^
+    --add-data "<PySide6 install dir>\plugins\iconengines;PySide6\plugins\iconengines" ^
+    --hidden-import qasync --hidden-import websockets ^
+    --hidden-import PySide6.QtOpenGL --hidden-import PySide6.QtOpenGLWidgets ^
+    --hidden-import OpenGL.platform.win32 ^
+    main.py
+
+# then copy README.md, LICENSE, docs/, and language/ next to dist/HYDRA-UMC_SUITE.exe
+```
+
+No Linux (ver o `build_exe.sh` para o comando exato e testado), use `:` em vez
+de `;` como separador do `--add-data`, retire o hidden-import
+`OpenGL.platform.win32` (só para Windows), retire `--windowed` e note que o
+caminho dos plugins aninha-se um nível mais fundo aí
+(`<PySide6 dir>/Qt/plugins/platforms` contra o
+`<PySide6 dir>\plugins\platforms` plano do Windows) - um pormenor de
+empacotamento da própria wheel, não algo que algum dos scripts tenha escolhido. O
+`HYDRA-UMC_SUITE.spec` na raiz do repositório é o ficheiro de especificação gerado
+pelo próprio PyInstaller na última compilação - seguro de apagar e regenerar, não
+mantido à mão.

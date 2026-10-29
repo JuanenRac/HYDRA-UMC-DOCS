@@ -1,0 +1,43 @@
+### API & WebSocket Surface
+
+Every route, the WebSocket message contract, authentication, and the
+per-client remote-access model are documented in
+**[`docs/REMOTE_API.md`](docs/REMOTE_API.md)** - the single source of
+truth for anything that talks to this server, including HYDRA-UMC
+STUDIO's own client code. In short:
+
+- REST API under `/api/*` - settings read/write, atomic robot commands
+  (jog/play/pause/stop/tool/valve/pump/speed/vision), account management,
+  work-file upload/download, model submissions, system metrics, discovery.
+- A single `/ws` WebSocket endpoint (bearer token as the `hydra.bearer` subprotocol, a token in the query string is refused unless the installation opts back in)
+  broadcasting full-tree `settings` snapshots and lighter `delta` updates
+  to every connected client whenever state changes.
+- `POST /api/stop-all` is the global stop: one call, open to every signed-in account, stops every robot and switches every valve and pump off
+  whatever any reservation says, and answers one result per robot.
+- Bluetooth LE (off by default): a phone near the CM5 can read the robot state and, when an administrator allows it, send commands that the server acknowledges only after the same route a network client uses has answered. See [`docs/BLE_GATT.md`](docs/BLE_GATT.md).
+- JWT bearer-token authentication on every write; three account roles
+  (`admin`, `operator`, read-only `viewer`) gate settings/user-management writes versus
+  day-to-day robot operation and read-only polling.
+- `_hydra._tcp` mDNS/Bonjour advertising for zero-config discovery on the
+  local network, plus a plain `GET /api/hydra-info` for a subnet scan.
+- `GET /metrics` - Prometheus exposition format (`prom-client`), for the
+  optional Grafana dashboard described in "📊 Monitoring" below.
+
+CORS is enabled via a configurable allowlist (`CORS_ALLOWED_ORIGINS`, see
+"Environment Variables" below) since this server's clients are no longer
+guaranteed to share its own origin. Unset, it stays wide open outside
+`NODE_ENV=production` (today's zero-config behavior for local dev); in
+production it denies every cross-origin browser request until the
+allowlist is set - see the comment above `app.use(cors(corsOptions))` in
+`src/server.ts` for the full reasoning.
+
+### Monitoring (Optional)
+
+`GET /metrics` exposes process uptime, connected WebSocket clients,
+`settings.json` write latency, atomic robot commands by type, authentication
+failures, and the same CPU/memory/temperature figures as
+`GET /api/system/metrics` - all in Prometheus format. A ready-to-run
+Prometheus + Grafana stack (with a starter dashboard) lives in
+**[`monitoring/`](monitoring/README.md)**: `docker compose up -d` from that
+folder and it's running. Entirely optional - nothing here is needed for the
+server itself to work.

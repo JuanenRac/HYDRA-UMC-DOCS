@@ -1,0 +1,20 @@
+### Dati e Persistenza
+
+Tutto ciò che questo server possiede vive sotto `data/`, creata
+automaticamente al primo avvio:
+
+- `data/settings.json` - l'intero albero di stato: controller, robot,
+  configurazione di sistema. Mai servito come file statico (404
+  esplicito) - raggiungibile solo tramite la rotta autenticata
+  `/api/settings`.
+- `data/users.json` - credenziali account (hash scrypt, con salt, mai in
+  chiaro). Anch'esso mai servito staticamente.
+- `data/logs/server.log` - log industriale append-only di ogni comando.
+- `data/WORKS/` - traiettorie robot salvate, una cartella per robot per
+  default, servite come semplici file statici (indice + singoli file di
+  lavoro).
+- `data/model_submissions.json` + le cartelle dei modelli inviati stesse
+  - il lato server del flusso di
+  [HYDRA-UMC-EDITOR-URDF](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-URDF)
+  per "inviare un modello robot finito direttamente nel catalogo di
+  questo server".

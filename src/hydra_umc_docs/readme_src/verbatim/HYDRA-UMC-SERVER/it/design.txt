@@ -1,0 +1,23 @@
+### Perché Esiste
+
+Separare il motore dal pannello web è stato un cambiamento deliberato,
+non un refactoring fine a se stesso:
+
+- **Isolamento delle risorse.** Una vista 3D pesante che blocca la scheda
+  del browser non condivide più il processo (e quindi la contesa di
+  CPU/I-O) con il codice realmente responsabile del movimento dei robot.
+  Se la UI web si blocca, questo server continua a rispondere ai comandi
+  di arresto di emergenza da qualsiasi altro client connesso.
+- **Un vero controller headless.** Questo processo può funzionare senza
+  alcuna UI mai caricata sull'host - il "cervello" di una cella
+  industriale non ha bisogno di una scheda del browser aperta per
+  funzionare. Libera RAM/CPU su hardware limitato (un Raspberry Pi CM5)
+  per la parte del lavoro che conta davvero: cinematica e controllo.
+- **Cicli di vita indipendenti.** La UI web può essere ridistribuita,
+  riavviata o sostituita con una build più recente senza mai toccare
+  questo processo - nessun fermo del controllo robot solo per rilasciare
+  una correzione UI.
+- **Hosting flessibile.** Questo server è pensato per funzionare sull'(o
+  accanto all')hardware che controlla; il client che lo visualizza può
+  essere ospitato altrove, raggiungibile via rete esattamente come gli
+  altri client remoti di questa stessa API.

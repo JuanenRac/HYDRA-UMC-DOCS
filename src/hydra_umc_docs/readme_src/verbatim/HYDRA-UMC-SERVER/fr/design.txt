@@ -1,0 +1,24 @@
+### Pourquoi Ce Projet Existe
+
+Séparer le moteur du tableau de bord web était un choix délibéré, pas un
+refactoring gratuit :
+
+- **Isolation des ressources.** Une vue 3D lourde qui bloque l'onglet du
+  navigateur ne partage plus de processus (et donc de contention
+  CPU/E-S) avec le code réellement responsable du déplacement des
+  robots. Si l'UI web se bloque, ce serveur continue de répondre aux
+  commandes d'arrêt d'urgence de tout autre client connecté.
+- **Un vrai contrôleur headless.** Ce processus peut fonctionner sans
+  jamais charger d'UI sur l'hôte - le "cerveau" d'une cellule
+  industrielle n'a pas besoin d'un onglet de navigateur ouvert pour
+  fonctionner. Libère RAM/CPU sur du matériel contraint (un Raspberry Pi
+  CM5) pour la partie du travail qui compte réellement : cinématique et
+  contrôle.
+- **Cycles de vie indépendants.** L'UI web peut être redéployée,
+  redémarrée ou remplacée par une build plus récente sans jamais toucher
+  ce processus - aucune interruption du contrôle des robots juste pour
+  livrer une correction d'UI.
+- **Hébergement flexible.** Ce serveur est destiné à fonctionner sur (ou
+  juste à côté de) le matériel qu'il contrôle ; le client qui l'affiche
+  peut être hébergé ailleurs, joignable par le réseau exactement comme
+  les autres clients distants de cette même API.

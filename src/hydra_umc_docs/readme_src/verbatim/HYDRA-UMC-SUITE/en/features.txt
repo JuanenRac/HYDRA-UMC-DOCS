@@ -1,0 +1,90 @@
+### Visual Command Deck
+
+The window has a persistent, game-console-inspired header using the official HYDRA-UMC icon and the deep navy/cyan language of HYDRA-UMC-UPDATER. It shows the product name, the live connection state and the version, and carries the global STOP button and the application menu (language, support bundle, keyboard shortcuts, About). Navigation to the panels is the left sidebar. It is not a simulated dashboard: every panel works on the real servers.
+
+### 🛑 Global STOP
+
+The **STOP** button is always at the top of the window, on every panel. One click, no confirmation: it calls `POST /api/stop-all` on every connected server and stops every robot, whoever reserved it. It shows the result: a green message when everything stopped, and a red one that stays until the next STOP when a robot did not stop, the stopped state could not be saved, or nothing confirmed the stop (**STOP NOT CONFIRMED**). If the server rate limits the call, the robots are stopped one by one. **F12** does the same from the keyboard (listed in **≡ > Keyboard shortcuts**); it is a bare function key, so it never presses a focused button and closes nothing.
+
+### The Qt Quick interface
+
+HYDRA-UMC SUITE has a single interface, written in Qt Quick (QML): a standalone `ApplicationWindow` (`assets/qml/Main.qml`) that `qt_suite.py` bridges to the unchanged `SuiteController`. It is the same pattern HYDRA-UMC-OS-REBUILDER, HYDRA-UMC-UPDATER, URTC-TESTER, URTC-FLASHER and HYDRA-UMC-EDITOR-URDF use, and the same shape as HYDRA-UMC-STUDIO: a navigation sidebar (a root menu plus the Industrial, URTC and HYDRA-UMC submenus, in `hydra_suite/nav_items.py`) and one content area that shows one of the 33 panels at a time. The 3D viewport and the previews are drawn by a dedicated `OffscreenRobotRenderer` (a separate `QOpenGLContext`, `QOffscreenSurface` and framebuffer, not Qt Quick's own `QQuickFramebufferObject`, which would force the whole interface off the Direct3D 11 backend Qt Quick uses by default on Windows onto OpenGL) with the same rendering code (`RobotGLRenderer`) and handed to QML as an image. The earlier classic window (a `QMainWindow` with dockable panels) was removed; everything it did lives in this interface, and `python main.py` starts it.
+
+### Features
+
+- **🔍 Network discovery** - a concurrent subnet scan (`GET /api/hydra-info`)
+  and real mDNS/Bonjour (`_hydra._tcp`, the same service `server.ts`
+  publishes and HYDRA-UMC-IOS-CONTROL already queries) run together for
+  real HYDRA-UMC SERVER instances, deduplicated by host:port, plus manual
+  add-by-address for anything neither can reach (a different subnet, a
+  VPN tunnel, multicast blocked by the network).
+- **🐝 Swarm connections** - connect to as many HYDRA-UMC servers
+  simultaneously as you want, each with its own live WebSocket sync; pick
+  which one is "active" for the other panels.
+- **📊 Overview** - per-controller robot roster: model, role, online
+  status, speed/acceleration, at a glance.
+- **🦾 Robot control** - a slider per joint inside the range of the model, speed/acceleration sliders, play / pause / stop of the recorded trajectory, the tool (with a confirmation), the valves and the pumps, all writing back live as atomic commands.
+- **🔐 Reservations, safety limits and Live / Sim** - the Robot Control panel has an access bar: reserve or release the selected robot for this program (renewed while kept), see who holds the others and, as an administrator, take one over. Every reservation, release, jog arming and command carries the controller id this program chose when it started, and a refusal (another account, the same account elsewhere, a missing controller id, a jog that is not armed) reaches the screen with its own sentence. The size of a jog and the hottest heated-bed target are read from the server (`GET /api/safety-limits`) and checked before anything is sent; an administrator edits them by model in the **Safety limits** panel, together with the optional arming of the jog (off by default) and the mandatory controller id. Each robot has a **Live / Sim** switch (Live by default): in Sim nothing that moves the robot or switches something on leaves this program, while STOP always does. The joint sliders follow the range of the model, a Work with points outside it is refused with their list, a Work whose points the arm cannot reach is refused with those points and can be loaded scaled about the base of the robot, and switching the bed heater on asks first. Writes are conditional: each one carries the revision of the robot this program last saw (`If-Match`), and when someone else changed the robot in between the server answers 412, nothing is applied, the robot is read again and a notice says so (Standard checks reservations, the table and the one-off commands; Strict checks everything but STOP; Off checks nothing; the choice is under the list of reservations; STOP is never checked). The XY table jog is one atomic `table` command, the server pushes the reservations over the WebSocket so the panel stops polling while they arrive, and administrators read the append-only audit record, with its SHA-256 chain verified twice (by the server and here), under **Ecosystem > Audit record**. Administrators also create, change and delete the accounts of the server (administrator or operator) under **Ecosystem > Users**. The **Ecosystem > Server Admin** screen also sets who may use the local AI relay, whether the host information asks for a sign-in, TLS (with the fingerprint of the certificate) and the Bluetooth LE service of the server, each with where its value comes from. **Ecosystem > Submitted models** lists the models the URDF and STL editors submitted to the server and saves the URDF of one.
+- **🧊 Real 3D viewport** - OpenGL 3.3, real STL meshes, real forward
+  kinematics for all 24 real robot models (numerically verified against
+  HYDRA-UMC STUDIO's own TypeScript implementation, bit-for-bit identical
+  results) plus a primitive-built "Generic" fallback - not a stylized
+  placeholder for any of them.
+- **📍 Trajectory points** - record the selected robot's live pose, jog
+  back to any recorded point on demand.
+- **🧭 One sidebar, one content area** - the panels are reached from the left navigation (root menu plus the Industrial, URTC and HYDRA-UMC submenus), one at a time, grouped like HYDRA-UMC-STUDIO's sidebar. The window starts maximized with its native title bar, and **F11** toggles real full screen.
+- **💾 Remembered servers and support bundle** - *Remember* is ticked by default when you add a server (untick it to keep nothing): its address, nickname and user name go to the configuration file and its password to the secure store of the operating system (Windows Credential Manager, macOS Keychain, the Secret Service of the Linux desktop) through `keyring`, never to the file; without a secure store the password is asked again. The application menu exports a zip for support with the versions, the server list and the client log, without passwords, user names or tokens.
+- **🌐 8 languages** - English, Español, Italiano, Français, Deutsch, 简体中文,
+  日本語, Português
+  (same `language/*.lng` convention as URTC-FLASHER/URTC-TESTER), switch
+  from the Language menu (takes effect after a restart).
+- **📷 Cameras** - real per-controller camera roster (which cameras
+  exist, their type, connected state, and a real USB/IP (RTSP) Source
+  Type toggle with generic per-brand host/port/path/credential fields)
+  synced with the real server the same way every other panel here is,
+  plus real live video: the metadata is real end to end and each
+  camera card renders the real MJPEG stream itself (HYDRA-UMC-
+  VISION-STREAMER's own `stream serve`, proxied through HYDRA-UMC-
+  SERVER's `GET /api/camera/:id/stream`) via a real JPEG SOI/EOI
+  marker-scanning client (the same real approach HYDRA-UMC-ANDROID-
+  CONTROL's own `MjpegStreamParser.kt` uses), verified against real USB
+  and IP hardware.
+- **🛠️ Tool-attachment config, all 11 of 11 panels** - CNC, Laser,
+  Heated Bed, Vacuum Table, ATC (Automatic Tool Changer), XY Table,
+  Rack Manager, Pick & Place, Kinematic Brain Stage, Flasher, and
+  Tester - real feature parity with every one of HYDRA-UMC STUDIO's own
+  tool-specific screens, each a faithful port (including the real,
+  sometimes-quirky behavior STUDIO's own source has, reproduced on
+  purpose rather than "fixed" here) with its own real headless test
+  coverage. CNC/Laser/Heated Bed/Vacuum Table share one
+  `moduleConfigComponent` implementation (STUDIO's own `CNC.tsx`/`Laser.tsx`
+  are identical components apart from the module key); the other 7 each
+  needed their own real, purpose-built panel. Heated beds and vacuum tables use STL in `render/module_rig.py`. PnP, CNC and laser use `render/pnp_rig.py`: 7 articulated meshes and 160 individual parts per independent machine directory. `OffscreenRobotRenderer` renders each assembly. See [machine assets](docs/MACHINE_ASSETS.md).
+
+---
+
+### 🧩 Selectable vacuum tables
+
+Choose one of six real STL models in Vacuum Table: 160 × 120, 230 × 210, 230 × 250, 232 × 217, 240 × 240 or 250 × 250 mm. Base thickness is 15 mm; total height with alignment walls is 16.2 mm. Width and length are editable in 5 mm steps (10–5000 mm). The footprint is scaled; thickness stays unchanged. Selecting a preset restores its original dimensions. Custom sizes synchronize through SERVER; scaled holes/channels are a visual layout, not a regenerated manufacturing STL. Selection preserves placement, pump and valve state; reset selects 160 × 120 mm and switches pump and valve off. Legacy/unknown model IDs display the first model. STUDIO and both SUITE interfaces use the same catalog and modelId in robot settings.
+
+[Model guide, configuration and regeneration](docs/VACUUM_TABLE_MODELS.md).
+
+### 🔥 Heated bed model
+
+Four STL presets: 100×100, 200×100, 200×200 and 255×255 mm, all 5 mm thick. Width/length adjust in 5 mm steps (25–5000 mm); selecting a preset restores its dimensions without changing heating. Visual model only, not an electrical or manufacturing design.
+
+[Heated bed model — STL / OpenSCAD](docs/HEATED_BED_MODELS.md).
+
+### 🗄️ Configurable STL racks
+
+STL rack: width and depth 40–1000 mm in 1 mm steps; 1–24 plates at a fixed 10 mm pitch. Dimensions are visual settings, not robot calibration.
+
+[Configurable STL racks — STL / OpenSCAD](docs/RACK_MODELS.md).
+
+### 🛠️ Independent machine models
+
+Independent STL copies for JuanenPnP, JuanenCNC and JuanenLaser; LumenPnP stays original. Edit each model in its own folder. CAD dimensions are used; legacy size settings do not stretch the model.
+
+[Independent machine models — STL](docs/MACHINE_ASSETS.md).
+
+These original JuanenPNP / HYDRA-UMC assets and their SCAD sources use GPL-3.0; they are not Opulo machine CAD.

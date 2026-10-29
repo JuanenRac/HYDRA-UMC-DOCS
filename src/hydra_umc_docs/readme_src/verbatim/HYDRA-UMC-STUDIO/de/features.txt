@@ -1,0 +1,120 @@
+### Multi-Roboter-3D-Steuerung
+
+Verwalten Sie mehrere unabhängige Roboter mit 6 Freiheitsgraden (6-DOF) gleichzeitig, jeder mit seinem eigenen echten 3D-Modell, eigener Kinematik, und eigenem Jog-/Trajektorienzustand. Die Modellauswahl (RobotDetail → Config-Tab) gruppiert jeden verfügbaren Roboter nach Hersteller:
+
+- 🏭 **Source Robotics** - Parol6, Faze4 (Meshes unter MIT- bzw. GPL-3.0-Lizenz, siehe die eigene `ATTRIBUTION.txt` jedes Modells)
+- 🏭 **Annin Robotics** - AR3, AR4 (Meshes unter MIT-Lizenz)
+- 🏭 **Universal Robots** - UR3e, UR5e, UR10e, UR16e, UR20 - offizielle Geometrie, Gelenkgrenzen, und Glieder-Kinematik, direkt aus dem eigenen [Universal_Robots_ROS2_Description](https://github.com/UniversalRobots/Universal_Robots_ROS2_Description)-Repository von Universal Robots (BSD-3-Clause) übernommen, deckt den gesamten Nutzlastbereich von leicht bis schwer ihrer e-Series-Reihe ab
+- 🏭 **Universal Robots (klassisch)** - UR3, UR5, UR10 - die Baureihe vor der e-Series (CB-Serie), offizielle Geometrie/DH-Parameter aus dem eigenen [universal_robot](https://github.com/ros-industrial/universal_robot)-Repository von ROS-Industrial (BSD-3-Clause)
+- 🏭 **UFACTORY** - xArm6, Lite 6 (BSD-3-Clause-Meshes, offizielle Geometrie/Kinematik von [xarm_ros2](https://github.com/xArm-Developer/xarm_ros2))
+- 🏭 **Comau** - e.DO (BSD-3-Clause-Meshes, offizielle Geometrie/Kinematik von [eDO_description](https://github.com/ianathompson/eDO_description))
+- 🏭 **Kinova** - Gen3 Lite, Gen2 (BSD-3-Clause-Meshes, offizielle Geometrie/Kinematik von [ros2_kortex](https://github.com/Kinovarobotics/ros2_kortex))
+- 🏭 **FANUC** - M-710iC (BSD-3-Clause-Meshes, offizielle Geometrie/Kinematik von [fanuc_m710ic_description](https://github.com/robot-descriptions/fanuc_m710ic_description))
+- 🏭 **The Robot Studio** - SO-ARM100, ein günstiger Arm mit 5-DOF (nicht 6) (Apache-2.0-Meshes, offizielle Geometrie/Kinematik von [SO-ARM100](https://github.com/TheRobotStudio/SO-ARM100))
+- 🏭 **AgileX** - PiPER (Apache-2.0-Meshes, offizielle Geometrie/Kinematik von [agilex_piper_arm_description](https://github.com/renesas-rdk/agilex_piper_arm_description))
+- 🏭 **Unitree** - Z1 (BSD-3-Clause-Meshes, über Google DeepMinds [mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie) - jeder Roboterordner dort behält seine eigene originale Herstellerlizenz)
+- 🏭 **Trossen Robotics** - ViperX 300, WidowX 250 (BSD-3-Clause-Meshes, offizielle Geometrie/Kinematik von [interbotix_ros_manipulators](https://github.com/Interbotix/interbotix_ros_manipulators))
+- 🏭 **Koch / Low-Cost Robot Arm** - Koch v1.1, ein weiterer günstiger Arm mit 5-DOF (nicht 6) (Apache-2.0-Meshes, über [mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie))
+- ⚙️ **Generisch** - ein vereinfachter Zwei-Glieder-Arm für jeden Aufbau ohne eigenes Modell
+
+Das sind 24 echte Robotermodelle von 13 Herstellern, plus der Generisch-Platzhalter - siehe die Lizenztabelle weiter unten für die genaue Modell↔Hersteller↔Lizenz-Zuordnung, die diese Liste zusammenfasst. Jedes echte Modell (alle außer Generisch) lädt seine tatsächliche STL-Mesh-Geometrie pro Glied und steuert sie über die eigene reale Gelenktransformationskette dieses Herstellers - kein stilisierter Platzhalter. Vorwärts-/Rückwärtskinematik wird gegen die eigene reale Geometrie jedes Roboters berechnet (Newton-Raphson-Lösung für die Position, reale Gelenkgrenzen pro Achse, wo der Roboter sie definiert), sodass eine aufgezeichnete Trajektorie oder ein gejogtes kartesisches Ziel den richtigen Arm so bewegt, wie es der physische Roboter tatsächlich tun würde. Die 5 e-Series-Modelle von Universal Robots teilen sich zusätzlich eine gemeinsame FK/IK-Engine (`src/examples/urKinematicsShared.ts`) und einen gemeinsamen 3D-Rig-Renderer (`src/components/3d/URArm.tsx`), da jedes Gelenk der UR-e-Series exakt dieselbe kinematische Struktur teilt - nur die numerischen Gliedlängen unterscheiden sich je Modell. Die 3 klassischen UR-Modelle (UR3/UR5/UR10) teilen sich stattdessen ihre eigene, separate Engine und ihren eigenen Renderer (`src/examples/urClassicKinematics.ts`, `src/components/3d/UrClassicArm.tsx`), da diese ältere Baureihe nicht in jedem Gelenk dieselbe lokale Z-Achse teilt, wie es die e-Series tut.
+
+Die Jog-Steuerungen pro Roboter umfassen einen Drehknopf + Schieberegler sowohl für **Geschwindigkeit** als auch für **Beschleunigung** auf jeder Achse, sowie eine vollständige Endschalter-/Statusanzeige neben einer Live-Statuskarte "Robot Controller Board", sobald CAN-OTA mit echter Hardware verkabelt ist. Jeder Drehknopf/Schieberegler rastet auf den in seinem eigenen Kombinationsfeld ausgewählten Jog-**Step**-Wert (0,1° bis 100°/mm) ein, statt sich kontinuierlich zu bewegen. Roboter **A1** ist ein laufender Proof of Concept für ein anderes Layout: seine Speed-/Acceleration-/J1-J6-/XYZ-Jog-Steuerungen befinden sich in einem verschiebbaren schwebenden Panel über dem 3D-Viewport selbst (`Joystick3D.tsx` für das XYZ-Pad) anstelle des Panels darunter, das alle anderen Roboter weiterhin verwenden - siehe `src/components/robots/A1.tsx`.
+
+### Kinematic Brain Stage
+
+Ein dediziertes Steuerungspanel für das eigene lokale Bewegungssubsystem der HYDRA-UMC-Hauptplatine - die direkt vom STM32H745 angesteuerten Achsen, getrennt von den verteilten Roboterarmen auf STACK A:
+
+- 📐 Jog-Steuerung des **XY-Portals** für die Achsen X, Y1, Y2 (duales Y-Portal), und Z
+- 🔥 Steuerung des **beheizten Betts** (SSR-geschaltet, 230VAC)
+- 🔄 **ATC-Revolver** - rotierende Werkzeugindex-Steuerung für den E0-angetriebenen automatischen Werkzeugwechsler
+- 🎢 **Förderband** - Installiert-/Läuft-/Geschwindigkeitssteuerung für das E1-angetriebene Transportband
+- 🛑 Ein vollständiges 12-Endschalter-Raster, 3 Lüfterkanäle, und 10 Pumpen/10 Ventile für die Prozessfluidik
+
+### Zubehör- und Maschinensteuerungspanels
+
+Dedizierte Panels für die Maschinen und Zubehörteile, die eine Roboterzelle begleiten: **XY-Tisch**, **ATC-Werkzeuge**, **Rack-Manager**, **Pick & Place** (einschließlich JuanenPnP-/LumenPnP-spezifischer Konfiguration), **CNC** (einschließlich JuanenCNC-spezifischer Konfiguration), **Laser** (einschließlich JuanenLaser-spezifischer Konfiguration), **Vakuumtisch**, und **beheiztes Bett**.
+
+---
+
+### 🧩 Auswählbare Vakuumtische
+
+Wähle im Vakuumtisch-Menü eines von sechs echten STL-Modellen: 160 × 120, 230 × 210, 230 × 250, 232 × 217, 240 × 240 oder 250 × 250 mm. Die Basis ist 15 mm dick; die Gesamthöhe mit Ausrichtungswänden beträgt 16,2 mm. Breite und Länge sind in 5-mm-Schritten einstellbar (10–5000 mm). Die Grundfläche wird skaliert, die Dicke bleibt unverändert. Die Modellauswahl stellt die ursprünglichen Maße wieder her. Benutzerdefinierte Maße werden über SERVER synchronisiert; skalierte Löcher und Kanäle dienen der Visualisierung, nicht als neu erzeugte Fertigungs-STL. Die Auswahl erhält Position, Pumpen- und Ventilzustand; Zurücksetzen wählt 160 × 120 mm und schaltet Pumpe und Ventil aus. Alte oder unbekannte Modell-IDs zeigen das erste Modell. STUDIO und beide SUITE-Oberflächen verwenden denselben Katalog und modelId in den Robotereinstellungen.
+
+[Modellhandbuch, Konfiguration und Neugenerierung](docs/VACUUM_TABLE_MODELS.md).
+
+### 🔥 Heizbettmodell
+
+Vier STL-Modelle: 100×100, 200×100, 200×200 und 255×255 mm, alle 5 mm dick. Breite/Länge in 5-mm-Schritten einstellbar (25–5000 mm); die Modellauswahl stellt die Maße wieder her, ohne die Heizung zu ändern. Nur Visualisierung, kein Elektro- oder Fertigungsentwurf.
+
+[Heizbettmodell — STL / OpenSCAD](docs/HEATED_BED_MODELS.md).
+
+### 🗄️ Konfigurierbare STL-Racks
+
+STL-Rack: Breite und Tiefe 40–1000 mm in 1-mm-Schritten; 1–24 Platinen mit festem 10-mm-Abstand. Visuelle Einstellungen, keine Roboterkalibrierung.
+
+[Konfigurierbare STL-Racks — STL / OpenSCAD](docs/RACK_MODELS.md).
+
+### 🛠️ Unabhängige Maschinenmodelle
+
+Separate STL-Kopien für JuanenPnP, JuanenCNC und JuanenLaser; LumenPnP behält das Original. Jedes Modell wird in seinem eigenen Ordner bearbeitet. Es gelten die CAD-Maße; bisherige Größeneinstellungen verzerren das Modell nicht.
+
+[Unabhängige Maschinenmodelle — STL](docs/MACHINE_ASSETS.md).
+
+Diese originalen JuanenPNP-/HYDRA-UMC-Modelle und ihre SCAD-Quellen stehen unter GPL-3.0; sie sind nicht die Maschinen-CAD-Dateien von Opulo.
+
+### Werke und Trajektorien
+
+Laden Sie vorgefertigte Beispieltrajektorien, joggen und zeichnen Sie live eigene Punkte auf, oder laden/speichern/bearbeiten/spielen Sie komplexe Mehrpunkt-Trajektorien (JSON) pro Roboter ab. Trajektorien sind zwischen Robotermodellen portabel - jeder aufgezeichnete Punkt wird beim Laden/Zeichnen/Abspielen über die eigene reale Kinematik dieses spezifischen Roboters (`src/examples/robotKinematicsDispatch.ts`) aufgelöst, nicht fest gegen den Roboter berechnet, mit dem er aufgezeichnet wurde, sodass dieselbe Trajektoriendatei einen Parol6 und einen UR10e korrekt entlang ihrer eigenen real erreichbaren Geometrie steuert.
+
+### CAN-OTA-Firmware-Tools
+
+Flashen und selbsttesten Sie Firmware über die gesamte CAN-OTA-Kette von HYDRA-UMC + URTC von einem Dashboard aus, mit zwei dedizierten Einstiegspunkten:
+
+- **URTC → Flasher / Tester** - für die URTC-Tool-Head-Platine und ihre eigenen Erweiterungsplatinen (entspricht der eigenen Protokollabdeckung der eigenständigen Desktop-Tools [URTC Flasher](https://github.com/JuanenRac/URTC-FLASHER)/[URTC Tester](https://github.com/JuanenRac/URTC-TESTER))
+- **HYDRA-UMC → Flasher / Tester** - für die Ebenen Robot Controller Board und Kinematic Brain, den ganzen Weg weitergeleitet von CM5 → SPI → STM32H745 → FDCAN1 → Robot Controller Board → CAN → URTC Tool Head, ohne JTAG-/SWD-Sonde und ohne USB-CAN-Dongle (siehe das eigene [`docs/architecture.md` von HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC/blob/main/docs/architecture.md) für das vollständige Adressierungs-/Relais-Design)
+
+Beide können echte Firmware-Releases direkt von GitHub herunterladen (basierend auf `firmware_manifest.json`, CRC32-verifiziert), sowohl für das `URTC`- als auch das `HYDRA-UMC`-Repository. Wie oben erwähnt läuft der Transport selbst gegen eine vollständige eingebaute Simulation, bis echte STM32H745-Firmware auf echter Hardware existiert, mit der gesprochen werden kann.
+
+### Gamepad-Unterstützung
+
+USB- und Bluetooth-Controller-Integration mit benutzerdefinierten Zuordnungen pro Taste/pro Achse, zum Joggen von Robotern und Zubehör ohne Maus/Tastatur. Echtzeitaktionen (Gelenk-/Tisch-Jog, E-STOP, START/STOP, Wiedergabegeschwindigkeit) lösen denselben atomaren `sendRobotCommand()`-Pfad aus, den auch die Jog-Schaltflächen im Roboter-Detailpanel verwenden, nicht das entprellte Speichern der Einstellungen - siehe `GamepadController.tsx`.
+
+### Kamera-Integration
+
+Bis zu 8 gleichzeitige Live-Feeds (USB-Bildverarbeitung oder Wärmebildsensoren der Familie MLX90640/41/42) mit Aufzeichnungs- und Inferenzstatus - die Kameramatrix, um die herum das eigene duale USB-3.0-Hub-Subsystem von HYDRA-UMC aufgebaut ist.
+
+### Mehrsprachige Benutzeroberfläche
+
+Vollständige Übersetzung der Oberfläche in **Englisch, Spanisch, Deutsch, Französisch, Italienisch, vereinfachtes Chinesisch, Japanisch und Portugiesisch** (`src/locales/`), einschließlich des Hilfemenüs in der App mit seinen Schritt-für-Schritt-Anleitungen, des Assistenten, des Info-Dialogs (Version/Autor/Lizenz) und jedes Reiters des Systemkonfigurationsdialogs. Die Abdeckung beträgt noch nicht 100 % jeder Ansicht: einige eigenständige Zubehörpanels sind noch fest auf Englisch im Code.
+
+### Hilfe, Anleitungen und Assistent
+
+Das Hilfefenster hat einen Reiter **Schritt-für-Schritt-Anleitungen**: eine Anleitung pro Aufgabe (Controller hinzufügen, Roboter bewegen, Trajektorie aufnehmen, Kameras nutzen, Firmware flashen, Benutzer verwalten, Fernzugriff, Sicherheit ...), jeweils mit Niveau (Grundlagen, fortgeschritten, technisch), Suchfeld und einer Schaltfläche, die zur Ansicht führt, in der die Aufgabe erledigt wird. **Hydri**, der Assistent, ist ein kleines animiertes Maskottchen über dem Dashboard: Er erklärt die aktuelle Ansicht, führt Schritt für Schritt durch eine Aufgabe, beantwortet in Worten getippte Fragen ohne Server und ohne KI-Modell (in jeder der 8 Sprachen), kann die Antworten mit der Stimme des Browsers vorlesen, lässt sich überallhin ziehen und dort fixieren und wird im Hilfefenster ein- oder ausgeschaltet. Seine Einstellungen bleiben im Browser (`src/assistant/`).
+
+### ℹ️ Info und Systemkonfiguration
+
+Zwei eigenständige Dialoge, beide über die Kopfzeile erreichbar (Schaltflächen `Config`/`About`): **About** zeigt die laufende App-Version (live gelesen von `GET /api/hydra-info`), Autor, und Lizenz; **Config** deckt die Server-Identität, Controller-/Knotenverwaltung, UI-Thema + Sprache, Roboter-Umbenennung, Kamera↔Roboter-Zuordnung mit Konflikterkennung, die benutzerdefinierte URDF-Bibliothek, Drittanbieter-Software-Integrationen (OpenPnP-/CNC-/Laser-Backends), clientweisen Fernzugriff (unabhängige Schalter für SUITE/Android/iOS), Benutzerkonten, roboterweise Arbeitsverzeichnisse, CAN-OTA-Transport, und Gamepad-Zuordnung ab - jeweils in einer eigenen Registerkarte. Beide sind eigenständige Komponenten (`src/components/About.tsx`, `src/components/Config.tsx`), nicht inline in die Haupt-Dashboard-Shell eingebettet.
+
+### Zuverlässigkeit
+
+Die App schützt sich selbst gegen zwei verschiedene Klassen von Laufzeitfehlern, beide entstanden aus einem echten Produktionsvorfall (ein Kiosk-Display, das nach einem Redeploy schwarz wurde). `src/main.tsx` hört auf Vites eigenes `vite:preloadError`-Event - ausgelöst, wenn ein über einen Redeploy hinweg offen gelassener Browser-Tab versucht, einen per `React.lazy()` geladenen Panel-Chunk abzurufen (jedes `Dashboard.tsx`-Panel, inhaltsgehasht gemäß `vite.config.ts`), der unter seinem alten Hash nicht mehr existiert - und lädt die Seite einmal automatisch neu, sodass sich ein langlebiger Kiosk-Tab oder ein veralteter Hintergrund-Tab selbst heilt, ohne dass es jemand bemerkt. Ein `sessionStorage`-Schutz verhindert, dass dies endlos in eine Neulade-Schleife gerät, falls ein Chunk aus einem anderen Grund tatsächlich fehlt. Getrennt davon umschließt `src/components/ErrorBoundary.tsx` den `<Suspense>`-Panel-Bereich als Backstop für jeden anderen Render-Absturz; es ist nach dem aktiven Tab indiziert, sodass ein Wechsel von einem abgestürzten Panel tatsächlich das nächste erneut versucht, statt das ganze Dashboard auf einem Fallback-Bildschirm hängen zu lassen.
+Befehle scheitern nie stillschweigend: Jeder Jog-, Wiedergabe-, Strom-, Vision- und Werkzeugbefehl liefert ein typisiertes Ergebnis, eine abgelaufene Sitzung wird einmal erneuert und wiederholt, und alles, was weiterhin abgelehnt wird, erscheint in einer Meldung. Die rote **STOP**-Taste ist global: ein Klick, ohne Bestätigung, sie hält alle Roboter aller Controller an und schaltet alle Ventile und Pumpen in einem Aufruf ab (`POST /api/stop-all`). Sie sitzt in der Kopf- und Fußzeile, im Roboter-Panel und im Fernsteuerungs-Overlay, und Strg+Umschalt+Leertaste drückt sie per Tastatur (eine Tastenkombination, die nicht versehentlich getippt wird und bei gehaltener Taste ignoriert wird). Die Antwort wird Roboter für Roboter aufgelistet (Warnung, wenn ein Roboter nicht anhielt oder der Server den Stopp nicht speichern konnte; von anderen Konten reservierte Roboter sind markiert); ein Netzwerkfehler wird einmal wiederholt, ein Server über seinem Limit (429) oder ohne die Route (404) wird mit dem Stopp je Roboter beantwortet, und eine dauerhafte Warnung „STOP nicht bestätigt“ bleibt, bis ein späterer STOP eine Antwort bekommt. Das Joystick-Jogging ist eine Totmann-Steuerung (sie endet bei Zeigerabbruch, Fensterfokusverlust, verborgenem Tab oder nach 8 Sekunden), eine J1-Bewegung bleibt beim nächstliegenden äquivalenten Winkel und ein Jog-Schritt über 20 Grad wird abgelehnt. Die Gamepad-Eingabe folgt dem in der Oberfläche gewählten Roboter und ist ratenbegrenzt. Die Firmware eines Releases wird vor dem CAN-OTA-Flashen gegen ihren sha256 geprüft, Bootloader-Images sind nur auf Wunsch wählbar, und importierte Trajektorien und Szenen werden geprüft, bevor sie den gemeinsamen Zustand erreichen.
+
+Der Server entscheidet für jeden Client, wer einen Roboter bewegen darf und wie weit. Ein Roboter kann für das Konto und das Fenster (eine je Fenster gewählte Controller-ID) **reserviert** werden, das ihn anfordert: Dasselbe Konto in einem anderen Fenster oder ein anderes Konto wird mit einer Meldung abgelehnt, die den Fall nennt (`other-controller`, `other-account`, `controller-id-required`); die Liste der Reservierungen kommt von `GET /api/claims`, und ein Administrator kann einen Roboter übernehmen. Die Größe eines Jogs, der Bereich eines absoluten Jogs und die höchste Betttemperatur werden von `GET /api/safety-limits` gelesen, statt in der App gehalten zu werden; ein Administrator bearbeitet sie je Modell unter **Ökosystem > Sicherheitsgrenzen**, zusammen mit der optionalen Jog-Freigabe (standardmäßig aus; wenn aktiv, schaltet eine Schaltfläche den Jog für begrenzte Zeit scharf) und der verpflichtenden Controller-ID. Jeder Roboter hat einen **Live / Sim**-Schalter (standardmäßig Live): In Sim wird von diesem Fenster nichts gesendet, was den Roboter bewegt oder etwas einschaltet, während STOP immer durchgeht. Ein Work oder Beispiel mit Punkten, die der Arm nicht erreicht, wird mit der Liste dieser Punkte abgelehnt und kann stattdessen auf die Reichweite des Modells skaliert werden. Die Liste der Reservierungen schickt der Server außerdem über den WebSocket (die Nachricht `claims`, für Verbindungen mit `remoteApiVersion=2`), sodass die Zugriffsleiste eine Änderung sofort zeigt, statt auf die nächste Abfrage zu warten; solange die Meldungen eintreffen, fragt sie nur gelegentlich ab. Schreibzugriffe sind bedingt: jeder trägt die Revision des Roboters, die dieses Fenster zuletzt gesehen hat (`If-Match`); hat inzwischen jemand anderes den Roboter geändert, antwortet der Server mit 412, der Roboter wird neu gelesen und die Meldung sagt es (Standard prüft Reservierungen, Tisch und einmalige Befehle; Streng prüft alles außer STOP; Aus prüft nichts; STOP wird nie geprüft). Der XY-Tisch fährt mit dem atomaren Befehl `table`, und Administratoren lesen das nur anfügbare Audit-Protokoll mit geprüfter SHA-256-Kette unter **Ökosystem > Audit-Protokoll**.
+
+### Konten und Zugriff
+
+Jeder Server legt bei seinem eigenen allerersten Start ein Konto an - Benutzername `admin`, Passwort `admin` - ändern Sie es über **Config > Users**, sobald der Server über ein vollständig vertrauenswürdiges LAN hinaus erreichbar ist. Dieselbe Registerkarte erlaubt es einem Admin-Konto, zusätzliche **operator**-Konten zu erstellen: ein Operator kann sich anmelden, den Live-Zustand beobachten, und Roboter steuern (jog/abspielen/pausieren/stoppen/Werkzeug/Ventil/Pumpe/Geschwindigkeit), kann aber keine globalen Einstellungen überschreiben oder andere Konten verwalten. Für das bloße Ansehen ist kein Konto erforderlich - das eigene "Continue read-only" des Anmeldebildschirms springt direkt zum Dashboard mit deaktivierten Schreibvorgängen. Vollständiger Vertrag (Rollen, Tokens, die `/api/users`-Routen) dokumentiert im eigenen [`docs/REMOTE_API.md` von HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/REMOTE_API.md), Abschnitte 2a/2b. In Produktion stammt der erste Administrator aus den Bootstrap-Einstellungen der Installation, und der Server lehnt Beispielgeheimnisse ab (siehe [`docs/PRODUCTION_BOOTSTRAP.md` von HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/PRODUCTION_BOOTSTRAP.md)).
+
+Jeder der 5 Remote-Clients (SUITE, Android, iOS, Watch, DSI) identifiziert sich selbst über einen `X-Hydra-Client`-Anfrage-Header, sodass **Config > Remote Access** jeden unabhängig erlauben oder blockieren kann, statt eines einzigen kombinierten Schalters für alle fünf.
+
+### Persistenter Zustand
+
+HYDRA-UMC STUDIO selbst ist ein reiner Client - er hält keinen eigenen Zustand über das hinaus, was für die aktuelle Sitzung im Speicher liegt. Die gesamte Persistenz (`settings.json`, `users.json`, gespeicherte Trajektorien unter `WORKS/`, eingereichte Modelle) lebt auf dem separaten **[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)**-Backend, mit dem diese App über das Netzwerk kommuniziert (siehe das eigene `data/` und README dieses Projekts für das vollständige Bild) - der Zustand überlebt ein Neuladen der Seite oder ein erneutes Deployment dieser App, da keines von beiden den Backend-Prozess überhaupt berührt. `settings.json` selbst ist bewusst von der statischen Dateiauslieferung dieses Backends ausgeschlossen (es enthält Controller-IPs, CAN-OTA-Konfiguration, und den vollständigen Zustand pro Roboter), obwohl dessen `WORKS/`-Ordner normal ausgeliefert wird.
+
+Die Anmeldung gilt so lange wie der Browser-Tab: Sitzung und Refresh-Token liegen in `sessionStorage`, das Schließen des Tabs beendet sie also. Die Anmeldeoption **Auf diesem Gerät angemeldet bleiben** speichert sie stattdessen in `localStorage`, sodass sie einen Neustart des Browsers überstehen (standardmäßig aus). Die Produktionsseite enthält eine Content-Security-Policy als Meta-Tag (Skripte nur von der Seite selbst, keine Inline-Skripte, keine Plugins); `HYDRA_STUDIO_CSP=off` beim Build lässt sie weg, für ein Deployment, das den Header selbst setzt, und jeder andere Wert wird als Richtlinie verwendet.
+
+Derselbe `GET`-/`POST /api/settings`-Vertrag, plus ein Discovery-Endpunkt (`GET /api/hydra-info`) und ein `WebSocket /ws` für Live-Push-Updates, ist auch die Art und Weise, wie sich externe Clients mit demselben Backend verbinden - dies ist es, was es [HYDRA-UMC SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE) ermöglicht, eine laufende HYDRA-UMC-SERVER-Instanz im Netzwerk zu entdecken, deren Zustand zu lesen/ändern, und Änderungen, die vom eigenen Browser-Tab dieser App aus vorgenommen wurden, live widergespiegelt zu sehen (und umgekehrt). Vollständiger Vertrag im eigenen [`docs/REMOTE_API.md` von HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/REMOTE_API.md).
+
+`GET /api/system/metrics` versorgt die Fußzeile des Overview-Dashboards: CPU-Last und Speichernutzung sind immer real (das eigene `os`-Modul von Node); die Temperatur liest die reale Ausgabe von `vcgencmd measure_temp`, wenn auf einem echten Raspberry Pi ausgeführt, und fällt andernfalls auf einen klar gekennzeichneten Mock-Wert zurück (`temp_is_real` in der Antwort); der Wi-Fi-/Ethernet-/Bluetooth-Status wird von `/sys/class/net`/`/sys/class/bluetooth` gelesen (nur Linux, `null`/unbekannt auf jedem anderen Host statt eines geratenen Werts).

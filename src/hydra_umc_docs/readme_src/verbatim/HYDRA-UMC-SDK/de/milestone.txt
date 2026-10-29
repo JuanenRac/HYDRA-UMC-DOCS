@@ -1,0 +1,10 @@
+### Erster Meilenstein
+
+1. Veröffentlichen Sie `DeviceDescriptor`, `HealthReport`, `SafetyState` und
+   `UpdateManifest` JSON-Schema v1.
+2. Validieren Sie gültige und ungültige Fixtures mit dem Python-Referenzclient.
+3. Fügen Sie in CI eine Produzenten-/Konsumenten-Kompatibilitätsmatrix hinzu.
+4. Veröffentlichen Sie Protobuf/OpenAPI-Darstellungen dort, wo die Integration dies erfordert
+   (der echte erste OpenAPI-Ausschnitt, der die discovery-/auth-/fleet-/command-Routen von
+   HYDRA-UMC-SERVER abdeckt, ist fertig; Protobuf steht noch aus).
+5. Echte, getestete TypeScript-, Go- und Rust-Clients hinzufügen, die die stabilen v1-Verträge validieren.

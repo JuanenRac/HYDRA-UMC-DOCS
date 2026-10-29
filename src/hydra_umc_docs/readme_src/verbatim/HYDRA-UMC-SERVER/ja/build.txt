@@ -1,0 +1,31 @@
+### 必要環境
+
+- [Node.js](https://nodejs.org/)（v18 以上推奨）
+- npm
+
+### インストール
+
+```bash
+npm install
+```
+
+### 開発モード
+
+`tsx` を用いて API/WebSocket サーバーを直接実行します（バンドラーなし、フロントエンドは関与しません）：
+- **Windows：** `dev.bat` をダブルクリックするか、`npm run dev` を実行
+- **Linux/Mac：** `./dev.sh` または `npm run dev` を実行
+
+### プロダクションビルド
+
+esbuild を用いてサーバーを単一のデプロイ可能なファイルへバンドルします：
+- **Windows：** バージョンを増やすリリースビルドには `build.bat` を使用し、コンパイルのみには `npm run build` を使用
+- **Linux/Mac：** バージョンを増やすリリースビルドには `./build.sh` を使用し、コンパイルのみには `npm run build` を使用
+
+その後、以下でプロダクションサーバーを起動します：
+```bash
+npm start
+```
+
+サーバーは `0.0.0.0:3000` でリッスンします —— `http://localhost:3000`、またはローカルネットワーク内の `http://<あなたのローカルIP>:3000` でアクセス可能です。すべての状態は `data/` に永続化されます。
+
+このリポジトリには意図的に Dockerfile がありません。サーバーは [HYDRA-UMC-OS](https://github.com/JuanenRac/HYDRA-UMC-OS)（`provisioning/install_server.sh`）によってパッケージ化され CM5 にインストールされます。

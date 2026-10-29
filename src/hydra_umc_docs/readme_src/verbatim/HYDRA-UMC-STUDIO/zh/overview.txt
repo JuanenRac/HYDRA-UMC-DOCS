@@ -1,0 +1,5 @@
+**HYDRA-UMC STUDIO** 是 [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)——多机器人微工厂主板（Raspberry Pi CM5 主机 + 双核 STM32H745 实时协处理器，通过单一 FDCAN 总线协调最多 8 个分布式机器人手臂）——的浏览器端控制仪表盘。HYDRA-UMC 自身的仓库涵盖硬件与固件，而本仓库则是面向人的一侧：一个单页 React 应用程序，以真实的 3D 方式可视化每一个机器人、点动并记录其运动、管理机器人单元周边的机器与配件，并对整条 CAN-OTA 固件链进行刷写/测试——所有这些都在一个浏览器标签页中完成，除 Node.js 外无需任何原生安装。
+
+**诚实说明，与本生态系统其余文档所采用的惯例一致：** HYDRA-UMC 自身的真实硬件尚不存在于经过测试的芯片形态（其引导程序编译干净，但尚未在真实板卡上运行过——参见该仓库自身的 `docs/architecture.md`）。因此，本仪表盘的 CAN-OTA Flasher/Tester 工具是针对一套完整的内置仿真运行的，该仿真遵循每一层已记录的真实寻址方案，而不是假装在与并不存在的硬件通信。3D 机器人可视化、运动学、轨迹记录以及每一个配件控制面板都是完全真实且独立于此的——目前仅 CAN-OTA 传输本身是被仿真的。
+
+使用 **React 19**、**Vite**、**Three.js**（通过 `@react-three/fiber`/`@react-three/drei`）和 **TypeScript** 构建——一个纯粹的客户端，自身不含任何后端代码。持久化状态存放在本应用通过网络通信的独立后端 **[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** 上。

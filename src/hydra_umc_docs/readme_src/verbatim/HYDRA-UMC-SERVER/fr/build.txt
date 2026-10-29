@@ -1,0 +1,34 @@
+### Prérequis
+
+- [Node.js](https://nodejs.org/) (v18 ou supérieur recommandé)
+- npm
+
+### Installation
+
+```bash
+npm install
+```
+
+### Mode Développement
+
+Exécute le serveur API/WebSocket directement avec `tsx` (pas de bundler,
+pas de frontend impliqué) :
+- **Windows :** double-cliquez sur `dev.bat` ou lancez `npm run dev`
+- **Linux/Mac :** lancez `./dev.sh` ou `npm run dev`
+
+### Build de Production
+
+Empaquette le serveur en un seul fichier déployable avec esbuild :
+- **Windows :** utilisez `build.bat` pour un build de publication versionné ; utilisez `npm run build` pour compiler seulement.
+- **Linux/Mac :** utilisez `./build.sh` pour un build de publication versionné ; utilisez `npm run build` pour compiler seulement.
+
+Puis démarrez le serveur de production avec :
+```bash
+npm start
+```
+
+Le serveur écoute sur `0.0.0.0:3000` - accessible via
+`http://localhost:3000` ou `http://<votre-ip-locale>:3000` sur le réseau
+local. Tout l'état persiste dans `data/`.
+
+Ce dépôt n'a volontairement pas de Dockerfile : le serveur est empaqueté et installé sur la CM5 par [HYDRA-UMC-OS](https://github.com/JuanenRac/HYDRA-UMC-OS) (`provisioning/install_server.sh`).

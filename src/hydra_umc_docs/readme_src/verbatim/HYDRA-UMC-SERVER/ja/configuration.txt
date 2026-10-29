@@ -1,0 +1,44 @@
+### 環境変数
+
+いずれも任意です——本サーバーは、以下の各変数について組み込みの開発向けデフォルト値を用いることで、ゼロコンフィグでも動作します。完全に信頼されたローカルネットワークの外へ本サーバーを公開する前に（例えばルーターの NAT／ポートフォワード経由でインターネットへ公開する場合、脅威モデルが「信頼済み LAN のみ」から「誰でも到達可能」へと変わります）、実際の値を設定してください（`.env.example` 参照）：
+
+- `JWT_SECRET` —— すべてのログイントークンに署名します。未設定の場合、`src/server.ts` に組み込まれた固定の開発用値が代わりに使用されます（ローカル開発には問題ありませんが、信頼されたネットワークの外から到達可能なデプロイには適しません）。シェルでエクスポートするか、お使いのプロセスマネージャー／コンテナ（systemd の `Environment=`、`pm2` 自身の環境設定、Docker の `-e` など）を通じて設定してください。
+- `NODE_ENV` —— 実運用のデプロイでは `production` に設定してください。以下 2 つのフォールバック（開放的な CORS、静かなデフォルト値の使用）を制御し、`JWT_SECRET` や初期投入された `admin`/`admin` アカウントがまだデフォルトのままである場合に、目立つ起動時警告を有効化します。未設定（またはそれ以外の値）の場合は、現在の寛容な開発向け動作を維持します。
+- `CORS_ALLOWED_ORIGINS` —— 本 API へのクロスオリジンブラウザリクエストを許可するオリジンのカンマ区切りリスト —— 実際に関係してくるのは、HYDRA-UMC STUDIO が本サーバーとは異なるホスト／ポートから配信される場合です（例：`https://studio.example.com`、開発時であれば `http://192.168.1.20:5173`）。例：
+  `CORS_ALLOWED_ORIGINS=https://studio.example.com,http://192.168.1.20:5173`。
+  未設定の場合：`NODE_ENV != production` であれば任意のオリジンを許可します（ローカル開発では設定不要、本プロジェクトの従来の挙動と一致）。`NODE_ENV = production` の場合は、これが設定されるまで、すべてのクロスオリジンブラウザリクエストを **拒否** し、目立つ起動時警告を表示します。非ブラウザクライアント（curl、HYDRA-UMC SUITE、モバイル制御アプリ）はいずれの場合も影響を受けません —— CORS はブラウザのみに関わる仕組みです。
+- `JWT_EXPIRES_IN` —— ログイントークンの有効期間。`jsonwebtoken` 自身の `expiresIn` オプションが受け付ける任意の文字列（`"24h"`、`"7d"`、秒数の裸の数値など）を指定できます。未設定の場合、デフォルトは `30d`（本プロジェクト当初の信頼済み LAN を前提とした値）です。**信頼済み LAN の外から到達可能なサーバーでは、これをより短く設定すべきです —— `24h` は妥当な出発点です** —— 漏洩した長期有効トークンは、そのアカウントのパスワードを変更する以外に個別に無効化する方法がありません。
+- `LOGIN_RATE_LIMIT_MAX` / `LOGIN_RATE_LIMIT_WINDOW_MS` —— `POST /api/login` のみをスロットリングします（他のすべてのルートは影響を受けません）。いずれか未設定の場合、デフォルトは IP ごとに 15 分あたり 5 回の試行です。制限に達した場合は、一般的な `500` ではなく、明確な JSON エラーを伴う `429` を返します。
+- `REFRESH_RATE_LIMIT_MAX` —— `POST /api/refresh` のウィンドウおよび IP ごとのリクエスト上限です（デフォルトは 120）。上記のログイン制限には、失敗したログインのみが数えられます。
+- `TLS_CERT_PATH` / `TLS_KEY_PATH` —— **両方を** 設定すると、サーバー（REST API + 同じリスナーを共有する `/ws` WebSocket）がプレーンな HTTP/WS から HTTPS/WSS へ切り替わります。詳細は下記「TLS / HTTPS」を参照してください。いずれか一方でも未設定の場合、現在のプレーン HTTP の挙動が維持されます。
+- `HYDRA_UMC_CAMERA_AUTH` —— カメラ映像(ライブストリーム、保存済みの写真と録画)は**既定で**短寿命の `?ticket=`(ログイン済みクライアントに `POST /api/camera/ticket` が渡します)または Bearer トークンを要求します。`HYDRA_UMC_CAMERA_AUTH=open` は、まだチケットを要求しないクライアント向けの一時的な回避策です。
+- `HYDRA_UMC_WS_QUERY_TOKEN` —— `/ws?token=` は**既定で拒否**されます(トークンは `hydra.bearer` サブプロトコルで送られます)。`HYDRA_UMC_WS_QUERY_TOKEN=allow` は、まだ移行していないクライアント向けの一時的な回避策です。回避策が有効な間、サーバーは起動のたびに警告します。
+- `HYDRA_UMC_BLE_GATT` - Bluetooth LE サービス:`off`(既定)、`state`(スマートフォンが状態を読む)、`commands`(コマンドも送る。各コマンドにアカウントのアクセストークンを付ける)。`HYDRA_UMC_BLE_ENCRYPTION=off` で暗号化リンクを要求しなくなります(既定では要求します)。どちらもサーバー管理画面から設定でき、変更は次回の起動時に反映されます。ホストに BlueZ、`python3-dbus`、`python3-gi` が必要です。
+- `HYDRA_UMC_MQTT_BRIDGE` - セルの MQTT ブローカーへのブリッジ:`off`(既定)、`state`(各ロボットの状態を retained トピックに出力)、`commands`(ロボットのトピックに発行されたコマンドを、ネットワーククライアントと同じルートで、`HYDRA_UMC_MQTT_COMMAND_USER` が指す専用アカウントのトークンで実行)。アドレス、トピックの接頭辞、ユーザー名は Server Admin 画面からも設定でき、パスワードは環境変数のみです。[`docs/MQTT_BRIDGE.md`](docs/MQTT_BRIDGE.md) を参照。
+- `HYDRA_UMC_INFO_AUTH=required` —— 読み取り専用のホスト情報(`/metrics`、`/api/system/metrics`、`/api/system/supervisor`、`/api/ecosystem/status`、`/api/models`)にログイン済みクライアントを要求します。それらのルートでまだトークンを送らないクライアントが動き続けるよう既定ではオフで、本番起動時はオフの間警告します。
+- `HYDRA_UMC_VOICE_UI_INCLUDE_HEARD_TEXT`、`HYDRA_UMC_VOICE_UI_MIN_CONFIDENCE`、`HYDRA_UMC_BRIDGE_UAV_SIGNING_KEY_FILE`、`HYDRA_UMC_BRIDGE_UAV_SIGNING_ALLOW_UNSIGNED` - 管理者が Server Admin からも設定できる音声と UAV のオプション(`data/server-config.json` の `voice` と `mavlink`):音声の返答が聞き取った内容を繰り返すか(`1` で有効、既定はオフ)、動作を開始する要求を受け付ける前に必要な音声認識の最小信頼度(0〜1、既定 0.6)、MAVLink 2 署名の鍵ファイルと未署名メッセージを引き続き受け付けるか(既定は署名なしで、未署名は拒否)。環境変数が保存値より優先され、その場合は画面に固定値として表示されます。
+- `HYDRA_UMC_AI_ACCESS=admin` - ローカル AI サービスへのリレー（`/api/ai/*`）を管理者のみに制限します。既定ではオフで、これまでどおりログイン済みのユーザーなら誰でも使えます。
+- `HYDRA_UMC_VISUAL_SERVOING_TOKEN`、`HYDRA_UMC_VLA_ENGINE_TOKEN`、`HYDRA_UMC_COGNITIVE_NODE_TOKEN`、`HYDRA_UMC_DETECTION_HEF_TOKEN`、`HYDRA_UMC_VISION_NODE_TOKEN`、`HYDRA_UMC_ANOMALY_TOKEN`(リレー `/api/ai/*` 用)、`HYDRA_UMC_VISION_STREAMER_TOKEN`(カメラストリーム用)、`HYDRA_UMC_DATALAKE_READ_TOKEN`(なければ `HYDRA_UMC_DATALAKE_TOKEN`、テレメトリ用)- トークンを要求するサービスにこのサーバーが提示する Bearer トークン。いずれも `..._FILE`(1 行目がトークンのファイル)でも指定できます。サービス自身が読む名前なので 1 つの環境ファイルが両方に使え、クライアントには決して見えません。トークン未設定のサービスは従来どおり到達できます。リレーは管理者でもオペレーターでもないセッションも拒否し、異常検知器のベースラインを変更できる(`/detect` 以外の `POST`)のは管理者だけです。`vision-node` と `anomaly-detector` がリレーに加わります。
+- `HYDRA_UMC_VOICE_UI_RESULT_KEY`（または `..._FILE`）- HYDRA-UMC-VOICE-UI が確認済みの音声結果に署名する鍵（16 文字以上、同じ値）。`POST /api/voice/confirm` はサインイン中のユーザーを subject として確認を中継し、そのユーザーを名指しし署名が検証できる場合にのみ `confirmed` の応答を信じます。鍵がなければ応答は `verified: false` で渡され、`HYDRA_UMC_VOICE_CONFIRM_REQUIRE_SIGNATURE=1` ではその代わりに拒否します。このルートは何も実行しません。
+- `HYDRA_UMC_TELEMETRY_COLLECTOR_URL`（`HYDRA_UMC_TELEMETRY_COLLECTOR_TOKEN` または `..._FILE`、および `HYDRA_UMC_TELEMETRY_INTERVAL_MS`：100〜60000、既定は 1000）- テレメトリのプロデューサーを有効にします。このサーバーが配信するロボットのデルタ（位置、関節、再生状態）の数値が、ロボットごとに 1 つの `robot_state` サンプルとして、間隔ごとに最大 1 つ、まとめて HYDRA-UMC-TELEMETRY-COLLECTOR に送られ、データレイクが保存する実データを持てるようになります。アドレスがなければ無効です。コマンドを遅らせることはなく、保持するデータ量には上限があり、失敗後は 30 秒間停止します。
+- `/dashboard-ai` - HYDRA-UMC-DASHBOARD-AI がこのリポジトリの隣にある場合、`build-frontend` がビルドし、このサーバーがそこで配信します。このページは、同じブラウザーで STUDIO にサインインした人のセッションで、リレーを通してデータレイク（`/api/ai/datalake/*`、読み取り専用：`/query`、`/aggregate`、`/stats`、`/stats/range`、`/series`、`/health` への `GET` のみで、それ以外は拒否）と異常検知器（`/api/ai/anomaly-detector/*`）を読みます。そのため、このサーバーのロールとサービストークンが適用されます。これで異常検知器を `HYDRA_UMC_ANOMALY_PROTECT_READS=1` で起動できます。
+- `HYDRA_UMC_LOG_MAX_BYTES` と `HYDRA_UMC_LOG_KEEP` - サーバーログをローテーションするサイズ（既定 10 MB）と、保持するローテーション済みファイルの数（既定 1）。
+- `HYDRA_UMC_SETTINGS_STORE`、`HYDRA_UMC_SETTINGS_BACKUPS`、`HYDRA_UMC_SETTINGS_BACKUP_INTERVAL_S` - 既定では設定（`settings.json` とポイントファイル）はジャーナル付きの全か無かの単位として書き込まれます。中断された書き込みは次回起動時に完了または破棄され、`settings.json` のコピーが `data/backups/` に保存され（10 件、最短 600 秒間隔）、壊れた `settings.json` は最新の正常なコピーから復元されます。`HYDRA_UMC_SETTINGS_STORE=plain` でファイルを 1 つずつ書く方式に戻せ、`HYDRA_UMC_SETTINGS_BACKUPS=0` でコピーを無効にできます。
+- AI リレーのアクセス、ホスト情報のサインイン要否、TLS（証明書と鍵のパス、証明書の SHA-256 フィンガープリント付き）は、管理者が制御アプリのサーバー管理画面から変更することもできます。環境変数で設定された値が優先され、ロック表示になります。サインイン要否は無効にする前に確認を求め、TLS は次回起動時に反映されます。
+- `STOP_ALL_RATE_LIMIT_MAX` / `STOP_ALL_RATE_LIMIT_WINDOW_MS` —— グローバル停止(`POST /api/stop-all`)のアドレスごとの上限。ログインとは別枠です(既定は毎分 60 回)。本番では、デプロイ用テンプレートの例の `JWT_SECRET` やブートストラップパスワード、32 文字未満の `JWT_SECRET`、12 文字未満のブートストラップパスワードでは起動を拒否します。
+
+### TLS / HTTPS
+
+デフォルトでは無効です —— 本サーバーは常にプレーンな HTTP/WS として動作してきており、明示的に有効化しない限り現在もそうです。`TLS_CERT_PATH` と `TLS_KEY_PATH`（上記参照）を、PEM 証明書とそれに対応する秘密鍵に設定すると、共有 REST + WebSocket リスナーが `https.createServer()` へ切り替わります —— `/ws` も追加設定不要で自動的に WSS になります。証明書／鍵のパスが設定されているものの読み取り不能または無効な場合、起動は静かにプレーン HTTP へフォールバックするのではなく、明確に失敗します（実際の `fs` エラー）。
+
+これは、本サーバーが完全に信頼された LAN の外から到達可能になる場合（例えば、リモートテストのためにルーターの NAT／ポートフォワード経由で公開する場合）に、特に重要になります —— プレーンな HTTP では、すべてのベアラートークン、すべてのロボット指令、そして admin/operator のログイン自体が、平文でネットワークを通過してしまいます。
+
+証明書の取得方法：
+
+- **本サーバーを指すドメインを所有している場合** —— [Let's Encrypt](https://letsencrypt.org/)（例えば [Certbot](https://certbot.eff.org/) 経由）を使用して、本物のブラウザに信頼された証明書を、無料かつ自動更新可能な形で取得してください。`TLS_CERT_PATH` / `TLS_KEY_PATH` を、生成された `fullchain.pem` / `privkey.pem` に向けてください。
+- **ローカルテスト、ドメインなしの場合** —— 自己署名証明書でも HTTPS/WSS のコードパスを試すには十分です（ブラウザおよびほとんどの HTTP クライアントは警告を出すか、明示的な信頼の上書きを要求します——テストにおいてはこれが想定どおりの正常な動作です）：
+  ```bash
+  openssl req -x509 -newkey rsa:2048 -nodes \
+    -keyout key.pem -out cert.pem -days 365 -subj "/CN=localhost"
+  ```
+  その後、`TLS_CERT_PATH=./cert.pem` および `TLS_KEY_PATH=./key.pem` を設定してください。

@@ -1,0 +1,44 @@
+### 环境变量
+
+均为可选项——本服务器在零配置的情况下即可运行，对下列每个变量都使用内置的、便于开发的默认值。在将本服务器暴露到完全受信任的局域网之外之前（例如通过路由器的 NAT/端口转发暴露到公网，这会将威胁模型从“仅限受信局域网”变为“任何人皆可访问”），请设置真实的值（参见 `.env.example`）：
+
+- `JWT_SECRET`——为每一个登录令牌签名。若未设置，将使用 `src/server.ts` 中内置的固定开发值（适用于本地开发，不适用于可从受信网络之外访问的部署）。可在你的 shell 中导出，或通过你所选的进程管理器/容器进行配置（systemd 的 `Environment=`、`pm2` 自身的环境配置、Docker 的 `-e` 等）。
+- `NODE_ENV`——对任何真实部署都应设置为 `production`。此设置会控制下面两个回退行为（开放的 CORS、静默使用默认值），并在 `JWT_SECRET` 或预置的 `admin`/`admin` 账户仍处于默认值时开启醒目的启动警告。未设置（或设置为其他值）则保持当前宽松的开发行为。
+- `CORS_ALLOWED_ORIGINS`——允许向本 API 发起跨源浏览器请求的来源列表，以逗号分隔——真正相关的场景是 HYDRA-UMC STUDIO 从与本服务器不同的主机/端口提供服务（例如 `https://studio.example.com`，开发环境下则是 `http://192.168.1.20:5173`）。示例：
+  `CORS_ALLOWED_ORIGINS=https://studio.example.com,http://192.168.1.20:5173`。
+  若未设置：`NODE_ENV != production` 时允许任意来源（本地开发无需任何设置，与本项目历史行为一致）；`NODE_ENV = production` 时则**拒绝**所有跨源浏览器请求，直至设置此项，并附有醒目的启动警告。非浏览器客户端（curl、HYDRA-UMC SUITE、移动控制应用）无论哪种情况均不受影响——CORS 仅是浏览器机制。
+- `JWT_EXPIRES_IN`——登录令牌的有效期。可使用 `jsonwebtoken` 自身 `expiresIn` 选项所接受的任意字符串（`"24h"`、`"7d"`、纯数字秒数等）。若未设置则默认为 `30d`（本项目最初对受信局域网的假设）。**可从受信局域网之外访问的服务器应将其设置得更短——`24h` 是一个合理的起始值**——泄露的长期有效令牌除了修改该账户密码之外，无法单独撤销。
+- `LOGIN_RATE_LIMIT_MAX` / `LOGIN_RATE_LIMIT_WINDOW_MS`——仅对 `POST /api/login` 进行限流（其他所有路由均不受影响）。若两者均未设置，默认为每个 IP 每 15 分钟 5 次尝试；触发限流时返回明确的 JSON 错误 `429`，而非泛泛的 `500`。
+- `REFRESH_RATE_LIMIT_MAX`——`POST /api/refresh` 每个时间窗口和每个 IP 的请求额度（默认 120）。上文的登录限流只统计失败的登录。
+- `TLS_CERT_PATH` / `TLS_KEY_PATH`——**两者均**设置后，可将服务器（REST API + 共享同一监听器的 `/ws` WebSocket）从纯 HTTP/WS 切换为 HTTPS/WSS。详见下文“TLS / HTTPS”。任一未设置则保持当前的纯 HTTP 行为不变。
+- `HYDRA_UMC_CAMERA_AUTH`——摄像头画面(实时流、已保存的照片和录像)**默认**要求短时效 `?ticket=`(由 `POST /api/camera/ticket` 发给已登录客户端)或 Bearer 令牌;`HYDRA_UMC_CAMERA_AUTH=open` 是供尚未请求票据的客户端使用的临时退路。
+- `HYDRA_UMC_WS_QUERY_TOKEN`——`/ws?token=` **默认被拒绝**(令牌以 `hydra.bearer` 子协议传递);`HYDRA_UMC_WS_QUERY_TOKEN=allow` 是供尚未迁移的客户端使用的临时退路。只要设置了退路,服务器每次启动都会发出警告。
+- `HYDRA_UMC_BLE_GATT`——蓝牙 LE 服务:`off`(默认)、`state`(手机读取状态)或 `commands`(并发送命令,每条命令都带有账户的访问令牌)。`HYDRA_UMC_BLE_ENCRYPTION=off` 不再要求加密链路(默认要求)。两者也可在服务器管理界面中设置;更改在下次启动时生效。主机上需要 BlueZ、`python3-dbus` 和 `python3-gi`。
+- `HYDRA_UMC_MQTT_BRIDGE`——连接单元 MQTT 代理的桥:`off`(默认)、`state`(每个机器人的状态发布到保留主题)或 `commands`(并且发布到某机器人主题上的命令,经与网络客户端相同的路由、使用由 `HYDRA_UMC_MQTT_COMMAND_USER` 指定的专用账户的令牌执行)。地址、主题前缀和用户名也可在 Server Admin 界面设置;密码只能通过环境变量设置。参见 [`docs/MQTT_BRIDGE.md`](docs/MQTT_BRIDGE.md)。
+- `HYDRA_UMC_INFO_AUTH=required`——要求已登录的客户端才能获取只读的主机信息(`/metrics`、`/api/system/metrics`、`/api/system/supervisor`、`/api/ecosystem/status`、`/api/models`)。默认关闭,以便尚未在这些路由上发送令牌的客户端继续可用;生产环境启动时在关闭期间会发出警告。
+- `HYDRA_UMC_VOICE_UI_INCLUDE_HEARD_TEXT`、`HYDRA_UMC_VOICE_UI_MIN_CONFIDENCE`、`HYDRA_UMC_BRIDGE_UAV_SIGNING_KEY_FILE`、`HYDRA_UMC_BRIDGE_UAV_SIGNING_ALLOW_UNSIGNED`——管理员也可以在 Server Admin 中设置的语音和 UAV 选项(`data/server-config.json` 中的 `voice` 和 `mavlink`):语音回复是否复述听到的内容(`1` 为开启,默认关闭)、接受启动运动的请求之前语音识别所需的最低置信度(0 到 1,默认 0.6),以及 MAVLink 2 签名的密钥文件和是否仍接受未签名的消息(默认不签名,并拒绝未签名的消息)。环境变量优先于已保存的值,此时界面将该值显示为已固定。
+- `HYDRA_UMC_AI_ACCESS=admin` - 将通往本地 AI 服务的中继（`/api/ai/*`）限制为仅管理员可用。默认关闭，因此与以前一样，任何已登录用户都可使用。
+- `HYDRA_UMC_VISUAL_SERVOING_TOKEN`、`HYDRA_UMC_VLA_ENGINE_TOKEN`、`HYDRA_UMC_COGNITIVE_NODE_TOKEN`、`HYDRA_UMC_DETECTION_HEF_TOKEN`、`HYDRA_UMC_VISION_NODE_TOKEN` 和 `HYDRA_UMC_ANOMALY_TOKEN`(用于中继 `/api/ai/*`)、`HYDRA_UMC_VISION_STREAMER_TOKEN`(用于摄像头流)以及 `HYDRA_UMC_DATALAKE_READ_TOKEN`,否则 `HYDRA_UMC_DATALAKE_TOKEN`(用于遥测)——本服务器向要求令牌的服务出示的 Bearer 令牌;每个变量也读取 `..._FILE`,即首行为令牌的文件。它们是各服务自己读取的名称,因此同一个环境文件可同时供两者使用,任何客户端都看不到它们。未配置令牌的服务与以前完全一样地访问。中继还会拒绝既不是管理员也不是操作员的会话,只有管理员才能更改异常检测器的基线(除 `/detect` 之外的任何 `POST`);`vision-node` 和 `anomaly-detector` 加入该中继。
+- `HYDRA_UMC_VOICE_UI_RESULT_KEY`（或 `..._FILE`）- HYDRA-UMC-VOICE-UI 为已确认的语音结果签名所用的密钥（16 个字符或更长，与其持有的值相同）。`POST /api/voice/confirm` 以已登录用户为主体转发确认，只有当 `confirmed` 应答指明该用户且签名验证通过时才会采信；没有密钥时应答以 `verified: false` 转交，而设置 `HYDRA_UMC_VOICE_CONFIRM_REQUIRE_SIGNATURE=1` 则改为拒绝。该路由不执行任何操作。
+- `HYDRA_UMC_TELEMETRY_COLLECTOR_URL`（以及 `HYDRA_UMC_TELEMETRY_COLLECTOR_TOKEN` 或 `..._FILE`，和 `HYDRA_UMC_TELEMETRY_INTERVAL_MS`，100 到 60000，默认 1000）- 启用遥测生产者：本服务器广播的每个机器人增量中的数值（位置、关节、播放状态）会按每个机器人一个 `robot_state` 样本、每个间隔至多一个并合并后发送给 HYDRA-UMC-TELEMETRY-COLLECTOR，使数据湖有真实的数据可存。缺少地址时关闭；它不会延迟任何命令，只保留有限的数据，失败后暂停 30 秒。
+- `/dashboard-ai` - 如果 HYDRA-UMC-DASHBOARD-AI 与本仓库并列检出，`build-frontend` 会构建它，本服务器在此路径提供。该页面通过中继读取数据湖（`/api/ai/datalake/*`，只读：仅允许对 `/query`、`/aggregate`、`/stats`、`/stats/range`、`/series` 和 `/health` 的 `GET`，其余一律拒绝）和异常检测器（`/api/ai/anomaly-detector/*`），使用在同一浏览器中登录 STUDIO 的用户会话，因此适用本服务器的角色和服务令牌。这样，异常检测器就可以用 `HYDRA_UMC_ANOMALY_PROTECT_READS=1` 启动。
+- `HYDRA_UMC_LOG_MAX_BYTES` 和 `HYDRA_UMC_LOG_KEEP` - 服务器日志轮转的大小（默认 10 MB）以及保留的已轮转文件数量（默认 1）。
+- `HYDRA_UMC_SETTINGS_STORE`、`HYDRA_UMC_SETTINGS_BACKUPS` 和 `HYDRA_UMC_SETTINGS_BACKUP_INTERVAL_S` - 默认情况下，设置（`settings.json` 和点位文件）作为带日志的“要么全部成功、要么全部不生效”的整体写入：被中断的写入会在下次启动时完成或丢弃，`settings.json` 的副本保存在 `data/backups/`（10 份，最多每 600 秒一份），损坏的 `settings.json` 会从最新的完好副本恢复。`HYDRA_UMC_SETTINGS_STORE=plain` 恢复为逐个文件写入；`HYDRA_UMC_SETTINGS_BACKUPS=0` 关闭副本。
+- AI 中继的访问权限、主机信息是否要求登录以及 TLS（证书和密钥路径，并显示证书的 SHA-256 指纹），管理员也可以在控制应用的“服务器管理”界面中修改。环境变量中设置的值优先并显示为锁定；关闭登录要求前会请求确认；TLS 在下次启动时生效。
+- `STOP_ALL_RATE_LIMIT_MAX` / `STOP_ALL_RATE_LIMIT_WINDOW_MS`——全局停止(`POST /api/stop-all`)每个地址的额度,与登录的额度分开(默认每分钟 60 次)。在生产环境中,服务器还会拒绝使用部署模板中的示例 `JWT_SECRET`/引导密码、少于 32 个字符的 `JWT_SECRET` 或少于 12 个字符的引导密码启动。
+
+### TLS / HTTPS
+
+默认关闭——本服务器一直以纯 HTTP/WS 方式运行，除非你主动开启，否则依然如此。设置 `TLS_CERT_PATH` 和 `TLS_KEY_PATH`（见上文）指向一份 PEM 证书及其对应的私钥，共享的 REST + WebSocket 监听器便会切换为 `https.createServer()`——`/ws` 会随之自动变为 WSS，无需额外配置。若证书/密钥路径已设置但不可读或无效，启动将明确失败（抛出真实的 `fs` 错误），而不会静默回退到纯 HTTP。
+
+这在本服务器可从完全受信局域网之外访问时（例如通过路由器的 NAT/端口转发暴露以进行远程测试）尤为重要——纯 HTTP 意味着每一个承载令牌、每一条机器人指令，以及 admin/operator 登录本身，都以明文形式穿越网络。
+
+获取证书：
+
+- **拥有指向本服务器的域名**——使用 [Let's Encrypt](https://letsencrypt.org/)（例如通过 [Certbot](https://certbot.eff.org/)）获取真实的、浏览器信任的证书，免费且可自动续期。将 `TLS_CERT_PATH` / `TLS_KEY_PATH` 指向生成的 `fullchain.pem` / `privkey.pem`。
+- **本地测试，无域名**——自签名证书足以运行 HTTPS/WSS 代码路径（浏览器及大多数 HTTP 客户端会警告/要求显式的信任覆盖，这在测试中是预期且正常的）：
+  ```bash
+  openssl req -x509 -newkey rsa:2048 -nodes \
+    -keyout key.pem -out cert.pem -days 365 -subj "/CN=localhost"
+  ```
+  然后设置 `TLS_CERT_PATH=./cert.pem` 和 `TLS_KEY_PATH=./key.pem`。

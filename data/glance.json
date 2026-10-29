@@ -263,7 +263,11 @@
       }
     },
     "HYDRA-UMC-SDK": {
-      "hardware": "not_run"
+      "hardware": "not_run",
+      "tests": {
+        "count": 463,
+        "command": "python -m unittest discover -s clients/python/tests"
+      }
     },
     "HYDRA-UMC-SEMANTIC-PLANNER": {
       "hardware": "not_run",
@@ -275,15 +279,23 @@
     "HYDRA-UMC-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 348,
+        "count": 377,
         "command": "npm run test:unit"
       }
     },
     "HYDRA-UMC-STUDIO": {
-      "hardware": "not_run"
+      "hardware": "not_run",
+      "tests": {
+        "count": 631,
+        "command": "npm test"
+      }
     },
     "HYDRA-UMC-SUITE": {
-      "hardware": "not_run"
+      "hardware": "not_run",
+      "tests": {
+        "count": 41,
+        "command": "python tools/run_offline_verifiers.py"
+      }
     },
     "HYDRA-UMC-SWARM-SYNC": {
       "hardware": "not_run",

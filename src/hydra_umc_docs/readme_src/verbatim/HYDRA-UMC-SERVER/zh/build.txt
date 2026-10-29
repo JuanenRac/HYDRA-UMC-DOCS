@@ -1,0 +1,31 @@
+### 系统要求
+
+- [Node.js](https://nodejs.org/)（建议 v18 或更高版本）
+- npm
+
+### 安装
+
+```bash
+npm install
+```
+
+### 开发模式
+
+直接使用 `tsx` 运行 API/WebSocket 服务器（无打包工具，不涉及前端）：
+- **Windows：** 双击 `dev.bat`，或运行 `npm run dev`
+- **Linux/Mac：** 运行 `./dev.sh` 或 `npm run dev`
+
+### 生产构建
+
+使用 esbuild 将服务器打包为单个可部署文件：
+- **Windows：** 使用 `build.bat` 执行带版本递增的发布构建；仅编译时使用 `npm run build`。
+- **Linux/Mac：** 使用 `./build.sh` 执行带版本递增的发布构建；仅编译时使用 `npm run build`。
+
+随后以生产模式启动服务器：
+```bash
+npm start
+```
+
+服务器监听 `0.0.0.0:3000`——可通过 `http://localhost:3000` 或局域网内的 `http://<你的本地IP>:3000` 访问。所有状态均持久化于 `data/` 目录。
+
+本仓库有意不提供 Dockerfile：服务器由 [HYDRA-UMC-OS](https://github.com/JuanenRac/HYDRA-UMC-OS)（`provisioning/install_server.sh`）打包并安装到 CM5 上。

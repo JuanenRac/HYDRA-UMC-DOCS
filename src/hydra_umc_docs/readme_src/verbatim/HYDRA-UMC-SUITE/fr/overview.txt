@@ -1,0 +1,33 @@
+**HYDRA-UMC SUITE** est une application de bureau native Windows/Linux
+(Python + PySide6/Qt6) construite comme centre de contrôle de mission pour
+toute une flotte de contrôleurs
+[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) à la fois - scanne le
+réseau local (ou ajoutez-en un manuellement, y compris via un tunnel VPN
+déjà connecté vers un HYDRA-UMC sur un réseau physique différent),
+connectez-vous à autant que trouvés, et pilotez/surveillez/reconfigurez
+n'importe lequel d'entre eux en direct, côte à côte, depuis un unique
+tableau de bord industriel plein écran.
+
+Il parle exactement le même protocole de communication qu'expose
+[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER) - le
+même backend headless auquel parle aussi la propre interface navigateur de
+[HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO), comme un
+client parmi d'autres - voir
+[`HYDRA-UMC-SERVER/docs/REMOTE_API.md`](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/REMOTE_API.md)
+pour le contrat complet, ajouté spécifiquement pour prendre en charge ce
+projet. Un changement effectué depuis SUITE apparaît en direct dans un
+onglet de navigateur ouvert, et vice versa - synchronisation bidirectionnelle
+réelle via WebSocket, pas un import/export ponctuel.
+
+**Note d'honnêteté, suivant la même convention de documentation que le
+reste de cet écosystème :** ceci est un premier passage réel et
+fonctionnel, pas un produit fini. Voir
+[`docs/ROADMAP.md`](docs/ROADMAP.md) pour savoir exactement ce qui est
+véritablement implémenté et vérifié de bout en bout aujourd'hui, par
+rapport à ce qui a été délibérément laissé hors périmètre pour plus tard.
+À ce stade, chaque modèle de robot réel pris en charge par cet écosystème
+dispose d'une géométrie STL réelle et d'une cinématique directe vérifiée
+numériquement câblée dans le viewport 3D (Parol6, Faze4, AR3, AR4,
+UR3e/5e/10e/16e/20, xArm6, Lite 6, e.DO), plus un mode de secours
+"Générique" construit avec des primitives pour tout modèle sans jeu de
+mailles dédié.

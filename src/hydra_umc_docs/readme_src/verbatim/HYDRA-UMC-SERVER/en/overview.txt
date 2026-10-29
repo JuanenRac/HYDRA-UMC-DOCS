@@ -1,0 +1,41 @@
+HYDRA-UMC SERVER is the standalone backend that drives a HYDRA-UMC
+multi-robot micro-factory cell: a Node.js/Express + WebSocket engine that
+owns robot state, persists it to disk, authenticates every write, and
+broadcasts live updates to every connected client. It ships with no user
+interface or frontend build step of its own - it is a pure API + WebSocket
+service, meant to run headless (no browser, no display) on the machine
+that actually sits next to the robots (typically a Raspberry Pi CM5).
+
+The second contract is complete: conditional writes (`If-Match` on commands and claims, `GET /api/robot/:id`), the atomic `table` command, an append-only audit record (`GET /api/audit`, hash-chained, switchable) and a `claims` WebSocket message. Camera passwords no longer appear in the process list or in the log. See `docs/CONTRACT_V2.md`.
+
+It CAN optionally also serve **[HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO)'s**
+own built frontend as static files, for the common "everything on one
+machine, one origin" deployment - run **`build-frontend.sh`/`.bat`** once
+(builds STUDIO from a sibling checkout and copies the output into this
+repo's own `public/`, gitignored) and this server starts serving it at
+`/` on its next start. This is what lets HYDRA-UMC-ANDROID-CONTROL,
+HYDRA-UMC-IOS-CONTROL and HYDRA-UMC-DSI embed the real STUDIO 3D
+viewport in their own in-app WebView, pointed at this same server's own
+`ip:port`. Entirely opt-in: skip that script and this server stays
+exactly as headless as described above - `public/` simply won't exist,
+and every route keeps working identically either way.
+
+The same `build-frontend.sh`/`.bat` also builds this repo's own
+**[`admin-ui/`](admin-ui/README.md)** - a small, separate panel for
+administering this SERVER itself (connected devices, its own log file,
+its own port/name, its own user accounts), served at `/admin`. This is
+deliberately NOT robot control (that stays STUDIO-only) - a narrow,
+explicit exception to the headless design above, not a reversal of it.
+
+This project used to be part of **[HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO)**,
+which shipped as a "hybrid monolith": one Node.js process that both ran
+the robot-control engine *and* served the Vite/React web dashboard (with
+Vite's own dev middleware wired straight into the same Express app). That
+process has been split in two:
+
+- **HYDRA-UMC SERVER** *(this repository)* - the engine: robot/controller
+  state, the REST + WebSocket API, authentication, mDNS discovery, model
+  submissions. No UI, no bundler, no frontend build step.
+- **[HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO)** - now a
+  pure Vite/React client that talks to this server over the network,
+  exactly like every other client of this API already does.

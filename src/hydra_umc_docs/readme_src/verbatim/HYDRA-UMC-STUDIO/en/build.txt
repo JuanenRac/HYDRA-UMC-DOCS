@@ -1,0 +1,41 @@
+### Requirements
+- [Node.js](https://nodejs.org/) (v22 or higher)
+- npm
+- A running **[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** backend (`npm run dev` there too, default port `3000`) - this app is a pure client and has nothing to talk to without it.
+
+### Installation
+
+```bash
+npm install
+```
+
+### Development Mode
+
+Runs Vite's own dev server (plain `vite`, port `5173`) with live-reloading. `vite.config.ts`'s own `server.proxy` transparently forwards `/api`, `/ws`, and `/WORKS` to `http://localhost:3000`, so the app's relative-path fetch/WebSocket calls reach the HYDRA-UMC SERVER backend with no CORS setup needed - just make sure that backend is running first:
+- **Windows:** double-click `dev.bat` or run `npm run dev`
+- **Linux/Mac:** run `./dev.sh` or `npm run dev`
+
+### Automated Tests
+
+```bash
+npm test          # vitest run - {tests} tests
+npm run typecheck # tsc -b --noEmit (src/) + tsc -p tsconfig.test.json --noEmit (tests/)
+```
+
+
+### Production Build
+
+Compiles into an optimized static build (plain `vite build` - no server bundling, this app has no backend code left):
+- **Windows:** double-click `build.bat` or run `npm run build`
+- **Linux/Mac:** run `./build.sh` or `npm run build`
+
+Preview the production build locally with:
+```bash
+npm run preview
+```
+
+Deploy the resulting `dist/` folder to any static host. By default the built app looks for its backend at this same page's own hostname on port `3000` (matches the common "everything on the CM5" deployment); set `VITE_API_BASE_URL` at build time (see `.env.example`) to point it at a HYDRA-UMC SERVER instance hosted elsewhere. All real state and data persist on that backend's own `data/` directory, not in this repository.
+
+### Versioning
+
+`bump_manifest_version.py` (repo root) is the single owner of both `hydra-umc.project.json` and `package.json`'s own `version` field - `npm run build` (`vite build`) is deliberately compilation-only so it can never create drift between them by bumping one and not the other. `scripts/bump-version.mjs` is a legacy native-only helper kept for reference; nothing in this repo calls it anymore. The running version is visible live in the **About** dialog (the Studio version is read from this app's own `package.json`; the server version shown next to it comes from `GET /api/hydra-info`), and the full history is in [`CHANGELOG.md`](CHANGELOG.md).

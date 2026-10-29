@@ -1,0 +1,8 @@
+```mermaid
+flowchart LR
+    STUDIO["HYDRA-UMC-STUDIO"] --> DASH_AI["DASHBOARD-AI (Plugin)"]
+    LAKE["HYDRA-UMC-DATALAKE"] --> ANALY["Moteur d'Analyse IA"]
+    ANALY --> DASH_AI
+    DASH_AI --> INSIGHTS["Widgets & Alertes Intelligents"]
+    INSIGHTS --> OPERATOR["Vue Navigateur Web"]
+```

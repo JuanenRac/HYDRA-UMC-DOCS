@@ -1,0 +1,1 @@
+🤖 Webbasiertes Steuerungs-Dashboard für die HYDRA-UMC Multi-Roboter-Mikrofabrik

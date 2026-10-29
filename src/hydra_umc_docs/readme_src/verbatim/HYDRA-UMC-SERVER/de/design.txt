@@ -1,0 +1,26 @@
+### Warum Dieses Projekt Existiert
+
+Die Trennung der Engine vom Web-Dashboard war eine bewusste Entscheidung,
+kein Refactoring um seiner selbst willen:
+
+- **Ressourcenisolierung.** Eine schwere 3D-Ansicht, die den eigenen
+  Browser-Tab erstickt, teilt sich keinen Prozess (und damit keine
+  CPU/I-O-Konkurrenz) mehr mit dem Code, der tatsächlich für die
+  Bewegung der Roboter verantwortlich ist. Wenn die Web-UI hängt,
+  beantwortet dieser Server weiterhin Not-Aus-Befehle von jedem anderen
+  verbundenen Client.
+- **Ein echter headless-Controller.** Dieser Prozess kann laufen, ohne
+  dass jemals eine UI auf dem Host geladen wird - das "Gehirn" einer
+  industriellen Zelle braucht keinen geöffneten Browser-Tab, um zu
+  funktionieren. Gibt RAM/CPU auf eingeschränkter Hardware (einem
+  Raspberry Pi CM5) für den Teil der Arbeit frei, der wirklich zählt:
+  Kinematik und Steuerung.
+- **Unabhängige Lebenszyklen.** Die Web-UI kann neu bereitgestellt,
+  neugestartet oder gegen einen neueren Build ausgetauscht werden, ohne
+  jemals diesen Prozess zu berühren - keine Ausfallzeit der
+  Robotersteuerung nur um einen UI-Fix auszuliefern.
+- **Flexibles Hosting.** Dieser Server ist dafür gedacht, auf (oder
+  direkt neben) der Hardware zu laufen, die er steuert; der Client, der
+  ihn darstellt, kann komplett woanders gehostet werden, erreichbar über
+  das Netzwerk genau wie die anderen entfernten Clients dieser selben
+  API.

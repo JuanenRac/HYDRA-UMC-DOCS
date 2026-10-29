@@ -1,0 +1,9 @@
+### 第一个里程碑
+
+1. 发布 `DeviceDescriptor`、`HealthReport`、`SafetyState` 和
+   `UpdateManifest` JSON 模式 v1。
+2. 使用 Python 参考客户端验证有效和无效的 fixture。
+3. 在 CI 中加入生产者/消费者兼容性矩阵。
+4. 在集成需要时发布 Protobuf/OpenAPI 表示(覆盖 HYDRA-UMC-SERVER discovery/
+   auth/fleet/command 路由的 OpenAPI 真实首个切片已完成;Protobuf 仍未开始)。
+5. 添加真实且经过测试的 TypeScript、Go 和 Rust 客户端，验证稳定的 v1 合约。

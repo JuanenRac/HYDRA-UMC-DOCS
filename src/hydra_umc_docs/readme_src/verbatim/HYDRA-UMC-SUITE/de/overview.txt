@@ -1,0 +1,31 @@
+**HYDRA-UMC SUITE** ist eine native Windows/Linux-Desktopanwendung (Python
++ PySide6/Qt6), die als Missionskontrollzentrale für eine ganze Flotte von
+[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)-Controllern gleichzeitig
+gebaut wurde - durchsuche das lokale Netzwerk (oder füge einen manuell
+hinzu, auch über einen bereits verbundenen VPN-Tunnel zu einem HYDRA-UMC in
+einem anderen physischen Netzwerk), verbinde dich mit so vielen wie
+gefunden werden, und steuere/überwache/konfiguriere jeden von ihnen live,
+nebeneinander, von einem einzigen industriellen Vollbild-Dashboard aus.
+
+Es spricht genau dasselbe Übertragungsprotokoll, das
+[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER) bereitstellt
+- dasselbe Headless-Backend, mit dem auch die eigene Browser-Oberfläche von
+[HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO) als
+einer von mehreren Clients spricht - siehe
+[`HYDRA-UMC-SERVER/docs/REMOTE_API.md`](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/REMOTE_API.md)
+für den vollständigen Vertrag, der eigens hinzugefügt wurde, um dieses
+Projekt zu unterstützen. Eine von SUITE aus vorgenommene Änderung erscheint
+live in einem geöffneten Browser-Tab, und umgekehrt - echte bidirektionale
+Synchronisierung über WebSocket, kein einmaliger Import/Export.
+
+**Ehrlichkeitshinweis, passend zur eigenen Dokumentationskonvention des
+restlichen Ökosystems:** dies ist ein erster echter, funktionierender
+Durchgang, kein fertiges Produkt. Siehe
+[`docs/ROADMAP.md`](docs/ROADMAP.md) für genau das, was heute wirklich
+implementiert und Ende-zu-Ende verifiziert ist, gegenüber dem, was
+absichtlich für später aus dem Umfang ausgeklammert wurde. Zum Zeitpunkt
+dieses Durchgangs verfügt jedes reale Robotermodell, das dieses Ökosystem
+unterstützt, über echte STL-Geometrie und numerisch verifizierte
+Vorwärtskinematik, die in das 3D-Viewport eingebunden ist (Parol6, Faze4,
+AR3, AR4, UR3e/5e/10e/16e/20, xArm6, Lite 6, e.DO), plus ein aus Primitiven
+gebauter "Generic"-Fallback für jedes Modell ohne eigenen Mesh-Satz.

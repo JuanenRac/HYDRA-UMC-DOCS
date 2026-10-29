@@ -1,0 +1,10 @@
+### Premier jalon
+
+1. Publiez le schéma JSON v1 de `DeviceDescriptor`, `HealthReport`, `SafetyState` et
+   `UpdateManifest`.
+2. Validez les fixtures valides et invalides avec le client de référence Python.
+3. Ajoutez une matrice de compatibilité producteur/consommateur dans CI.
+4. Publiez les représentations Protobuf/OpenAPI là où l'intégration l'exige
+   (la vraie première tranche OpenAPI, couvrant les routes discovery/auth/
+   fleet/command de HYDRA-UMC-SERVER, est faite ; Protobuf reste à faire).
+5. Ajoutez des clients TypeScript, Go et Rust réels et testés, validant les contrats v1 stables.

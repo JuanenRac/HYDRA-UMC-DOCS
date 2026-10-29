@@ -1,0 +1,10 @@
+### First milestone
+
+1. Publish `DeviceDescriptor`, `HealthReport`, `SafetyState`, and
+   `UpdateManifest` JSON Schema v1.
+2. Validate valid and invalid fixtures with the Python reference client.
+3. Add a producer/consumer compatibility matrix in CI.
+4. Publish Protobuf/OpenAPI representations where the integration requires it
+   (OpenAPI's real first slice, covering HYDRA-UMC-SERVER's discovery/auth/
+   fleet/command routes, is done; Protobuf remains outstanding).
+5. Add real, tested TypeScript, Go, and Rust clients validating the stable v1 contracts.

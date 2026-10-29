@@ -1,0 +1,7 @@
+### Primeiro marco
+
+1. Publicar `DeviceDescriptor`, `HealthReport`, `SafetyState` e `UpdateManifest` em JSON Schema v1.
+2. Validar fixtures válidas e inválidas com o cliente de referência em Python.
+3. Acrescentar ao CI uma matriz de compatibilidade produtor/consumidor.
+4. Publicar representações Protobuf/OpenAPI onde a integração as exija (a primeira fatia real de OpenAPI, que cobre as rotas de descoberta/autenticação/frota/comandos do HYDRA-UMC-SERVER, está concluída; o Protobuf continua pendente).
+5. Acrescentar clientes reais e testados em TypeScript, Go e Rust que validem os contratos v1 estáveis.

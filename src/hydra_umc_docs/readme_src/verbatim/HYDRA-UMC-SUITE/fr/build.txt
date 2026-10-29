@@ -1,0 +1,99 @@
+### Pour commencer
+
+### Prérequis
+- Python 3.12+ (la CI utilise 3.12 ; également testé en local avec 3.14)
+- Un serveur [HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO) en cours d'exécution auquel se connecter
+
+### Installation
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate      # Windows
+# source .venv/bin/activate   # Linux
+
+pip install -r requirements.txt
+```
+
+### Exécution
+
+```bash
+python main.py
+```
+
+Démarre maximisée avec un minimum de 1280x720 (selon la propre
+spécification de design de cette app) - appuyez sur **F11** pour basculer
+entre le plein écran et une fenêtre maximisée normale à tout moment, donc
+elle ne vous piège jamais vraiment sans issue de secours. Utilisez le
+panneau **Servers** pour scanner votre réseau ou ajouter un serveur
+HYDRA-UMC SERVER par adresse.
+
+Appuyez sur **F12** à tout moment pour envoyer le STOP global (le bouton **STOP** de la barre supérieure fait de même).
+
+### Pile technologique
+
+- **Framework d'UI :** PySide6 (Qt6) avec Qt Quick (QML) - une seule interface, sans réinventer un framework d'ancrage
+- **Rendu 3D :** PyOpenGL (shaders GLSL core-profile) + numpy-stl
+- **Réseau :** `httpx` (REST) + `websockets` (synchronisation en direct),
+  intégré à la propre boucle d'événements de Qt via `qasync` - pas de
+  thread de travail séparé
+- **Mathématiques :** NumPy (transformations homogènes 4x4 pour la
+  cinématique directe)
+
+### Compiler un exécutable autonome
+
+Deux chemins, même résultat (`dist/HYDRA-UMC_SUITE.exe` sous Windows,
+`dist/HYDRA-UMC_SUITE` sous Linux) - aucune installation de Python n'est
+nécessaire pour exécuter le résultat dans les deux cas.
+
+**Automatisé (recommandé) :**
+
+```bash
+build_exe.bat    # Windows
+./build_exe.sh   # Linux
+```
+
+Chaque script crée/réutilise `.venv`, y installe `requirements.txt` +
+PyInstaller, nettoie tout `build/`/`dist/` précédent, compile avec
+PyInstaller (en incluant `assets/` et seulement les 4 sous-dossiers de
+plugins Qt réellement utilisés par cette app - `platforms`/`styles`/
+`imageformats`/`iconengines`, et non le paquet PySide6 entier, ce qui
+maintient le résultat de l'ordre des dizaines de Mo plutôt que des
+centaines), et copie `README.md`/`LICENSE`/`docs/` ainsi que les fichiers
+éditables `language/*.lng` à côté de l'exécutable plutôt que de les
+figer à l'intérieur.
+
+**Équivalent manuel**, si vous voulez voir/contrôler chaque étape
+vous-même (les mêmes commandes exécutées par les scripts ci-dessus) :
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate          # Windows
+# source .venv/bin/activate      # Linux
+
+pip install -r requirements.txt
+pip install pyinstaller
+
+python -m PyInstaller --onefile --windowed --noconfirm --name "HYDRA-UMC_SUITE" ^
+    --add-data "assets;assets" ^
+    --add-data "<PySide6 install dir>\plugins\platforms;PySide6\plugins\platforms" ^
+    --add-data "<PySide6 install dir>\plugins\styles;PySide6\plugins\styles" ^
+    --add-data "<PySide6 install dir>\plugins\imageformats;PySide6\plugins\imageformats" ^
+    --add-data "<PySide6 install dir>\plugins\iconengines;PySide6\plugins\iconengines" ^
+    --hidden-import qasync --hidden-import websockets ^
+    --hidden-import PySide6.QtOpenGL --hidden-import PySide6.QtOpenGLWidgets ^
+    --hidden-import OpenGL.platform.win32 ^
+    main.py
+
+# puis copiez README.md, LICENSE, docs/, et language/ a cote de dist/HYDRA-UMC_SUITE.exe
+```
+
+Sous Linux (voir `build_exe.sh` pour la commande exacte et testée),
+utilisez `:` au lieu de `;` comme séparateur `--add-data`, supprimez le
+hidden-import `OpenGL.platform.win32` (Windows uniquement), supprimez
+`--windowed`, et notez que le chemin des plugins s'imbrique un niveau
+plus profond là-bas (`<PySide6 dir>/Qt/plugins/platforms` contre le
+`<PySide6 dir>\plugins\platforms` plat de Windows) - un détail
+d'empaquetage propre à la wheel elle-même, pas quelque chose choisi par
+l'un ou l'autre des 2 scripts. `HYDRA-UMC_SUITE.spec` à la racine du dépôt
+est le propre fichier spec généré par PyInstaller lors de la dernière
+build - sûr à supprimer et régénérer, non maintenu à la main.

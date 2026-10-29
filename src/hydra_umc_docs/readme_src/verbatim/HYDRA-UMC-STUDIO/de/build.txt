@@ -1,0 +1,41 @@
+### Voraussetzungen
+- [Node.js](https://nodejs.org/) (v22 oder höher)
+- npm
+- Ein laufendes **[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)**-Backend (dort ebenfalls `npm run dev`, Standardport `3000`) - diese App ist ein reiner Client und hat ohne dieses Backend niemanden, mit dem sie sprechen könnte.
+
+### Installation
+
+```bash
+npm install
+```
+
+### Entwicklungsmodus
+
+Führt den eigenen Dev-Server von Vite aus (einfaches `vite`, Port `5173`) mit Live-Reloading. Das eigene `server.proxy` von `vite.config.ts` leitet `/api`, `/ws`, und `/WORKS` transparent an `http://localhost:3000` weiter, sodass die Fetch-/WebSocket-Aufrufe der App mit relativem Pfad das HYDRA-UMC-SERVER-Backend ohne CORS-Konfiguration erreichen - stellen Sie nur sicher, dass dieses Backend zuerst läuft:
+- **Windows:** Doppelklick auf `dev.bat` oder `npm run dev` ausführen
+- **Linux/Mac:** `./dev.sh` oder `npm run dev` ausführen
+
+### Automatisierte Tests
+
+```bash
+npm test          # vitest run - {tests} echte Tests über src/examples/
+npm run typecheck # tsc -b --noEmit (src/) + tsc -p tsconfig.test.json --noEmit (tests/)
+```
+
+
+### Produktions-Build
+
+Kompiliert zu einem optimierten statischen Build (einfaches `vite build` - kein Server-Bundling, diese App hat keinen Backend-Code mehr):
+- **Windows:** Doppelklick auf `build.bat` oder `npm run build` ausführen
+- **Linux/Mac:** `./build.sh` oder `npm run build` ausführen
+
+Den Produktions-Build lokal in der Vorschau ansehen mit:
+```bash
+npm run preview
+```
+
+Stellen Sie den resultierenden `dist/`-Ordner auf einem beliebigen statischen Host bereit. Standardmäßig sucht die gebaute App ihr Backend unter demselben Hostnamen dieser Seite auf Port `3000` (entspricht dem üblichen "alles auf der CM5"-Deployment); setzen Sie `VITE_API_BASE_URL` zur Build-Zeit (siehe `.env.example`), um sie auf eine anderswo gehostete HYDRA-UMC-SERVER-Instanz zu verweisen. Aller echte Zustand und alle Daten bleiben im eigenen `data/`-Verzeichnis dieses Backends erhalten, nicht in diesem Repository.
+
+### Versionierung
+
+`bump_manifest_version.py` (Repo-Wurzel) ist der alleinige Eigentümer sowohl von `hydra-umc.project.json` als auch des `version`-Felds in `package.json` - `npm run build` (`vite build`) ist bewusst rein kompilierend, damit dadurch nie eine Divergenz zwischen beiden entstehen kann, indem nur eines von beiden erhöht wird. `scripts/bump-version.mjs` ist ein veralteter, nativer Helfer, der nur als Referenz erhalten bleibt; nichts in diesem Repo ruft ihn noch auf. Die laufende Version ist live im **About**-Dialog sichtbar (die Studio-Version stammt aus der eigenen `package.json` dieser App; die daneben gezeigte Server-Version kommt von `GET /api/hydra-info`), die vollständige Historie steht in [`CHANGELOG.md`](CHANGELOG.md).

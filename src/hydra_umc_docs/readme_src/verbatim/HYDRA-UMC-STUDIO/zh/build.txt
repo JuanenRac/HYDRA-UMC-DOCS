@@ -1,0 +1,40 @@
+### 系统要求
+- [Node.js](https://nodejs.org/)（v22 或更高版本）
+- npm
+- 一个正在运行的 **[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** 后端（同样运行 `npm run dev`，默认端口 `3000`）——本应用是一个纯客户端，没有它就无法与任何东西通信。
+
+### 安装
+
+```bash
+npm install
+```
+
+### 开发模式
+
+运行 Vite 自身的开发服务器（纯粹的 `vite`，端口 `5173`），支持实时重载。`vite.config.ts` 自身的 `server.proxy` 会透明地将 `/api`、`/ws` 和 `/WORKS` 转发到 `http://localhost:3000`，因此本应用的相对路径 fetch/WebSocket 调用无需任何 CORS 设置即可到达 HYDRA-UMC SERVER 后端——只需确保先启动该后端：
+- **Windows：** 双击 `dev.bat`，或运行 `npm run dev`
+- **Linux/Mac：** 运行 `./dev.sh` 或 `npm run dev`
+
+### 自动化测试
+
+```bash
+npm run typecheck # tsc -b --noEmit（src/）+ tsc -p tsconfig.test.json --noEmit（tests/）
+```
+
+
+### 生产构建
+
+编译为一个经过优化的静态构建（纯粹的 `vite build`——不涉及服务器打包，本应用已不再包含任何后端代码）：
+- **Windows：** 双击 `build.bat`，或运行 `npm run build`
+- **Linux/Mac：** 运行 `./build.sh` 或 `npm run build`
+
+在本地预览生产构建：
+```bash
+npm run preview
+```
+
+将生成的 `dist/` 文件夹部署到任何静态托管服务。默认情况下，构建好的应用会在当前页面自身的主机名、端口 `3000` 上寻找其后端（匹配常见的“一切都在 CM5 上”的部署方式）；如需将其指向托管在别处的 HYDRA-UMC SERVER 实例，请在构建时设置 `VITE_API_BASE_URL`（参见 `.env.example`）。所有真实状态和数据都持久化在该后端自身的 `data/` 目录中，而非本仓库中。
+
+### 版本管理
+
+`bump_manifest_version.py`（仓库根目录）是 `hydra-umc.project.json` 和 `package.json` 自身 `version` 字段的唯一所有者——`npm run build`（`vite build`）刻意只负责编译，这样就永远不会因为只递增其中一个而造成两者不同步。`scripts/bump-version.mjs` 是一个遗留的原生辅助脚本，仅作参考保留；本仓库中已没有任何地方调用它。当前运行版本可在 **About** 对话框中实时查看（Studio 版本读取自本应用自己的 `package.json`；旁边显示的服务器版本来自 `GET /api/hydra-info`），完整历史记录见 [`CHANGELOG.md`](CHANGELOG.md)。

@@ -1,0 +1,5 @@
+**HYDRA-UMC SUITE** 是一款原生的 Windows/Linux 桌面应用程序（Python + PySide6/Qt6），构建为整支 [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) 控制器舰队的任务控制中心——扫描本地网络（或手动添加一台，包括通过一个已连接到位于不同物理网络上的 HYDRA-UMC 的 VPN 隧道），连接到所有找到的控制器，并从一个全屏工业仪表盘并排实时点动/监控/重新配置其中任意一台。
+
+它使用的是与 [HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER) 完全相同的线路协议——同一个无头式后端，[HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO) 自身的浏览器界面也只是作为它的另一个客户端与之通信——完整契约参见 [`HYDRA-UMC-SERVER/docs/REMOTE_API.md`](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/REMOTE_API.md)，该文档专门为支持本项目而新增。从 SUITE 所做的更改会实时出现在打开的浏览器标签页中，反之亦然——是通过 WebSocket 实现的真正双向实时同步，而非一次性的导入/导出。
+
+**诚实说明，与本生态系统其余文档所采用的惯例一致：** 这是第一个真实可用的版本，而非成品。具体哪些功能今天已真正实现并经过端到端验证、哪些被刻意留待以后，参见 [`docs/ROADMAP.md`](docs/ROADMAP.md)。截至本版本，本生态系统支持的每一个真实机器人型号都已接入 3D 视口，具备真实的 STL 几何数据和经数值验证的正向运动学（Parol6、Faze4、AR3、AR4、UR3e/5e/10e/16e/20、xArm6、Lite 6、e.DO），外加一个基于基本几何体构建的“通用”后备型号，适用于任何没有专属网格集的型号。

@@ -1,0 +1,108 @@
+### Umgebungsvariablen
+
+Optional - der Server läuft ohne jede Konfiguration, mit
+entwicklungsfreundlichen Standardwerten für jede Variable unten. Setzen
+Sie echte Werte, bevor dieser Server über ein vollständig
+vertrauenswürdiges LAN hinaus freigegeben wird - z. B. über das offene
+Internet via NAT/Portweiterleitung des Routers, was das Bedrohungsmodell
+von "nur vertrauenswürdiges LAN" zu "von jedem erreichbar" ändert (siehe
+`.env.example`):
+
+- `JWT_SECRET` - signiert jedes Login-Token. Falls nicht gesetzt, wird
+  stattdessen ein fester Entwicklungswert aus `src/server.ts` verwendet
+  (in Ordnung für die lokale Entwicklung, nicht für ein Deployment
+  außerhalb eines vertrauenswürdigen Netzwerks). Exportieren Sie sie über
+  Ihre Shell oder über Ihren bevorzugten Prozessmanager/Container
+  (systemd `Environment=`, die Umgebungskonfiguration von `pm2`, Docker
+  `-e`, ...).
+- `NODE_ENV` - setzen Sie `production` für jedes reale Deployment.
+  Steuert die beiden Fallbacks unten (offenes CORS, stille Standardwerte)
+  und aktiviert deutlich sichtbare Start-Warnungen, falls `JWT_SECRET`
+  oder das geseedete `admin`/`admin`-Konto noch auf ihren Standardwerten
+  stehen. Nicht gesetzt (oder jeder andere Wert) behält das heutige
+  permissive Entwicklungsverhalten bei.
+- `CORS_ALLOWED_ORIGINS` - kommagetrennte Liste von Ursprüngen, die
+  Cross-Origin-Browseranfragen an diese API stellen dürfen - der reale
+  Fall, auf den es hier ankommt, ist HYDRA-UMC STUDIO, das von einem
+  anderen Host/Port als diesem Server ausgeliefert wird (z. B.
+  `https://studio.example.com`, oder `http://192.168.1.20:5173` in der
+  Entwicklung). Beispiel:
+  `CORS_ALLOWED_ORIGINS=https://studio.example.com,http://192.168.1.20:5173`.
+  Falls nicht gesetzt: `NODE_ENV != production` erlaubt jeden Ursprung
+  (keine Konfiguration für die lokale Entwicklung nötig, entspricht dem
+  bisherigen Verhalten dieses Projekts); `NODE_ENV = production`
+  **verweigert** stattdessen jede Cross-Origin-Browseranfrage, bis dies
+  gesetzt ist, mit einer deutlich sichtbaren Start-Warnung. Nicht-Browser-
+  Clients (curl, HYDRA-UMC SUITE, die mobilen Apps) sind in beiden
+  Fällen nie betroffen - CORS ist ein reiner Browser-Mechanismus.
+- `JWT_EXPIRES_IN` - wie lange ein Login-Token gültig bleibt. Jede
+  Zeichenkette, die die `expiresIn`-Option von `jsonwebtoken` selbst
+  akzeptiert (`"24h"`, `"7d"`, eine reine Sekundenzahl, ...). Standardmäßig
+  `30d`, falls nicht gesetzt (die ursprüngliche Annahme dieses Projekts
+  eines vertrauenswürdigen LANs). **Ein Server, der über ein
+  vertrauenswürdiges LAN hinaus erreichbar ist, sollte dies deutlich
+  kürzer setzen - `24h` ist ein vernünftiger Ausgangspunkt** - ein
+  geleaktes langlebiges Token kann nicht einzeln widerrufen werden, außer
+  durch Ändern des Passworts dieses Kontos.
+- `LOGIN_RATE_LIMIT_MAX` / `LOGIN_RATE_LIMIT_WINDOW_MS` - drosselt
+  ausschließlich `POST /api/login` (alle anderen Routen sind nicht
+  betroffen). Standardmäßig 5 Versuche pro 15 Minuten pro IP, falls eine
+  der beiden nicht gesetzt ist; ein ausgelöstes Limit antwortet mit `429`
+  und einer klaren JSON-Fehlermeldung, nicht mit einem generischen `500`.
+- `REFRESH_RATE_LIMIT_MAX` - Anfragebudget von `POST /api/refresh` pro Zeitfenster und IP (Standard 120). Für das obige Login-Limit zählen nur fehlgeschlagene Anmeldungen.
+- `TLS_CERT_PATH` / `TLS_KEY_PATH` - setzen Sie **beide**, um den Server
+  (REST-API + den `/ws`-WebSocket, der denselben Listener teilt) von
+  einfachem HTTP/WS auf HTTPS/WSS umzuschalten. Siehe "TLS / HTTPS"
+  unten. Wird eine der beiden nicht gesetzt, bleibt das heutige
+  Klartext-HTTP-Verhalten unverändert.
+- `HYDRA_UMC_CAMERA_AUTH` - die Kamerabilder (Live-Streams, gespeicherte Fotos und Aufnahmen) verlangen **standardmäßig** ein kurzlebiges `?ticket=` (`POST /api/camera/ticket` gibt es an einen angemeldeten Client aus) oder ein Bearer-Token; `HYDRA_UMC_CAMERA_AUTH=open` ist der vorübergehende Ausweg für Clients, die noch keine Tickets anfordern.
+- `HYDRA_UMC_WS_QUERY_TOKEN` - `/ws?token=` wird **standardmäßig abgelehnt** (das Token reist als Subprotokoll `hydra.bearer`); `HYDRA_UMC_WS_QUERY_TOKEN=allow` ist der vorübergehende Ausweg für Clients, die noch nicht umgestellt haben. Der Server warnt bei jedem Start, solange ein Ausweg gesetzt ist.
+- `HYDRA_UMC_BLE_GATT` - der Bluetooth-LE-Dienst: `off` (Standard), `state` (Telefone lesen den Zustand) oder `commands` (und senden Befehle, jeweils mit dem Zugriffstoken des Kontos). `HYDRA_UMC_BLE_ENCRYPTION=off` verlangt keine verschlüsselte Verbindung mehr (standardmäßig wird sie verlangt). Beides lässt sich auch im Server-Admin-Bildschirm einstellen; eine Änderung gilt ab dem nächsten Start. Benötigt BlueZ, `python3-dbus` und `python3-gi` auf dem Rechner.
+- `HYDRA_UMC_MQTT_BRIDGE` - die Brücke zum MQTT-Broker der Zelle: `off` (Standard), `state` (der Zustand jedes Roboters geht auf retained Topics hinaus) oder `commands` (und ein auf dem Topic eines Roboters veröffentlichter Befehl wird über dieselbe Route wie bei einem Netzwerk-Client ausgeführt, mit dem Token eines eigenen Kontos, das `HYDRA_UMC_MQTT_COMMAND_USER` benennt). Adresse, Topic-Präfix und Benutzernamen lassen sich auch im Server-Admin-Bildschirm setzen; die Passwörter nur über die Umgebung. Siehe [`docs/MQTT_BRIDGE.md`](docs/MQTT_BRIDGE.md).
+- `HYDRA_UMC_INFO_AUTH=required` - verlangt für die schreibgeschützten Geräteinformationen (`/metrics`, `/api/system/metrics`, `/api/system/supervisor`, `/api/ecosystem/status`, `/api/models`) einen angemeldeten Client. Standardmäßig aus, damit ein Client, der sein Token auf diesen Routen noch nicht sendet, weiter funktioniert; ein Produktionsstart warnt, solange es aus ist.
+- `HYDRA_UMC_VOICE_UI_INCLUDE_HEARD_TEXT`, `HYDRA_UMC_VOICE_UI_MIN_CONFIDENCE`, `HYDRA_UMC_BRIDGE_UAV_SIGNING_KEY_FILE`, `HYDRA_UMC_BRIDGE_UAV_SIGNING_ALLOW_UNSIGNED` - die Sprach- und UAV-Optionen, die ein Administrator auch in Server Admin setzen kann (`voice` und `mavlink` in `data/server-config.json`): ob eine Sprachantwort das Gesagte wiederholt (`1` schaltet es ein; standardmäßig aus), die Mindestsicherheit der Spracherkennung (0 bis 1, Standard 0,6), bevor eine Anfrage angenommen wird, die eine Bewegung startet, sowie die Schlüsseldatei der MAVLink-2-Signatur und ob unsignierte Nachrichten weiter angenommen werden (standardmäßig keine Signatur und unsignierte werden abgewiesen). Die Umgebung hat Vorrang vor dem Gespeicherten; dann zeigt der Bildschirm den Wert als fest an.
+- `HYDRA_UMC_AI_ACCESS=admin` - beschränkt das Relay zu den lokalen KI-Diensten (`/api/ai/*`) auf Administratoren. Standardmäßig aus, sodass wie bisher jeder angemeldete Benutzer es nutzen kann.
+- `HYDRA_UMC_VISUAL_SERVOING_TOKEN`, `HYDRA_UMC_VLA_ENGINE_TOKEN`, `HYDRA_UMC_COGNITIVE_NODE_TOKEN`, `HYDRA_UMC_DETECTION_HEF_TOKEN`, `HYDRA_UMC_VISION_NODE_TOKEN` und `HYDRA_UMC_ANOMALY_TOKEN` (für das Relay `/api/ai/*`), `HYDRA_UMC_VISION_STREAMER_TOKEN` (für die Kamerastreams) und `HYDRA_UMC_DATALAKE_READ_TOKEN`, sonst `HYDRA_UMC_DATALAKE_TOKEN` (für die Telemetrie) - das Bearer-Token, das dieser Server einem Dienst vorlegt, der eines verlangt; jede liest auch `..._FILE`, eine Datei, deren erste Zeile das Token ist. Es sind die Namen, die die Dienste selbst lesen, eine einzige Umgebungsdatei bedient also beide, und kein Client sieht sie je. Ein Dienst ohne konfiguriertes Token wird genau wie vorher erreicht. Das Relay lehnt außerdem eine Sitzung ab, die weder Administrator noch Bediener ist, und nur ein Administrator darf die Referenz des Anomalie-Detektors ändern (jedes `POST` außer `/detect`); `vision-node` und `anomaly-detector` kommen zum Relay hinzu.
+- `HYDRA_UMC_VOICE_UI_RESULT_KEY` (oder `..._FILE`) - der Schlüssel, mit dem HYDRA-UMC-VOICE-UI ein bestätigtes Sprachergebnis signiert (16 Zeichen oder mehr, derselbe Wert, den es hält). `POST /api/voice/confirm` leitet eine Bestätigung mit dem angemeldeten Benutzer als Subject weiter und glaubt eine `confirmed`-Antwort nur, wenn sie diesen Benutzer nennt und ihre Signatur stimmt; ohne den Schlüssel wird die Antwort mit `verified: false` weitergereicht, und `HYDRA_UMC_VOICE_CONFIRM_REQUIRE_SIGNATURE=1` lehnt sie stattdessen ab. Diese Route führt nichts aus.
+- `HYDRA_UMC_TELEMETRY_COLLECTOR_URL` (mit `HYDRA_UMC_TELEMETRY_COLLECTOR_TOKEN` oder `..._FILE` und `HYDRA_UMC_TELEMETRY_INTERVAL_MS`, 100 bis 60000, standardmäßig 1000) - schaltet den Telemetrie-Produzenten ein: Die Zahlen jedes Roboter-Deltas, das dieser Server sendet (Position, Gelenke, Wiedergabestatus), gehen als ein `robot_state`-Sample pro Roboter an HYDRA-UMC-TELEMETRY-COLLECTOR, höchstens eines pro Intervall und zusammengeführt, damit der Data Lake etwas Echtes zu speichern hat. Aus, wenn die Adresse fehlt; er verzögert nie einen Befehl, hält eine begrenzte Datenmenge und pausiert nach einem Fehler 30 Sekunden.
+- `/dashboard-ai` - wenn HYDRA-UMC-DASHBOARD-AI neben diesem Repository ausgecheckt ist, baut `build-frontend` es und dieser Server liefert es dort aus. Die Seite liest den Data Lake (`/api/ai/datalake/*`, nur lesend: `GET` auf `/query`, `/aggregate`, `/stats`, `/stats/range`, `/series` und `/health`, alles andere wird abgelehnt) und den Anomalie-Detektor (`/api/ai/anomaly-detector/*`) über das Relay, mit der Sitzung der Person, die sich im selben Browser in STUDIO angemeldet hat; so gelten die Rollen und die Dienst-Token dieses Servers. Damit kann der Anomalie-Detektor mit `HYDRA_UMC_ANOMALY_PROTECT_READS=1` gestartet werden.
+- `HYDRA_UMC_LOG_MAX_BYTES` und `HYDRA_UMC_LOG_KEEP` - die Größe, ab der das Serverprotokoll rotiert (Standard 10 MB), und wie viele rotierte Dateien behalten werden (Standard 1).
+- `HYDRA_UMC_SETTINGS_STORE`, `HYDRA_UMC_SETTINGS_BACKUPS` und `HYDRA_UMC_SETTINGS_BACKUP_INTERVAL_S` - standardmäßig werden die Einstellungen (`settings.json` und die Punktedateien) als eine Alles-oder-nichts-Einheit mit Journal geschrieben: Ein unterbrochener Schreibvorgang wird beim nächsten Start abgeschlossen oder verworfen, eine Kopie von `settings.json` liegt in `data/backups/` (10 Kopien, höchstens eine alle 600 s) und eine beschädigte `settings.json` wird aus der neuesten guten Kopie wiederhergestellt. `HYDRA_UMC_SETTINGS_STORE=plain` kehrt zum Schreiben Datei für Datei zurück; `HYDRA_UMC_SETTINGS_BACKUPS=0` schaltet die Kopien ab.
+- Der Zugriff auf das KI-Relay, die Anmeldepflicht der Host-Informationen und TLS (Pfade von Zertifikat und Schlüssel, mit dem SHA-256-Fingerabdruck des Zertifikats) kann ein Administrator auch im Bildschirm Server-Verwaltung der Steuer-App ändern. Ein in der Umgebung gesetzter Wert hat Vorrang und wird als gesperrt angezeigt; vor dem Abschalten der Anmeldepflicht wird um Bestätigung gebeten; TLS gilt ab dem nächsten Start.
+- `STOP_ALL_RATE_LIMIT_MAX` / `STOP_ALL_RATE_LIMIT_WINDOW_MS` - Budget des globalen Stopps (`POST /api/stop-all`) pro Adresse, getrennt von dem der Anmeldung (Standard 60 pro Minute). In Produktion verweigert der Server außerdem den Start mit einem Beispiel-`JWT_SECRET` oder -Startpasswort aus einer Deployment-Vorlage, einem `JWT_SECRET` unter 32 Zeichen oder einem Startpasswort unter 12 Zeichen.
+
+### TLS / HTTPS
+
+Standardmäßig deaktiviert - dieser Server lief schon immer als einfaches
+HTTP/WS und tut das weiterhin, sofern nicht explizit aktiviert. Setzen
+Sie sowohl `TLS_CERT_PATH` als auch `TLS_KEY_PATH` (siehe oben) auf ein
+PEM-Zertifikat und den passenden privaten Schlüssel, und der gemeinsame
+REST-+-WebSocket-Listener wechselt zu `https.createServer()` - `/ws` wird
+dabei automatisch zu WSS, ohne separate Konfiguration. Ein gesetzter,
+aber unlesbarer oder ungültiger Zertifikat-/Schlüsselpfad lässt den Start
+laut fehlschlagen (ein echter `fs`-Fehler), statt still auf einfaches
+HTTP zurückzufallen.
+
+Das ist vor allem relevant, sobald dieser Server über ein vollständig
+vertrauenswürdiges LAN hinaus erreichbar ist (z. B. über
+NAT/Portweiterleitung des Routers für Remote-Tests freigegeben) - einfaches
+HTTP bedeutet, dass jedes Bearer-Token, jeder Roboterbefehl und der
+Admin-/Operator-Login selbst im Klartext über das Netzwerk laufen.
+
+Ein Zertifikat besorgen:
+
+- **Sie besitzen eine Domain, die auf diesen Server zeigt** - verwenden
+  Sie [Let's Encrypt](https://letsencrypt.org/) (z. B. über
+  [Certbot](https://certbot.eff.org/)) für ein echtes, browser-
+  vertrauenswürdiges Zertifikat, kostenlos und automatisch erneuerbar.
+  Zeigen Sie `TLS_CERT_PATH` / `TLS_KEY_PATH` auf das resultierende
+  `fullchain.pem` / `privkey.pem`.
+- **Lokale Tests, ohne Domain** - ein selbstsigniertes Zertifikat genügt,
+  um den HTTPS/WSS-Codepfad zu testen (Browser und die meisten
+  HTTP-Clients werden warnen/ein explizites manuelles Vertrauen
+  verlangen, was für Tests erwartet und in Ordnung ist):
+  ```bash
+  openssl req -x509 -newkey rsa:2048 -nodes \
+    -keyout key.pem -out cert.pem -days 365 -subj "/CN=localhost"
+  ```
+  Setzen Sie dann `TLS_CERT_PATH=./cert.pem` und `TLS_KEY_PATH=./key.pem`.

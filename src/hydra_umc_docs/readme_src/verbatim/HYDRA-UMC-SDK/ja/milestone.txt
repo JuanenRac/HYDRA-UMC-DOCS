@@ -1,0 +1,10 @@
+### 最初のマイルストーン
+
+1. `DeviceDescriptor`、`HealthReport`、`SafetyState`、および
+   `UpdateManifest` の JSON スキーマ v1 を公開します。
+2. Python リファレンス クライアントを使用して、有効なフィクスチャと無効なフィクスチャを検証します。
+3. CI にプロデューサー/コンシューマー互換性マトリックスを追加します。
+4. 統合で必要な場合は、Protobuf/OpenAPI 表現を公開します(HYDRA-UMC-SERVER の
+   discovery/auth/fleet/command ルートを対象とする OpenAPI の実際の最初の
+   スライスは完了、Protobuf は未着手)。
+5. 安定した v1 契約を検証する、実際にテスト済みの TypeScript、Go、Rust クライアントを追加します。

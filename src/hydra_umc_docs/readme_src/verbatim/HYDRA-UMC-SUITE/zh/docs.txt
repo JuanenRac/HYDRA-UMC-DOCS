@@ -1,0 +1,2 @@
+- **[docs/ROADMAP.md](docs/ROADMAP.md)** —— 今天哪些是真实且端到端验证过的，哪些是刻意仍未纳入范围的。
+- **[installer/README.md](installer/README.md)** —— 如何构建 Windows `.exe` 安装程序和 Linux `.deb` 软件包。

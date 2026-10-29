@@ -1,0 +1,120 @@
+### 多机器人 3D 控制
+
+同时管理多个独立的 6 自由度机器人，每一个都拥有自己真实的 3D 模型、运动学和点动/轨迹状态。型号选择器（RobotDetail → Config 选项卡）按制造商对所有可用机器人进行分组：
+
+- 🏭 **Source Robotics** —— Parol6、Faze4（网格分别采用 MIT 与 GPL-3.0 许可，参见各型号自身的 `ATTRIBUTION.txt`）
+- 🏭 **Annin Robotics** —— AR3、AR4（MIT 许可网格）
+- 🏭 **Universal Robots** —— UR3e、UR5e、UR10e、UR16e、UR20 —— 官方几何数据、关节限位和连杆运动学直接取自 Universal Robots 自身的 [Universal_Robots_ROS2_Description](https://github.com/UniversalRobots/Universal_Robots_ROS2_Description) 仓库（BSD-3-Clause），涵盖其 e-Series 系列从小到大的负载范围
+- 🏭 **Universal Robots（经典系列）** —— UR3、UR5、UR10 —— e-Series 之前的 CB 系列，官方几何数据/DH 参数取自 Universal Robots 自身的 [universal_robot](https://github.com/ros-industrial/universal_robot) ROS-Industrial 仓库（BSD-3-Clause）
+- 🏭 **UFACTORY** —— xArm6、Lite 6（BSD-3-Clause 许可网格，官方 [xarm_ros2](https://github.com/xArm-Developer/xarm_ros2) 几何数据/运动学）
+- 🏭 **Comau** —— e.DO（BSD-3-Clause 许可网格，官方 [eDO_description](https://github.com/ianathompson/eDO_description) 几何数据/运动学）
+- 🏭 **Kinova** —— Gen3 Lite、Gen2（BSD-3-Clause 许可网格，官方 [ros2_kortex](https://github.com/Kinovarobotics/ros2_kortex) 几何数据/运动学）
+- 🏭 **FANUC** —— M-710iC（BSD-3-Clause 许可网格，官方 [fanuc_m710ic_description](https://github.com/robot-descriptions/fanuc_m710ic_description) 几何数据/运动学）
+- 🏭 **The Robot Studio** —— SO-ARM100，一款 5 自由度（非 6）低成本机械臂（Apache-2.0 许可网格，官方 [SO-ARM100](https://github.com/TheRobotStudio/SO-ARM100) 几何数据/运动学）
+- 🏭 **AgileX** —— PiPER（Apache-2.0 许可网格，官方 [agilex_piper_arm_description](https://github.com/renesas-rdk/agilex_piper_arm_description) 几何数据/运动学）
+- 🏭 **Unitree** —— Z1（BSD-3-Clause 许可网格，通过 Google DeepMind 的 [mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie)——该仓库中每个机器人文件夹均保留其原始制造商许可）
+- 🏭 **Trossen Robotics** —— ViperX 300、WidowX 250（BSD-3-Clause 许可网格，官方 [interbotix_ros_manipulators](https://github.com/Interbotix/interbotix_ros_manipulators) 几何数据/运动学）
+- 🏭 **Koch / Low-Cost Robot Arm** —— Koch v1.1，另一款 5 自由度（非 6）低成本机械臂（Apache-2.0 许可网格，通过 [mujoco_menagerie](https://github.com/google-deepmind/mujoco_menagerie)）
+- ⚙️ **通用** —— 适用于任何没有专属型号的装置的简化双连杆机械臂
+
+也就是横跨 13 家制造商的 24 个真实机器人型号，外加通用占位型号——具体的型号↔制造商↔许可证映射汇总见下方的许可证表。每一个真实型号（除通用型号外的全部）都会为每个连杆加载其实际的 STL 网格几何，并通过该制造商自身真实的关节变换链驱动它——而非风格化的占位符。正向/逆向运动学是针对每个机器人自身真实的几何数据进行计算的（位置采用牛顿-拉夫逊求解，在机器人自身定义了限位的地方使用真实的每关节限位），因此一条已记录的轨迹或一个点动的笛卡尔目标，会像真实的物理机器人那样移动正确的机械臂。Universal Robots 的 5 个 e-Series 型号还共享同一个通用的正向/逆向运动学引擎（`src/examples/urKinematicsShared.ts`）和同一个通用的 3D 装配渲染器（`src/components/3d/URArm.tsx`），因为每一个 UR e-Series 关节都共享完全相同的运动学结构——每个型号之间只有数值上的连杆长度不同。3 个经典 UR 型号（UR3/UR5/UR10）则共享它们自己独立的引擎和渲染器（`src/examples/urClassicKinematics.ts`、`src/components/3d/UrClassicArm.tsx`），因为那一代较早的关节并不像 e-Series 那样都共享一个共同的局部 Z 轴。
+
+每个机器人的点动控制在每根轴上都包含用于**速度**和**加速度**的旋钮 + 滑块，还有完整的限位/状态读数，一旦 CAN-OTA 与真实硬件连通后，还会附带一张实时的“机器人控制器板”状态卡。每个旋钮/滑块都会吸附到其自身组合框中所选的点动**步进**值（0.1° 到 100°/mm），而非连续移动。机器人 **A1** 是一种不同布局的实验性概念验证：其速度/加速度/J1-J6/XYZ 点动控制位于 3D 视口本身上方的一个可拖动浮动面板中（XYZ 面板对应 `Joystick3D.tsx`），而不是所有其他机器人仍在使用的下方面板——参见 `src/components/robots/A1.tsx`。
+
+### 运动大脑阶段
+
+一个专用的控制面板，用于 HYDRA-UMC 主板自身的本地运动子系统——STM32H745 直接驱动的各轴，与 STACK A 上的分布式机器人手臂相独立：
+
+- 📐 **XY 龙门架** X、Y1、Y2（双 Y 龙门架）和 Z 轴的点动控制
+- 🔥 **热床** 控制（SSR 切换，230VAC）
+- 🔄 **ATC 转塔** —— 由 E0 驱动的自动换刀装置的旋转工具索引控制
+- 🎢 **传送带** —— 由 E1 驱动的传输带的安装/运行/速度控制
+- 🛑 完整的 12 路限位开关网格、3 路风扇通道，以及用于流体处理的 10 个泵/10 个阀门
+
+### 配件与机器控制面板
+
+面向机器人单元周边机器与配件的专用面板：**XY 工作台**、**ATC 工具**、**工具架管理器**、**拾取放置**（包括 JuanenPnP/LumenPnP 专属配置）、**CNC**（包括 JuanenCNC 专属配置）、**激光**（包括 JuanenLaser 专属配置）、**真空台**，以及**热床**。
+
+---
+
+### 🧩 可选真空台模型
+
+在真空台菜单中选择六种真实STL模型之一：160 × 120、230 × 210、230 × 250、232 × 217、240 × 240或250 × 250 mm。底座厚15 mm，含定位壁的总高度为16.2 mm。宽度和长度可按5 mm步长调整（10–5000 mm）。仅缩放平面尺寸，厚度保持不变。选择预设模型可恢复原始尺寸。自定义尺寸通过SERVER同步；缩放后的孔和通道仅用于布局显示，并非重新生成的制造用STL。切换型号保留位置、泵和阀门状态；重置选择160 × 120 mm并关闭泵和阀门。旧型号或未知型号ID显示第一个模型。STUDIO和SUITE的两种界面使用相同目录以及机器人配置中的modelId。
+
+[型号、配置与重新生成指南](docs/VACUUM_TABLE_MODELS.md).
+
+### 🔥 加热床模型
+
+四种STL预设：100×100、200×100、200×200和255×255 mm，厚度均为5 mm。宽度和长度可按5 mm步长调整（25–5000 mm）；选择预设会恢复尺寸，但不会改变加热状态。仅供可视化，不是电气或制造设计。
+
+[加热床模型 — STL / OpenSCAD](docs/HEATED_BED_MODELS.md).
+
+### 🗄️ 可配置的 STL 料架
+
+STL 料架：宽度和深度为 40–1000 毫米，以 1 毫米递增；可放置 1–24 块电路板，固定间距为 10 毫米。这些是显示设置，并非机器人标定。
+
+[可配置的 STL 料架 — STL / OpenSCAD](docs/RACK_MODELS.md).
+
+### 🛠️ 独立的机器模型
+
+JuanenPnP、JuanenCNC 和 JuanenLaser 使用独立的 STL 副本，LumenPnP 保留原始模型。请在各自文件夹中编辑模型。显示采用 CAD 尺寸，原有尺寸设置不会拉伸模型。
+
+[独立的机器模型 — STL](docs/MACHINE_ASSETS.md).
+
+这些原创JuanenPNP / HYDRA-UMC模型及其SCAD源文件采用GPL-3.0；它们不是Opulo机器的CAD文件。
+
+### 工作与轨迹
+
+加载预置的示例轨迹，实时点动并记录你自己的点位，或按机器人加载/保存/编辑/回放复杂的多点轨迹（JSON）。轨迹在不同机器人型号之间是可移植的——每一个已记录的点位都会在加载/绘制/播放时通过该特定机器人自身真实的运动学（`src/examples/robotKinematicsDispatch.ts`）进行解析，而不是针对当初记录它的那个机器人被固化，因此同一个轨迹文件能够沿着 Parol6 和 UR10e 各自真实的可达几何正确驱动它们。
+
+### CAN-OTA 固件工具
+
+从一个仪表盘对整条 HYDRA-UMC + URTC CAN-OTA 链进行刷写和自检，提供两个专用入口：
+
+- **URTC → Flasher / Tester** —— 面向 URTC 工具头板及其自身的扩展板（与独立的 [URTC Flasher](https://github.com/JuanenRac/URTC-FLASHER)/[URTC Tester](https://github.com/JuanenRac/URTC-TESTER) 桌面工具自身的协议覆盖范围一致）
+- **HYDRA-UMC → Flasher / Tester** —— 面向机器人控制器板与运动大脑两个层级，全程从 CM5 → SPI → STM32H745 → FDCAN1 → 机器人控制器板 → CAN → URTC 工具头进行中继，无需 JTAG/SWD 探针，也无需 USB-CAN 适配器（完整的寻址/中继设计参见 [HYDRA-UMC 自身的 `docs/architecture.md`](https://github.com/JuanenRac/HYDRA-UMC/blob/main/docs/architecture.md)）
+
+两者都可以直接从 GitHub 下载真实的固件版本（基于 `firmware_manifest.json`，经 CRC32 校验），面向 `URTC` 或 `HYDRA-UMC` 仓库均可。如上所述，在真实的 STM32H745 固件存在于真实硬件上并可供通信之前，传输本身运行于一套完整的内置仿真。
+
+### 手柄支持
+
+支持 USB 和蓝牙控制器集成，具有自定义的按键/轴映射，可在不使用鼠标/键盘的情况下点动机器人和配件。实时操作(关节/工作台点动、E-STOP、START/STOP、回放速度)会触发与机器人详情面板中点动按钮相同的原子 `sendRobotCommand()` 路径,而不是防抖动的设置保存——参见 `GamepadController.tsx`。
+
+### 摄像头集成
+
+最多支持 8 路同步实时画面（USB 视觉或 MLX90640/41/42 系列热成像传感器），并附带录制与推理状态——这正是 HYDRA-UMC 自身双 USB 3.0 集线器子系统所围绕构建的摄像头矩阵。
+
+### 多语言界面
+
+界面完整翻译为**英语、西班牙语、德语、法语、意大利语、简体中文、日语和葡萄牙语**（`src/locales/`），包括应用内带分步指南的帮助菜单、助手、“关于”对话框（版本/作者/许可证）以及系统配置对话框的每个标签页。目前尚未覆盖每个界面的 100%：少数独立的附属面板仍是硬编码的英文。
+
+### 帮助、指南与助手
+
+帮助窗口有一个**分步指南**标签页：每个任务一份指南（添加控制器、移动机器人、记录轨迹、使用摄像头、刷写固件、管理用户、远程访问、安全等），每份都有级别（基础、进阶、技术）、搜索框和一个跳转到执行该任务的界面的按钮。助手**Hydri**是漂浮在仪表板上方的小型动画吉祥物：它讲解你所在的界面，一步步带你完成任务，在不使用服务器和 AI 模型的情况下回答用文字输入的问题（支持全部 8 种语言），可用浏览器自带的语音朗读回答，可拖到任意位置并固定，并可在帮助窗口中开启或关闭。它的偏好保存在浏览器中（`src/assistant/`）。
+
+### ℹ️ 关于与系统配置
+
+两个独立的对话框，均可从头部（`Config`/`About` 按钮）访问：**About** 显示当前运行的应用版本（实时读取自 `GET /api/hydra-info`）、作者和许可证；**Config** 涵盖服务器身份、控制器/节点管理、界面主题 + 语言、机器人重命名、摄像头↔机器人映射（含冲突检测）、自定义 URDF 库、第三方软件集成（OpenPnP/CNC/激光后端）、逐客户端远程访问（SUITE/安卓/iOS 各自独立的开关）、用户账户、每个机器人的工作目录、CAN-OTA 传输，以及手柄映射——每一项都是自己的选项卡。两者都是各自独立的组件（`src/components/About.tsx`、`src/components/Config.tsx`），并未内联到主仪表盘外壳中。
+
+### 可靠性
+
+本应用为自身抵御两类不同的运行时故障，二者都源自一次真实的生产事故（一次重新部署后信息亭屏幕变黑）。`src/main.tsx` 监听 Vite 自身的 `vite:preloadError` 事件——当一个跨越重新部署仍保持打开的浏览器标签页，尝试获取一个通过 `React.lazy()` 加载的面板代码块（`Dashboard.tsx` 中的每个面板，按 `vite.config.ts` 做了内容哈希）、而该代码块在其旧哈希下已不复存在时触发——并自动重新加载一次页面，使长期运行的信息亭标签页或过期的后台标签页在无人察觉的情况下自我修复。一个 `sessionStorage` 保护机制可防止在代码块因其他原因确实缺失时陷入无限重载循环。另外，`src/components/ErrorBoundary.tsx` 包裹了 `<Suspense>` 面板区域，作为其他任何渲染崩溃的后备方案；它按当前活动标签页进行索引，因此切换离开一个已崩溃的面板会真正重试下一个面板，而不会让整个仪表盘卡在回退画面上。
+命令不会静默失败:每个点动、播放、电源、视觉和工具命令都会返回带类型的结果,过期的会话会刷新一次并重试,仍被拒绝的内容会显示在横幅中。红色 **STOP** 按钮是全局的:单击即可,无需确认,一次调用(`POST /api/stop-all`)就会停止所有控制器的所有机器人,并关闭所有阀门和泵。它位于页眉和页脚、机器人面板以及远程控制覆盖层中,也可用 Ctrl+Shift+空格从键盘按下(这个组合键不会被误输入,按住不放时会被忽略)。结果按机器人逐个列出(有机器人未停止或服务器无法保存停止时给出警告;被其他账户预约的机器人会被标出);网络故障会重试一次,超出限制(429)或没有该路由(404)的服务器改用逐个机器人停止,并且“STOP 未确认”的持续警告会一直保留到之后的某次 STOP 得到应答。摇杆点动是按住式的死人开关(指针取消、窗口失焦、标签页隐藏或 8 秒后结束),J1 的移动保持在最接近的等效角度,超过 20 度的点动步长会被拒绝。手柄输入跟随界面中选中的机器人,并限制发送频率。发布版固件在 CAN-OTA 刷写前会用 sha256 校验,引导加载程序镜像为可选项,导入的轨迹和场景在进入共享状态之前会被验证。
+
+对每个客户端而言，谁可以移动机器人以及移动多远，都由服务器决定。机器人可以为提出请求的账户和窗口（每个窗口选定一个控制器 ID）**预留**：同一账户在另一个窗口，或另一个账户，都会被拒绝，并附带说明具体情况的消息（`other-controller`、`other-account`、`controller-id-required`），预留列表来自 `GET /api/claims`，管理员可以接管机器人。点动的大小、绝对点动的范围和热床的最高目标温度从 `GET /api/safety-limits` 读取，而不是保存在应用中；管理员可在 **生态系统 > 安全限制** 中按型号编辑它们，同时可设置可选的点动启用（默认关闭；开启后，按钮会在限定时间内启用点动）和必填的控制器 ID。每个机器人都有一个 **Live / Sim** 开关（默认 Live）：在 Sim 下，该窗口不会发送任何会移动机器人或接通设备的内容，而 STOP 始终有效。包含机械臂无法到达的点的 Work 或示例会被拒绝并列出这些点，也可以改为缩放到该型号的工作范围。 预约列表也会由服务器通过 WebSocket 推送（`claims` 消息，面向请求了 `remoteApiVersion=2` 的连接），因此访问栏会立即显示变化，而不必等下一次轮询；推送到达期间，轮询只偶尔运行。 写入是有条件的:每次写入都带有此窗口最后看到的机器人修订号(`If-Match`),如果期间有其他人修改了机器人,服务器返回 412,机器人会被重新读取,横幅会提示(标准模式检查预约、工作台和一次性命令;严格模式检查除 STOP 外的全部命令;关闭则不检查;STOP 永远不检查)。XY 工作台使用原子的 `table` 命令移动,管理员可在 **生态系统 > 审计记录** 中读取仅追加的审计记录并校验其 SHA-256 链。
+
+### 账户与访问
+
+每个后端在自身首次启动时都会预置一个账户——用户名 `admin`，密码 `admin`——一旦服务器可从完全受信任的局域网之外访问，请立即从 **Config > Users** 修改它。同一个选项卡还允许管理员账户创建额外的**操作员**账户：操作员可以登录、查看实时状态并驱动机器人（点动/播放/暂停/停止/工具/阀门/泵/速度），但不能覆盖全局设置或管理其他账户。仅仅四处浏览并不需要任何账户——登录界面自身的“以只读方式继续”会直接跳转到仪表盘,写入功能被禁用。完整契约（角色、令牌、`/api/users` 路由）记录于 [HYDRA-UMC-SERVER 自身的 `docs/REMOTE_API.md`](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/REMOTE_API.md) 第 2a/2b 节。 在生产环境中，第一个管理员来自部署的引导设置，服务器会拒绝示例密钥（参见 [HYDRA-UMC-SERVER 的 `docs/PRODUCTION_BOOTSTRAP.md`](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/PRODUCTION_BOOTSTRAP.md)）。
+
+5 个远程客户端（SUITE、Android、iOS、Watch、DSI）中的每一个都通过 `X-Hydra-Client` 请求头自我标识，因此 **Config > Remote Access** 可以独立允许或阻止每一个,而不是所有五者共用一个开关。
+
+### 持久化状态
+
+HYDRA-UMC STUDIO 本身是一个纯客户端——除了当前会话在内存中的内容外，它不持有任何自身的状态。所有持久化数据（`settings.json`、`users.json`、`WORKS/` 下保存的轨迹、已提交的模型）都存放在本应用通过网络通信的独立后端 **[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** 上（完整情况参见该项目自身的 `data/` 目录和 README）——状态在页面重新加载或本应用自身重新部署后依然保留,因为这两者都完全不会触碰后端进程。`settings.json` 本身被刻意排除在该后端的静态文件服务之外（它保存控制器 IP、CAN-OTA 配置和每个机器人的完整状态），即便其 `WORKS/` 文件夹是正常提供服务的。
+
+登录只在浏览器标签页存在期间有效:会话及其刷新令牌保存在 `sessionStorage` 中,关闭标签页即结束。登录选项 **在此设备上保持登录** 会改为把它们保存在 `localStorage` 中,重启浏览器后仍然有效(默认关闭)。生产页面带有作为 meta 标签的 Content-Security-Policy(脚本仅来自页面自身,不允许内联脚本和插件);构建时设置 `HYDRA_STUDIO_CSP=off` 可省略它,适用于自行设置响应头的部署,其他任何值都会按原样用作策略。
+
+同一套 `GET`/`POST /api/settings` 契约，加上一个发现端点（`GET /api/hydra-info`）和一个用于实时推送更新的 `WebSocket /ws`，也是外部客户端连接到同一个后端的方式——这正是 [HYDRA-UMC SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE) 能够在网络上发现一个正在运行的 HYDRA-UMC SERVER 实例、读取/修改其状态,并实时看到本应用自身浏览器标签页所做更改的原因（反之亦然）。完整契约见 [HYDRA-UMC-SERVER 自身的 `docs/REMOTE_API.md`](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/REMOTE_API.md)。
+
+`GET /api/system/metrics` 驱动概览仪表盘页脚：CPU 负载和内存使用始终是真实的（Node 自身的 `os` 模块）；在真实的 Raspberry Pi 上运行时,温度读取真实的 `vcgencmd measure_temp` 输出,否则回退为明确标记的模拟值（响应中的 `temp_is_real`）；Wi-Fi/以太网/蓝牙状态读取自 `/sys/class/net`/`/sys/class/bluetooth`（仅限 Linux,在任何其他主机上为 `null`/未知,而非猜测值）。

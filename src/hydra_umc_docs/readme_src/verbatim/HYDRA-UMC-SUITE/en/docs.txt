@@ -1,0 +1,2 @@
+- **[docs/ROADMAP.md](docs/ROADMAP.md)** — what's real and verified end-to-end today versus what's deliberately still out of scope.
+- **[installer/README.md](installer/README.md)** — building the Windows `.exe` installer and the Linux `.deb` package.

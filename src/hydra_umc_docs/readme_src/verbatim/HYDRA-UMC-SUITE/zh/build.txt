@@ -1,0 +1,71 @@
+### 快速开始
+
+### 系统要求
+- Python 3.12+（CI 使用 3.12；本地也在 3.14 上运行）
+- 一台正在运行的 [HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO) 服务器供连接
+
+### 安装
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate      # Windows
+# source .venv/bin/activate   # Linux
+
+pip install -r requirements.txt
+```
+
+### 运行
+
+```bash
+python main.py
+```
+
+以最小 1280x720 的最大化窗口启动（依照本应用自身的设计规范）——随时按 **F11** 在全屏和普通最大化窗口之间切换，因此它绝不会真的把你困住而没有退出方式。使用 **Servers** 面板扫描你的网络，或按地址添加一台 HYDRA-UMC SERVER 服务器。
+
+随时按 **F12** 发送全局 STOP（顶部栏中的 **STOP** 按钮作用相同）。
+
+### 技术栈
+
+- **UI 框架：** PySide6（Qt6）与 Qt Quick（QML）——只有一个界面，没有重新发明自定义停靠框架
+- **3D 渲染：** PyOpenGL（核心配置 GLSL 着色器）+ numpy-stl
+- **网络通信：** `httpx`（REST）+ `websockets`（实时同步），通过 `qasync` 与 Qt 自身的事件循环集成——没有单独的工作线程
+- **数学运算：** NumPy（用于正向运动学的 4x4 齐次变换）
+
+### 构建独立可执行文件
+
+两种途径，结果相同（Windows 上是 `dist/HYDRA-UMC_SUITE.exe`，Linux 上是 `dist/HYDRA-UMC_SUITE`）——无论哪种方式，运行输出都无需安装 Python。
+
+**自动化（推荐）：**
+
+```bash
+build_exe.bat    # Windows
+./build_exe.sh   # Linux
+```
+
+每个脚本都会创建/复用 `.venv`，向其中安装 `requirements.txt` + PyInstaller，清理任何先前的 `build/`/`dist/`，用 PyInstaller 编译（打包 `assets/` 及本应用实际使用的仅 4 个 Qt 插件子文件夹——`platforms`/`styles`/`imageformats`/`iconengines`，而非整个 PySide6 包，这正是让结果保持在数十 MB 而非数百 MB 的原因），并将 `README.md`/`LICENSE`/`docs/` 及可编辑的 `language/*.lng` 文件复制到可执行文件旁边，而不是将它们冻结在其内部。
+
+**等效的手动方式**，如果你想亲自查看/控制每一个步骤（与上述脚本运行的命令相同）：
+
+```bash
+python -m venv .venv
+.venv\Scripts\activate          # Windows
+# source .venv/bin/activate      # Linux
+
+pip install -r requirements.txt
+pip install pyinstaller
+
+python -m PyInstaller --onefile --windowed --noconfirm --name "HYDRA-UMC_SUITE" ^
+    --add-data "assets;assets" ^
+    --add-data "<PySide6 install dir>\plugins\platforms;PySide6\plugins\platforms" ^
+    --add-data "<PySide6 install dir>\plugins\styles;PySide6\plugins\styles" ^
+    --add-data "<PySide6 install dir>\plugins\imageformats;PySide6\plugins\imageformats" ^
+    --add-data "<PySide6 install dir>\plugins\iconengines;PySide6\plugins\iconengines" ^
+    --hidden-import qasync --hidden-import websockets ^
+    --hidden-import PySide6.QtOpenGL --hidden-import PySide6.QtOpenGLWidgets ^
+    --hidden-import OpenGL.platform.win32 ^
+    main.py
+
+# 随后将 README.md、LICENSE、docs/ 及 language/ 复制到 dist/HYDRA-UMC_SUITE.exe 旁边
+```
+
+在 Linux 上（确切的、经过测试的命令见 `build_exe.sh`），使用 `:` 而非 `;` 作为 `--add-data` 分隔符，删除 `OpenGL.platform.win32` 隐式导入（仅限 Windows），删除 `--windowed`，并注意那里的插件路径要深一层嵌套（`<PySide6 目录>/Qt/plugins/platforms` 相对于 Windows 扁平的 `<PySide6 目录>\plugins\platforms`）——这是该 wheel 包自身的打包细节，并非任一脚本自行选择的。仓库根目录下的 `HYDRA-UMC_SUITE.spec` 是 PyInstaller 自身在上一次构建中生成的规范文件——可以安全删除并重新生成，不是手工维护的。

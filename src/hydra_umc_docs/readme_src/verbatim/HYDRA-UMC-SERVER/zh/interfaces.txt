@@ -1,0 +1,17 @@
+### API 与 WebSocket 接口
+
+每一个路由、WebSocket 消息契约、身份验证机制以及逐客户端的远程访问模型，均记录于 **[`docs/REMOTE_API.md`](docs/REMOTE_API.md)** 中——这是与本服务器通信的任何组件（包括 HYDRA-UMC STUDIO 自身的客户端代码）的唯一权威来源。简而言之：
+
+- `/api/*` 下的 REST API——设置读写、原子化机器人指令（点动/播放/暂停/停止/工具/阀门/泵/速度/视觉）、账户管理、工作文件上传/下载、模型提交、系统指标、发现服务。
+- 单一的 `/ws` WebSocket 端点（承载令牌通过 `hydra.bearer` 子协议传递，查询字符串中的令牌会被拒绝，除非安装方重新允许），在状态发生变化时向所有已连接客户端广播完整树形的 `settings` 快照及更轻量的 `delta` 更新。
+- `POST /api/stop-all` 是全局停止:一次调用,向任何已登录账户开放,无论预约如何,都会停止所有机器人并关闭所有阀门和泵,并为每个机器人返回一个结果。
+- 蓝牙 LE(默认关闭):CM5 附近的手机可以读取机器人状态,并在管理员允许时发送命令;服务器只有在网络客户端所用的同一路由作出响应之后才会确认。详见 [`docs/BLE_GATT.md`](docs/BLE_GATT.md)。
+- 每次写入均需 JWT 承载令牌身份验证；三种账户角色（`admin`、`operator`、只读的 `viewer`）分别控制设置/用户管理写入与日常机器人操作的权限。
+- `_hydra._tcp` mDNS/Bonjour 广播，实现局域网内零配置发现，另配有一个纯粹的 `GET /api/hydra-info` 供子网扫描使用。
+- `GET /metrics`——Prometheus 导出格式（`prom-client`），供下文“📊 监控”一节所述的可选 Grafana 仪表盘使用。
+
+CORS 通过一个可配置的白名单（`CORS_ALLOWED_ORIGINS`，见下文“环境变量”）启用，因为本服务器的客户端不再保证与其自身同源。若未设置，在 `NODE_ENV=production` 之外始终保持完全开放（这是当前本地开发下的零配置行为）；在生产环境中，则会拒绝所有跨源浏览器请求，直至设置该白名单为止——完整推理过程见 `src/server.ts` 中 `app.use(cors(corsOptions))` 上方的注释。
+
+### 监控（可选）
+
+`GET /metrics` 以 Prometheus 格式导出进程运行时长、已连接的 WebSocket 客户端数、`settings.json` 写入延迟、按类型统计的原子机器人指令、身份验证失败次数，以及与 `GET /api/system/metrics` 相同的 CPU/内存/温度数据。一套可直接运行的 Prometheus + Grafana 技术栈（附带一个起始仪表盘）位于 **[`monitoring/`](monitoring/README.md)**：在该目录下执行 `docker compose up -d` 即可运行。完全可选——服务器本身的工作并不依赖此处的任何内容。

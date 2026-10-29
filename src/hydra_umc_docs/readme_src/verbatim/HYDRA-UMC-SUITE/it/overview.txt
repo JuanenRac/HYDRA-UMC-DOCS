@@ -1,0 +1,31 @@
+**HYDRA-UMC SUITE** è un'applicazione desktop nativa Windows/Linux (Python
++ PySide6/Qt6) costruita come centro di controllo missione per un'intera
+flotta di controllori [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)
+contemporaneamente - scansiona la rete locale (oppure aggiungine uno
+manualmente, anche tramite un tunnel VPN già connesso verso una HYDRA-UMC
+su una rete fisica diversa), connettiti a quante ne trovi, e
+comanda/monitora/riconfigura in tempo reale ognuna di esse, fianco a
+fianco, da un'unica dashboard industriale a schermo intero.
+
+Parla esattamente lo stesso protocollo di comunicazione esposto da
+[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER) - lo
+stesso backend headless a cui parla anche l'interfaccia browser di
+[HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO), come un
+client qualsiasi - vedi
+[`HYDRA-UMC-SERVER/docs/REMOTE_API.md`](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/REMOTE_API.md)
+per il contratto completo, aggiunto specificamente per supportare questo
+progetto. Una modifica fatta da SUITE compare in tempo reale in una scheda
+del browser aperta, e viceversa - sincronizzazione bidirezionale reale via
+WebSocket, non un'importazione/esportazione una tantum.
+
+**Nota di onestà, in linea con la stessa convenzione di documentazione del
+resto di questo ecosistema:** questo è un primo passaggio reale e
+funzionante, non un prodotto finito. Vedi
+[`docs/ROADMAP.md`](docs/ROADMAP.md) per sapere esattamente cosa è
+genuinamente implementato e verificato end-to-end oggi rispetto a cosa è
+stato deliberatamente escluso dall'ambito per dopo. A partire da questo
+passaggio, ogni modello di robot reale supportato da questo ecosistema ha
+geometria STL reale e cinematica diretta verificata numericamente cablata
+nel viewport 3D (Parol6, Faze4, AR3, AR4, UR3e/5e/10e/16e/20, xArm6,
+Lite 6, e.DO), più un fallback "Generico" costruito con primitive per
+qualsiasi modello privo di un proprio set di mesh.

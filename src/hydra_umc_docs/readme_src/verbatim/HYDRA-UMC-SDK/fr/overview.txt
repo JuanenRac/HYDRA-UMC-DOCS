@@ -1,0 +1,5 @@
+HYDRA-UMC-SDK définit le langage stable partagé par les services HYDRA-UMC,
+clients, adaptateurs CM5 et intégrations URTC. Elle possède des contrats normatifs, un
+validateur de référence Python sans dépendance, des fixtures de conformité et
+un accompagnement pour l'intégration. Il ne remplace pas les API officielles de Raspberry Pi OS, Hailo, ROS 2, MQTT, OPC-UA ou
+MTConnect.

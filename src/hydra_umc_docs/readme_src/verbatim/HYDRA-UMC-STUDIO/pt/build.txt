@@ -1,0 +1,42 @@
+### Requisitos
+- [Node.js](https://nodejs.org/) (v22 ou superior)
+- npm
+- Um back-end **[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** em execução (`npm run dev` lá também, porta por defeito `3000`) - esta app é um cliente puro e não tem com quem comunicar sem ele.
+
+### Instalação
+
+```bash
+npm install
+```
+
+### Modo de desenvolvimento
+
+Executa o servidor de desenvolvimento do próprio Vite (`vite` simples, porta `5173`) com recarga automática. O `server.proxy` de `vite.config.ts` reencaminha de forma transparente `/api`, `/ws` e `/WORKS` para `http://localhost:3000`, pelo que as chamadas fetch/WebSocket de caminho relativo da app chegam ao back-end HYDRA-UMC SERVER sem qualquer configuração de CORS - basta garantir que esse back-end está a correr primeiro:
+- **Windows:** faça duplo clique em `dev.bat` ou execute `npm run dev`
+- **Linux/Mac:** execute `./dev.sh` ou `npm run dev`
+
+### Testes automatizados
+
+```bash
+npm test          # vitest run - testes reais sobre src/examples/, o assistente e as traduções
+npm run typecheck # tsc -b --noEmit (src/) + tsc -p tsconfig.test.json --noEmit (tests/)
+```
+
+Encontrado ao auditar o código: `src/examples/` (a matemática FK/IK de cada um dos 24 modelos de robô reais para os quais `robotKinematicsDispatch.ts` despacha - a fórmula genérica de braço partilhada de `utils.ts`, o motor real de cadeia DH + Newton-Raphson de `urKinematicsShared.ts` partilhado por todos os modelos da família UR, a cadeia real fixa de `parol6Kinematics.ts` e os 23 ficheiros `*Kinematics.ts` por robô) não tinha qualquer cobertura de testes automáticos. Corrigido: `tests/` (novo, Vitest) - a maioria dos testes é uma suite genérica parametrizada sobre a própria tabela de despacho de `robotKinematicsDispatch.ts` em vez de 23 ficheiros à medida quase duplicados, pelo que um robô novo acrescentado a essa tabela fica coberto automaticamente. Em separado: o `npm run typecheck` também era, durante todo esse tempo, um no-op silencioso - o `tsc --noEmit` sozinho contra o `tsconfig.json` raiz em estilo de solução deste repositório (`"files": []`, só `"references"` de projetos) não verifica nada; a correção real exige o modo de construção de projeto (`tsc -b --noEmit`), que de imediato fez surgir 8 erros de tipos reais e já existentes (agora corrigidos) que se vinham acumulando em silêncio, já que a transpilação esbuild/SWC do `vite build` nunca verifica tipos. Veja o [`CHANGELOG.md`](CHANGELOG.md) para o detalhe completo.
+
+### Compilação de produção
+
+Compila para uma versão estática otimizada (`vite build` simples - sem empacotamento de servidor, esta app já não tem código de back-end):
+- **Windows:** faça duplo clique em `build.bat` ou execute `npm run build`
+- **Linux/Mac:** execute `./build.sh` ou `npm run build`
+
+Pré-visualize localmente a versão de produção com:
+```bash
+npm run preview
+```
+
+Implante a pasta `dist/` resultante em qualquer alojamento estático. Por defeito, a app compilada procura o seu back-end no mesmo nome de anfitrião da própria página, na porta `3000` (corresponde à implantação comum "tudo no CM5"); defina `VITE_API_BASE_URL` em tempo de compilação (veja `.env.example`) para a apontar a uma instância do HYDRA-UMC SERVER alojada noutro lado. Todo o estado e dados reais persistem no diretório `data/` desse back-end, não neste repositório.
+
+### Versionamento
+
+O `bump_manifest_version.py` (raiz do repositório) é o único dono tanto de `hydra-umc.project.json` como do campo `version` do `package.json` - o `npm run build` (`vite build`) é deliberadamente só de compilação, para nunca criar divergência entre eles ao subir um e não o outro. O `scripts/bump-version.mjs` é um auxiliar legado só nativo mantido como referência; nada neste repositório o chama já. A versão em execução é visível em direto na caixa **Acerca de** (a versão do Studio é lida do `package.json` da própria app; a versão do servidor mostrada ao lado vem de `GET /api/hydra-info`), e o histórico completo está em [`CHANGELOG.md`](CHANGELOG.md).

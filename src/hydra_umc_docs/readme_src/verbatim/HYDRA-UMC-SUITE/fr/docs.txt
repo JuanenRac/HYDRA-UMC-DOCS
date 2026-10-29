@@ -1,0 +1,2 @@
+- **[docs/ROADMAP.md](docs/ROADMAP.md)** — ce qui est réel et vérifié de bout en bout aujourd'hui, par opposition à ce qui reste délibérément hors périmètre.
+- **[installer/README.md](installer/README.md)** — comment construire l'installateur `.exe` Windows et le paquet `.deb` Linux.

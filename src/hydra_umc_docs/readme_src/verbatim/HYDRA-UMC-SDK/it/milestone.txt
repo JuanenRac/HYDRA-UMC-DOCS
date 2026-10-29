@@ -1,0 +1,10 @@
+### Primo traguardo
+
+1. Pubblicare lo schema JSON v1 di `DeviceDescriptor`, `HealthReport`, `SafetyState` e
+   `UpdateManifest`.
+2. Convalidare le fixture valide e non valide con il client di riferimento Python.
+3. Aggiungere una matrice di compatibilità produttore/consumatore in CI.
+4. Pubblicare rappresentazioni Protobuf/OpenAPI laddove l'integrazione lo richiede
+   (la vera prima porzione OpenAPI, che copre le rotte discovery/auth/fleet/command
+   di HYDRA-UMC-SERVER, è completa; Protobuf resta da fare).
+5. Aggiungere client TypeScript, Go e Rust reali e testati che validano i contratti v1 stabili.

@@ -1,0 +1,8 @@
+Use a verificação de compilação que não altera versões antes de uma compilação de lançamento:
+
+| Ação | Windows | Linux / macOS |
+|---|---|---|
+| Verificação de compilação (sem alterar versão nem CHANGELOG) | `build-test.bat` | `./build-test.sh` |
+| Executar / desenvolvimento (quando existir) | `run*.bat` ou `dev*.bat` | `./run*.sh` ou `./dev*.sh` |
+
+`build-test.bat` e `build-test.sh` compilam ou validam a pilha do projeto sem incrementar `hydra-umc.project.json` nem modificar `CHANGELOG.md`. Podem criar a saída normal do compilador. Os scripts `build*.bat`, `build*.sh`, `run*` e `dev*` existentes mantêm o seu comportamento próprio do projeto, versionado ou de execução; use-os quando esse comportamento for necessário.
