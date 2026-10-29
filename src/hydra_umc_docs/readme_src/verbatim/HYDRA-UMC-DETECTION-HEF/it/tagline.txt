@@ -1,0 +1,1 @@
+📦 Registro di modelli compilati e controllo di caricamento sicuro per modelli Hailo HEF (nessun modello viene ancora compilato o eseguito)

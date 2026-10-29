@@ -1,0 +1,7 @@
+flowchart TB
+    DATA["Telemetria Datalake"] --> FFT["Analisi nel dominio della frequenza (FFT)"]
+    FFT --> AI["Modello di rilevamento anomalie"]
+    AI -- Normale --> LOG["Stato di salute: OK"]
+    AI -- Anomalia --> ALRT["ALLERTA: Potenziale guasto ai cuscinetti"]
+    ALRT --> ORCH["Notifica orchestratore"]
+    ALRT --> REP["Flag report di produzione"]

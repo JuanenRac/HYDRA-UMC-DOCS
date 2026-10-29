@@ -1,0 +1,54 @@
+需要 Python >= 3.10。一个真正基于 FFT 的异常检测，带有 HTTP API，
+而不只是一个能导入的骨架。
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh --port 8097
+
+# Windows
+build.bat
+run.bat --port 8097
+```
+
+`build` 创建/激活本地 `.venv`，以可编辑模式（含 dev 附加项，包括
+`numpy`）安装该包，验证导入，并运行真实的测试套件（`pytest`）。`run`
+启动 HTTP API，并转发任何标志(`--addr`、`--port`、`--sample-rate`、
+`--threshold`、`--baseline-path`、
+`--datalake-url`/`--source-id`/`--kind`/`--field`/`--window-size`)。
+
+另外三个选项，默认都很保守：`--window hann` 在 FFT 之前去除均值并施加汉宁窗(默认的 `none` 是原有行为；数值会不同，所以基线会记住它的窗，检测器拒绝恢复用另一种窗做出的基线，并且在信任 Hann 之前必须用真实的健康记录重新校准 `--threshold`)。从 DATALAKE 读取的训练历史现在分页读取(最旧的先读)，在时间戳间隔不约等于 `1/sample-rate` 的地方切开，并去掉重复的时间戳；在 `--max-train-points` 处停止的读取会明确说明(`--train-start`/`--train-end` 选择范围)。`--token-file`(或 `HYDRA_UMC_ANOMALY_TOKEN`)使 `POST /baseline/fit`、`/drift/init` 和 `/drift/observe` 要求 Bearer 令牌，非回环的 `--addr` 没有令牌会被拒绝。已针对替身测试；从未用真实机器记录测试。
+
+现在拟合出的基线可以在重启后保留下来,也可以直接从 HYDRA-UMC-DATALAKE
+的真实历史数据中拟合,而不必手动粘贴数组:
+
+```bash
+# 将每次拟合持久化到磁盘,并在下次启动时自动恢复
+./run.sh --port 8097 --baseline-path /var/lib/hydra-umc-anomaly-detector/baseline.npz
+
+# 启动时从 DATALAKE 的真实历史数据拟合一个全新的基线,然后将其持久化
+./run.sh --port 8097 --baseline-path baseline.npz \
+  --datalake-url http://127.0.0.1:8095 --source-id motor-1 --kind vibration --field value --window-size 200
+```
+
+```bash
+# 针对已知健康的信号窗口进行校准（浮点数的 JSON 数组，与 --sample-rate 相同的采样率）
+curl -X POST localhost:8097/baseline/fit -d '{"windows": [[...], [...], ...]}'
+
+# 对一个实时窗口按已拟合的 baseline 打分
+curl -X POST localhost:8097/detect -d '{"window": [...]}'
+# -> {"score": 6.3, "anomalous": false, "worstBinFreqHz": 276.0}
+
+curl localhost:8097/stats
+```
+
+```bash
+python -m pytest tests/ -v   # fft.py（正确找到已知正弦波的峰值频率，
+                              # DC 被真正丢弃）、baseline.py（均值/标准差
+                              # 正确，零标准差下限防止真实的除零错误）、
+                              # detector.py（真正的承诺：合成故障信号被
+                              # 标记，看似健康的信号不被标记，具有真实的
+                              # 分离余量，而非临界阈值），以及 api.py
+                              # （通过真实的 ThreadingHTTPServer 的真实
+                              # HTTP 往返测试）
+```

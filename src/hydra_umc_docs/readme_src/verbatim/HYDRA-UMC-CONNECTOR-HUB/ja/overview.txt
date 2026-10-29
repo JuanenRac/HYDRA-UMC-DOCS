@@ -1,0 +1,57 @@
+現在、あるセル/マシンがどのブリッジを使うかの選択と設定は、多くの実
+在するブリッジリポジトリ自身の README、`.env` ファイル、その場しの
+ぎのスクリプトに分散しています。HYDRA-UMC-CONNECTOR-HUB は、任意の実
+在する外部マシンについて 3 つの問いに答える唯一の場所になることを意
+図しています：**どのプロトコルを話すのか、実際に何ができるのか(読み
+取り/書き込み/中止、それぞれどのリスクで)、そしてこのエコシステムの
+どの既存の実在するプロジェクトが既にそれを実装しているのか？**
+
+このバージョンは、計画された 4 件すべてを 6 つの部分で届けます:
+
+1. **本物で固定された契約** ([docs/ADAPTER_MANIFEST.md](docs/ADAPTER_MANIFEST.md)) -
+   このエコシステムの「CONTRATO MINIMO DE
+   ADAPTADOR」であり、既にコードで強制されている譲れないルールを持ち
+   ます: `write`/`abort` 能力は、自身のリスク、必要な権限、必要なセル
+   状態、人による確認の要否、タイムアウトのすべてを宣言しない限り拒否
+   されます。
+2. **本物の CLI バリデーター** (`hydra-umc-connector-hub validate`) -
+   手書きの構造チェック(`jsonschema` 依存なし)であり、すべての実際の
+   エラーが責任のあるアダプター/フィールド/能力を正確に名指しします。
+3. **10 件の実際のフィクスチャ**、このエコシステムに既に存在する実際
+   のブリッジ/プロトコルプロジェクトそれぞれに 1 件ずつ——この契約が
+   理論上のものではないという証拠であり、新しいアダプターマニフェスト
+   の出発点となるテンプレートです。
+4. **本物の読み取り専用カタログ** (`catalog`/`serve-catalog`) - ディ
+   レクトリ内の構造的に有効なすべてのマニフェストを発見し、
+   `serve-catalog` では本物の GET のみの `http.server` 経由でそれを公
+   開します(このプロジェクトのどこにも書き込みルートは存在しません)。
+5. **HYDRA-UMC-SDK 安全ゲートとの本物の統合** (`gate`) -
+   `write`/`abort` 能力呼び出しは SDK 自身の本物の `evaluate_job()` に
+   よってゲートされ、決してそのロジックの第二の実装ではありません。
+   [docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md) を参照してくだ
+   さい。
+6. **本物の認証記録** (`certify`/`certifications`) - 人間が証言し、
+   追記のみの本物の記録であり、アダプター自身の `evidenceSchema` に照
+   らして検証されます。エビデンスを本物のハードウェアに対して独立に検
+   証することがここで明示的に範囲外にとどまる理由については
+   [docs/CERTIFICATION.md](docs/CERTIFICATION.md) を参照してください。
+
+```
+$ hydra-umc-connector-hub validate fixtures/industrial-opcua.json
+VALID fixtures/industrial-opcua.json adapterId='industrial-opcua' ownerProject='HYDRA-UMC-OPCUA-SERVER'
+
+$ hydra-umc-connector-hub catalog --registry-dir fixtures | head -c 200
+{"adapters": [{"adapterId": "cnc-grbl", "protocol": "grbl-serial", ...
+
+$ hydra-umc-connector-hub gate fixtures/cnc-grbl.json --capability grblStatus \
+    --job-id j1 --idempotency-key i1 --source studio --cell-state READY --machine-state IDLE
+{"allowed": true, "reason": "read capabilities are not subject to the motion safety gate", "evidenceErrors": []}
+
+$ hydra-umc-connector-hub certify fixtures/cnc-grbl.json --machine-model "Genmitsu 3018-PROVer" \
+    --certified-by "Juan Enrique" --evidence-file real-status.json --out-dir certifications/
+CERTIFIED adapterId='cnc-grbl' certificationId='...' -> certifications/cnc-grbl__....json
+```
+
+このプロジェクトのどこにもデフォルト/無引数の呼び出しも GUI も存在し
+ません——完全かつ本物のコマンド面については
+[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md) を参照してください。

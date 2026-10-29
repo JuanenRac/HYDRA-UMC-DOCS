@@ -1,0 +1,49 @@
+- **A hand-written validator, not `jsonschema`.** Delivery 1's own
+  contract is small enough (14 top-level fields, one nested capability
+  shape) that a plain Python function collecting real, specific error
+  strings is both simpler than a generic JSON-Schema validator AND
+  produces clearer output - every message names the exact field/index at
+  fault, not a generic schema-path.
+- **The write/abort safety rule is enforced in code, not documentation.**
+  `_WRITE_CAPABILITY_REQUIRED_FIELDS` in `schema.py` is that explicit
+  rule turned into a real, tested check - a
+  manifest author cannot forget it, because the validator rejects a
+  capability that does.
+- **`authenticationRef` is checked as a reference, never trusted as
+  free text.** A closed set of real prefixes (`env:`, `secret-store:`,
+  `vault:`, `none:`) - deliberately not a "looks secret-shaped"
+  heuristic (see HYDRA-UMC-OPS-AGENT's own `log_redaction.py` for why a
+  heuristic is the wrong tool for this exact problem too).
+- **Every error is collected, never just the first one.**
+  `validate_adapter_manifest()` keeps checking after finding a problem -
+  a person fixing a manifest sees every real issue in one run.
+- **The catalog is real and read-only, on purpose.** `registry.py` scans
+  a directory non-recursively (so a nested `fixtures/invalid/` never
+  joins a real catalog), drops - but still reports - anything that fails
+  `validate_adapter_manifest()`, and rejects two files that declare the
+  same `adapterId`. `catalog_server.py` has no `do_POST`/`do_PUT`
+  anywhere - a write attempt gets `BaseHTTPRequestHandler`'s own honest
+  `501`, never a route this project forgot to protect.
+- **The safety gate reuses HYDRA-UMC-SDK's own real logic, never a
+  second implementation of it.** `sdk_gate.py`'s `evaluate_capability_call()`
+  calls straight into `hydra_umc_sdk.bridge_contract.evaluate_job()` for
+  every `write`/`abort` capability - a `read` capability never touches
+  the SDK at all, since `evaluate_job()` is a motion/write gate, not a
+  read gate. See [docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md) for
+  the one deliberate, named simplification this integration makes
+  (a single stand-in `JobPhase` for any non-abort write).
+- **A certification record is honest about what it can and cannot
+  prove.** `certification.py` refuses to save a certification whose
+  evidence does not match the adapter's own `evidenceSchema`, but it
+  never claims to independently verify that evidence came from real
+  hardware - there is no code path anywhere in this project that opens a
+  real serial port/OPC-UA session/MQTT connection to check that. See
+  [docs/CERTIFICATION.md](docs/CERTIFICATION.md).
+- **The ten fixtures name real owner projects, never invented ones.**
+  Every `ownerProject` in `fixtures/*.json` is an actual repository in
+  this ecosystem (see the Related Projects section) - this is a real
+  registry template, not a speculative one.
+- **stdlib only for the core.** `validate`/`catalog`/`serve-catalog`/
+  `certify`/`certifications` need zero dependencies - `json`, plain
+  Python structural checks, and `http.server`. Only `gate` on a
+  `write`/`abort` capability needs the optional `[sdk]` extra.

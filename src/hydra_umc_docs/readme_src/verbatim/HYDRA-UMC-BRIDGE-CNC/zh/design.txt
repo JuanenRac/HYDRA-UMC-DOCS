@@ -1,0 +1,7 @@
+* **为什么先检查急停和门状态,而不是先看控制器自身上报的状态。** `CncSnapshot.machine_state()` 会在检测到 `estop` 或门未关闭时,第一时间短路为 `SAFE_STOP` —— 一个门开着却仍上报 `IDLE` 的控制器,绝不能被照单全收。
+* **为什么控制器状态的映射被刻意设计得保守。** 只有字面字符串 `IDLE` 会被映射为 `MachineState.IDLE`。任何无法识别的值都会回落到 `OFFLINE`,绝不会回落到允许辅助工作的状态 —— 未知的控制器状态被当作"不知道"处理,而不是"大概没问题"。
+* **为什么桥接会构造一个新的 `BridgeJob` 并委托给共享的 `evaluate_job()`,而不是自己编写接受/拒绝逻辑。** 全部五个 External Automation Bridges(CNC、LASER、OPENPNP、PRINTER3D、ROS2)都复用 `HYDRA-UMC-SDK` 中完全相同的 `bridge_contract`,因此"什么才算安全到可以启动任务"不会在它们之间悄悄产生分歧。
+* **为什么 LinuxCNC 和 CNCjs 连接只读取、暂停和恢复。** 控制器始终保留对轨迹、主轴和限位的控制权,程序属于运行它的一方(CNCjs、LinuxCNC 本身):桥接只能让机器停下来,并让已暂停的机器继续,仅此而已。接线真实的 HAL 引脚仍是必须针对真实控制器验证的硬件集成步骤。
+* **它如何融入整个生态系统。** BRIDGE-CNC 位于 CNC 控制器与 `HYDRA-UMC-SDK` → `HYDRA-UMC-MQTT-BROKER` → MCU/单元安全之间:它协调围绕 CNC 的辅助机器人工作,而不会取代或凌驾于控制器自身的安全权限之上。
+
+这些观测辅助函数是证据规范化器,而不是控制器适配器:它们不会打开任何 HAL、串口或网络连接。[Controller Evidence Boundary](docs/CONTROLLER_EVIDENCE_BOUNDARY.md) 定义了进行真实控制器集成之前所需的验证。

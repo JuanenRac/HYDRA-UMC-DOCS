@@ -1,0 +1,3 @@
+O **HYDRA-UMC-JOB-DISPATCHER** é o motor de atribuição de tarefas do Orchestrator. Gere uma fila global de missões, distribuindo trabalhos a cada robô com base na sua disponibilidade atual, localização e ferramenta montada (URTC).
+
+Garante que as tarefas de alta prioridade (p. ex. "Correção urgente de defeito") ultrapassam o fluxo normal de produção, e coordena sequências de montagem de várias etapas que exigem que robôs diferentes trabalhem em conjunto.

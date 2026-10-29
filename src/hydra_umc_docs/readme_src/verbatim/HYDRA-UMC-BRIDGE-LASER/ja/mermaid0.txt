@@ -1,0 +1,4 @@
+flowchart LR
+    LASER["レーザーコントローラー<br/>(状態, キー, エンクロージャー, インターロック)"] --> BRIDGE["BRIDGE-LASER<br/>LaserSafetySnapshot.machine_state()"]
+    BRIDGE -- "BridgeJob + 観測された MachineState" --> SDK["HYDRA-UMC-SDK<br/>evaluate_job()"]
+    SDK -- GateDecision --> RESULT["MQTT: cmd/job/result"]

@@ -1,0 +1,4 @@
+flowchart LR
+    CNC["CNC-Steuerung / HAL<br/>(Zustand, E-STOP, Tür)"] --> BRIDGE["BRIDGE-CNC<br/>CncSnapshot.machine_state()"]
+    BRIDGE -- "BridgeJob + beobachteter MachineState" --> SDK["HYDRA-UMC-SDK<br/>evaluate_job()"]
+    SDK -- GateDecision --> RESULT["MQTT: cmd/job/result"]

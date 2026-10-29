@@ -1,0 +1,60 @@
+Aujourd'hui, choisir et configurer quel bridge utilise une cellule/
+machine donnée est réparti entre des README, des fichiers `.env` et des
+scripts ad hoc dans de nombreux dépôts de bridges réels.
+HYDRA-UMC-CONNECTOR-HUB est destiné à devenir l'unique endroit qui
+répond, pour toute machine externe réelle, à trois questions : **quel
+protocole parle-t-elle, que peut-elle vraiment faire (lire/écrire/
+avorter, avec quel risque), et quel projet réel déjà existant de cet
+écosystème l'implémente déjà ?**
+
+Cette version expédie les quatre livraisons prévues, en six parties :
+
+1. **Un contrat réel et fixe** ([docs/ADAPTER_MANIFEST.md](docs/ADAPTER_MANIFEST.md)) -
+   le "CONTRATO MINIMO DE ADAPTADOR" de cet écosystème,
+   avec une règle non négociable déjà appliquée en code : une capacité
+   `write`/`abort` est rejetée à moins qu'elle ne déclare aussi son
+   propre risque, la permission requise, l'état de cellule requis,
+   l'exigence de confirmation humaine et le délai d'expiration.
+2. **Un vrai validateur CLI** (`hydra-umc-connector-hub validate`) - une
+   vérification structurelle écrite à la main (sans dépendance
+   `jsonschema`), afin que chaque erreur réelle nomme exactement
+   l'adaptateur/champ/capacité en cause.
+3. **Dix vraies fixtures**, une par projet de bridge/protocole déjà
+   existant dans cet écosystème - la preuve que le contrat n'est pas
+   théorique, et un modèle de départ pour un nouveau manifeste
+   d'adaptateur.
+4. **Un vrai catalogue en lecture seule** (`catalog`/`serve-catalog`) -
+   découvre chaque manifeste structurellement valide d'un répertoire et,
+   avec `serve-catalog`, l'expose via un vrai `http.server` uniquement
+   GET (aucune route d'écriture n'existe nulle part dans ce projet).
+5. **Une vraie intégration avec la barrière de sécurité de
+   HYDRA-UMC-SDK** (`gate`) - un appel de capacité `write`/`abort` est
+   arbitré par le propre `evaluate_job()` réel du SDK, jamais une
+   seconde implémentation de cette logique ; voir
+   [docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md).
+6. **De vrais registres de certification** (`certify`/`certifications`)
+   - un journal réel, attesté par un humain et uniquement en ajout,
+   vérifié contre le propre `evidenceSchema` d'un adaptateur ; voir
+   [docs/CERTIFICATION.md](docs/CERTIFICATION.md) pour comprendre
+   pourquoi vérifier la preuve de façon indépendante contre du matériel
+   réel reste explicitement hors périmètre ici.
+
+```
+$ hydra-umc-connector-hub validate fixtures/industrial-opcua.json
+VALID fixtures/industrial-opcua.json adapterId='industrial-opcua' ownerProject='HYDRA-UMC-OPCUA-SERVER'
+
+$ hydra-umc-connector-hub catalog --registry-dir fixtures | head -c 200
+{"adapters": [{"adapterId": "cnc-grbl", "protocol": "grbl-serial", ...
+
+$ hydra-umc-connector-hub gate fixtures/cnc-grbl.json --capability grblStatus \
+    --job-id j1 --idempotency-key i1 --source studio --cell-state READY --machine-state IDLE
+{"allowed": true, "reason": "read capabilities are not subject to the motion safety gate", "evidenceErrors": []}
+
+$ hydra-umc-connector-hub certify fixtures/cnc-grbl.json --machine-model "Genmitsu 3018-PROVer" \
+    --certified-by "Juan Enrique" --evidence-file real-status.json --out-dir certifications/
+CERTIFIED adapterId='cnc-grbl' certificationId='...' -> certifications/cnc-grbl__....json
+```
+
+Il n'existe ni invocation par défaut/sans argument ni GUI nulle part
+dans ce projet - voir [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)
+pour la surface de commandes complète et réelle.

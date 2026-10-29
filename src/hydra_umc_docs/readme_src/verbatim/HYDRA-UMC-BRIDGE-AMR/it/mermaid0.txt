@@ -1,0 +1,6 @@
+flowchart LR
+    BRIDGE["BRIDGE-AMR<br/>AmrCoordinator.dispatch()"] -- "VDA 5050 (MQTT)" --> AMR["Flotta AGV / AMR<br/>(Wi-Fi / 4G-5G)"]
+    AMR -- "state / connection" --> BRIDGE
+    BRIDGE -- "FrameTransform" --> LOCAL["x/y locale dell'AMR"]
+    BRIDGE -- BridgeJob --> SDK["HYDRA-UMC-SDK<br/>evaluate_job()"]
+    SDK -- GateDecision --> BRIDGE

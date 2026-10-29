@@ -1,0 +1,7 @@
+flowchart TB
+    DATA["Datalake Telemetry"] --> FFT["Frequency Domain Analysis (FFT)"]
+    FFT --> AI["Anomaly Detection Model"]
+    AI -- Normal --> LOG["Health Status: OK"]
+    AI -- Anomaly --> ALRT["ALERT: Potential Bearing Failure"]
+    ALRT --> ORCH["Orchestrator Notification"]
+    ALRT --> REP["Production Report Flag"]

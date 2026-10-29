@@ -1,0 +1,69 @@
+Dieses Repository ist der **Eltern-/Integrationspunkt** der Cognitive AI
+Node-Familie. Es führt selbst kein Modell aus - es besitzt die
+gemeinsamen Ressourcen und die Verdrahtung, die es seinen vier Kindern
+ermöglichen, als eine kognitive Einheit auf derselben physischen Platine
+zu agieren:
+
+* **Warum dieser Knoten keine eigene Hardware/Firmware hat.** Anders als
+  die Firmware auf Motherboard-Ebene von HYDRA-UMC läuft dieser Knoten
+  vollständig auf einem bereits vorhandenen Raspberry Pi CM5 + Hailo-10
+  M.2-Modul - es gibt hier keine eigene Leiterplatte oder einen eigenen
+  Mikrocontroller zu entwerfen, daher wurden die Ordner
+  `hardware/`/`firmware/` entfernt, statt sie leer zu lassen.
+* **Warum `os/` und `models/` nur im Elternteil liegen.** Das
+  HydraOS-Image und die quantisierten LLM/VLA-Gewichte sind gemeinsam
+  genutzte Ressourcen auf Platinenebene - eine einzige Kopie im
+  Elternteil zu behalten und sie schreibgeschützt in jeden
+  Kind-Container zu mounten (siehe `docker-compose.yml`) vermeidet vier
+  abweichende Kopien mehrere Gigabyte großer Modellgewichte.
+* **Warum ein `src/`-Layout.** Trennt das installierbare Paket
+  (`hydra_umc_cognitive_node`) vom Tooling im Repo-Root
+  (`bump_version.py`, `docker-compose.yml`) und entspricht dem Layout
+  aller anderen Python-Projekte im Ökosystem.
+* **Warum der Einstiegspunkt heute nur Identität/Version/Rolle
+  ausgibt.** Dies ist die Andamiaje- (Gerüst-) Phase: zu beweisen, dass
+  sich das Paket auf der tatsächlichen Ziel-Python-Version sauber
+  installieren, kompilieren und importieren lässt, ist Voraussetzung,
+  bevor echte LLM/VLA/Sprach-Orchestrierungslogik hinzugefügt wird, und
+  hält diese spätere Arbeit von Packaging-Fragen getrennt.
+* **Warum `docker-compose.yml` den Integrationsvertrag dokumentiert,
+  nicht nur Images verdrahtet.** Zu entscheiden, welcher Dienst von
+  welchem abhängt und welche Geräte-/Volume-Mounts jeder benötigt, wurde
+  festgehalten, bevor irgendein Kind ein Dockerfile hatte - so wurde
+  verhindert, dass diese Form später ad hoc erfunden wird. Alle 4 Kinder
+  (VLA-Engine, Voice-UI, Semantic-Planner, Docs-QA) haben inzwischen ein
+  echtes eigenes Dockerfile - schließt eine echte Lücke -
+  `docker compose up` baut und startet jetzt das echte Ding.
+* **Wie sich das in den Rest des Ökosystems einfügt.** Dieser Knoten
+  sitzt eine Schicht über der Wahrnehmung (HYDRA-UMC-VISION-NODE,
+  Hailo-8) und eine Schicht unter der Missionsorchestrierung
+  (HYDRA-UMC-ORCHESTRATOR): Er wandelt Sprach-/Textanweisungen und
+  Erkennungen in semantische Entscheidungen um, die der Orchestrator
+  anschließend in physische Roboterbefehle umsetzt.
+* **Warum `family-status` das eigene Manifest jedes Kindes liest, statt
+  einer von Hand gepflegten Liste.** `hydra-umc.project.json` ist bereits
+  die einzige Quelle der Wahrheit, der das ökosystemweite Dashboard und
+  der Updater vertrauen - eine zweite
+  Liste hier würde in dem Moment auseinanderdriften, in dem sich der
+  echte Reifegrad eines Kindes ändert und niemand daran denkt, sie zu
+  aktualisieren.
+* **Warum ein fehlendes Geschwister-Checkout ein echtes, ehrliches
+  "nicht gefunden" ist, kein Fehler.** Ein Integrations-Hub weiß
+  wirklich nicht, ob ein Entwickler alle vier Kinder lokal ausgecheckt
+  hat - `manifest.py` gibt für jeden echten Fehlerfall (fehlendes Repo,
+  fehlendes Manifest, fehlerhaftes JSON) `None` zurück, sodass
+  `family-status` dies klar meldet, statt abzustürzen.
+* **Warum Manifest-Lesevorgänge von Geschwistern auf 64 KiB begrenzt
+  sind.** Jedes echte Manifest in diesem Ökosystem ist einige hundert
+  Byte bis wenige KiB groß - ein beschädigtes oder manipuliertes
+  Checkout, dessen Manifest durch eine überdimensionierte Datei ersetzt
+  wurde, darf eine routinemäßige Bereitschaftsprüfung niemals dazu
+  bringen, eine unbegrenzte Menge an Daten in den Speicher zu laden. Es
+  degradiert zu `None`, genau wie jedes andere fehlerhafte Manifest.
+* **Warum `family-status` `models/` meldet, obwohl dieser Knoten selbst
+  kein Modell ausführt.** "Die Geschwister-Repos sind ausgecheckt" und
+  "die gemeinsam genutzten Gewichte, die sie bräuchten, sind tatsächlich
+  vorhanden" sind zwei unterschiedliche echte Fakten -
+  `check_shared_models()` in `models.py` prüft den zweiten ehrlich (leer,
+  aber vorhanden zählt als fehlend), statt einen Betreiber allein aus der
+  Präsenz der Kinder auf Bereitschaft schließen zu lassen.

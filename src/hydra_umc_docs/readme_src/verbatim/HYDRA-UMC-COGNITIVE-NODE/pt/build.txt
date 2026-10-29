@@ -1,0 +1,112 @@
+Requer o Python >= 3.10.
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # cria o .venv, instala o pacote (editável), verifica a importação
+./run.sh     # executa o ponto de entrada
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` nunca altera a versão (só `python tools/hydra_project_tool.py bump` a sobe) e executa a suite de testes real
+(`pytest tests/`). Saída esperada de um `run.sh` simples:
+
+```text
+HYDRA-UMC-COGNITIVE-NODE v{version}
+Semantic reasoning & GenAI edge node (Hailo-10) - integrates VLA-Engine, Voice-UI, Semantic-Planner and Docs-QA into one cognitive node.
+```
+
+Veja o `docker-compose.yml` para saber como os quatro serviços filhos (VLA-Engine,
+Voice-UI, Semantic-Planner, Docs-QA) se ligam a este nó - cada um traz agora
+o seu Dockerfile real.
+
+O subcomando real `family-status` verifica os filhos reais numa cópia
+local real:
+
+```bash
+./run.sh family-status
+./run.sh family-status --workspace /path/to/some/other/checkout
+./run.sh family-status --json
+
+# Windows
+run.bat family-status
+```
+
+O `family-status` reporta sempre também os pesos de modelos partilhados deste nó
+- um `models/` real e vazio numa máquina de desenvolvimento é honestamente `MISSING`,
+nunca ignorado em silêncio:
+
+```text
+Cognitive AI Node family status (workspace: /path/to/workspace):
+  HYDRA-UMC-VLA-ENGINE: v0.1.8, maturity=functional, role=service
+  ...
+
+Shared model weights: MISSING (.../HYDRA-UMC-COGNITIVE-NODE/models) - this node's own os/models weights have not been provisioned on this machine; children that need them will run in their own honest degraded/no-hardware mode.
+
+All 4 children present.
+```
+
+O `--json` imprime os mesmos dados reais como um objeto versionado e
+legível por máquina:
+
+```bash
+$ ./run.sh family-status --json
+{
+  "schema_version": "1.0",
+  "shared_models": { "present": false, "path": ".../models" },
+  "children": [
+    { "name": "HYDRA-UMC-VLA-ENGINE", "present": true, "version": "0.1.8", "maturity": "functional", "role": "service" },
+    ...
+  ],
+  "all_children_present": true
+}
+```
+
+Por omissão usa o diretório pai deste próprio repositório - a estrutura que todas as
+cópias reais deste ecossistema já usam (todos os repositórios como irmãos numa
+só pasta de trabalho). Termina com `1` se algum filho real estiver em falta.
+
+### 🌐 API HTTP (`serve`)
+
+O `serve` executa essa mesma verificação `family-status` como um pequeno
+`http.server` da biblioteca padrão em vez de uma chamada única da CLI - é o comando que a
+unidade systemd `hydra-umc-cognitive-node.service` do próprio CM5 está configurada
+para executar:
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8096
+# GET /family-status  -> o mesmo JSON que o `family-status --json` imprime acima
+# GET /stats          -> { "status": "ok" }
+```
+
+O `GET /family-status` analisa o workspace fixado no arranque do serviço (`--workspace`, `--models-dir` ou `HYDRA_UMC_COGNITIVE_NODE_WORKSPACE` / `HYDRA_UMC_COGNITIVE_NODE_MODELS_DIR`) e responde `400` se um pedido tentar escolher outro; qualquer outro
+caminho devolve `404`. Veja a [Referência da CLI](docs/CLI_REFERENCE.md) para a
+referência completa de comandos: cada opção, saída real capturada de `-h`/`curl` e
+a tabela de códigos de saída.
+
+### 🩺 Resolução de problemas
+
+* **`python: command not found` / a compilação falha no passo 1.** Requer o
+  Python >= 3.10 no `PATH`. No Windows, instale a partir de
+  [python.org](https://python.org) e confirme que "Add to PATH" ficou
+  marcado durante a instalação; `python3` é o nome habitual no Linux/macOS.
+* **O `build.sh` falha ao ativar o venv.** O `python3 -m venv .venv`
+  dispõe o script de ativação de forma diferente por plataforma:
+  `.venv/bin/activate` no Linux/macOS, `.venv/Scripts/activate` no
+  Windows (incluindo um venv de Python do Windows usado a partir do Git Bash). O `build.sh`
+  já verifica ambos os caminhos - se ainda assim falhar, apague o `.venv/` e
+  volte a executar `./build.sh` para o reconstruir de raiz.
+* **O `pip install -e .` falha.** Normalmente um `.venv/` obsoleto. Apague a
+  pasta `.venv/` e volte a executar `./build.sh`/`build.bat` para a recriar.
+* **O `import OK` nunca aparece.** Significa que o próprio `python -c "import
+  hydra_umc_cognitive_node"` falhou - volte a executar com o venv ativo
+  para ver o traceback real (uma edição quebrada do `pyproject.toml` é a causa habitual
+  depois de uma fusão manual).
+* **O `docker compose up` não consegue arrancar o `voice-ui`.** O seu próprio contentor
+  recusa-se a ligar para lá do loopback sem um `HYDRA_UMC_VOICE_UI_TOKEN` real
+  (por desenho - veja o comentário do próprio `docker-compose.yml`); defina-o num
+  ficheiro `.env` real ou no seu gestor de segredos, nunca faça commit de um. Executar cada
+  serviço diretamente com o seu próprio `run.sh`/`run.bat` durante o desenvolvimento
+  não precisa desse token, já que o `--host` aí fica em loopback.

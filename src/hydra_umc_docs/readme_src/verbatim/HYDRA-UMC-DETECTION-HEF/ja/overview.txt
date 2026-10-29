@@ -1,0 +1,9 @@
+**HYDRA-UMC-DETECTION-HEF** は、**Hailo Executable Format（HEF）** に
+コンパイルされた高性能ニューラルネットワークモデルの厳選されたライブラリ
+とツールチェーンとなることを目指しており、産業用マイクロファクトリー
+環境（電子部品組立、SMD 実装、工具ヘッド検証）向けに調整されています。
+
+これは、ファミリーの統合親プロジェクトである
+**[HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE)** の 4 つの子プロジェクトの 1 つです：本プロジェクトはモデルのコンパイルとバージョン管理のみを担当します——実際に配信され実行される `.hef` モデルのコピーは、Hailo-8 デバイスハンドルを保持する親プロジェクトによってロードおよび実行され、本プロジェクト自体は行いません。
+
+モデルのコンパイル（ONNX から Hailo Dataflow Compiler を経て `.hef` へ）は、Dataflow Compiler をインストールした x86_64 Linux ホストと量子化用のキャリブレーションデータセットで行い、Hailo-8 自体は必要ありません。コンパイル済みモデルを実行するときだけアクセラレーターが必要です。`registry load` と `GET /registry/load` は曖昧なレジストリ（同じ名前とバージョンで異なるファイル）を拒否し、デバイスが報告するとおりのアーキテクチャ（`HAILO8`）を受け付け、`--version` / `?version=` で正確なバージョンを固定できます。`registry add` は直列化されており、同時に追加しても項目が失われません。ボード上のモデルは `/opt/hydra-umc/detection-hef/models` にあります。

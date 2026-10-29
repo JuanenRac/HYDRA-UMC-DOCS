@@ -1,0 +1,65 @@
+Este repositorio es un **hijo** de la familia Cognitive AI Node - su
+padre, [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+posee la imagen HydraOS compartida y los pesos de modelos cuantizados, y
+conecta este servicio en su `docker-compose.yml` junto a sus tres
+hermanos (VLA-Engine, Voice-UI, Semantic-Planner):
+
+* **Por qué este hijo no tiene hardware/firmware/`os/`/`models/`
+  propios.** Corre por completo sobre el módulo CM5 + Hailo-10 M.2 que ya
+  posee el padre - centralizar los pesos de modelos y la imagen HydraOS
+  en un solo lugar evita cuatro copias divergentes de varios gigabytes
+  dentro de la familia.
+* **Por qué una estructura `src/`.** Mantiene el paquete instalable
+  (`hydra_umc_docs_qa`) separado del tooling en la raíz del repo
+  (`bump_version.py`), igual que el resto de proyectos Python del
+  ecosistema.
+* **Por qué la invocación desnuda (sin subcomando) sigue imprimiendo solo
+  identidad/versión/rol.** Ese fue el comportamiento original de la
+  etapa de andamiaje, demostrando que el paquete se instala, compila e
+  importa correctamente antes de que existiera ninguna lógica real - hoy
+  sigue siendo el comportamiento por defecto como comprobación rápida de
+  "esto está realmente instalado y funciona", junto a los subcomandos
+  reales `query` (búsqueda TF-IDF) y `serve` (API JSON/HTTP) para los que
+  ese andamiaje era un requisito previo.
+* **Cómo encaja en el resto del ecosistema.** Este asistente fundamenta
+  sus respuestas en la documentación propia del ecosistema, dando a su
+  hermano HYDRA-UMC-SEMANTIC-PLANNER una fuente de conocimiento técnico
+  que puede consultar durante el razonamiento, y ofreciendo a los
+  técnicos in-situ soporte manos-libres junto a HYDRA-UMC-VOICE-UI.
+* **Por qué la recuperación de `index.py` es TF-IDF real, no un modelo de
+  embeddings.** La búsqueda semántica basada en embeddings necesita una
+  dependencia real de modelo (idealmente el propio Hailo-10 que ya
+  menciona este README) - un índice TF-IDF/similitud coseno puro en
+  stdlib es real, testeable, y no necesita nada más allá del propio
+  Python, dando a este proyecto un núcleo de recuperación funcional hoy
+  que un futuro índice basado en embeddings puede sustituir detrás del
+  mismo contrato `search()`, sin tocar la CLI ni el paso de ingesta.
+* **Por qué una consulta sin coincidencias devuelve un fallo honesto, no
+  una respuesta de respaldo.** v0 no tiene paso de síntesis por LLM - una
+  pregunta cuyas palabras no coinciden con el corpus ingerido recibe
+  `No relevant passages found` (ver `main.py`), nunca una respuesta
+  inventada o alucinada disfrazada de resultado real de recuperación.
+* **Por qué una ruta `--docs` no permitida se rechaza, en vez de
+  omitirse o ingerirse silenciosamente.** Un asistente de QA que se
+  supone "fundamentado en la documentación propia del ecosistema" no
+  debe leer y citar en silencio cualquier archivo al que apunte quien lo
+  invoque - una ruta inexistente o un archivo que no es Markdown (un
+  `.env` suelto, un binario de firmware) recibe una línea real y
+  distinta `REJECTED ... : <motivo>` (ver `validate_doc_path` en
+  `ingest.py`) en vez de un "no se encontró nada" agregado que oculta
+  *por qué*.
+* **Por qué la similitud coseno ordena los términos compartidos antes
+  de sumarlos.** `dict.keys() & dict.keys()` es un conjunto (set), y el
+  orden de iteración de los sets en CPython depende de la
+  aleatorización del hash de cadenas por proceso - sumar términos de
+  punto flotante en ese orden haría que una puntuación dependiera de
+  qué proceso ejecutó la consulta, no solo del corpus y del texto de la
+  consulta. Ordenar primero hace que la puntuación sea una función pura
+  y reproducible de sus entradas reales.
+* **Por qué las citas llevan un `#index`, no solo un nombre de
+  archivo.** Un nombre de archivo por sí solo no puede desambiguar dos
+  secciones que comparten un encabezado (o, más adelante, dos archivos
+  ingeridos que comparten nombre) - `DocChunk.index` es la posición
+  ordinal real de cada fragmento dentro de su propia fuente, dando a
+  cada cita una clave estable que quien la use puede emplear para
+  recuperar de forma determinista el mismo pasaje.

@@ -1,0 +1,8 @@
+flowchart LR
+    REQ["Nuova richiesta di missione"] --> Q["Coda missioni globale"]
+    Q --> SCHED["Pianificatore Dispatcher"]
+    DB[("Registro strumenti e robot")] --> SCHED
+    SCHED --> R1["Robot A (PnP)"]
+    SCHED --> R2["Robot B (Laser)"]
+    R1 -- Successo/Fallimento --> SCHED
+    SCHED -.-> LOG["Report di produzione (pianificato)"]

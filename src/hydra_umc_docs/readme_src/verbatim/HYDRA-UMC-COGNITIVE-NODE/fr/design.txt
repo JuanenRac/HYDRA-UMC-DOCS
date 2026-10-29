@@ -1,0 +1,68 @@
+Ce dépôt est le **point parent/d'intégration** de la famille Cognitive AI
+Node. Il n'exécute aucun modèle lui-même - il détient les ressources
+partagées et le câblage qui permettent à ses quatre enfants d'agir comme
+une seule unité cognitive sur la même carte physique :
+
+* **Pourquoi ce nœud n'a pas de matériel/firmware propre.** Contrairement
+  au firmware au niveau de la carte mère HYDRA-UMC, ce nœud fonctionne
+  entièrement sur un module Raspberry Pi CM5 + Hailo-10 M.2 déjà
+  existant - il n'y a aucun PCB ou microcontrôleur propre à concevoir
+  ici, donc les dossiers `hardware/`/`firmware/` ont été supprimés
+  plutôt que laissés vides.
+* **Pourquoi `os/` et `models/` ne vivent que dans le parent.** L'image
+  HydraOS et les poids LLM/VLA quantifiés sont des ressources partagées
+  au niveau de la carte - garder une seule copie dans le parent et la
+  monter en lecture seule dans chaque conteneur enfant (voir
+  `docker-compose.yml`) évite quatre copies divergentes de poids de
+  plusieurs gigaoctets.
+* **Pourquoi une structure `src/`.** Sépare le paquet installable
+  (`hydra_umc_cognitive_node`) de l'outillage à la racine du dépôt
+  (`bump_version.py`, `docker-compose.yml`), conformément au reste des
+  projets Python de l'écosystème.
+* **Pourquoi le point d'entrée se contente d'afficher
+  identité/version/rôle aujourd'hui.** C'est l'étape d'échafaudage :
+  prouver que le paquet s'installe, se compile et s'importe correctement
+  - sur la version Python cible réelle - est un prérequis avant d'ajouter
+  une vraie logique d'orchestration LLM/VLA/vocale, et isole ce travail
+  ultérieur des préoccupations d'empaquetage.
+* **Pourquoi `docker-compose.yml` documente le contrat d'intégration, pas
+  seulement le câblage des images.** Décider quel service dépend de quel
+  autre et quels montages de périphérique/volume chacun nécessite a été
+  écrit avant qu'aucun enfant n'ait de Dockerfile - évitant que cette
+  forme soit inventée plus tard de manière improvisée. Les 4 enfants
+  (VLA-Engine, Voice-UI, Semantic-Planner, Docs-QA) ont maintenant chacun
+  leur propre vrai Dockerfile, comblant un vrai manque -
+  `docker compose up` construit et exécute la vraie chose.
+* **Comment cela s'intègre dans le reste de l'écosystème.** Ce nœud se
+  situe une couche au-dessus de la perception (HYDRA-UMC-VISION-NODE,
+  Hailo-8) et une couche en dessous de l'orchestration de mission
+  (HYDRA-UMC-ORCHESTRATOR) : il transforme les instructions vocales/
+  textuelles et les détections en décisions sémantiques, que
+  l'orchestrateur transforme ensuite en commandes physiques pour les
+  robots.
+* **Pourquoi `family-status` lit le manifeste propre de chaque enfant
+  plutôt qu'une liste tenue à la main.** `hydra-umc.project.json` est déjà
+  la source unique de vérité en laquelle le tableau de bord et l'updater
+  de tout l'écosystème ont confiance -
+  une seconde liste ici dériverait dès qu'un enfant changerait réellement
+  de maturité sans que personne ne pense à la mettre à jour.
+* **Pourquoi un enfant sans checkout local est un « non trouvé » réel et
+  honnête, pas une erreur.** Un hub d'intégration ne sait réellement pas
+  si un développeur a cloné localement les quatre enfants -
+  `manifest.py` renvoie `None` pour chaque échec réel (dépôt absent,
+  manifeste absent, JSON malformé) afin que `family-status` le signale
+  clairement plutôt que de planter.
+* **Pourquoi les lectures de manifeste d'un frère sont plafonnées à
+  64 Kio.** Chaque manifeste réel de cet écosystème pèse de quelques
+  centaines d'octets à quelques Kio - un checkout corrompu ou malveillant
+  dont le manifeste aurait été remplacé par un fichier surdimensionné ne
+  doit jamais faire charger en mémoire une quantité illimitée de données
+  par un simple contrôle de disponibilité de routine. Il se dégrade en
+  `None`, comme tout autre manifeste malformé.
+* **Pourquoi `family-status` signale `models/` alors que ce nœud
+  n'exécute lui-même aucun modèle.** « Les dépôts frères sont clonés »
+  et « les poids partagés dont ils auraient besoin sont réellement
+  présents » sont deux faits réels distincts - `check_shared_models()`
+  de `models.py` vérifie honnêtement le second (vide mais présent compte
+  comme manquant) plutôt que de laisser un opérateur présumer de la
+  disponibilité à partir de la seule présence des enfants.

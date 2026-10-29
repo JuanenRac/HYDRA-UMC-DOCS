@@ -1,0 +1,57 @@
+Python >= 3.10 が必要です。
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # .venv を作成し、パッケージを（editable モードで）インストールし、インポートを検証します
+./run.sh     # エントリポイントを実行します
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` はバージョンを変更せず（上げるのは `python tools/hydra_project_tool.py bump` だけです）、実際のテストスイートを
+実行します（`pytest tests/`）。引数なしの `run.sh` の予期される出力：
+
+```text
+HYDRA-UMC-DOCS-QA v{version}
+Docs-QA (Hailo-10) - retrieval-augmented technical assistant grounded in the ecosystem's own documentation.
+```
+
+実際の `query` サブコマンドは取り込まれた Markdown を検索します——
+`--docs` が指定されない場合、デフォルトで本リポジトリ自身の
+`README.md`/`CHANGELOG.md` を使用し、`--docs` で任意の実際のファイルを
+渡すこともできます：
+
+```bash
+./run.sh query "CAN バス配線" --top-k 3
+./run.sh query "ベクトル検索 リトリーバル" --docs docs/manual.md docs/spec.md
+
+# Windows
+run.bat query "CAN バス配線" --top-k 3
+```
+
+取り込まれたコーパスと単語が重ならない質問には、正直な
+`No relevant passages found` が表示されます——v0 は実際の語彙検索であり、
+生成的な回答ではありません。
+
+すべての結果は `source#index`（例：`manual.md#1`）を引用します——その正確なチャンクへの安定した、追跡可能なポインタです。存在しない、または `.md`/`.markdown` ではない `--docs` パスは、黙って無視されるのではなく、拒否されて報告されます：
+
+```text
+$ ./run.sh query "firmware flashing" --docs manual.md ghost.md secret.env
+REJECTED ghost.md: file not found (no source)
+REJECTED secret.env: disallowed extension .env - only .markdown, .md are ingested
+Top 1 passage(s) for: "firmware flashing"
+
+1. [0.289] manual.md#1 - Firmware Flashing
+   Flash URTC firmware over SWD or JTAG using URTC-FLASHER.
+```
+
+同じ検索は、`./run.sh serve --docs manual.md`（デフォルト `127.0.0.1:8110`）を通じて、長時間稼働する JSON/HTTP API としても利用できます。すべてのコマンドとエンドポイントの完全なリファレンス（各例は実際の実行から取得）については [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) を参照してください。
+
+### 🩺 トラブルシューティング
+
+* **`python: command not found` / ビルドがステップ 1 で失敗する。** `PATH` 上に Python >= 3.10 が必要です。Windows では [python.org](https://python.org) からインストールし、セットアップ中に「Add to PATH」がチェックされていることを確認してください。Linux/macOS では通常 `python3` という名前が使われます。
+* **`build.sh` が venv をアクティブ化できない。** `python3 -m venv .venv` は、プラットフォームごとに異なる場所にアクティベートスクリプトを配置します：Linux/macOS では `.venv/bin/activate`、Windows（Git Bash から使用される Windows Python venv でも同様）では `.venv/Scripts/activate`。`build.sh` は既に両方のパスをチェックしています——それでも失敗する場合は、`.venv/` を削除して `./build.sh` を再実行し、ゼロから再構築してください。
+* **`pip install -e .` が失敗する。** 通常は `.venv/` が古くなっていることが原因です。`.venv/` フォルダを削除して `./build.sh`/`build.bat` を再実行し、再作成してください。
+* **`import OK` が一度も表示されない。** `python -c "import hydra_umc_docs_qa"` 自体が失敗したことを意味します——venv がアクティブな状態で再実行し、実際のトレースバックを確認してください。

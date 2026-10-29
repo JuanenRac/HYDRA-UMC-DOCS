@@ -1,0 +1,4 @@
+flowchart LR
+    JOB["Trabajo OpenPnP<br/>(board_id, fase)"] --> BRIDGE["BRIDGE-OPENPNP<br/>BoardFlow.plan()"]
+    BRIDGE -- BridgeJob --> SDK["HYDRA-UMC-SDK<br/>evaluate_job()"]
+    SDK -- GateDecision --> RESULT["MQTT: cmd/job/result"]

@@ -1,0 +1,6 @@
+* **为什么 `coordinator.py` 完全不依赖 `rclpy`。** 其模块自身的文档字符串明确说明了这一点:它"可以在任何主机上测试,只有通过单独部署的适配器才会变成一个 ROS 2 节点"。这让与安全相关的协调逻辑无需安装 ROS 2 就能在 CI 中测试,并允许日后独立选择和验证适配器。
+* **为什么使用三种不同的接口类型,而不是一个通用通道。** `state_topic`、`inspect_service` 和 `job_action` 被刻意设计为对应 ROS 2 自身的语义:持续状态发布不需要请求/响应(topic),快速检查需要同步的应答(service),而单元作业需要能在执行中途被取消(action)——把它们压缩成一个通道会丢失这种区分。
+* **为什么 `Ros2Coordinator.dispatch()` 仍然让每个任务经过共享的 `evaluate_job()` 门控。** ROS 2 只是使用与 CNC、LASER、OPENPNP 和 PRINTER3D 相同的 `bridge_contract` 的又一个客户端——它不会获得任何绕过所有其他桥接和 HYDRA-UMC-SERVER 所执行的 IDLE/READY 逻辑的特殊待遇。
+* **为什么在故障期间仍可请求 `ABORT`。** 门控的生产性阶段要求(`IDLE` + `READY`)被刻意地不以同样的方式应用于中止请求——操作员或 ROS 2 节点必须始终能够请求受控停止,即使正处于故障中。
+* **为什么 `rclpy` 适配器和 ROS `.msg`/`.srv`/`.action` 契约尚未加入本仓库。** 在选定并测试真实的 ROS 2 环境之前就绑定具体的消息/服务/动作定义,会有引入这个本地无依赖核心无法验证的假设的风险。
+* **它如何融入整个生态系统。** BRIDGE-ROS2 位于 ROS 2 节点与 `HYDRA-UMC-SDK` → `HYDRA-UMC-SERVER` → MCU 安全之间:它是一个协调边界,绝不是电机控制节点,也不能绕过 HYDRA-UMC-SERVER、MCU 限位、看门狗或急停。

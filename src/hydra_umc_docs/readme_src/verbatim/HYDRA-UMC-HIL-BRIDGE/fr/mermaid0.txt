@@ -1,0 +1,7 @@
+flowchart LR
+    APP["Interface de contrôle - prévu"] --> BRIDGE["HIL-BRIDGE - acheminement réel v0"]
+    BRIDGE -- Mode Simulation --> TWIN["HYDRA-UMC-TWIN - prévu"]
+    BRIDGE -- "Mode Réel (verrouillé - réel v0)" --> CORE["Cœur HYDRA-UMC (STM32) - prévu"]
+    CORE -- Retour --> BRIDGE
+    TWIN -- Retour --> BRIDGE
+    BRIDGE --> APP

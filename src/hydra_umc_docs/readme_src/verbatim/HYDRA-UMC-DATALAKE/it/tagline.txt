@@ -1,0 +1,1 @@
+📊 Archiviazione scalabile di serie temporali per dati robotici industriali

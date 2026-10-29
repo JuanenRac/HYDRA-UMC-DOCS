@@ -1,0 +1,9 @@
+- **手写校验器，而非 `jsonschema`。** 交付 1 自身的契约足够小(14 个顶层字段，一种嵌套的能力结构)，以至于一个收集真实、具体错误字符串的简单 Python 函数，既比通用 JSON-Schema 校验器更简单，又能给出更清晰的输出——每条消息都会指出确切出问题的字段/下标，而不是一条泛泛的 schema 路径。
+- **write/abort 安全规则由代码强制执行，而非只写在文档里。** `schema.py` 中的 `_WRITE_CAPABILITY_REQUIRED_FIELDS` 正是那条明确规则被转化成的真实、经过测试的检查——清单编写者不可能遗忘它，因为校验器会拒绝任何遗漏它的能力。
+- **`authenticationRef` 被当作一个引用来检查，绝不被当作自由文本信任。** 一个封闭的真实前缀集合(`env:`、`secret-store:`、`vault:`、`none:`)——刻意不采用"看起来像秘密"式的启发式判断(为什么这种启发式在这个具体问题上同样是错误的工具，见 HYDRA-UMC-OPS-AGENT 自身的 `log_redaction.py`)。
+- **每一条错误都会被收集，绝不只报告第一条。** `validate_adapter_manifest()` 在发现一个问题后会继续检查——修复清单的人能在一次运行中看到所有真实问题。
+- **目录是刻意做成真实且只读的。** `registry.py` 对一个目录做非递归扫描(因此嵌套的 `fixtures/invalid/` 永远不会进入真实目录)，会丢弃——但依然报告——任何未通过 `validate_adapter_manifest()` 的内容，并拒绝两份声明同一个 `adapterId` 的文件。`catalog_server.py` 里任何地方都没有 `do_POST`/`do_PUT`——任何写入尝试都会得到 `BaseHTTPRequestHandler` 自身诚实的 `501`，绝不会有本项目忘记保护的路由。
+- **安全门复用 HYDRA-UMC-SDK 自身真实的逻辑，绝非该逻辑的第二套实现。** `sdk_gate.py` 的 `evaluate_capability_call()` 会为每一个 `write`/`abort` 能力直接调用 `hydra_umc_sdk.bridge_contract.evaluate_job()`——`read` 能力则完全不会触碰该 SDK，因为 `evaluate_job()` 是一个运动/写入门，而非读取门。这项集成所做的唯一一处刻意且明确说明的简化(为任何非中止的写入操作使用单一的替代 `JobPhase`)，见 [docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md)。
+- **认证记录对自己能证明什么、不能证明什么是诚实的。** `certification.py` 会拒绝保存一份证据与该适配器自身 `evidenceSchema` 不匹配的认证，但它从不宣称能够独立验证该证据确实来自真实硬件——本项目中任何地方都没有代码路径会打开一个真实的串口/OPC-UA 会话/MQTT 连接去做这项检查。见 [docs/CERTIFICATION.md](docs/CERTIFICATION.md)。
+- **十个 fixture 都指向真实的所有者项目，绝非凭空捏造。** `fixtures/*.json` 中的每一个 `ownerProject` 都是本生态系统中一个真实存在的仓库(见相关项目章节)——这是一份真实的注册模板，而非空想出来的。
+- **核心部分仅使用标准库。** `validate`/`catalog`/`serve-catalog`/`certify`/`certifications` 完全不需要任何依赖——`json`、纯 Python 结构性检查，以及 `http.server`。只有在一个 `write`/`abort` 能力上使用 `gate` 时才需要可选的 `[sdk]` extra。

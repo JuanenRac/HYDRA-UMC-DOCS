@@ -1,0 +1,51 @@
+Python >= 3.10 が必要です。コンパイルできるだけの骨組みではなく、
+HTTP API を備えた本物のクエリ可能な時系列ストアです。
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh --port 8095
+
+# Windows
+build.bat
+run.bat --port 8095
+```
+
+`build` はローカルの `.venv` を作成/アクティブ化し、パッケージを
+(editable、dev 拡張込みで) その中にインストールし、インポートを検証し、
+本物のテストスイート(`pytest`)を実行します。`run` は HTTP API を起動し、
+すべてのフラグ(`--addr`、`--port`、`--db`)をそのまま渡します。
+
+```bash
+# サンプルを取り込む(HYDRA-UMC-TELEMETRY-COLLECTOR 自身の Sample と同じ正規化された形)
+curl -X POST localhost:8095/ingest \
+  -d '{"sourceId":"robot-1","kind":"motor_temp","timestamp":1700000000000,"fields":{"value":42.5}}'
+
+# それをクエリで取り出す
+curl "localhost:8095/query?sourceId=robot-1"
+
+# 実際の時間範囲を 1 分間隔のバケットにダウンサンプリングする
+curl "localhost:8095/aggregate?kind=motor_temp&field=value&bucketMs=60000&start=0&end=1800000000000&agg=avg"
+
+curl localhost:8095/stats
+```
+
+```bash
+python -m pytest tests/ -v   # store.py(挿入/クエリ/集計、手計算で
+                              # 検証可能なバケット化の数学を含む)、
+                              # および api.py(一時ポート上の本物の
+                              # ThreadingHTTPServer に対する本物の
+                              # HTTP 往復テスト)
+```
+
+本プロジェクトをその 3 つの子プロジェクト（Telemetry-Collector、
+Anomaly-Detector、Production-Reports、兄弟ディレクトリとしてチェック
+アウト）とともに立ち上げるには：
+
+```bash
+TELEMETRY_COLLECTOR_TOKEN='a-secret-of-16-or-more-characters' \
+DATALAKE_TOKEN='another-secret-of-16-or-more-characters' \
+ANOMALY_TOKEN='a-third-secret-of-16-or-more-characters' docker compose up --build
+```
+
+この compose ファイルは4つのサービスを実際に起動し（それぞれ明示的なコマンド付き）、すべてのポートをホストの `127.0.0.1` にのみ公開し、`TELEMETRY_COLLECTOR_TOKEN`、`DATALAKE_TOKEN`、`ANOMALY_TOKEN`（いずれも16文字以上のシークレット。コレクターの取り込みルート、データレイクの書き込み・管理ルート、検知器のルートがそれぞれ要求する）がなければ起動を拒否します。データは名前付きボリュームにあるため、`docker compose down` でも保持されます。`python tools/verify_compose.py` は Docker なしでファイルの構造を検査します。

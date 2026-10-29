@@ -1,0 +1,13 @@
+Python 3.11以上が必要。`tools/build_test.py` は `HYDRA-UMC-SDK` が兄弟ディレクトリ(`../HYDRA-UMC-SDK`)としてチェックアウトされているか、環境変数 `HYDRA_UMC_SDK_ROOT` で指定されていることを期待する。
+
+```bash
+# Windows
+build-test.bat      # 検証のみ —— バージョン/CHANGELOGの変更なし
+build.bat            # 検証後、成功時にバージョン + CHANGELOG を更新
+
+# Linux/macOS
+bash build-test.sh
+bash build.sh
+```
+
+`build-test` は `src/` 配下の各モジュールを `py_compile` でコンパイルし、`unittest` の全スイート(`tests/` 配下のすべての `test_*.py`)を実行する —— ROS 2のインストールもネットワークも不要で決定論的に動作し、バージョンやCHANGELOGを変更しない。`build` はまず同じ検証を実行し、成功した場合のみ `tools/bump_version.py` を呼び出して `pyproject.toml`、`hydra-umc.project.json`、`CHANGELOG.md` の間でバージョンを同期する。実際のハードウェア向け `run` コマンドはまだ存在しない —— それには検証済みのROS 2デプロイメントが必要である。

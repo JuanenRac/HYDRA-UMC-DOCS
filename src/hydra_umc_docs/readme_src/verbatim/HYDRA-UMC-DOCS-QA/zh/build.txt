@@ -1,0 +1,54 @@
+需要 Python >= 3.10。
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # 创建 .venv，安装该包（可编辑模式），验证导入
+./run.sh     # 运行入口点
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升），并运行真实的测试套件（`pytest tests/`）。不带参数的
+`run.sh` 的预期输出：
+
+```text
+HYDRA-UMC-DOCS-QA v{version}
+Docs-QA (Hailo-10) - retrieval-augmented technical assistant grounded in the ecosystem's own documentation.
+```
+
+真实的 `query` 子命令会在已摄取的 Markdown 中搜索——默认使用本仓库自身的
+`README.md`/`CHANGELOG.md`，或通过 `--docs` 传入的任意真实文件：
+
+```bash
+./run.sh query "CAN 总线接线" --top-k 3
+./run.sh query "向量搜索 检索" --docs docs/manual.md docs/spec.md
+
+# Windows
+run.bat query "CAN 总线接线" --top-k 3
+```
+
+一个词语与已摄取语料库没有重叠的问题会打印一个诚实的
+`No relevant passages found`——v0 是真实的词法检索，而非生成式回答。
+
+每条结果都会引用 `source#index`（例如 `manual.md#1`）——一个指向该确切分块的稳定、可追溯的指针。一个缺失或不是 `.md`/`.markdown` 的 `--docs` 路径会被拒绝并报告，而不是被静默忽略：
+
+```text
+$ ./run.sh query "firmware flashing" --docs manual.md ghost.md secret.env
+REJECTED ghost.md: file not found (no source)
+REJECTED secret.env: disallowed extension .env - only .markdown, .md are ingested
+Top 1 passage(s) for: "firmware flashing"
+
+1. [0.289] manual.md#1 - Firmware Flashing
+   Flash URTC firmware over SWD or JTAG using URTC-FLASHER.
+```
+
+同样的搜索也可以通过 `./run.sh serve --docs manual.md`（默认 `127.0.0.1:8110`）作为长期运行的 JSON/HTTP API 使用。完整的命令与端点参考（每个示例均来自真实运行）见 [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md)。
+
+### 🩺 故障排查
+
+* **`python: command not found` / 构建在第 1 步失败。** 需要 `PATH` 中存在 Python >= 3.10。在 Windows 上，从 [python.org](https://python.org) 安装，并确保安装过程中勾选了"Add to PATH"；`python3` 是 Linux/macOS 上的常见命令名。
+* **`build.sh` 无法激活 venv。** `python3 -m venv .venv` 在不同平台上生成的激活脚本路径不同：Linux/macOS 上是 `.venv/bin/activate`，Windows（从 Git Bash 使用的 Windows Python venv 也是如此）上是 `.venv/Scripts/activate`。`build.sh` 已经检查了这两个路径——如果仍然失败，删除 `.venv/` 并重新运行 `./build.sh` 从头重建。
+* **`pip install -e .` 失败。** 通常是 `.venv/` 已过期。删除 `.venv/` 文件夹并重新运行 `./build.sh`/`build.bat` 重新创建它。
+* **`import OK` 从未打印。** 意味着 `python -c "import hydra_umc_docs_qa"` 本身失败了——在激活 venv 的情况下重新运行以查看真实的回溯信息。

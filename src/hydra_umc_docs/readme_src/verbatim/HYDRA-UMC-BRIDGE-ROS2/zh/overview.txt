@@ -1,0 +1,3 @@
+**HYDRA-UMC-BRIDGE-ROS2** 是 HYDRA-UMC 与 ROS 2 之间双向的高层协调边界。它把持续观测映射为 topic,把即时检查映射为 service,把长时间运行的单元作业映射为可取消的 action。它不是一个电机控制节点,也不能绕过 HYDRA-UMC-SERVER、MCU 限位、看门狗或急停(E-STOP)。 目前只接通了状态主题和安全停止服务;检查服务和作业 action 只是保留的名称,背后还没有消息类型。必须转动节点状态主题才会被送达:`run_forever()` 会在独立线程中完成。
+
+它属于 **External Automation Bridges** 家族:一组共享 `HYDRA-UMC-SDK` 相同安全契约的兄弟仓库(CNC、LASER、OPENPNP、PRINTER3D、ROS2),因此任何一个桥接都不能自行发明"可以安全工作"的定义。

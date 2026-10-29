@@ -1,0 +1,59 @@
+Requires Python >= 3.10. Real FFT-based anomaly detection with an HTTP
+API, not just a skeleton that imports.
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh --port 8097
+
+# Windows
+build.bat
+run.bat --port 8097
+```
+
+`build` creates/activates a local `.venv`, installs the package (editable,
+with dev extras, including `numpy`) into it, verifies the import, and runs
+the real test suite (`pytest`). `run` starts the HTTP API and forwards any
+flags to it (`--addr`, `--port`, `--sample-rate`, `--threshold`,
+`--baseline-path`, `--datalake-url`/`--source-id`/`--kind`/`--field`/
+`--window-size`).
+
+Three more options, all conservative by default: `--window hann` removes the mean and applies a Hann window before the FFT (the default `none` is the original behaviour; the numbers differ, so a baseline remembers its window, a detector refuses to restore one made with another, and `--threshold` has to be recalibrated with real healthy recordings before Hann is trusted). The training history read from DATALAKE is now paged (oldest first), cut where the timestamps are not about `1/sample-rate` apart and stripped of repeated timestamps, and a read that stops at `--max-train-points` says so (`--train-start`/`--train-end` pick the range). `--token-file` (or `HYDRA_UMC_ANOMALY_TOKEN`) makes `POST /baseline/fit`, `/drift/init` and `/drift/observe` demand a bearer token, and a non-loopback `--addr` is refused without one. Tested against fakes; never against real machine recordings.
+
+The fitted baseline can now survive a restart, and can be fit from real
+HYDRA-UMC-DATALAKE history instead of pasting arrays by hand:
+
+```bash
+# Persist every fit to disk, and restore it automatically on the next start
+./run.sh --port 8097 --baseline-path /var/lib/hydra-umc-anomaly-detector/baseline.npz
+
+# Fit a fresh baseline at startup from real DATALAKE history, then persist it
+./run.sh --port 8097 --baseline-path baseline.npz \
+  --datalake-url http://127.0.0.1:8095 --source-id motor-1 --kind vibration --field value --window-size 200
+```
+
+```bash
+# Calibrate against known-healthy signal windows (JSON arrays of floats,
+# same sample rate as --sample-rate)
+curl -X POST localhost:8097/baseline/fit -d '{"windows": [[...], [...], ...]}'
+
+# Score a live window against the fitted baseline
+curl -X POST localhost:8097/detect -d '{"window": [...]}'
+# -> {"score": 6.3, "anomalous": false, "worstBinFreqHz": 276.0}
+
+curl localhost:8097/stats
+```
+
+```bash
+python -m pytest tests/ -v   # fft.py (a known sine wave's peak frequency
+                              # is found correctly, DC is genuinely
+                              # dropped), baseline.py (correct mean/std,
+                              # the zero-std floor prevents a real
+                              # division-by-zero), detector.py (the
+                              # actual promise: a synthetic fault signal
+                              # is flagged, a healthy-looking one is not,
+                              # with real separation margin - not a
+                              # knife-edge threshold), and api.py (real
+                              # HTTP round-trips via a genuine
+                              # ThreadingHTTPServer)
+```

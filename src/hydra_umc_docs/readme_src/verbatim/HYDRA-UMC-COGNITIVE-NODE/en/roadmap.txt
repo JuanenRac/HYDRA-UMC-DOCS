@@ -1,0 +1,4 @@
+* **Phase 1:** VLA engine deployment and multi-modal input processing on Hailo-10.
+* **Phase 2:** Semantic planner integration with swarm behavioral models and long-term memory.
+* **Phase 3:** Voice UI low-latency local execution and industrial noise cancellation.
+* **Phase 4:** Autonomous decision-making audits and full integration with Dashboard AI for "See and Ask" feedback.

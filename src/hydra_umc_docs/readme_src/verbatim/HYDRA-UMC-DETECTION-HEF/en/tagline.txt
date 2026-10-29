@@ -1,0 +1,1 @@
+📦 Compiled-Model Registry and Safe-Load Gate for Hailo HEF Models (no model is compiled or run yet)

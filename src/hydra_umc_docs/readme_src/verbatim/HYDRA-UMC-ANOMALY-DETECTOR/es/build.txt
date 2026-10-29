@@ -1,0 +1,59 @@
+Requiere Python >= 3.10. Detección de anomalías real basada en FFT con
+API HTTP, no solo un esqueleto que importa.
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh --port 8097
+
+# Windows
+build.bat
+run.bat --port 8097
+```
+
+`build` crea/activa un `.venv` local, instala el paquete (editable, con
+extras de dev, incluyendo `numpy`) en él, verifica la importación, y corre
+la suite de tests real (`pytest`). `run` arranca la API HTTP y reenvía
+cualquier flag (`--addr`, `--port`, `--sample-rate`, `--threshold`,
+`--baseline-path`, `--datalake-url`/`--source-id`/`--kind`/`--field`/
+`--window-size`).
+
+Tres opciones más, todas conservadoras por defecto: `--window hann` quita la media y aplica una ventana de Hann antes de la FFT (el valor por defecto `none` es el comportamiento original; los números cambian, así que un baseline recuerda su ventana, un detector se niega a restaurar uno hecho con otra, y hay que recalibrar `--threshold` con grabaciones sanas reales antes de fiarse de Hann). El historial de entrenamiento que se lee de DATALAKE ahora se pagina (lo más antiguo primero), se corta donde las marcas de tiempo no distan unos `1/sample-rate` y se le quitan las marcas repetidas, y una lectura que se detiene en `--max-train-points` lo dice (`--train-start`/`--train-end` eligen el rango). `--token-file` (o `HYDRA_UMC_ANOMALY_TOKEN`) hace que `POST /baseline/fit`, `/drift/init` y `/drift/observe` pidan un token Bearer, y un `--addr` que no sea de loopback se rechaza sin él. Probado con simulacros; nunca con grabaciones reales de máquinas.
+
+El baseline ajustado ahora puede sobrevivir a un reinicio, y puede
+ajustarse a partir del historial real de HYDRA-UMC-DATALAKE en vez de
+pegar arrays a mano:
+
+```bash
+# Persistir cada ajuste a disco, y restaurarlo automáticamente al siguiente arranque
+./run.sh --port 8097 --baseline-path /var/lib/hydra-umc-anomaly-detector/baseline.npz
+
+# Ajustar un baseline nuevo al arrancar a partir del historial real de DATALAKE, y persistirlo
+./run.sh --port 8097 --baseline-path baseline.npz \
+  --datalake-url http://127.0.0.1:8095 --source-id motor-1 --kind vibration --field value --window-size 200
+```
+
+```bash
+# Calibrar contra ventanas de señal conocidas como sanas (arrays JSON de floats,
+# mismo sample rate que --sample-rate)
+curl -X POST localhost:8097/baseline/fit -d '{"windows": [[...], [...], ...]}'
+
+# Puntuar una ventana en vivo contra el baseline ajustado
+curl -X POST localhost:8097/detect -d '{"window": [...]}'
+# -> {"score": 6.3, "anomalous": false, "worstBinFreqHz": 276.0}
+
+curl localhost:8097/stats
+```
+
+```bash
+python -m pytest tests/ -v   # fft.py (el pico de una onda seno conocida
+                              # se encuentra correctamente, la DC se
+                              # descarta de verdad), baseline.py (media/std
+                              # correctas, el suelo de std-cero evita una
+                              # división por cero real), detector.py (la
+                              # promesa real: una señal de fallo sintética
+                              # se marca, una que parece sana no - con
+                              # margen de separación real, no un umbral al
+                              # filo), y api.py (round-trips HTTP reales
+                              # vía un ThreadingHTTPServer genuino)
+```

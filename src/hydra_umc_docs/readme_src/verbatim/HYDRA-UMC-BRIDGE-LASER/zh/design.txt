@@ -1,0 +1,8 @@
+* **为什么用三个独立的安全防护,而不是一个布尔值。** `LaserSafetySnapshot.machine_state()` 将 `key_enabled`、`enclosure_closed` 和 `interlock_healthy` 作为三个独立条件分别检查——真实的激光安全要求每一项物理防护都独立成立;把它们压缩成一个标志会掩盖到底是哪一项失效了。
+* **为什么桥接会明确声明它绝不能为激光解锁或触发。** `LaserCellBridge` 自身的文档字符串写明它"只协调外部辅助设备;不能为激光解锁或触发"——这些条件是对控制器自身已认证联锁装置的观测,绝不是它们的替代品。
+* **为什么控制器状态的映射被刻意设计得保守。** 只有字面字符串 `IDLE` 会被映射为 `MachineState.IDLE`。任何无法识别的值都会回落到 `OFFLINE`,绝不会回落到允许辅助工作的状态。
+* **为什么桥接会构造一个新的 `BridgeJob` 并委托给共享的 `evaluate_job()`,而不是自己编写接受/拒绝逻辑。** 全部五个 External Automation Bridges(CNC、LASER、OPENPNP、PRINTER3D、ROS2)都复用 `HYDRA-UMC-SDK` 中完全相同的 `bridge_contract`,因此"什么才算安全到可以启动任务"不会在它们之间悄悄产生分歧。
+* **为什么真实激光软件/控制器的选型被刻意推迟。** 在设备及其文档化的联锁上报机制就绪之前就绑定某个特定厂商的接口,等于宣称一个这个本地核心无法验证的真实安全保证。
+* **它如何融入整个生态系统。** BRIDGE-LASER 位于激光控制器与 `HYDRA-UMC-SDK` → `HYDRA-UMC-MQTT-BROKER` → 独立安全系统之间:它协调围绕激光单元的辅助机器人工作,而不会取代或凌驾于已认证的激光安全系统之上。
+
+这个观测辅助工具是证据规范化器,而不是激光控制器适配器:它不会打开任何网络或串口连接,不会更改设置、上传任务、进行武装或触发出光。[Laser Controller Evidence Boundary](docs/CONTROLLER_EVIDENCE_BOUNDARY.md) 定义了进行真实集成之前所需的验证。

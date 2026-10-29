@@ -1,0 +1,1 @@
+🤖 意味推論と生成 AI エッジノード（Hailo-10 + Raspberry Pi CM5）

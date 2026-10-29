@@ -1,0 +1,8 @@
+- **[docs/ADAPTER_MANIFEST.md](docs/ADAPTER_MANIFEST.md)** — 完全な本物の契約、フィールドごとの説明、そしてなぜ `authenticationRef` が参照でなければならないのか。
+- **[docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md)** — 納品 3 自身の HYDRA-UMC-SDK 安全ゲートとの本物の統合と、その唯一の明示された単純化。
+- **[docs/CERTIFICATION.md](docs/CERTIFICATION.md)** — 納品 4 自身の本物の認証記録契約と、その正直なハードウェア検証のギャップ。
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — すべてのサブコマンド、その出力形、終了コード契約。
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** —— プルリクエストのための技術スタックとコーディング指針。
+- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** —— このコミュニティで期待される行動規範。
+- **[SECURITY.md](SECURITY.md)** —— 脆弱性の報告方法と、このプロジェクトの実際のセキュリティ重点領域。
+- **[SUPPORT.md](SUPPORT.md)** —— 質問の投稿先とバグの報告先。

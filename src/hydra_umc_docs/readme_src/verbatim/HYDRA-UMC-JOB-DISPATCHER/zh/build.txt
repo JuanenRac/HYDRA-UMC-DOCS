@@ -1,0 +1,43 @@
+一个带有优先级和 HTTP API 的真实任务队列，而不只是一个能编译的骨架。
+
+```bash
+# Windows
+build.bat
+run.bat -addr 127.0.0.1:8090
+
+# Linux / macOS
+./build.sh
+./run.sh -addr 127.0.0.1:8090
+```
+
+`build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升），然后执行 `go build`。`run.sh`/`run.bat` 直接执行生成的二进
+制文件。
+
+```bash
+# 注册一个机器人，提交一个任务，调度它，然后标记为完成
+curl -X POST localhost:8090/robots -d '{"id":"robot-a","tool":"PnP","available":true}'
+curl -X POST localhost:8090/jobs   -d '{"id":"job-1","priority":5,"requiredTool":"PnP"}'
+curl -X POST localhost:8090/dispatch -d '{}'
+curl -X POST localhost:8090/jobs/complete -d '{"id":"job-1","success":true,"robotId":"robot-a"}'
+curl localhost:8090/jobs
+curl localhost:8090/robots
+```
+
+```bash
+# 幂等提交：使用相同 dedupKey 的重试请求永远不会让同一个任务执行两次，
+# 即使客户端使用了不同的 id 也是如此。
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", ..., "result":"created"}
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2-retry","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", ..., "result":"duplicate"} - 同一个任务，未改变
+
+# 真实失败后，使用相同 dedupKey 的重试会复用 job-2 的 ID：
+curl -X POST localhost:8090/jobs/complete -d '{"id":"job-2","success":false,"robotId":"robot-a"}'
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2-retry-2","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", "Status":"pending", ..., "result":"retried"}
+```
+
+```bash
+go test ./...   # src/dispatcher（调度算法）+
+                 # src/api（通过 httptest 的真实 HTTP 往返测试）
+```

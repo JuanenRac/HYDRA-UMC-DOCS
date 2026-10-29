@@ -1,0 +1,7 @@
+flowchart TB
+    DATA["Datalake-Telemetrie"] --> FFT["Analyse im Frequenzbereich (FFT)"]
+    FFT --> AI["Anomalie-Erkennungsmodell"]
+    AI -- Normal --> LOG["Gesundheitsstatus: OK"]
+    AI -- Anomalie --> ALRT["ALARM: Potenzieller Lagerausfall"]
+    ALRT --> ORCH["Orchestrator-Benachrichtigung"]
+    ALRT --> REP["Produktionsbericht-Flag"]

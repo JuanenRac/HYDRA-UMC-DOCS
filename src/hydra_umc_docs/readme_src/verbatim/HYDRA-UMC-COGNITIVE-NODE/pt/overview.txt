@@ -1,0 +1,3 @@
+O **HYDRA-UMC-COGNITIVE-NODE** serve de "lobo frontal" do ecossistema HYDRA-UMC. Alimentado pela NPU Hailo-10 (40 TOPS), permite raciocínio semântico complexo, compreensão de linguagem natural e planeamento de tarefas visão-linguagem-ação (VLA) diretamente na periferia.
+
+Transforma instruções humanas de alto nível em sequências robóticas lógicas, gerindo a recuperação de erros e a otimização de missões sem dependência da nuvem.

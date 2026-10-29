@@ -1,0 +1,5 @@
+**HYDRA-UMC-DETECTION-HEF** 旨在成为一个精心策划的高性能神经网络模型库和
+工具链，这些模型被编译为 **Hailo 可执行格式（HEF）**，并针对工业微工厂
+环境（电子装配、SMD 贴片和刀头验证）进行调优。
+
+这是集成父项目 **[HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE)** 4 个子项目之一：本项目仅负责模型编译和版本管理——`.hef` 模型的实际服务、运行副本由持有 Hailo-8 设备句柄的父项目加载和执行，而非本项目自身。

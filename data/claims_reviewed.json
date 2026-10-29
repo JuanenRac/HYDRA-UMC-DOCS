@@ -1,18 +1,25 @@
 {
  "reviewed": {
   "*": {
+   "0065acb234f6": "Jump to: Overview · Architecture · Features · Security & Safety · Interfaces · Configuration · Quick start · T",
+   "018c6ccd3a3c": "none | The CA file that signed the broker's certificate: the connection is TLS and the certificate is verified",
+   "03375205d534": "off | turns TLS on, verified against the system's trusted CAs",
    "0447539cee13": "Production Build",
    "0a28eafebde8": "— iOS/iPadOS control app (Flutter) with real-time WebSocket sync.",
    "0d114bbf5ed3": "✅ Real shared safety gate: every observed job is re-evaluated through from 's , the same gate every sibling br",
    "19df42ee4a6f": "how to report a vulnerability, and this project's own real security focus areas.",
    "21c5810d1c26": "— web control dashboard with real-time multi-robot 3D visualization.",
+   "25c66ca9f16e": "See CONTRIBUTING.md, the code of conduct, SECURITY.md and SUPPORT.md.",
+   "416cfb6dbbca": "🔒 Security & Safety",
    "5b10e71477f5": "— real forward kinematics and joint-limit validation over a real URDF subset.",
    "667ee408d2dc": "SECURITY.md",
    "69381d120c8a": "Maturity | Established",
    "727de1d5e23d": "Software | 🟢 | Complete for its purpose and stable; the honesty check above lists the known limits",
+   "7e8a01a27faf": "Safety Safety Fails Closed red.svg",
    "8a91cfb19016": "— the real headless backend (REST/WebSocket) every control client actually talks to; the authenticated ecosyst",
+   "93294ff1a2a8": "Security baseline of the ecosystem",
    "cfe823251d84": "✅ Real shared safety gate: every job dispatched through is evaluated by from 's , the same gate every sibling ",
-   "d116963177fe": "Fails Closed Safety Fails Closed red.svg",
+   "e3ca095a2f77": "/ | none | The client certificate and its key for a broker that demands mutual TLS; both are needed",
    "ecd0a62c2932": "— real procedural 2D scene generator with YOLO/COCO annotation export."
   },
   "ELECTRO-HOBBY-3D-UPDATER": {
@@ -39,6 +46,9 @@
    "8f11f1484e2f": "is the bidirectional, high-level coordination boundary between HYDRA-UMC and an AGV/AMR (autonomous mobile rob"
   },
   "HYDRA-UMC-BRIDGE-CNC": {
+   "0bcbf52c8dd7": "Stopping or moving the machine by a remote order | Only , and reach CNCjs, only pause, abort and resume reach ",
+   "31bcfcd5fa8f": "docs/CONTROLLER_EVIDENCE_BOUNDARY.md - what counts as real safety evidence and what the bridge refuses to infe",
+   "8d34836e3024": "The controller always keeps trajectory, spindle and limit authority; the bridge only reports what the controll",
    "d3567bdd0683": "✅ Real fail-safe cell snapshot: 's checks E-STOP and door state *before* looking at anything the controller re",
    "ef864466b3de": "✅ Real GRBL serial transport: 's opens a real serial connection and queries GRBL's real-time status byte ( ); "
   },
@@ -46,25 +56,34 @@
    "aad0029f0f8c": "✅ Real shared safety gate: every job dispatched through is evaluated by from 's , the same gate every sibling "
   },
   "HYDRA-UMC-BRIDGE-LASER": {
-   "c9dbf8b552b5": "Stack | Python / Laser controller / G-code / Safety evidence / GPIO interlock reading"
+   "7d525e55fa54": "A cut interlock wire | The default bias makes a cut wire read as unsafe (pull-up for an active-low signal, pul",
+   "c9dbf8b552b5": "Stack | Python / Laser controller / G-code / Safety evidence / GPIO interlock reading",
+   "d17218618c7c": "docs/CONTROLLER_EVIDENCE_BOUNDARY.md - what counts as real safety evidence"
   },
   "HYDRA-UMC-BRIDGE-OPENPNP": {
-   "9b8147b84cde": "Integration boundary: OpenPnP retains placement kinematics, feeder control and raw motion at all times; this b",
+   "0480989812d2": "although OpenPnP is running | The state file is missing, older than the limit or written by another origin | I",
+   "a7d3e35fd407": "Unbounded traceability data and unsafe SMEMA outputs | At most 256 open traces and 5000 pending samples (sent ",
    "aec75a94ccce": "✅ Real traceable board-flow core: 's rejects any job whose is empty or has leading/trailing whitespace *before",
    "dc29c82c031f": "✅ Real shared safety gate: every valid job is evaluated through from 's , the same gate every sibling bridge u"
   },
   "HYDRA-UMC-BRIDGE-PRINTER3D": {
    "2bbf5338c7ad": "Keeping the dependency surface to the Python standard library keeps the safety-relevant parsing minimal, audit"
   },
+  "HYDRA-UMC-BRIDGE-ROS2": {
+   "bc2f01920708": "calls the safe-stop service through"
+  },
   "HYDRA-UMC-BRIDGE-UAV": {
+   "00e1bf0c3029": "unset | path of the MAVLink 2 signing key (32 bytes, raw or 64 hexadecimal characters); wins",
+   "19c35dc83c08": "docs/BRIDGE_GUIDE.md - scope, flight requests, MAVLink, signing, the failsafe, scripts",
+   "ad1dc4176a6c": "exit code | A bad option, for example a heartbeat rate outside 0.1 to 10 or an unreadable signing key | Fix th",
    "fb9e4aaaed34": "It belongs to the Mobile & Autonomous Bridges family alongside and , and shares the same job-and-safety contra"
   },
   "HYDRA-UMC-COGNITIVE-NODE": {
    "4c65c09deee1": "— web control dashboard with real-time multi-robot 3D visualization; one of this node's own voice-control surf"
   },
   "HYDRA-UMC-CONNECTOR-HUB": {
-   "61123612ffeb": "Delivery 3's own real safety-gate integration and its one named simplification.",
-   "630977b87ac2": "fixtures, read-only catalog, SDK safety gate, certification records)."
+   "630977b87ac2": "fixtures, read-only catalog, SDK safety gate, certification records).",
+   "df40efc1f2cc": "Jump to: Overview · Architecture · Security & Safety · Interfaces · Configuration · Quick start · Testing · Tr"
   },
   "HYDRA-UMC-DASHBOARD-AI": {
    "37ea8219d430": "There it reads through the relay of that server, (read-only) and , with the access token of the person who sig",
@@ -72,10 +91,9 @@
   },
   "HYDRA-UMC-DATALAKE": {
    "6a8b224088fc": "To bring up this project together with its three children (Telemetry-Collector, Anomaly-Detector, Production-R",
-   "8f008e355f27": "🔍 Deterministic Queries: Raw results are ordered by timestamp and stable tie-breakers; bounded reads reject no"
-  },
-  "HYDRA-UMC-DETECTION-HEF": {
-   "b0717cd9f583": "The real ONNX export step from trained PyTorch/YOLO models."
+   "8f008e355f27": "🔍 Deterministic Queries: Raw results are ordered by timestamp and stable tie-breakers; bounded reads reject no",
+   "bccc09a524ca": ", | - | the routes over real HTTP, the token roles and every limit",
+   "e0fe7b2e8060": "docs/API.md - every route, its role, its limits and its errors"
   },
   "HYDRA-UMC-DEV-SERVER": {
    "2788d20ed33f": "safety contract ( ) - only the deterministic",
@@ -99,6 +117,11 @@
   },
   "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
    "0a02b239d56b": "Production Build Bundles the server into a single deployable file with esbuild:"
+  },
+  "HYDRA-UMC-HIL-BRIDGE": {
+   "3a14c4da5c7c": "Safety Safety Interlock gated red.svg",
+   "c17e161eb501": ", | , | age limit of a certificate; worker threads (1 to 256)",
+   "e986c5583a2a": "docs/INTERLOCK_CERTIFICATE.md - what the signed interlock certificate says and how it is checked"
   },
   "HYDRA-UMC-IOS-CONTROL": {
    "902c960672f0": "— web control dashboard with real-time multi-robot 3D visualization; its own 3D viewport is embedded directly "

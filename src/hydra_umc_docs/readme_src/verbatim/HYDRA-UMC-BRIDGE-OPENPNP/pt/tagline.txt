@@ -1,0 +1,1 @@
+📋 Bridge de coordenação rastreável de fluxo de placas para o OpenPnP

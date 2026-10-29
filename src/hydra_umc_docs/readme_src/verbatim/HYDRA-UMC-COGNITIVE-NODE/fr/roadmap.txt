@@ -1,0 +1,4 @@
+* **Phase 1 :** Déploiement du moteur VLA et traitement des entrées multimodales sur Hailo-10.
+* **Phase 2 :** Intégration du planificateur sémantique avec des modèles de comportement en essaim et une mémoire à long terme.
+* **Phase 3 :** Exécution locale à faible latence de l'interface vocale et suppression du bruit industriel.
+* **Phase 4 :** Audits de prise de décision autonomes et intégration complète avec Dashboard AI pour le retour « Voir et demander ».

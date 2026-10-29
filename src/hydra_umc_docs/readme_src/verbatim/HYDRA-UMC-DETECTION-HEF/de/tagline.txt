@@ -1,0 +1,1 @@
+📦 Registry für kompilierte Modelle und Safe-Load-Prüfung für Hailo-HEF-Modelle (noch wird kein Modell kompiliert oder ausgeführt)

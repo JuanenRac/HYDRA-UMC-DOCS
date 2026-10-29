@@ -1,0 +1,78 @@
+### Prerequisites
+
+* **Python 3.10 or newer** on your `PATH` (the scripts try `python3` then fall back to `python`).
+* No ONNX/Hailo Dataflow Compiler tooling is required yet - **zero third-party runtime dependencies** at this stage (`dependencies = []` in `pyproject.toml`).
+* A few tens of MB of disk space for a local virtual environment under `.venv/`.
+
+### Step by step
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **Version check** - reads and prints the project version; building never changes it (only `python tools/hydra_project_tool.py bump` raises it).
+2. **Virtual environment** - creates `.venv/` if missing; reuses it otherwise.
+3. **Editable install** - `pip install -e ".[dev]"` so `src/` edits take effect immediately, installs `pytest`, and registers the `hydra-umc-detection-hef` console entry point.
+4. **Compile-check** - `python -m compileall -q src` byte-compiles every file under `src/`, catching syntax errors ecosystem-wide.
+5. **Real test suite** - `python -m pytest tests/ -q` ({tests} tests covering the registry, the safe-load gate, and the CLI).
+
+`set -euo pipefail` stops the script at the first failing step; the build only reports success if all 5 pass.
+
+```bash
+./run.sh
+```
+
+Locates the interpreter inside `.venv` (handling both the POSIX and Windows `.venv` layouts) and runs `python -m hydra_umc_detection_hef.main`, forwarding any arguments through - bare invocation prints name + version + role.
+
+Real example - validate a registry and look up the latest version of a model:
+
+```bash
+./run.sh registry validate --registry registry.json --models-dir models/
+# 2 entries in registry.json
+#   pcb-defect 0.1.0: pcb-defect-0.1.0.hef not present locally, skipped
+#   pcb-defect 0.2.0: checksum OK
+# registry OK
+
+./run.sh registry latest --registry registry.json --name pcb-defect
+# pcb-defect 0.2.0  task=detection  input_shape=(640, 640, 3)
+# classes: solder_bridge, missing_component
+# hef_path: pcb-defect-0.2.0.hef
+# sha256: 1c8a52bb4a34927d55efc913b23f06bd08ff5eeee0aca2ccd8d2c0fd34c81497
+```
+
+Each registry entry also declares its target `hailo_arch` (e.g. `hailo8`). The real `registry load` subcommand combines the checksum check above with a real architecture-compatibility check, and only ever reports a model ready if both pass:
+
+```bash
+./run.sh registry load --registry registry.json --models-dir models/ --name pcb-defect --target-arch hailo8
+# READY: pcb-defect 0.2.0 (hailo8) verified and ready
+
+./run.sh registry load --registry registry.json --models-dir models/ --name pcb-defect --target-arch hailo15h
+# REJECTED_ARCH_MISMATCH: model compiled for 'hailo8', this deployment targets 'hailo15h'
+```
+
+Adding a new model no longer means hand-editing the JSON (including the sha256 `verify_checksum()` only ever checked, never generated) - `registry add` hashes the real local `.hef` file and appends a validated entry:
+
+```bash
+./run.sh registry add --registry registry.json --models-dir models/ --hef-path pcb-defect-0.3.0.hef \
+  --name pcb-defect --version 0.3.0 --task detection --input-shape 640,640,3 \
+  --classes solder_bridge,missing_component --hailo-arch hailo8
+# added pcb-defect 0.3.0 to registry.json (sha256=<the real computed digest>)
+```
+
+The registry file is rewritten atomically (written beside it, fsynced, then renamed over it), so a power cut or a full disk while adding a model leaves the previous registry intact instead of a truncated file.
+
+The same registry/safe-load checks are also reachable as a long-running JSON/HTTP API via `./run.sh serve --registry registry.json --models-dir models/` (default `127.0.0.1:8093`). See [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) for the full command and endpoint reference, with every example captured from a real run.
+
+```bat
+:: Windows - identical steps, batch syntax
+build.bat
+run.bat
+```
+
+### Troubleshooting
+
+* **`python`/`python3` not found** - install Python 3.10+ and ensure it is on `PATH`.
+* **`compileall` fails** - a real syntax error was introduced under `src/`; the build stops without touching the install, on purpose.
+* **"No `.venv` found" from `run.sh`/`run.bat`** - run `build.sh`/`build.bat` at least once first.
+* **Stale editable install** - delete `.venv/` and rebuild; rarely needed.

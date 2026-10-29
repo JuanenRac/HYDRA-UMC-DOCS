@@ -1,0 +1,7 @@
+flowchart LR
+    APP["Control Interface - 计划中"] --> BRIDGE["HIL-BRIDGE - 真实 v0 路由"]
+    BRIDGE -- Simulation Mode --> TWIN["HYDRA-UMC-TWIN - 计划中"]
+    BRIDGE -- "Real Mode（联锁把关 - 真实 v0）" --> CORE["HYDRA-UMC Core (STM32) - 计划中"]
+    CORE -- Feedback --> BRIDGE
+    TWIN -- Feedback --> BRIDGE
+    BRIDGE --> APP

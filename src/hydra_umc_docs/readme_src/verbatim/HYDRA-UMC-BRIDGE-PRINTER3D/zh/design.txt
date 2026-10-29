@@ -1,0 +1,7 @@
+* **为什么只有 Moonraker 字面上的 `"ready"` 状态会被映射为空闲。** `parse_info()` 的状态映射被刻意设计得很窄:`ready` → `IDLE`,`shutdown`/`error` → `FAULT`(故障安全),其他任何值或缺失值 → `OFFLINE`。对于无法识别的打印机状态,不存在"默认安全"的假设。
+* **为什么解析逻辑是一个独立于网络获取的 `@staticmethod`。** `MoonrakerProbe.parse_info()` 接收一个普通的 `dict`,完全可以在不进行网络调用、不需要运行中的打印机的情况下做单元测试;`fetch()` 是调用它的、必然涉及网络的薄层部分。与安全相关的逻辑正好位于那个永远不需要真实打印机就能测试的部分。
+* **为什么探测器使用标准库的 `urlopen`/`json`,而不是某个 Moonraker 客户端库。** 把依赖面限制在 Python 标准库内,能让与安全相关的解析逻辑保持最小化、可审计,并且不受第三方客户端自身在重试、超时或错误处理上的假设所影响。
+* **为什么桥接会构造一个新的 `BridgeJob` 并委托给共享的 `evaluate_job()`,而不是自己编写接受/拒绝逻辑。** 全部五个 External Automation Bridges(CNC、LASER、OPENPNP、PRINTER3D、ROS2)都复用 `HYDRA-UMC-SDK` 中完全相同的 `bridge_contract`,因此"什么才算安全到可以启动任务"不会在它们之间悄悄产生分歧。
+* **为什么任务命令(start/pause/resume/cancel)是真实的,而原始 G-code 流式传输还不是。** Moonraker 的 `/printer/print/*` 端点始终只是按名称引用一个已经上传、已经切片好的文件——这与 Moonraker/Klipper 自身已经在该文件上强制执行的安全边界相同。任意的原始 G-code 是一个从根本上不同、大得多的信任面(它可以包含任何内容),仍然需要经过测试的配置文件、身份验证和物理安全评审,而本桥接目前还没有这些。
+* **为什么 `resume_job()` 不复用通用的 `evaluate_job()` 关卡。** 那个关卡是围绕"生产性工作需要一台处于 IDLE 状态的机器"构建的——这与恢复一个已暂停的任务正好相反,后者只有从 `HOLDING` 状态出发才有意义。与 DROIDS 的 `stand_request()`/`sit_request()` 已经使用的独立关卡逻辑相同。
+* **它如何融入整个生态系统。** BRIDGE-PRINTER3D 位于 Moonraker/Klipper 与 `HYDRA-UMC-SDK` → `HYDRA-UMC-MQTT-BROKER` → 单元安全之间:它协调围绕打印机的辅助机器人工作,绝不会取代原生固件、加热器或热保护。

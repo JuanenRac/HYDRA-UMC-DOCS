@@ -15,78 +15,78 @@
     "HYDRA-UMC-ANOMALY-DETECTOR": {
       "hardware": "not_run",
       "tests": {
-        "count": 73,
-        "command": "pytest tests/"
+        "count": 154,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-BRIDGE-AMR": {
       "hardware": "simulated",
       "tests": {
-        "count": 83,
+        "count": 110,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-CNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 123,
+        "count": 206,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-DROIDS": {
       "hardware": "simulated",
       "tests": {
-        "count": 57,
+        "count": 72,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-LASER": {
       "hardware": "simulated",
       "tests": {
-        "count": 96,
+        "count": 149,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-OPENPNP": {
       "hardware": "simulated",
       "tests": {
-        "count": 68,
+        "count": 208,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-PRINTER3D": {
       "hardware": "simulated",
       "tests": {
-        "count": 103,
+        "count": 125,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-ROS2": {
       "hardware": "simulated",
       "tests": {
-        "count": 64,
+        "count": 81,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-UAV": {
       "hardware": "simulated",
       "tests": {
-        "count": 124,
+        "count": 132,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-COGNITIVE-NODE": {
       "hardware": "not_run",
       "tests": {
-        "count": 35,
-        "command": "pytest tests/"
+        "count": 56,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-CONNECTOR-HUB": {
       "hardware": "not_run",
       "tests": {
-        "count": 165,
-        "command": "pytest tests/"
+        "count": 188,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-DASHBOARD-AI": {
@@ -99,7 +99,8 @@
     "HYDRA-UMC-DATALAKE": {
       "hardware": "not_run",
       "tests": {
-        "count": 109
+        "count": 118,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-DETECTION-HEF": {
@@ -120,7 +121,8 @@
     "HYDRA-UMC-DOCS-QA": {
       "hardware": "not_run",
       "tests": {
-        "count": 74
+        "count": 100,
+        "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-DSI": {
@@ -142,7 +144,11 @@
       "hardware": "not_run"
     },
     "HYDRA-UMC-HIL-BRIDGE": {
-      "hardware": "simulated"
+      "hardware": "simulated",
+      "tests": {
+        "count": 115,
+        "command": "cargo test"
+      }
     },
     "HYDRA-UMC-IOS-CONTROL": {
       "hardware": "not_run",
@@ -151,7 +157,8 @@
     "HYDRA-UMC-JOB-DISPATCHER": {
       "hardware": "not_run",
       "tests": {
-        "count": 143
+        "count": 153,
+        "command": "go test ./..."
       }
     },
     "HYDRA-UMC-LOCAL-TECHNICIAN": {

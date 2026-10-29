@@ -1,0 +1,89 @@
+需要 Python >= 3.10。
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # 创建 .venv，安装该包（可编辑模式），验证导入
+./run.sh     # 运行入口点
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升），并运行真实的测试套件（`pytest tests/`）。不带参数的
+`run.sh` 的预期输出：
+
+```text
+HYDRA-UMC-COGNITIVE-NODE v{version}
+Semantic reasoning & GenAI edge node (Hailo-10) - integrates VLA-Engine, Voice-UI, Semantic-Planner and Docs-QA into one cognitive node.
+```
+
+4 个子服务（VLA-Engine、Voice-UI、Semantic-Planner、Docs-QA）如何接入
+本节点，请参见 `docker-compose.yml`——每一个现在都有自己真实的 Dockerfile。
+
+真实的 `family-status` 子命令会在真实的本地检出中检查真实的子项目：
+
+```bash
+./run.sh family-status
+./run.sh family-status --workspace /path/to/some/other/checkout
+./run.sh family-status --json
+
+# Windows
+run.bat family-status
+```
+
+`family-status` 始终也会报告本节点自身的共享模型权重——开发机器上真实的、
+空的 `models/` 会被诚实地报告为 `MISSING`，绝不会被静默忽略：
+
+```text
+Cognitive AI Node family status (workspace: /path/to/workspace):
+  HYDRA-UMC-VLA-ENGINE: v0.1.8, maturity=functional, role=service
+  ...
+
+Shared model weights: MISSING (.../HYDRA-UMC-COGNITIVE-NODE/models) - this node's own os/models weights have not been provisioned on this machine; children that need them will run in their own honest degraded/no-hardware mode.
+
+All 4 children present.
+```
+
+`--json` 则会打印相同的真实数据，形式是一个版本化的、机器可读的对象：
+
+```bash
+$ ./run.sh family-status --json
+{
+  "schema_version": "1.0",
+  "shared_models": { "present": false, "path": ".../models" },
+  "children": [
+    { "name": "HYDRA-UMC-VLA-ENGINE", "present": true, "version": "0.1.8", "maturity": "functional", "role": "service" },
+    ...
+  ],
+  "all_children_present": true
+}
+```
+
+默认使用本仓库自身的父目录——这正是本生态系统任何真实检出已经在使用的
+布局（所有仓库作为兄弟项目位于同一个工作区文件夹下）。如果缺少任何真实
+子项目，将以 `1` 退出。
+
+### 🌐 HTTP API（`serve`）
+
+`serve` 会以一个小巧的标准库 `http.server` 运行完全相同的 `family-status`
+检查，而不是单次 CLI 调用——这正是 CM5 自身的 `hydra-umc-cognitive-node.service`
+systemd 单元被配置为运行的命令：
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8096
+# GET /family-status  -> 返回与上方 `family-status --json` 相同的 JSON
+# GET /stats          -> { "status": "ok" }
+```
+
+`GET /family-status` 扫描服务启动时固定的工作区（`--workspace`、`--models-dir`，或 `HYDRA_UMC_COGNITIVE_NODE_WORKSPACE` / `HYDRA_UMC_COGNITIVE_NODE_MODELS_DIR`），请求试图选择其他工作区时返回 `400`；其他任何路径均返回
+`404`。完整命令参考（所有参数、真实抓取的 `-h`/`curl` 输出以及退出码表）
+请参见 [CLI 参考](docs/CLI_REFERENCE.md)。
+
+### 🩺 故障排查
+
+* **`python: command not found` / 构建在第 1 步失败。** 需要 `PATH` 中存在 Python >= 3.10。在 Windows 上，从 [python.org](https://python.org) 安装，并确保安装过程中勾选了"Add to PATH"；`python3` 是 Linux/macOS 上的常见命令名。
+* **`build.sh` 无法激活 venv。** `python3 -m venv .venv` 在不同平台上生成的激活脚本路径不同：Linux/macOS 上是 `.venv/bin/activate`，Windows（包括从 Git Bash 使用的 Windows Python venv）上是 `.venv/Scripts/activate`。`build.sh` 已经检查了这两个路径——如果仍然失败，删除 `.venv/` 并重新运行 `./build.sh` 从头重建。
+* **`pip install -e .` 失败。** 通常是 `.venv/` 已过期。删除 `.venv/` 文件夹并重新运行 `./build.sh`/`build.bat` 重新创建它。
+* **`import OK` 从未打印。** 意味着 `python -c "import hydra_umc_cognitive_node"` 本身失败了——在激活 venv 的情况下重新运行以查看真实的回溯信息（手动合并后 `pyproject.toml` 被破坏是常见原因）。
+* **`docker compose up` 无法启动 `voice-ui`。** 该容器在没有真实 `HYDRA_UMC_VOICE_UI_TOKEN` 时会拒绝监听 loopback 以外的地址(有意为之——见 `docker-compose.yml` 自身的注释);请在真实的 `.env` 文件或密钥管理器中设置它,切勿提交。开发期间直接用各自的 `run.sh`/`run.bat` 运行每个服务则不需要这个令牌,因为那里的 `--host` 仍停留在 loopback。

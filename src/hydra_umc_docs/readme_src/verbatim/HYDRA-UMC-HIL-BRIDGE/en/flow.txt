@@ -1,0 +1,5 @@
+The mode-based split at `BRIDGE` and the safety interlock gate on the
+`Real Mode` path are real today (`bridge.rs`/`interlock.rs`), routing to
+an in-memory sink rather than a live process. Everything touching a real
+`APP`, `TWIN` or `CORE` process over a real connection remains future
+work.

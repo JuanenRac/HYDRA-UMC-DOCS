@@ -1,0 +1,14 @@
+* 🧠 **Exécution de LLM locale :** Inférence accélérée matériellement pour les modèles quantifiés (Llama/Mistral). *(prévu - nécessite le vrai runtime de modèles Hailo-10)*
+* 👁️ **Intégration VLA :** Modèles Vision-Language-Action pour une exécution intuitive des tâches. *(prévu)*
+* 🎙️ **Traitement des commandes vocales :** STT/TTS en temps réel pour l'interaction homme-robot. *(prévu)*
+* 🛡️ **Priorité à la confidentialité :** Traitement 100 % hors ligne de toutes les tâches cognitives. *(vrai par conception une fois ce qui précède en place - rien ici n'appelle un réseau aujourd'hui)*
+* 🧩 **Hub d'intégration (v0) :** Détient l'image HydraOS partagée et les poids
+  de modèles quantifiés consommés par ses 4 enfants, et les relie entre
+  eux comme des services frères dans un seul `docker-compose.yml`. Le
+  vrai contrôle `family-status` lit le manifeste réel de chaque enfant
+  pour signaler présence/version/maturité. *(implémenté comme un vrai
+  contrôle de disponibilité - voir BUILD ET EXÉCUTION ci-dessous)*
+* 🔒 **Schéma de statut versionné + lectures de manifeste à ressources limitées :** `family-status --json` affiche un résultat réel, versionné et lisible par machine ; tout manifeste d'un frère dépassant 64 Kio (un checkout corrompu ou malveillant) se dégrade en « non trouvé » plutôt que d'être lu sans limite. *(implémenté)*
+* 🩺 **Santé des enfants en marche, étiquettes d'image et poids dans le conteneur du moteur :** `family-status --probe` (ou `GET /family-status?probe=1`) demande aussi à chaque enfant en marche sa santé, sur la route que déclare son propre manifeste (`/stats` sinon), et rapporte s'il a répondu, avec quel statut et à quelle vitesse, et ce que l'enfant dit de lui-même ; il sort avec un code non nul quand l'un d'eux ne va pas bien. L'emplacement des enfants est fixé au démarrage du nœud : leurs ports de bouclage par défaut, ou `HYDRA_UMC_COGNITIVE_NODE_CHILD_URLS` (comme le fichier compose le fixe dans la pile). Les images du fichier compose portent l'étiquette `HYDRA_UMC_<NOM>_VERSION` (du `.env` ; `family-versions` imprime ces lignes depuis les manifestes) ou `latest`, jamais un numéro inventé, le conteneur vla-engine a maintenant `models/` monté là où le moteur le cherche, et un second workflow vérifie que `docker compose config` se résout toujours. *(essayé avec des services de remplacement, pas avec les vrais enfants ni un Hailo-10)*
+* 🪫 **Contrôle de dégradation des poids de modèle partagés :** `family-status` signale honnêtement si le répertoire `models/` propre à ce nœud contient réellement de vrais poids, et pas seulement si les dépôts frères sont clonés. *(implémenté)*
+* 📦 **Versionnage compteur kilométrique :** La version de `pyproject.toml` n'est augmentée que par la commande `bump` explicite (`python tools/hydra_project_tool.py bump`, qui exécute `bump_version.py`) - compiler ne la change jamais.

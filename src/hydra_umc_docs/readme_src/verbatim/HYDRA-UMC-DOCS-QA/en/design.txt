@@ -1,0 +1,61 @@
+This repository is a **child** of the Cognitive AI Node family - its
+parent, [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+owns the shared HydraOS image and quantized model weights, and wires this
+service into `docker-compose.yml` alongside its three siblings
+(VLA-Engine, Voice-UI, Semantic-Planner):
+
+* **Why this child has no hardware/firmware/`os/`/`models/` of its
+  own.** It runs entirely on the CM5 + Hailo-10 M.2 module already owned
+  by the parent - keeping model weights and the HydraOS image
+  centralized in one place avoids four divergent multi-gigabyte copies
+  across the family.
+* **Why a `src/` layout.** Keeps the installable package
+  (`hydra_umc_docs_qa`) separate from repo-root tooling
+  (`bump_version.py`), matching the layout used by every other Python
+  project across the ecosystem.
+* **Why bare invocation (no subcommand) still only prints
+  identity/version/role.** That was the original andamiaje (scaffolding)
+  behavior, proving the package installs, compiles and imports cleanly
+  before any real logic existed - it stays the default today as a quick
+  "is this actually installed and working" smoke check, now alongside
+  the real `query` (TF-IDF search) and `serve` (JSON/HTTP API)
+  subcommands the scaffolding was a prerequisite for.
+* **How this fits the rest of the ecosystem.** This assistant grounds
+  its answers in the ecosystem's own documentation, giving its sibling
+  HYDRA-UMC-SEMANTIC-PLANNER a technical-knowledge source it can query
+  during reasoning, and offering on-site technicians hands-free
+  troubleshooting support alongside HYDRA-UMC-VOICE-UI.
+* **Why `index.py`'s retrieval is real TF-IDF, not an embedding model.**
+  Embedding-based semantic search needs a real model dependency (and
+  ideally the Hailo-10 this project's own README already targets) - a
+  pure-stdlib TF-IDF/cosine-similarity index is real, testable, and
+  needs nothing beyond Python itself, giving this project a working
+  retrieval kernel today that a future embedding-based index can be
+  swapped in behind the same `search()` contract without touching the
+  CLI or the ingestion step.
+* **Why an unmatched query returns an honest miss, not a fallback
+  answer.** v0 has no LLM synthesis step - a question whose words don't
+  overlap the ingested corpus gets `No relevant passages found`
+  (see `main.py`), never a guessed or hallucinated response dressed up
+  as a real retrieval result.
+* **Why a disallowed `--docs` path is rejected, not silently skipped or
+  silently ingested.** A QA assistant that's supposed to be "grounded in
+  the ecosystem's own documentation" must not quietly read and cite
+  whatever file a caller happens to point it at - a missing path or a
+  non-Markdown file (a stray `.env`, a firmware binary) gets a real,
+  distinct `REJECTED ... : <reason>` line (see `ingest.py`'s
+  `validate_doc_path`) instead of an aggregate "found nothing" that
+  hides *why*.
+* **Why cosine similarity sorts the shared terms before summing them.**
+  `dict.keys() & dict.keys()` is a set, and CPython's set iteration order
+  depends on per-process string hash randomization - summing
+  floating-point terms in that order would make a score depend on which
+  process happened to run the query, not only on the corpus and query
+  text. Sorting first makes the score a pure, reproducible function of
+  its real inputs.
+* **Why citations carry a `#index`, not just a filename.** A bare
+  filename can't disambiguate two sections sharing a heading (or, later,
+  two ingested files sharing a name) - `DocChunk.index` is each chunk's
+  real ordinal position within its own source, giving every citation a
+  stable key a caller can use to deterministically recover the exact
+  passage again.

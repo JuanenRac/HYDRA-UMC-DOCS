@@ -1,0 +1,28 @@
+如今，某个单元/机器该使用哪一个桥接(bridge)，其选择与配置分散在众多真实 bridge 仓库自身的 README、`.env` 文件以及零散脚本之中。HYDRA-UMC-CONNECTOR-HUB 的定位，是成为唯一一个能对任意真实外部机器回答以下三个问题的地方：**它讲哪种协议、它到底能做什么(读取/写入/中止，各自伴随何种风险)，以及本生态系统中哪个已有的真实项目已经实现了它？**
+
+本版本交付了该计划的全部四项，分为六个部分：
+
+1. **一份真实且固定的契约**([docs/ADAPTER_MANIFEST.md](docs/ADAPTER_MANIFEST.md))——本生态系统的"最小适配器契约(CONTRATO MINIMO DE ADAPTADOR)"，并且已经在代码中落实了一条不可协商的规则：一个 `write`/`abort` 能力，除非同时声明其风险等级、所需权限、所需单元状态、是否需要人工确认，以及超时时间，否则会被拒绝。
+2. **一个真实的 CLI 校验器**(`hydra-umc-connector-hub validate`)——一段手写的结构性检查(不依赖 `jsonschema`)，因此每一条真实错误都会精确指出出问题的适配器/字段/能力。
+3. **十个真实 fixture**，分别对应本生态系统中十个已经存在的真实 bridge/协议项目——证明该契约并非纸上谈兵，同时也是编写新适配器清单的起点模板。
+4. **一个真实的只读目录**(`catalog`/`serve-catalog`)——发现某个目录中每一份结构有效的清单，并通过 `serve-catalog` 用一个真实的、仅支持 GET 的 `http.server` 暴露它们(整个项目中不存在任何写入路由)。
+5. **与 HYDRA-UMC-SDK 安全门的真实集成**(`gate`)——一次 `write`/`abort` 能力调用会经由该 SDK 自身真实的 `evaluate_job()` 把关，绝不是该逻辑的第二套实现；见 [docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md)。
+6. **真实的认证记录**(`certify`/`certifications`)——一份真实的、由人类见证的、仅追加的日志，会依据某个适配器自身的 `evidenceSchema` 进行校验；见 [docs/CERTIFICATION.md](docs/CERTIFICATION.md)，了解为什么独立针对真实硬件验证证据在此明确保持在范围之外。
+
+```
+$ hydra-umc-connector-hub validate fixtures/industrial-opcua.json
+VALID fixtures/industrial-opcua.json adapterId='industrial-opcua' ownerProject='HYDRA-UMC-OPCUA-SERVER'
+
+$ hydra-umc-connector-hub catalog --registry-dir fixtures | head -c 200
+{"adapters": [{"adapterId": "cnc-grbl", "protocol": "grbl-serial", ...
+
+$ hydra-umc-connector-hub gate fixtures/cnc-grbl.json --capability grblStatus \
+    --job-id j1 --idempotency-key i1 --source studio --cell-state READY --machine-state IDLE
+{"allowed": true, "reason": "read capabilities are not subject to the motion safety gate", "evidenceErrors": []}
+
+$ hydra-umc-connector-hub certify fixtures/cnc-grbl.json --machine-model "Genmitsu 3018-PROVer" \
+    --certified-by "Juan Enrique" --evidence-file real-status.json --out-dir certifications/
+CERTIFIED adapterId='cnc-grbl' certificationId='...' -> certifications/cnc-grbl__....json
+```
+
+整个项目中不存在任何默认/无参数调用方式，也没有图形界面——完整、真实的命令面见 [docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)。

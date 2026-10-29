@@ -1,0 +1,5 @@
+La suddivisione basata su modalità in `BRIDGE` e la porta dell'interblocco
+di sicurezza sul percorso `Modalità reale` sono reali oggi
+(`bridge.rs`/`interlock.rs`), instradando verso un ricevitore in memoria
+anziché un vero processo live. Tutto ciò che tocca un vero processo
+`APP`, `TWIN` o `CORE` tramite una vera connessione resta lavoro futuro.

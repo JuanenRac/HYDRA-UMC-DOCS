@@ -1,0 +1,25 @@
+All four deliveries of the plan named in this project's own manifest and
+CHANGELOG now ship real, tested code. What is left, stated honestly:
+
+- **Delivery 4's own hardware-verification gap stays open on purpose.**
+  `certify` records a human-attested evidence payload checked against an
+  adapter's own `evidenceSchema`, but nothing in this project
+  independently confirms that evidence came from the named real
+  machine - that needs the physical hardware itself, in a real cell,
+  which this development machine does not have. See
+  [docs/CERTIFICATION.md](docs/CERTIFICATION.md).
+- **Real client integration: started, not finished.** HYDRA-UMC-SERVER now
+  polls `serve-catalog` for real - `GET /api/adapters` and
+  `GET /api/adapters/:adapterId` proxy this project's own real catalog, end
+  to end (see HYDRA-UMC-SERVER's own `tools/verify_connector_hub_relay_contract.mjs`,
+  which spawns this project's real `serve-catalog` against its real
+  `fixtures/` and a real Server instance, never a mock). This has also been
+  installed as a real wheel into a venv outside this project's own
+  checkout and driven from there, confirming the packaging itself (not
+  just an editable install) works. Studio/Suite/Updater calling `gate`
+  themselves is still real, separate, future work.
+- **A real transport between a `gate`/`certify` caller and the actual
+  cell/machine state.** Today, `--cell-state`/`--machine-state` are
+  supplied by the caller as already-known values - there is no code path
+  here that fetches them live from HYDRA-UMC-SERVER or a safety-zone
+  service itself.

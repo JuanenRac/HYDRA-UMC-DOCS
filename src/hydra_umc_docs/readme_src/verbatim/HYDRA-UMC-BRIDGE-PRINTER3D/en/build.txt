@@ -1,0 +1,20 @@
+Requires Python 3.11+. `tools/build_test.py` expects `HYDRA-UMC-SDK` checked out as a sibling directory (`../HYDRA-UMC-SDK`) or pointed at via the `HYDRA_UMC_SDK_ROOT` environment variable.
+
+```bash
+# Windows
+build-test.bat      # validate only — no version/CHANGELOG change
+build.bat            # Validate and build (building never changes the version)
+
+# Linux/macOS
+bash build-test.sh
+bash build.sh
+```
+
+`build-test` compiles every module under `src/` and `tools/` with `py_compile` and runs the full `unittest` suite discovered under `tests/` (`test_moonraker.py`, `test_artifacts.py`, `test_profiles.py`, `test_mqtt_transport.py`, `test_hardening.py`, `test_idempotency.py`, `test_mqtt_environment.py` - {tests} tests), proving readiness-response parsing, artifact inspection and the fail-safe gate among everything else covered — it sends no G-code, touches no printer and never modifies the repository. `build` runs that same validation first and, only on success, calls `tools/bump_version.py` to synchronize the version across `pyproject.toml`, `hydra-umc.project.json` and `CHANGELOG.md`. There is no live printer `run` command yet — that requires a tested profile, authentication and physical safety review.
+
+To inspect a local slicer output without contacting a printer:
+
+```bash
+py tools/inspect_print_artifact.py path/to/job.gcode      # Windows
+python3 tools/inspect_print_artifact.py path/to/job.gcode  # Linux / macOS
+```

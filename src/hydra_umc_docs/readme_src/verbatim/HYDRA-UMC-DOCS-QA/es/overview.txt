@@ -1,0 +1,3 @@
+**HYDRA-UMC-DOCS-QA** es un asistente especializado de Generación Aumentada por Recuperación (RAG) diseñado para técnicos y desarrolladores in-situ. Proporciona respuestas instantáneas y fundamentadas a preguntas técnicas sobre el ecosistema HYDRA-UMC.
+
+Solo responde a partir de los documentos Markdown que se le dan con `--docs`, en local y sin conexión a internet, y siempre cita el pasaje que usó. Leer todos los manuales, la documentación de esquemas y el código fuente de todo el ecosistema para resolver problemas, consultar pinout y compilar firmware es el objetivo, está planificado pero aún no se ha hecho.

@@ -1,0 +1,13 @@
+Requer Python 3.11+. `tools/build_test.py` espera o `HYDRA-UMC-SDK` extraído como diretoria irmã (`../HYDRA-UMC-SDK`) ou indicado pela variável de ambiente `HYDRA_UMC_SDK_ROOT`.
+
+```bash
+# Windows
+build-test.bat      # só valida - sem alteração de versão/CHANGELOG
+build.bat            # Valida e compila (compilar nunca altera a versão)
+
+# Linux/macOS
+bash build-test.sh
+bash build.sh
+```
+
+`build-test` compila com `py_compile` cada módulo em `src/` e executa a suíte `unittest` completa (todos os ficheiros `test_*.py` de `tests/`) de forma determinista, sem ligação a nenhum UAV real, sem rede e sem alteração de versão/CHANGELOG. `build` executa primeiro essa mesma validação e, só se correr bem, chama `tools/bump_version.py` para sincronizar a versão em `pyproject.toml`, `hydra-umc.project.json` e `CHANGELOG.md`. Ainda não há comando `run` de hardware vivo: exige um adaptador de transporte MAVLink/OSDK validado e um UAV real.

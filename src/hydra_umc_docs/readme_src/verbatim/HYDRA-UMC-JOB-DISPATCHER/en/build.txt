@@ -1,0 +1,43 @@
+A real priority mission queue with an HTTP API, not just a skeleton that compiles.
+
+```bash
+# Windows
+build.bat
+run.bat -addr 127.0.0.1:8090
+
+# Linux / macOS
+./build.sh
+./run.sh -addr 127.0.0.1:8090
+```
+
+`build.sh`/`build.bat` never change the version (only `python tools/hydra_project_tool.py bump` raises it) and then run `go build`. `run.sh`/`run.bat`
+execute the resulting binary directly.
+
+```bash
+# Register a robot, submit a job, dispatch it, then mark it done
+curl -X POST localhost:8090/robots -d '{"id":"robot-a","tool":"PnP","available":true}'
+curl -X POST localhost:8090/jobs   -d '{"id":"job-1","priority":5,"requiredTool":"PnP"}'
+curl -X POST localhost:8090/dispatch -d '{}'
+curl -X POST localhost:8090/jobs/complete -d '{"id":"job-1","success":true,"robotId":"robot-a"}'
+curl localhost:8090/jobs
+curl localhost:8090/robots
+```
+
+```bash
+# Idempotent submission: a retried request with the same dedupKey never
+# runs the same job twice, even if the client used a different job id.
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", ..., "result":"created"}
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2-retry","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", ..., "result":"duplicate"} - same job, untouched
+
+# After a real failure, a retry with the same dedupKey reuses job-2's ID:
+curl -X POST localhost:8090/jobs/complete -d '{"id":"job-2","success":false,"robotId":"robot-a"}'
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2-retry-2","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", "Status":"pending", ..., "result":"retried"}
+```
+
+```bash
+go test ./...   # src/dispatcher (scheduling algorithm) +
+                 # src/api (real HTTP round-trips via httptest)
+```

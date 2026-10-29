@@ -1,0 +1,78 @@
+### Requisitos previos
+
+* **Python 3.10 o superior** en el `PATH` (los scripts prueban `python3` y luego `python`).
+* No hace falta todavía ONNX ni el Hailo Dataflow Compiler - **cero dependencias de terceros en tiempo de ejecución** en esta etapa (`dependencies = []` en `pyproject.toml`).
+* Unas pocas decenas de MB de espacio en disco para un entorno virtual local en `.venv/`.
+
+### Paso a paso
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **Lectura de la versión** - lee e imprime la versión del proyecto; compilar nunca la cambia (solo `python tools/hydra_project_tool.py bump` la sube).
+2. **Entorno virtual** - crea `.venv/` si falta; lo reutiliza si ya existe.
+3. **Instalación editable** - `pip install -e ".[dev]"` para que los cambios en `src/` tengan efecto inmediato, instala `pytest`, y registra el entry point de consola `hydra-umc-detection-hef`.
+4. **Compile-check** - `python -m compileall -q src` compila a bytecode cada archivo bajo `src/`.
+5. **Suite de tests real** - `python -m pytest tests/ -q` ({tests} tests que cubren el registro, la verja de carga segura y el CLI).
+
+`set -euo pipefail` detiene el script en el primer paso que falle; el build solo reporta éxito si los 5 pasos tienen éxito.
+
+```bash
+./run.sh
+```
+
+Localiza el intérprete dentro de `.venv` y ejecuta `python -m hydra_umc_detection_hef.main`, reenviando cualquier argumento - la invocación desnuda imprime nombre + versión + rol.
+
+Ejemplo real - validar un registro y buscar la última versión de un modelo:
+
+```bash
+./run.sh registry validate --registry registry.json --models-dir models/
+# 2 entries in registry.json
+#   pcb-defect 0.1.0: pcb-defect-0.1.0.hef not present locally, skipped
+#   pcb-defect 0.2.0: checksum OK
+# registry OK
+
+./run.sh registry latest --registry registry.json --name pcb-defect
+# pcb-defect 0.2.0  task=detection  input_shape=(640, 640, 3)
+# classes: solder_bridge, missing_component
+# hef_path: pcb-defect-0.2.0.hef
+# sha256: 1c8a52bb4a34927d55efc913b23f06bd08ff5eeee0aca2ccd8d2c0fd34c81497
+```
+
+Cada entrada del registro también declara su `hailo_arch` objetivo (p. ej. `hailo8`). El subcomando real `registry load` combina la comprobación de checksum de arriba con una comprobación real de compatibilidad de arquitectura, y solo reporta un modelo como listo si ambas pasan:
+
+```bash
+./run.sh registry load --registry registry.json --models-dir models/ --name pcb-defect --target-arch hailo8
+# READY: pcb-defect 0.2.0 (hailo8) verified and ready
+
+./run.sh registry load --registry registry.json --models-dir models/ --name pcb-defect --target-arch hailo15h
+# REJECTED_ARCH_MISMATCH: model compiled for 'hailo8', this deployment targets 'hailo15h'
+```
+
+Añadir un modelo nuevo ya no significa editar el JSON a mano (incluido el sha256, que `verify_checksum()` solo comprueba, nunca genera) - `registry add` calcula el hash del archivo `.hef` local real y añade una entrada validada:
+
+```bash
+./run.sh registry add --registry registry.json --models-dir models/ --hef-path pcb-defect-0.3.0.hef \
+  --name pcb-defect --version 0.3.0 --task detection --input-shape 640,640,3 \
+  --classes solder_bridge,missing_component --hailo-arch hailo8
+# added pcb-defect 0.3.0 to registry.json (sha256=<el digest real calculado>)
+```
+
+El archivo del registro se reescribe de forma atómica (se escribe a su lado, se hace fsync y se renombra sobre él), de modo que un corte de luz o un disco lleno al añadir un modelo deja intacto el registro anterior en lugar de un archivo truncado.
+
+Las mismas comprobaciones de registro/carga segura también se pueden usar como una API JSON/HTTP de larga duración vía `./run.sh serve --registry registry.json --models-dir models/` (por defecto `127.0.0.1:8093`). Ver [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) para la referencia completa de comandos y endpoints, con cada ejemplo capturado de una ejecución real.
+
+```bat
+:: Windows - mismos pasos, sintaxis batch
+build.bat
+run.bat
+```
+
+### Solución de problemas
+
+* **No se encuentra `python`/`python3`** - instala Python 3.10+ y asegúrate de que está en el `PATH`.
+* **`compileall` falla** - se introdujo un error de sintaxis real bajo `src/`; el build se detiene sin tocar la instalación, a propósito.
+* **"No `.venv` found" en `run.sh`/`run.bat`** - ejecuta `build.sh`/`build.bat` al menos una vez antes.
+* **Instalación editable desactualizada** - borra `.venv/` y reconstruye; rara vez hace falta.

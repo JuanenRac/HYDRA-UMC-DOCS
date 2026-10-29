@@ -1,0 +1,1 @@
+🧠 Detección estadística de anomalías y análisis de vibración de motores (sin modelo de aprendizaje automático)

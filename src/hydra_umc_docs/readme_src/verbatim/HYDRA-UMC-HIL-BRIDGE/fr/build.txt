@@ -1,0 +1,58 @@
+Nécessite la chaîne d'outils Rust (`cargo`/`rustc`, à installer via [rustup](https://rustup.rs)) et Python 3.10+ (uniquement pour `bump_version.py`).
+
+```bash
+# Linux / macOS
+./build.sh   # `cargo test` (115 tests), puis `cargo build --release`
+./run.sh     # exécute target/release/hydra-umc-hil-bridge, affiche nom + version + rôle
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` ne changent jamais la version (seule `python tools/hydra_project_tool.py bump` la fait monter), exécutent la vraie suite de tests, puis construisent un binaire release.
+
+Les vrais sous-commandes `route` et `mirror` :
+
+```bash
+./run.sh route --mode real --joint shoulder --position 0.5 --clear-distance 2.0
+# SENT: routed to real HYDRA-UMC controller
+
+./run.sh route --mode real --joint shoulder --position 0.5
+# BLOCKED: safety interlock refused to forward to real hardware (no twin risk report: a real command is not forwarded without one)
+
+./run.sh route --mode real --joint shoulder --position 0.5 --collision-risk --distance 0.02
+# BLOCKED: safety interlock refused to forward to real hardware (twin reports imminent collision at 0.020m)
+
+./run.sh route --mode simulation --joint shoulder --position 0.5 --collision-risk --distance 0.02
+# SENT: routed to HYDRA-UMC-TWIN (simulation)
+
+./run.sh mirror --joint elbow --position -0.3
+# MIRRORED: joint 'elbow' = -0.300000 shadowed into the twin
+
+./run.sh route --mode real --joint shoulder --position 0.5 --transport-timeout-ms 100 --transport-latency-ms 500
+# TRANSPORT FAILURE: command was not confirmed delivered (transport timed out after 100ms)
+
+./run.sh route --mode real --joint shoulder --position 0.5 --transport-disconnected
+# TRANSPORT FAILURE: command was not confirmed delivered (transport is disconnected)
+```
+
+`route` se termine avec `0` (envoyé), `1` (bloqué par le verrouillage de sécurité - un vrai résultat significatif, pas une erreur), `2` (entrée invalide), ou `3` (échec de transport - le verrouillage a laissé passer la commande, mais la livraison n'a pas été confirmée). `mirror` se termine avec `0`, `2` ou `3`.
+
+La même logique d'acheminement/mise en miroir est aussi accessible via du vrai HTTP JSON :
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8113
+# [hil-bridge] HTTP API listening on 127.0.0.1:8113
+# [hil-bridge] POST /route, POST /mirror, GET /stats
+
+curl -X POST http://127.0.0.1:8113/route \
+    -d '{"mode":"real","joint":"shoulder","position":1.0,"risk":{"collision_imminent":true,"distance_m":0.02}}'
+# {"BlockedByInterlock":{"reason":"twin reports imminent collision at 0.020m"}}
+```
+
+Voir [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) pour le contrat complet requête/réponse de `POST /route`/`POST /mirror`/`GET /stats` - c'est le même binaire que celui exécuté par l'unité `systemd/hydra-umc-hil-bridge.service` sur une CM5 déployée.
+
+`Cargo.toml` ne comporte volontairement aucune crate externe pour l'instant, en dehors de `tiny_http`/`serde`/`serde_json` (la vraie interface HTTP JSON) - voir le commentaire dans le fichier pour ce qui sera ajouté quand le vrai travail de transport gRPC/WebSocket commencera.

@@ -1,0 +1,4 @@
+* **Fase 1:** Implantação do motor VLA e processamento de entrada multimodal no Hailo-10.
+* **Fase 2:** Integração do planeador semântico com modelos comportamentais do enxame e memória de longo prazo.
+* **Fase 3:** Execução local de baixa latência do Voice UI e cancelamento de ruído industrial.
+* **Fase 4:** Visualização interativa de esquemas ligada às respostas de QA e otimização de RAG para dispositivos de periferia.

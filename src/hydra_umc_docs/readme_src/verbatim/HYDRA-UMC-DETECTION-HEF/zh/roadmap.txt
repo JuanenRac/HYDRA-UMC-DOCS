@@ -1,0 +1,8 @@
+**今天已实现的内容：** 模型注册表——模式校验（包括必须提供且经过校验的 Hailo 架构元数据）、重复版本检测、最新版本查找、以及 sha256 完整性校验（`registry.py`）——加上一个真实的、组合式的安全加载关卡，会一起检查架构兼容性和校验和完整性，只有两者都通过时才会报告模型就绪（`compatibility.py`），同样的检查也作为一个真实的、长期运行的 JSON/HTTP API（`api.py`，`serve` 子命令）与一次性 CLI 并行暴露，共 {tests} 个测试，再加上一个真实的、可安装的 Python 包，带有已验证的入口点，以及一个显式的`bump` 命令，用于提升版本（构建绝不会更改版本）。具体已捕获的构建/运行输出见 [`CHANGELOG.md`](CHANGELOG.md)。
+
+**仍待完成、顺序不分先后、无既定时间表、且受限于真实 Hailo 硬件的内容：**
+
+* 从已训练的 PyTorch/YOLO 模型进行真实的 ONNX 导出步骤。
+* 集成 Hailo Dataflow Compiler 以进行 INT8/INT4 量化。
+* HAR/HEF 打包——这将真正填充一个本项目 `registry.py` 已经能够读取和校验的注册表文件。
+* 将编译好的 `.hef` 输出发布到 [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE) 的 `models/` 文件夹中。

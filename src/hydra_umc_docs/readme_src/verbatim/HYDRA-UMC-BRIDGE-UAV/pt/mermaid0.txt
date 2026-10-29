@@ -1,0 +1,7 @@
+flowchart LR
+    BRIDGE["BRIDGE-UAV<br/>UavCoordinator.dispatch()"] -- "MAVLink" --> UAV["UAV com câmara<br/>(Wi-Fi / rádio / telemetria 4G-5G)"]
+    UAV -- "COMMAND_ACK" --> BRIDGE
+    UAV -- "batimento" --> HB["HeartbeatMonitor<br/>.observe() / .state()"]
+    HB -- "LOST -> failsafe_action" --> BRIDGE
+    BRIDGE -- BridgeJob --> SDK["HYDRA-UMC-SDK<br/>evaluate_job()"]
+    SDK -- GateDecision --> BRIDGE

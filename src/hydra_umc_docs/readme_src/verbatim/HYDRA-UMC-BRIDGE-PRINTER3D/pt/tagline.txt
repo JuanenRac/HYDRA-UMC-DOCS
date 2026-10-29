@@ -1,0 +1,1 @@
+🌡️ Bridge de coordenação de falha segura para software aberto de impressão 3D

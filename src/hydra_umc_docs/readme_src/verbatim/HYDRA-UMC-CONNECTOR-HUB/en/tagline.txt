@@ -1,0 +1,1 @@
+🧩 A Declarative Registry and Validator for External-Machine Adapters

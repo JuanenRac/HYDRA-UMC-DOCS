@@ -1,0 +1,8 @@
+flowchart LR
+    REQ["Nueva Petición de Misión"] --> Q["Cola Global de Misiones"]
+    Q --> SCHED["Planificador del Despachador"]
+    DB[("Registro de Herramientas y Robots")] --> SCHED
+    SCHED --> R1["Robot A (PnP)"]
+    SCHED --> R2["Robot B (Láser)"]
+    R1 -- Éxito/Fallo --> SCHED
+    SCHED -.-> LOG["Informes de Producción (previsto)"]

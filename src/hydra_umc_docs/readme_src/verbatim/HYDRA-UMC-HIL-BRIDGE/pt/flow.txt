@@ -1,0 +1,1 @@
+A divisão por modos em `BRIDGE` e a porta do interbloqueio de segurança no caminho `Real Mode` são reais hoje (`bridge.rs`/`interlock.rs`), encaminhando para um sumidouro em memória em vez de um processo em direto. Tudo o que toca num processo real de `APP`, `TWIN` ou `CORE` por uma ligação real continua a ser trabalho futuro.

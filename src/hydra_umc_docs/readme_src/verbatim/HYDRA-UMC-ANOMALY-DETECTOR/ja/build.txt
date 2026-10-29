@@ -1,0 +1,58 @@
+Python >= 3.10 が必要です。コンパイルできるだけの骨組みではなく、
+HTTP API を備えた本物の FFT ベースの異常検知です。
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh --port 8097
+
+# Windows
+build.bat
+run.bat --port 8097
+```
+
+`build` はローカルの `.venv` を作成/アクティブ化し、パッケージを
+(editable、`numpy` を含む dev 拡張込みで)その中にインストールし、
+インポートを検証し、本物のテストスイート(`pytest`)を実行します。
+`run` は HTTP API を起動し、すべてのフラグ(`--addr`、`--port`、
+`--sample-rate`、`--threshold`、`--baseline-path`、
+`--datalake-url`/`--source-id`/`--kind`/`--field`/`--window-size`)を
+そのまま渡します。
+
+既定ではどれも保守的な、さらに 3 つのオプション:`--window hann` は FFT の前に平均を除去してハン窓を掛けます(既定の `none` は従来の動作です。数値が変わるため、ベースラインは自分の窓を記憶し、別の窓で作られたものを検出器は復元を拒否し、Hann を信頼する前に実際の正常な記録で `--threshold` を再調整する必要があります)。DATALAKE から読む学習用履歴はページ単位(古い順)で読み、タイムスタンプの間隔が約 `1/sample-rate` でない箇所で分割し、重複するタイムスタンプを除きます。`--max-train-points` で止まった読み込みはそう報告します(`--train-start`/`--train-end` で範囲を指定)。`--token-file`(または `HYDRA_UMC_ANOMALY_TOKEN`)を指定すると `POST /baseline/fit`、`/drift/init`、`/drift/observe` が Bearer トークンを要求し、ループバック以外の `--addr` はトークンなしでは拒否されます。代用品に対してテスト済みで、実際の機械の記録には未実施です。
+
+適合済みのベースラインは再起動を乗り越えられるようになり、配列を手で
+貼り付ける代わりに実際の HYDRA-UMC-DATALAKE の履歴から適合させること
+もできます:
+
+```bash
+# すべての適合結果をディスクに永続化し、次回起動時に自動的に復元する
+./run.sh --port 8097 --baseline-path /var/lib/hydra-umc-anomaly-detector/baseline.npz
+
+# 起動時に実際の DATALAKE 履歴から新しいベースラインを適合させ、それを永続化する
+./run.sh --port 8097 --baseline-path baseline.npz \
+  --datalake-url http://127.0.0.1:8095 --source-id motor-1 --kind vibration --field value --window-size 200
+```
+
+```bash
+# 既知の健全な信号ウィンドウに対してキャリブレーションする(float の JSON 配列、--sample-rate と同じサンプルレート)
+curl -X POST localhost:8097/baseline/fit -d '{"windows": [[...], [...], ...]}'
+
+# フィットした baseline に対してライブウィンドウを採点する
+curl -X POST localhost:8097/detect -d '{"window": [...]}'
+# -> {"score": 6.3, "anomalous": false, "worstBinFreqHz": 276.0}
+
+curl localhost:8097/stats
+```
+
+```bash
+python -m pytest tests/ -v   # fft.py(既知の正弦波のピーク周波数が正しく
+                              # 検出され、DC が本当に除外されることを検証)、
+                              # baseline.py(正しい平均/標準偏差、ゼロ標準偏差
+                              # の下限が本物のゼロ除算を防ぐことを検証)、
+                              # detector.py(実際の約束：合成の故障信号が
+                              # フラグ付けされ、健全に見える信号はされない、
+                              # 際どい閾値ではなく本物の分離マージンを伴う)、
+                              # そして api.py(本物の ThreadingHTTPServer に
+                              # 対する本物の HTTP 往復テスト)
+```

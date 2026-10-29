@@ -1,0 +1,1 @@
+📊 Armazenamento escalável de séries temporais para dados robóticos industriais

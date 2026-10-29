@@ -1,0 +1,6 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — cada invocação de `route`/`mirror`/`serve`, saída real capturada de um binário de lançamento compilado, a tabela de códigos de saída e o contrato HTTP JSON de `POST /route`/`POST /mirror`/`GET /stats`.
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** — pilha tecnológica e diretrizes de código para um pull request.
+- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** — as normas de comportamento esperadas nesta comunidade.
+- **[SECURITY.md](SECURITY.md)** — como comunicar uma vulnerabilidade e as áreas de segurança em que este projeto se concentra.
+- **[SUPPORT.md](SUPPORT.md)** — onde fazer perguntas e comunicar erros.
+- **[LICENSE.md](LICENSE.md)** — a licença deste projeto.

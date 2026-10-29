@@ -1,0 +1,20 @@
+Requer Python 3.11+. `tools/build_test.py` espera o `HYDRA-UMC-SDK` extraído como diretoria irmã (`../HYDRA-UMC-SDK`) ou indicado pela variável de ambiente `HYDRA_UMC_SDK_ROOT`.
+
+```bash
+# Windows
+build-test.bat      # só valida - sem alteração de versão/CHANGELOG
+build.bat            # Valida e compila (compilar nunca altera a versão)
+
+# Linux/macOS
+bash build-test.sh
+bash build.sh
+```
+
+`build-test` compila com `py_compile` cada módulo em `src/` e `tools/` e executa a suíte `unittest` completa descoberta em `tests/` (`test_moonraker.py`, `test_artifacts.py`, `test_profiles.py`, `test_mqtt_transport.py`, `test_hardening.py`, `test_idempotency.py`, `test_mqtt_environment.py` - {tests} testes), que prova, entre tudo o resto que cobre, a análise das respostas de prontidão, a inspeção de artefactos e a porta de falha segura; não envia G-code, não toca em nenhuma impressora e nunca modifica o repositório. `build` executa primeiro essa mesma validação e, só se correr bem, chama `tools/bump_version.py` para sincronizar a versão em `pyproject.toml`, `hydra-umc.project.json` e `CHANGELOG.md`. Ainda não há comando `run` de impressora viva: exige um perfil testado, autenticação e uma revisão de segurança física.
+
+Para inspecionar uma saída local de um fatiador sem contactar uma impressora:
+
+```bash
+py tools/inspect_print_artifact.py path/to/job.gcode      # Windows
+python3 tools/inspect_print_artifact.py path/to/job.gcode  # Linux / macOS
+```

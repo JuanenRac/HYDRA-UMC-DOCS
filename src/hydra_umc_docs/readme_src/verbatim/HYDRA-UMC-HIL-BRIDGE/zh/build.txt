@@ -1,0 +1,66 @@
+需要 Rust 工具链（`cargo`/`rustc`，通过 [rustup](https://rustup.rs) 安装）
+以及 Python 3.10+（仅供 `bump_version.py` 使用）。
+
+```bash
+# Linux / macOS
+./build.sh   # 、`cargo test`（115 个测试），然后执行 `cargo build --release`
+./run.sh     # 运行 target/release/hydra-umc-hil-bridge，打印名称 + 版本 + 角色
+```
+
+```bat
+:: Windows
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升），运行真实的测试
+套件，然后构建一个 release 二进制文件。
+
+真实的 `route` 和 `mirror` 子命令：
+
+```bash
+./run.sh route --mode real --joint shoulder --position 0.5 --clear-distance 2.0
+# SENT: routed to real HYDRA-UMC controller
+
+./run.sh route --mode real --joint shoulder --position 0.5
+# BLOCKED: safety interlock refused to forward to real hardware (no twin risk report: a real command is not forwarded without one)
+
+./run.sh route --mode real --joint shoulder --position 0.5 --collision-risk --distance 0.02
+# BLOCKED: safety interlock refused to forward to real hardware (twin reports imminent collision at 0.020m)
+
+./run.sh route --mode simulation --joint shoulder --position 0.5 --collision-risk --distance 0.02
+# SENT: routed to HYDRA-UMC-TWIN (simulation)
+
+./run.sh mirror --joint elbow --position -0.3
+# MIRRORED: joint 'elbow' = -0.300000 shadowed into the twin
+
+./run.sh route --mode real --joint shoulder --position 0.5 --transport-timeout-ms 100 --transport-latency-ms 500
+# TRANSPORT FAILURE: command was not confirmed delivered (transport timed out after 100ms)
+
+./run.sh route --mode real --joint shoulder --position 0.5 --transport-disconnected
+# TRANSPORT FAILURE: command was not confirmed delivered (transport is disconnected)
+```
+
+`route` 在发送成功时退出码为 `0`，被安全联锁阻止时为 `1`（这是一个真实
+且有意义的结果，不是错误），输入无效时为 `2`，传输失败时为 `3`
+（联锁放行了指令，但投递未被确认）。`mirror` 退出码为 `0`、`2` 或 `3`。
+
+同样的路由/镜像逻辑，也可以通过真实的 HTTP JSON 访问：
+
+```bash
+./run.sh serve --addr 127.0.0.1 --port 8113
+# [hil-bridge] HTTP API listening on 127.0.0.1:8113
+# [hil-bridge] POST /route, POST /mirror, GET /stats
+
+curl -X POST http://127.0.0.1:8113/route \
+    -d '{"mode":"real","joint":"shoulder","position":1.0,"risk":{"collision_imminent":true,"distance_m":0.02}}'
+# {"BlockedByInterlock":{"reason":"twin reports imminent collision at 0.020m"}}
+```
+
+完整的 `POST /route`/`POST /mirror`/`GET /stats` 请求/响应契约见
+[`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md)——这与部署到 CM5 上的
+`systemd/hydra-umc-hil-bridge.service` 单元运行的是同一个二进制文件。
+
+`Cargo.toml` 目前刻意不包含真实 HTTP JSON 接口所需的
+`tiny_http`/`serde`/`serde_json` 之外的任何外部 crate——具体在真正的
+gRPC/WebSocket 传输层工作开始时还会添加什么，请见其内部的注释说明。

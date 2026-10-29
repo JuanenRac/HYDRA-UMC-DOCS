@@ -1,0 +1,70 @@
+Richiede Python >= 3.10.
+
+```bash
+# Linux / macOS / Git Bash
+./build.sh   # crea .venv, installa il pacchetto (editable), verifica l'import
+./run.sh     # esegue il punto di ingresso
+
+# Windows (cmd)
+build.bat
+run.bat
+```
+
+`build.sh`/`build.bat` non cambiano mai la versione (solo `python tools/hydra_project_tool.py bump` la alza), ed eseguono la vera
+suite di test (`pytest tests/`). Output atteso di un `run.sh` senza
+argomenti:
+
+```text
+HYDRA-UMC-DOCS-QA v{version}
+Docs-QA (Hailo-10) - retrieval-augmented technical assistant grounded in the ecosystem's own documentation.
+```
+
+Il vero sottocomando `query` cerca nel Markdown ingerito - per
+impostazione predefinita i propri `README.md`/`CHANGELOG.md` di questo
+repo, oppure qualsiasi file reale passato con `--docs`:
+
+```bash
+./run.sh query "cablaggio bus CAN" --top-k 3
+./run.sh query "ricerca vettoriale recupero" --docs docs/manual.md docs/spec.md
+
+# Windows
+run.bat query "cablaggio bus CAN" --top-k 3
+```
+
+Una domanda le cui parole non si sovrappongono al corpus ingerito
+stampa un `No relevant passages found` onesto - v0 è vero recupero
+lessicale, non una risposta generativa.
+
+Ogni risultato cita `source#index` (es. `manual.md#1`) - un puntatore
+stabile e tracciabile a quel frammento esatto. Un percorso `--docs`
+mancante o non `.md`/`.markdown` viene rifiutato e segnalato, non
+ignorato silenziosamente:
+
+```text
+$ ./run.sh query "firmware flashing" --docs manual.md ghost.md secret.env
+REJECTED ghost.md: file not found (no source)
+REJECTED secret.env: disallowed extension .env - only .markdown, .md are ingested
+Top 1 passage(s) for: "firmware flashing"
+
+1. [0.289] manual.md#1 - Firmware Flashing
+   Flash URTC firmware over SWD or JTAG using URTC-FLASHER.
+```
+
+La stessa ricerca è raggiungibile anche come API JSON/HTTP di lunga durata tramite `./run.sh serve --docs manual.md` (default `127.0.0.1:8110`). Vedi [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) per il riferimento completo di comandi ed endpoint, con ogni esempio catturato da un'esecuzione reale.
+
+### 🧪 Risoluzione dei problemi
+
+* **`python: command not found` / la build fallisce al passaggio 1.** È
+  richiesto Python >= 3.10 nel `PATH`. Su Windows installarlo da
+  [python.org](https://python.org) e selezionare “Add to PATH”; su
+  Linux/macOS il comando è generalmente `python3`.
+* **`build.sh` non riesce ad attivare il virtual environment.**
+  `python3 -m venv .venv` crea lo script di attivazione in percorsi diversi:
+  `.venv/bin/activate` su Linux/macOS e `.venv/Scripts/activate` su
+  Windows. `build.sh` verifica entrambi; se fallisce ancora, eliminare
+  `.venv/` e rieseguire `./build.sh`.
+* **`pip install -e .` fallisce.** Di solito la causa è una `.venv/`
+  obsoleta. Eliminare la cartella e rieseguire `./build.sh` o `build.bat`.
+* **`import OK` non viene mai stampato.** Significa che
+  `python -c "import hydra_umc_docs_qa"` è già fallito; rieseguire con il
+  virtual environment attivo per visualizzare il traceback reale.

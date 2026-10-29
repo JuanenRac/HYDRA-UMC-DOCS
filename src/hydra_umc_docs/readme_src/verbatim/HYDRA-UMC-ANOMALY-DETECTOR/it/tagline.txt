@@ -1,0 +1,1 @@
+🧠 Rilevamento statistico di anomalie e analisi delle vibrazioni del motore (nessun modello di machine learning)

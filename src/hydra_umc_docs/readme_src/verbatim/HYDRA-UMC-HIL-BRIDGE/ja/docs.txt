@@ -1,0 +1,6 @@
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — すべての `route`/`mirror`/`serve` 呼び出し、ビルド済みリリースバイナリから実際に取得した出力、終了コード表、そして `POST /route`/`POST /mirror`/`GET /stats` の HTTP JSON 契約。
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** —— プルリクエストのための技術スタックとコーディング指針。
+- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** —— このコミュニティで期待される行動規範。
+- **[SECURITY.md](SECURITY.md)** —— 脆弱性の報告方法と、このプロジェクトの実際のセキュリティ重点領域。
+- **[SUPPORT.md](SUPPORT.md)** —— 質問の投稿先とバグの報告先。
+- **[LICENSE.md](LICENSE.md)** —— このプロジェクト自身のライセンス。

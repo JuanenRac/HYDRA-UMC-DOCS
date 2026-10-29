@@ -1,0 +1,48 @@
+```bash
+chmod +x build.sh   # einmalig
+./build.sh          # erstellt .venv, pip install -e ".[dev]", Compile-Check + Tests
+./run.sh                                   # echte Demo: validiert die zehn echten Fixtures
+./run.sh validate fixtures/industrial-opcua.json
+./run.sh validate fixtures/invalid/*.json  # jedes davon sollte INVALID melden
+./run.sh catalog --registry-dir fixtures
+./run.sh serve-catalog --registry-dir fixtures --port 8801   # Strg+C zum Stoppen
+pip install -e ".[sdk]"                    # nur für `gate` bei einer write/abort-Fähigkeit nötig
+./run.sh gate fixtures/cnc-grbl.json --capability sendControlByte --job-id j1 \
+    --idempotency-key i1 --source studio --cell-state READY --machine-state IDLE
+./run.sh certify fixtures/cnc-grbl.json --machine-model "Genmitsu 3018-PROVer" \
+    --certified-by "Ihr Name" --evidence-file real-status.json --out-dir certifications/
+```
+
+Unter Windows: `build.bat`, dann `run.bat` (dieselbe Demo ohne
+Argumente) / einer der obigen Unterbefehle. `build-test.sh`/`.bat`
+führt dieselbe Kompilierungsprüfung (nur Python-Syntax) aus, ohne die
+Projektversion oder das CHANGELOG anzufassen, die die eigene CI dieses
+Projekts auch ausführt - es führt NICHT selbst die Testsuite aus; die
+CI führt `pytest` als eigenen, späteren Schritt aus. Führen Sie
+`./build.sh`/`build.bat` (oder direkt `pytest tests/`) für die
+vollständige lokale Testsuite aus.
+
+**Fehlerbehebung**
+
+- `validate` meldet `INVALID` für ein Manifest, das Sie für korrekt
+  halten: Lesen Sie jeden aufgeführten Grund - der Validator meldet
+  alle, nicht nur den ersten. Siehe
+  [docs/ADAPTER_MANIFEST.md](docs/ADAPTER_MANIFEST.md) für den genauen
+  Vertrag Feld für Feld.
+- `validate` meldet `ERROR: ... is not valid JSON`: Die Datei selbst ist
+  fehlerhaftes JSON, zu unterscheiden von einem wohlgeformten, aber
+  ungültigen Manifest - prüfen Sie auf ein fehlendes Komma/Anführungs-
+  zeichen, bevor Sie den Vertrag selbst prüfen.
+- `catalog`/`serve-catalog` endet mit Exit-Code `1` oder listet eine
+  Datei unter `invalidFiles`: diese Datei hat die strukturelle
+  Validierung nicht bestanden und wurde absichtlich aus dem Katalog
+  ausgeschlossen - führen Sie `validate` direkt darauf aus, um die
+  vollständige Liste der Gründe zu sehen.
+- `gate` schlägt fehl mit `ERROR: the optional 'hydra-umc-sdk' package
+  is not installed`: Führen Sie zuerst `pip install -e ".[sdk]"` aus -
+  nur für eine `write`/`abort`-Fähigkeit nötig.
+- `gate`/`certify` schlägt fehl mit `ERROR: unknown cell_state ...`
+  oder `... does not match evidenceSchema`: Siehe
+  [docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md)/
+  [docs/CERTIFICATION.md](docs/CERTIFICATION.md) für die genauen
+  erwarteten Werte/Formen.

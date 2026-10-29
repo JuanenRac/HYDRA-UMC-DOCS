@@ -1,0 +1,3 @@
+**HYDRA-UMC-BRIDGE-LASER** 是激光单元与 HYDRA-UMC 机器人辅助设备之间的高层桥接。它可以协调诸如物料交接之类的安全外围任务,但**绝不能**为激光控制器解锁、触发或越权操作——那些是它读取的观测量,而不是它拥有的权限。
+
+它属于 **External Automation Bridges** 家族:一组共享 `HYDRA-UMC-SDK` 相同安全契约的兄弟仓库(CNC、LASER、OPENPNP、PRINTER3D、ROS2),因此任何一个桥接都不能自行发明"可以安全工作"的定义。

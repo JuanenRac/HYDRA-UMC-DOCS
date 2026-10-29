@@ -1,0 +1,7 @@
+flowchart LR
+    APP["Control Interface - 計画中"] --> BRIDGE["HIL-BRIDGE - 実際の v0 ルーティング"]
+    BRIDGE -- Simulation Mode --> TWIN["HYDRA-UMC-TWIN - 計画中"]
+    BRIDGE -- "Real Mode（インターロック適用 - 実際の v0）" --> CORE["HYDRA-UMC Core (STM32) - 計画中"]
+    CORE -- Feedback --> BRIDGE
+    TWIN -- Feedback --> BRIDGE
+    BRIDGE --> APP

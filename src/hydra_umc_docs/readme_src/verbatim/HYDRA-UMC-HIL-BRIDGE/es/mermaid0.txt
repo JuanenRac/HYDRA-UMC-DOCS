@@ -1,0 +1,7 @@
+flowchart LR
+    APP["Interfaz de Control - planeado"] --> BRIDGE["HIL-BRIDGE - encaminamiento real v0"]
+    BRIDGE -- Modo Simulación --> TWIN["HYDRA-UMC-TWIN - planeado"]
+    BRIDGE -- "Modo Real (con enclavamiento - real v0)" --> CORE["Núcleo HYDRA-UMC (STM32) - planeado"]
+    CORE -- Feedback --> BRIDGE
+    TWIN -- Feedback --> BRIDGE
+    BRIDGE --> APP

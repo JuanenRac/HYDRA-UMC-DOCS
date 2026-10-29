@@ -1,0 +1,5 @@
+読み取り専用の成果物レーンは、OrcaSlicer、Ultimaker Cura、PrusaSlicer、Bambu Studioなどが生成する通常のFDM G-code(`.gcode`、`.gco`、`.gc`)をサポートする。既知のコメントは出所のヒントとなり、マーカーがない場合は `unknown-slicer` のままとなる。`.gcode.3mf` と汎用 `.3mf` は識別するが、展開は一切しない。Lychee互換ワークフローのレジンスライス(`.ctb`、`.goo`、`.photon`、`.pwmo`、`.pws`、`.sl1`)は意図的に不透明として扱い、特定のプリンターやスライサーに帰属させない。
+
+これは**出力成果物**との互換性であり、これらのアプリケーションのリモート制御ではない。ブリッジはスライサーを起動せず、プロファイルを変更せず、G-codeを解析/実行せず、ファイルをアップロードせず、クラウドサービスに接続せず、印刷を開始しない。正確なマトリックスと将来の制御要件は[スライサー成果物の互換性](docs/SLICER_ARTIFACT_COMPATIBILITY.md)を参照。
+
+成果物・プロファイルの一致は依然として単なる証拠にすぎず、印刷の許可では決してない。[Print Profile Admission Boundary](docs/PRINT_PROFILE_BOUNDARY.md) は、将来のネイティブコントローラー操作の前に必要な別個の検証を定義している。

@@ -1,0 +1,42 @@
+Uma fila de missões por prioridade real, com uma API HTTP, não apenas um esqueleto que compila.
+
+```bash
+# Windows
+build.bat
+run.bat -addr 127.0.0.1:8090
+
+# Linux / macOS
+./build.sh
+./run.sh -addr 127.0.0.1:8090
+```
+
+`build.sh`/`build.bat` nunca alteram a versão (só `python tools/hydra_project_tool.py bump` a sobe) e depois executam `go build`. O `run.sh`/`run.bat` executam diretamente o binário resultante.
+
+```bash
+# Registar um robô, submeter um trabalho, despachá-lo e depois marcá-lo como concluído
+curl -X POST localhost:8090/robots -d '{"id":"robot-a","tool":"PnP","available":true}'
+curl -X POST localhost:8090/jobs   -d '{"id":"job-1","priority":5,"requiredTool":"PnP"}'
+curl -X POST localhost:8090/dispatch -d '{}'
+curl -X POST localhost:8090/jobs/complete -d '{"id":"job-1","success":true,"robotId":"robot-a"}'
+curl localhost:8090/jobs
+curl localhost:8090/robots
+```
+
+```bash
+# Submissão idempotente: um pedido repetido com o mesmo dedupKey nunca executa
+# o mesmo trabalho duas vezes, mesmo que o cliente tenha usado outro id de trabalho.
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", ..., "result":"created"}
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2-retry","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", ..., "result":"duplicate"} - o mesmo trabalho, intocado
+
+# Após uma falha real, uma repetição com o mesmo dedupKey reutiliza o ID de job-2:
+curl -X POST localhost:8090/jobs/complete -d '{"id":"job-2","success":false,"robotId":"robot-a"}'
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2-retry-2","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", "Status":"pending", ..., "result":"retried"}
+```
+
+```bash
+go test ./...   # src/dispatcher (algoritmo de escalonamento) +
+                 # src/api (idas e voltas HTTP reais via httptest)
+```

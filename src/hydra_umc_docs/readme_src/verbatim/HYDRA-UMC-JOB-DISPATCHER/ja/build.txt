@@ -1,0 +1,44 @@
+コンパイルできるだけの骨組みではなく、優先度付きの本物のジョブ
+キューと HTTP API です。
+
+```bash
+# Windows
+build.bat
+run.bat -addr 127.0.0.1:8090
+
+# Linux / macOS
+./build.sh
+./run.sh -addr 127.0.0.1:8090
+```
+
+`build.sh`/`build.bat` はバージョンを変更せず（上げるのは `python tools/hydra_project_tool.py bump` だけです）、その後 `go build` を実行します。
+`run.sh`/`run.bat` は生成されたバイナリを直接実行します。
+
+```bash
+# ロボットを登録し、ジョブを送信し、ディスパッチし、完了としてマークする
+curl -X POST localhost:8090/robots -d '{"id":"robot-a","tool":"PnP","available":true}'
+curl -X POST localhost:8090/jobs   -d '{"id":"job-1","priority":5,"requiredTool":"PnP"}'
+curl -X POST localhost:8090/dispatch -d '{}'
+curl -X POST localhost:8090/jobs/complete -d '{"id":"job-1","success":true,"robotId":"robot-a"}'
+curl localhost:8090/jobs
+curl localhost:8090/robots
+```
+
+```bash
+# 冪等な送信：同じ dedupKey を持つ再試行リクエストは、クライアントが
+# 異なる id を使っても、同じジョブを二度実行することは決してありません。
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", ..., "result":"created"}
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2-retry","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", ..., "result":"duplicate"} - 同じジョブ、変更なし
+
+# 実際の失敗の後、同じ dedupKey での再試行は job-2 の ID を再利用します：
+curl -X POST localhost:8090/jobs/complete -d '{"id":"job-2","success":false,"robotId":"robot-a"}'
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2-retry-2","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", "Status":"pending", ..., "result":"retried"}
+```
+
+```bash
+go test ./...   # src/dispatcher(スケジューリングアルゴリズム) +
+                 # src/api(httptest による実際の HTTP 往復テスト)
+```

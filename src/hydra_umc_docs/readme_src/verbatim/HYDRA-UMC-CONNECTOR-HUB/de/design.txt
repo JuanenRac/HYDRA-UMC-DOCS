@@ -1,0 +1,60 @@
+- **Ein handgeschriebener Validator, kein `jsonschema`.** Der eigene
+  Vertrag von Lieferung 1 ist klein genug (14 Felder oberster Ebene,
+  eine verschachtelte Fähigkeits-Form), dass eine einfache Python-
+  Funktion, die echte, spezifische Fehlerzeichenketten sammelt, sowohl
+  einfacher als ein generischer JSON-Schema-Validator ist ALS AUCH
+  klarere Ausgaben erzeugt - jede Meldung benennt genau das
+  betroffene Feld/den Index, keinen generischen Schema-Pfad.
+- **Die write/abort-Sicherheitsregel wird im Code durchgesetzt, nicht in
+  der Dokumentation.** `_WRITE_CAPABILITY_REQUIRED_FIELDS` in
+  `schema.py` ist diese explizite Regel, umgesetzt in
+  eine echte, getestete Prüfung - wer ein Manifest schreibt, kann sie
+  nicht vergessen, weil der Validator eine Fähigkeit ablehnt, die es
+  tut.
+- **`authenticationRef` wird als Referenz geprüft, niemals als
+  Freitext akzeptiert.** Ein geschlossenes Set echter Präfixe (`env:`,
+  `secret-store:`, `vault:`, `none:`) - bewusst keine "sieht wie ein
+  Geheimnis aus"-Heuristik (siehe das eigene `log_redaction.py` von
+  HYDRA-UMC-OPS-AGENT dafür, warum eine Heuristik auch hier für genau
+  dasselbe Problem das falsche Werkzeug ist).
+- **Jeder Fehler wird gesammelt, niemals nur der erste.**
+  `validate_adapter_manifest()` prüft weiter, nachdem ein Problem
+  gefunden wurde - wer ein Manifest korrigiert, sieht alle echten
+  Probleme in einem einzigen Durchlauf.
+- **Der Katalog ist absichtlich echt und schreibgeschützt.**
+  `registry.py` durchsucht ein Verzeichnis ohne Rekursion (sodass ein
+  verschachteltes `fixtures/invalid/` niemals einem echten Katalog
+  beitritt), verwirft - meldet aber weiterhin - alles, was
+  `validate_adapter_manifest()` nicht besteht, und lehnt zwei Dateien
+  ab, die dieselbe `adapterId` deklarieren. `catalog_server.py` hat
+  nirgendwo ein `do_POST`/`do_PUT` - ein Schreibversuch erhält das
+  eigene ehrliche `501` von `BaseHTTPRequestHandler`, niemals eine
+  Route, die dieses Projekt zu schützen vergessen hat.
+- **Die Sicherheitsschranke nutzt die eigene echte Logik von
+  HYDRA-UMC-SDK wieder, niemals eine zweite Implementierung davon.**
+  Das `evaluate_capability_call()` von `sdk_gate.py` ruft direkt
+  `hydra_umc_sdk.bridge_contract.evaluate_job()` für jede
+  `write`/`abort`-Fähigkeit auf - eine `read`-Fähigkeit berührt das SDK
+  nie, da `evaluate_job()` eine Bewegungs-/Schreibschranke ist, keine
+  Leseschranke. Siehe
+  [docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md) für die eine
+  bewusste, benannte Vereinfachung, die diese Integration vornimmt (ein
+  einzelner Ersatz-`JobPhase` für jede Schreibaktion, die kein Abbruch
+  ist).
+- **Ein Zertifizierungsdatensatz ist ehrlich darüber, was er beweisen
+  kann und was nicht.** `certification.py` verweigert das Speichern
+  einer Zertifizierung, deren Nachweis nicht zum eigenen
+  `evidenceSchema` des Adapters passt, behauptet aber nie, unabhängig
+  zu verifizieren, dass dieser Nachweis von echter Hardware stammt - es
+  gibt nirgendwo in diesem Projekt einen Codepfad, der eine echte
+  serielle Schnittstelle/OPC-UA-Sitzung/MQTT-Verbindung öffnet, um das
+  zu prüfen. Siehe [docs/CERTIFICATION.md](docs/CERTIFICATION.md).
+- **Die zehn Fixtures nennen echte Eigentümerprojekte, niemals
+  erfundene.** Jedes `ownerProject` in `fixtures/*.json` ist ein echtes
+  Repository dieses Ökosystems (siehe den Abschnitt Verwandte Projekte)
+  - dies ist eine echte Registervorlage, keine spekulative.
+- **Nur Standardbibliothek für den Kern.**
+  `validate`/`catalog`/`serve-catalog`/`certify`/`certifications`
+  benötigen keine Abhängigkeit - `json`, einfaches Python für die
+  strukturellen Prüfungen und `http.server`. Nur `gate` bei einer
+  `write`/`abort`-Fähigkeit benötigt das optionale `[sdk]`-Extra.

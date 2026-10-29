@@ -1,0 +1,1 @@
+🛑 Bridge de coordenação de falha segura para células CNC

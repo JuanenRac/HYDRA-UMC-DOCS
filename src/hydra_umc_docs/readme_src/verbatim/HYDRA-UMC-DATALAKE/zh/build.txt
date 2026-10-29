@@ -1,0 +1,48 @@
+需要 Python >= 3.10。一个真实的、可查询的时序存储，带有 HTTP API，
+而不只是一个能导入的骨架。
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh --port 8095
+
+# Windows
+build.bat
+run.bat --port 8095
+```
+
+`build` 创建/激活本地 `.venv`，以可编辑模式（含 dev 附加项）安装该包，
+验证导入，并运行真实的测试套件（`pytest`）。`run` 启动 HTTP API，并
+转发任何标志（`--addr`、`--port`、`--db`）。
+
+```bash
+# 摄取一个样本（与 HYDRA-UMC-TELEMETRY-COLLECTOR 自己的 Sample 相同的归一化形态）
+curl -X POST localhost:8095/ingest \
+  -d '{"sourceId":"robot-1","kind":"motor_temp","timestamp":1700000000000,"fields":{"value":42.5}}'
+
+# 将其查询回来
+curl "localhost:8095/query?sourceId=robot-1"
+
+# 在真实时间范围上降采样为 1 分钟的桶
+curl "localhost:8095/aggregate?kind=motor_temp&field=value&bucketMs=60000&start=0&end=1800000000000&agg=avg"
+
+curl localhost:8095/stats
+```
+
+```bash
+python -m pytest tests/ -v   # store.py（插入/查询/聚合，包括可手工
+                              # 验证的分桶数学）以及 api.py（针对真实
+                              # ThreadingHTTPServer 在临时端口上的真实
+                              # HTTP 往返测试）
+```
+
+要将本项目与其 3 个子项目（Telemetry-Collector、Anomaly-Detector、
+Production-Reports，作为同级目录检出）一同启动：
+
+```bash
+TELEMETRY_COLLECTOR_TOKEN='a-secret-of-16-or-more-characters' \
+DATALAKE_TOKEN='another-secret-of-16-or-more-characters' \
+ANOMALY_TOKEN='a-third-secret-of-16-or-more-characters' docker compose up --build
+```
+
+该 compose 文件会真正启动这四个服务（每个都带有明确的命令），所有端口都只发布在 `127.0.0.1` 上，并且在没有 `TELEMETRY_COLLECTOR_TOKEN`、`DATALAKE_TOKEN` 或 `ANOMALY_TOKEN`（至少 16 个字符的密钥，collector 的摄取路由、datalake 的写入与管理路由以及检测器的路由随后会要求它们）时拒绝启动。数据保存在具名卷中，因此 `docker compose down` 不会丢失它。`python tools/verify_compose.py` 无需 Docker 即可检查该文件的结构。

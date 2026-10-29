@@ -1,0 +1,4 @@
+* **Fase 1:** Sincronización determinista de enjambre sobre TSN y reducción de jitter sub-ms.
+* **Fase 2:** Planificación de trayectorias 3D con evitación dinámica de obstáculos en celdas multi-robot.
+* **Fase 3:** Optimización del despacho de trabajos multi-robot utilizando disponibilidad de recursos en tiempo real.
+* **Fase 4:** Estimación de duración de trabajos impulsada por IA para una mejor planificación y coordinación de flotas heterogéneas.

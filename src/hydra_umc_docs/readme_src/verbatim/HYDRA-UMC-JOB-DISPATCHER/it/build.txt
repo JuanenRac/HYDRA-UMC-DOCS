@@ -1,0 +1,44 @@
+Una vera coda di missioni con priorità e API HTTP, non solo uno scheletro
+che compila.
+
+```bash
+# Windows
+build.bat
+run.bat -addr 127.0.0.1:8090
+
+# Linux / macOS
+./build.sh
+./run.sh -addr 127.0.0.1:8090
+```
+
+`build.sh`/`build.bat` non cambiano mai la versione (solo `python tools/hydra_project_tool.py bump` la alza) e poi eseguono
+`go build`. `run.sh`/`run.bat` eseguono direttamente il binario risultante.
+
+```bash
+# Registra un robot, invia un lavoro, distribuiscilo, poi segnalo completato
+curl -X POST localhost:8090/robots -d '{"id":"robot-a","tool":"PnP","available":true}'
+curl -X POST localhost:8090/jobs   -d '{"id":"job-1","priority":5,"requiredTool":"PnP"}'
+curl -X POST localhost:8090/dispatch -d '{}'
+curl -X POST localhost:8090/jobs/complete -d '{"id":"job-1","success":true,"robotId":"robot-a"}'
+curl localhost:8090/jobs
+curl localhost:8090/robots
+```
+
+```bash
+# Invio idempotente: una richiesta ritentata con lo stesso dedupKey non
+# esegue mai due volte lo stesso job, anche se il client usa un id diverso.
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", ..., "result":"created"}
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2-retry","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", ..., "result":"duplicate"} - stesso job, invariato
+
+# Dopo un fallimento reale, un nuovo tentativo con lo stesso dedupKey riutilizza l'ID di job-2:
+curl -X POST localhost:8090/jobs/complete -d '{"id":"job-2","success":false,"robotId":"robot-a"}'
+curl -X POST localhost:8090/jobs/submit -d '{"id":"job-2-retry-2","priority":5,"requiredTool":"PnP","dedupKey":"req-abc"}'
+# -> {"ID":"job-2", "Status":"pending", ..., "result":"retried"}
+```
+
+```bash
+go test ./...   # src/dispatcher (algoritmo di scheduling) +
+                 # src/api (round-trip HTTP reali via httptest)
+```

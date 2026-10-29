@@ -1,0 +1,49 @@
+Nécessite Python >= 3.10. Un véritable entrepôt de séries temporelles
+interrogeable avec une API HTTP, pas seulement un squelette qui s'importe.
+
+```bash
+# Linux/macOS
+./build.sh
+./run.sh --port 8095
+
+# Windows
+build.bat
+run.bat --port 8095
+```
+
+`build` crée/active un `.venv` local, installe le paquet (éditable, avec
+les extras de dev) dedans, vérifie l'import, et exécute la véritable suite
+de tests (`pytest`). `run` démarre l'API HTTP et transmet tout indicateur
+(`--addr`, `--port`, `--db`).
+
+```bash
+# Ingérer un échantillon (même forme normalisée que le Sample de HYDRA-UMC-TELEMETRY-COLLECTOR)
+curl -X POST localhost:8095/ingest \
+  -d '{"sourceId":"robot-1","kind":"motor_temp","timestamp":1700000000000,"fields":{"value":42.5}}'
+
+# Le requêter en retour
+curl "localhost:8095/query?sourceId=robot-1"
+
+# Sous-échantillonner en buckets d'1 minute sur une vraie plage de temps
+curl "localhost:8095/aggregate?kind=motor_temp&field=value&bucketMs=60000&start=0&end=1800000000000&agg=avg"
+
+curl localhost:8095/stats
+```
+
+```bash
+python -m pytest tests/ -v   # store.py (insert/query/aggregate, y compris
+                              # des maths de bucketing vérifiables à la main)
+                              # et api.py (allers-retours HTTP réels contre
+                              # un vrai ThreadingHTTPServer sur un port
+                              # éphémère)
+```
+
+Pour démarrer ce projet avec ses trois enfants (Telemetry-Collector, Anomaly-Detector, Production-Reports) placés comme répertoires frères :
+
+```bash
+TELEMETRY_COLLECTOR_TOKEN='a-secret-of-16-or-more-characters' \
+DATALAKE_TOKEN='another-secret-of-16-or-more-characters' \
+ANOMALY_TOKEN='a-third-secret-of-16-or-more-characters' docker compose up --build
+```
+
+Le fichier compose démarre réellement les quatre services (chacun avec une commande explicite), ne publie chaque port que sur `127.0.0.1` et refuse de démarrer sans `TELEMETRY_COLLECTOR_TOKEN`, `DATALAKE_TOKEN` ou `ANOMALY_TOKEN` (des secrets d'au moins 16 caractères, qu'exigent alors les routes d'ingestion du collector, les routes d'écriture et d'administration du datalake et celles du détecteur). Les données vivent dans des volumes nommés, donc `docker compose down` les conserve. `python tools/verify_compose.py` vérifie la structure du fichier sans Docker.

@@ -1,0 +1,47 @@
+```bash
+chmod +x build.sh   # 初回のみ
+./build.sh          # .venv を作成、pip install -e ".[dev]"、コンパイルチェック + テスト
+./run.sh                                   # 本物のデモ: 10 件の実際のフィクスチャを検証
+./run.sh validate fixtures/industrial-opcua.json
+./run.sh validate fixtures/invalid/*.json  # これらはそれぞれ INVALID を報告するはずです
+./run.sh catalog --registry-dir fixtures
+./run.sh serve-catalog --registry-dir fixtures --port 8801   # Ctrl+C で停止
+pip install -e ".[sdk]"                    # write/abort 能力に対する `gate` にのみ必要
+./run.sh gate fixtures/cnc-grbl.json --capability sendControlByte --job-id j1 \
+    --idempotency-key i1 --source studio --cell-state READY --machine-state IDLE
+./run.sh certify fixtures/cnc-grbl.json --machine-model "Genmitsu 3018-PROVer" \
+    --certified-by "あなたの名前" --evidence-file real-status.json --out-dir certifications/
+```
+
+Windows では: 先に `build.bat`、その後 `run.bat`(引数なしの場合は同じ
+デモ) / 上記いずれかのサブコマンド。`build-test.sh`/`.bat` は、この
+プロジェクト自身の CI が実行するのと同じコンパイルチェック(Python
+の構文のみ)を、プロジェクトのバージョンや CHANGELOG に触れずに実行
+します——ただしそれ自体はテストスイートを実行しません。CI は
+`pytest` を別の、より後のステップとして実行します。完全なローカル
+テストスイートには `./build.sh`/`build.bat`(または直接
+`pytest tests/`)を実行してください。
+
+**トラブルシューティング**
+
+- `validate` が、正しいと思っているマニフェストに対して `INVALID` を
+  報告する: 列挙されたすべての理由を読んでください——バリデーターは
+  最初の 1 つだけでなく、すべてを報告します。フィールドごとの正確な
+  契約については [docs/ADAPTER_MANIFEST.md](docs/ADAPTER_MANIFEST.md)
+  を参照してください。
+- `validate` が `ERROR: ... is not valid JSON` を報告する: ファイル自
+  体が不正な形式の JSON であり、これは整形式だが無効なマニフェストと
+  は別の問題です——契約自体を確認する前に、カンマや引用符の欠落を確
+  認してください。
+- `catalog`/`serve-catalog` が終了コード `1` になるか、
+  `invalidFiles` にファイルが列挙される: そのファイルは構造検証に失
+  敗し、意図的にカタログから除外されました——理由の完全な一覧を見る
+  には、それに対して直接 `validate` を実行してください。
+- `gate` が `ERROR: the optional 'hydra-umc-sdk' package is not
+  installed` で失敗する: 先に `pip install -e ".[sdk]"` を実行してく
+  ださい——`write`/`abort` 能力にのみ必要です。
+- `gate`/`certify` が `ERROR: unknown cell_state ...` または
+  `... does not match evidenceSchema` で失敗する: 期待される正確な
+  値/形については
+  [docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md)/
+  [docs/CERTIFICATION.md](docs/CERTIFICATION.md) を参照してください。

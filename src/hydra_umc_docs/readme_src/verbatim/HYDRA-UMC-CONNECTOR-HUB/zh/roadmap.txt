@@ -1,0 +1,5 @@
+本项目自身清单和 CHANGELOG 中已经命名的 4 项交付计划，如今全部四项都已交付真实、经过测试的代码。诚实地说，尚剩：
+
+- **交付 4 的硬件验证空白是刻意保留的。** `certify` 会记录一份由人类见证、依据某个适配器自身 `evidenceSchema` 校验过的证据，但本项目中没有任何东西能独立确认这份证据确实来自那台被指名的真实机器——这需要真正的实体硬件、在一个真实单元中，而这台开发机不具备。见 [docs/CERTIFICATION.md](docs/CERTIFICATION.md)。
+- **真实客户端集成:已经开始,尚未完成。** HYDRA-UMC-SERVER 现在会真正轮询 `serve-catalog`——`GET /api/adapters` 与 `GET /api/adapters/:adapterId` 端到端地转发本项目自身的真实目录(见 HYDRA-UMC-SERVER 自身的 `tools/verify_connector_hub_relay_contract.mjs`,它会启动本项目真实的 `serve-catalog`、对接其真实的 `fixtures/` 以及一个真实的 Server 实例,绝非模拟)。该项目还被打包成真实的 wheel,安装到本项目自身检出目录之外的一个 venv 中并从那里运行,证明了打包本身(而不仅仅是可编辑安装)是可行的。让 Studio/Suite/Updater 自行调用 `gate` 仍是真实、独立、未来的工作。
+- **`gate`/`certify` 调用方与真实单元/机器状态之间缺少真实传输通道。** 如今 `--cell-state`/`--machine-state` 都是由调用方作为已知值传入的——这里没有任何代码路径会从 HYDRA-UMC-SERVER 或某个安全区域服务实时获取它们。

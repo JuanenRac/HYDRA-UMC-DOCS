@@ -1,0 +1,59 @@
+This repository is the **parent/integration point** of the Cognitive AI
+Node family. It does not itself run a model - it owns the shared
+resources and the wiring that let its four children act as one cognitive
+unit on the same physical board:
+
+* **Why this node has no hardware/firmware of its own.** Unlike the
+  motherboard-level HYDRA-UMC firmware, this node runs entirely on an
+  existing Raspberry Pi CM5 + Hailo-10 M.2 module - there is no custom
+  PCB or microcontroller to design here, so `hardware/`/`firmware/`
+  folders were pruned rather than left empty.
+* **Why `os/` and `models/` live only in the parent.** The HydraOS image
+  and the quantized LLM/VLA weights are shared, board-level resources -
+  keeping one copy in the parent and mounting it read-only into each
+  child's container (see `docker-compose.yml`) avoids four divergent
+  copies of multi-gigabyte model weights.
+* **Why a `src/` layout.** Keeps the installable package
+  (`hydra_umc_cognitive_node`) separate from repo-root tooling
+  (`bump_version.py`, `docker-compose.yml`), and matches the layout used
+  by every other Python project across the ecosystem.
+* **Why the entry point only prints identity/version/role today.** This
+  is the andamiaje (scaffolding) stage: proving the package installs,
+  compiles and imports cleanly - on the actual target Python version - is
+  a prerequisite for adding real LLM/VLA/voice orchestration logic later,
+  and keeps that later work isolated from packaging concerns.
+* **Why `docker-compose.yml` documents the integration contract, not just
+  wires up images.** Deciding which service depends on which and what
+  device/volume mounts each needs was written down before any child had
+  a Dockerfile - avoiding that shape being invented ad hoc later. All
+  four children (VLA-Engine, Voice-UI, Semantic-Planner, Docs-QA) now
+  have a real Dockerfile of their own, closing a real gap - `docker compose up`
+  builds and runs the real thing.
+* **How this fits the rest of the ecosystem.** This node sits one layer
+  above perception (HYDRA-UMC-VISION-NODE, Hailo-8) and one layer below
+  mission orchestration (HYDRA-UMC-ORCHESTRATOR): it turns voice/text
+  instructions and detections into semantic decisions, which the
+  orchestrator then turns into physical robot commands.
+* **Why `family-status` reads each child's own manifest instead of a
+  hand-maintained list.** `hydra-umc.project.json` is already the single
+  source of truth the ecosystem-wide dashboard and updater trust - a second
+  list here would drift the moment
+  a child's real maturity changed and nobody remembered to update it.
+* **Why a missing sibling checkout is a real, honest "not found", not an
+  error.** An integration hub genuinely doesn't know whether a developer
+  has checked out all four children locally - `manifest.py` returns
+  `None` for every real failure mode (missing repo, missing manifest,
+  malformed JSON) so `family-status` reports it plainly instead of
+  crashing.
+* **Why sibling manifest reads are capped at 64 KiB.** Every real manifest
+  across this ecosystem is a few hundred bytes to a couple of KiB - a
+  corrupted or malicious checkout whose manifest has been replaced by an
+  oversized file must never make a routine readiness check load an
+  unbounded amount of data into memory. It degrades to `None`, the same
+  as any other malformed manifest.
+* **Why `family-status` reports `models/` even though this node runs no
+  model itself.** "The sibling repos are checked out" and "the shared
+  weights they'd need are actually present" are two different real
+  facts - `models.py`'s `check_shared_models()` checks the second
+  honestly (empty-but-present counts as missing) instead of letting an
+  operator assume readiness from child presence alone.

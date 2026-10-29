@@ -1,0 +1,58 @@
+Este repositório é o **pai/ponto de integração** da família do Nó de IA Cognitiva.
+Não executa ele próprio nenhum modelo - detém os recursos partilhados e a ligação
+que permitem aos seus quatro filhos atuar como uma só unidade cognitiva
+na mesma placa física:
+
+* **Porque este nó não tem hardware/firmware próprios.** Ao contrário do firmware
+  ao nível da placa-mãe do HYDRA-UMC, este nó corre inteiramente num
+  Raspberry Pi CM5 + módulo M.2 Hailo-10 existentes - não há nenhuma PCB nem
+  microcontrolador à medida para desenhar aqui, pelo que as pastas `hardware/`/`firmware/`
+  foram retiradas em vez de deixadas vazias.
+* **Porque `os/` e `models/` vivem apenas no pai.** A imagem HydraOS
+  e os pesos quantizados de LLM/VLA são recursos partilhados ao nível da placa -
+  manter uma cópia no pai e montá-la só de leitura no contentor de cada
+  filho (veja `docker-compose.yml`) evita quatro cópias divergentes de pesos de
+  modelos com vários gigabytes.
+* **Porque uma estrutura `src/`.** Mantém o pacote instalável
+  (`hydra_umc_cognitive_node`) separado das ferramentas da raiz do repositório
+  (`bump_version.py`, `docker-compose.yml`) e corresponde à estrutura usada
+  por todos os outros projetos Python do ecossistema.
+* **Porque o ponto de entrada só imprime a identidade/versão/papel hoje.** Esta
+  é a fase de andaimes (scaffolding): provar que o pacote instala,
+  compila e importa limpo - na versão de Python de destino - é
+  um pré-requisito para acrescentar mais tarde a lógica real de orquestração de LLM/VLA/voz,
+  e mantém esse trabalho posterior isolado das questões de empacotamento.
+* **Porque o `docker-compose.yml` documenta o contrato de integração, e não apenas
+  liga imagens.** Decidir que serviço depende de qual e de que montagens de
+  dispositivos/volumes cada um precisa foi escrito antes de qualquer filho ter
+  um Dockerfile - evitando que essa forma fosse inventada ad hoc mais tarde. Os
+  quatro filhos (VLA-Engine, Voice-UI, Semantic-Planner, Docs-QA) têm agora
+  um Dockerfile real próprio, fechando uma lacuna real - o `docker compose up`
+  constrói e executa a coisa a sério.
+* **Como isto se encaixa no resto do ecossistema.** Este nó fica uma camada
+  acima da perceção (HYDRA-UMC-VISION-NODE, Hailo-8) e uma camada abaixo da
+  orquestração de missões (HYDRA-UMC-ORCHESTRATOR): transforma instruções de voz/texto
+  e deteções em decisões semânticas, que o orquestrador converte depois em comandos
+  físicos para o robô.
+* **Porque o `family-status` lê o manifesto de cada filho em vez de uma lista
+  mantida à mão.** O `hydra-umc.project.json` já é a única fonte de verdade
+  em que o painel e o atualizador de todo o ecossistema confiam - uma segunda
+  lista aqui divergiria no momento
+  em que a maturidade real de um filho mudasse e ninguém se lembrasse de a atualizar.
+* **Porque uma cópia de irmão em falta é um "não encontrado" real e honesto, e não um
+  erro.** Um centro de integração genuinamente não sabe se um programador
+  clonou localmente os quatro filhos - o `manifest.py` devolve
+  `None` para todos os modos de falha reais (repositório em falta, manifesto em falta,
+  JSON malformado), para que o `family-status` o reporte com clareza em vez de
+  falhar.
+* **Porque as leituras de manifestos de irmãos têm um limite de 64 KiB.** Todos os manifestos reais
+  deste ecossistema têm de algumas centenas de bytes a um par de KiB - uma cópia corrompida
+  ou maliciosa cujo manifesto tenha sido substituído por um ficheiro sobredimensionado nunca deve fazer
+  uma verificação de prontidão de rotina carregar uma quantidade ilimitada de dados para a memória.
+  Degrada para `None`, tal como qualquer outro manifesto malformado.
+* **Porque o `family-status` reporta o `models/` mesmo que este nó não execute
+  nenhum modelo.** "Os repositórios irmãos estão clonados" e "os pesos partilhados de que
+  precisariam estão realmente presentes" são dois factos reais diferentes -
+  o `check_shared_models()` do `models.py` verifica o segundo com
+  honestidade (vazio mas presente conta como em falta) em vez de deixar um
+  operador presumir a prontidão só pela presença dos filhos.

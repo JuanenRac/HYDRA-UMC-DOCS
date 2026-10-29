@@ -1,0 +1,3 @@
+**HYDRA-UMC-ANOMALY-DETECTOR** est destiné à devenir le gardien proactif de la santé robotique. Il applique une FFT et une base de référence statistique (aucun modèle d'apprentissage automatique) à des échantillons de télémétrie (vibrations, signatures de courant moteur et profils thermiques) et signale les écarts par rapport à une base saine ; il ne prédit pas encore les pannes.
+
+L'objectif est de surveiller l'« empreinte numérique » de chaque moteur et tête d'outil afin de pouvoir repérer l'usure des roulements, les courroies desserrées ou les défaillances de refroidissement des semaines à l'avance, pour permettre une maintenance programmée au lieu de réparations d'urgence (prévu : aucun code de prédiction de pannes n'existe encore).

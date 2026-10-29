@@ -10,7 +10,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import __version__, brand, catalog, claims, family, glance, publication, readmes, status
+from . import __version__, brand, catalog, claims, family, glance, glance_jump, publication, readme_universal, readmes, status
 
 REPO = Path(__file__).resolve().parents[2]
 CATALOG_FILE = REPO / "docs" / "PROJECT_CATALOG.md"
@@ -80,24 +80,46 @@ def make_brand(argv: list[str] | None = None) -> int:
 
 
 def make_readmes(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="make_readmes.py", description="Write README.md and its seven translations from tools/readme_src.")
+    parser = argparse.ArgumentParser(prog="make_readmes.py", description="Write README.md and its seven translations of this repository from tools/readme_src, and of the repositories next to it that have a source in readme_src/repos.")
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--repo", action="append", metavar="NAME", help="only this sibling repository (repeat the option for several); without it this repository and every sibling that has a source")
+    parser.add_argument("--workspace", help="the folder that holds the repositories (default: the parent of this repository)")
     args = parser.parse_args(argv)
     stale = []
-    for name, content in readmes.outputs(REPO).items():
-        target = REPO / name
-        current = target.read_text(encoding="utf-8").replace("\r\n", "\n") if target.is_file() else None
-        if current == content:
+    jobs: list[tuple[Path, dict[str, str]]] = []
+    if not args.repo:
+        jobs.append((REPO, readmes.outputs(REPO)))
+    workspace = _workspace(args)
+    sources = sorted(path.stem.replace("_", "-") for path in (Path(__file__).resolve().parent / "readme_src" / "repos").glob("HYDRA_UMC*.py"))
+    entries = glance.load_data(GLANCE_FILE)
+    done = 0
+    for name in args.repo or sources:
+        sibling = workspace / name
+        if not sibling.is_dir():
             continue
-        stale.append(name)
-        if not args.check:
-            target.write_text(content, encoding="utf-8", newline="\n")
+        if name not in entries:
+            print(f"READMES=FAIL {name} is not in data/glance.json", file=sys.stderr)
+            return 1
+        try:
+            jobs.append((sibling, readme_universal.outputs(sibling, entries[name])))
+        except (OSError, ValueError, KeyError) as error:
+            print(f"READMES=FAIL {name}: {error}", file=sys.stderr)
+            return 1
+        done += 1
+    for base, outputs in jobs:
+        for name, content in outputs.items():
+            target = base / name
+            current = target.read_bytes().decode("utf-8").replace("\r\n", "\n") if target.is_file() else None
+            if current == content:
+                continue
+            stale.append(f"{base.name}/{name}")
+            if not args.check:
+                target.write_text(content, encoding="utf-8", newline="\n")
     if args.check and stale:
         print("READMES=FAIL out of date: " + ", ".join(stale), file=sys.stderr)
         return 1
-    print(f"READMES={'PASS' if args.check else 'WRITTEN'} {len(readmes.LANGUAGES)} languages")
+    print(f"READMES={'PASS' if args.check else 'WRITTEN'} {len(readmes.LANGUAGES)} languages, {done} sibling repositories")
     return 0
-
 
 def make_glance(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="make_glance.py", description="Write or check the 'At a glance' and 'Project status' sections of the eight READMEs of the repositories next to this one.")
@@ -127,9 +149,9 @@ def make_glance(argv: list[str] | None = None) -> int:
                     problems.append(f"{name}: the repository is not next to this one")
                 continue
             if args.apply:
-                for changed in glance.apply_repo(repo, entries[name]) + status.apply_repo(repo, entries[name]):
+                for changed in glance_jump.apply_repo(repo, entries[name]) + status.apply_repo(repo, entries[name]):
                     print(f"WRITTEN {name}/{changed}")
-            problems += glance.check_repo(repo, entries[name]) + status.check_repo(repo, entries[name])
+            problems += glance_jump.check_repo(repo, entries[name]) + status.check_repo(repo, entries[name])
             done += 1
     except (glance.GlanceError, OSError, ValueError) as error:
         print(f"GLANCE=FAIL {error}", file=sys.stderr)

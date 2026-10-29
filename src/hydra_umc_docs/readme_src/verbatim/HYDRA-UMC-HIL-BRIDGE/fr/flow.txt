@@ -1,0 +1,6 @@
+La répartition par mode au niveau de `BRIDGE` et la porte de verrouillage
+de sécurité sur le chemin `Mode Réel` sont réelles aujourd'hui
+(`bridge.rs`/`interlock.rs`), acheminant vers un récepteur en mémoire
+plutôt qu'un vrai processus en direct. Tout ce qui touche un vrai
+processus `APP`, `TWIN` ou `CORE` via une vraie connexion reste du
+travail futur.

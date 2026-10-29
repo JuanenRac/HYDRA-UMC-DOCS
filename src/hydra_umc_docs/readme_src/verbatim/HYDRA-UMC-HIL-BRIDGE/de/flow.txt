@@ -1,0 +1,6 @@
+Die modusbasierte Aufteilung bei `BRIDGE` und die Sicherheitsverriegelung
+auf dem `Realmodus`-Pfad sind heute real (`bridge.rs`/`interlock.rs`) und
+leiten an einen In-Memory-Empfänger weiter, statt an einen echten
+laufenden Prozess. Alles, was einen echten `APP`-, `TWIN`- oder
+`CORE`-Prozess über eine echte Verbindung betrifft, bleibt zukünftige
+Arbeit.

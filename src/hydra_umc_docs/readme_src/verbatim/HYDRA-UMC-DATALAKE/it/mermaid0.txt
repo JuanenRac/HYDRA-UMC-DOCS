@@ -1,0 +1,6 @@
+flowchart LR
+    NODES["HydraNode e URTC"] --> COLL["TELEMETRY-COLLECTOR"]
+    COLL --> LAKE["HYDRA-UMC-DATALAKE"]
+    LAKE --> ANALY["ANOMALY-DETECTOR (AI)"]
+    LAKE --> REP["PRODUCTION-REPORTS"]
+    LAKE --> DASH["Dashboard STUDIO / SUITE"]

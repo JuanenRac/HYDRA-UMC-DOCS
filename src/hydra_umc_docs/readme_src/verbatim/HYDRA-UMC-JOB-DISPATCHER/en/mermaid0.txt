@@ -1,0 +1,8 @@
+flowchart LR
+    REQ["New Mission Request"] --> Q["Global Mission Queue"]
+    Q --> SCHED["Dispatcher Scheduler"]
+    DB[("Tool & Robot Registry")] --> SCHED
+    SCHED --> R1["Robot A (PnP)"]
+    SCHED --> R2["Robot B (Laser)"]
+    R1 -- Success/Fail --> SCHED
+    SCHED -.-> LOG["Production Reports (planned)"]

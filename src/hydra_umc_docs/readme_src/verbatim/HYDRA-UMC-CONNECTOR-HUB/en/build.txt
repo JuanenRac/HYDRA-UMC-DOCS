@@ -1,0 +1,44 @@
+```bash
+chmod +x build.sh   # one-time
+./build.sh          # creates .venv, pip install -e ".[dev]", compile-checks + tests
+./run.sh                                   # real demo: validates the ten real fixtures
+./run.sh validate fixtures/industrial-opcua.json
+./run.sh validate fixtures/invalid/*.json  # every one of these should report INVALID
+./run.sh catalog --registry-dir fixtures
+./run.sh serve-catalog --registry-dir fixtures --port 8801   # Ctrl+C to stop
+pip install -e ".[sdk]"                    # only needed for `gate` on a write/abort capability
+./run.sh gate fixtures/cnc-grbl.json --capability sendControlByte --job-id j1 \
+    --idempotency-key i1 --source studio --cell-state READY --machine-state IDLE
+./run.sh certify fixtures/cnc-grbl.json --machine-model "Genmitsu 3018-PROVer" \
+    --certified-by "Your Name" --evidence-file real-status.json --out-dir certifications/
+```
+
+On Windows: `build.bat`, then `run.bat` (same demo when called with no
+arguments) / any of the subcommands above. `build-test.sh`/`.bat`
+performs the same non-mutating Python-syntax compile check this
+project's own CI workflow performs, without touching the project
+version or CHANGELOG - it does NOT run the test suite itself; CI runs
+`pytest` as its own separate, later step. Run `./build.sh`/`build.bat`
+(or `pytest tests/` directly) for the full local test suite.
+
+**Troubleshooting**
+
+- `validate` reports `INVALID` for a manifest you believe is correct:
+  read every listed reason - the validator reports all of them, not just
+  the first. See [docs/ADAPTER_MANIFEST.md](docs/ADAPTER_MANIFEST.md)
+  for the exact field-by-field contract.
+- `validate` reports `ERROR: ... is not valid JSON`: the file itself is
+  malformed JSON, distinct from a well-formed-but-invalid manifest -
+  check for a missing comma/quote before checking the contract itself.
+- `catalog`/`serve-catalog` exits `1` or lists a file under
+  `invalidFiles`: that file failed structural validation and was left
+  out of the catalog on purpose - run `validate` on it directly for the
+  full list of reasons.
+- `gate` fails with `ERROR: the optional 'hydra-umc-sdk' package is not
+  installed`: run `pip install -e ".[sdk]"` first - only needed for a
+  `write`/`abort` capability.
+- `gate`/`certify` fails with `ERROR: unknown cell_state ...` or
+  `... does not match evidenceSchema`: see
+  [docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md)/
+  [docs/CERTIFICATION.md](docs/CERTIFICATION.md) for the exact real
+  values/shapes expected.

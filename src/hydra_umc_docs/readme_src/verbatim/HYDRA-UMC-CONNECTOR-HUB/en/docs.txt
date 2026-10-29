@@ -1,0 +1,8 @@
+- **[docs/ADAPTER_MANIFEST.md](docs/ADAPTER_MANIFEST.md)** — the full real contract, field by field, and why `authenticationRef` is a reference.
+- **[docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md)** — Delivery 3's own real HYDRA-UMC-SDK safety-gate integration and its one named simplification.
+- **[docs/CERTIFICATION.md](docs/CERTIFICATION.md)** — Delivery 4's own real certification-record contract and its honest hardware-verification gap.
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — every subcommand, its output shapes, and the exit-code contract.
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** — tech stack and coding guidelines for a pull request.
+- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** — the standards of behavior expected in this community.
+- **[SECURITY.md](SECURITY.md)** — how to report a vulnerability, and this project's own real security focus areas.
+- **[SUPPORT.md](SUPPORT.md)** — where to ask questions and report bugs.

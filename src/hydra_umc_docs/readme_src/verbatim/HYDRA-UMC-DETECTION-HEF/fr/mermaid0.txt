@@ -1,0 +1,6 @@
+flowchart LR
+    TRAIN["Entraînement (PyTorch/YOLO)"] --> ONNX["Export vers ONNX"]
+    ONNX --> DFC["Hailo Dataflow Compiler"]
+    DFC --> HAR["Quantification (HAR)"]
+    HAR --> HEF["Binaire HEF"]
+    HEF --> NODE["HYDRA-UMC-VISION-NODE"]

@@ -1,0 +1,1 @@
+🤖 语义推理与生成式 AI 边缘节点（Hailo-10 + Raspberry Pi CM5）

@@ -1,0 +1,8 @@
+**Cosa funziona oggi:** il registro di modelli - validazione per schema (inclusi metadati di architettura Hailo richiesti e validati), rilevamento versioni duplicate, ricerca dell'ultima versione, e verifica di integrità tramite sha256 (`registry.py`) - più una vera verifica combinata di caricamento sicuro che controlla compatibilità dell'architettura e integrità del checksum insieme e non riporta mai un modello pronto a meno che entrambi non passino (`compatibility.py`), gli stessi controlli esposti anche come vera API JSON/HTTP di lunga durata (`api.py`, sottocomando `serve`) accanto alla CLI a esecuzione singola, {tests} test in totale, più un vero pacchetto Python installabile con un entry point verificato e un comando `bump` esplicito, in stile contachilometri, che aumenta la versione (compilare non la cambia mai). Vedi [`CHANGELOG.md`](CHANGELOG.md) per l'output di build/run catturato.
+
+**Cosa resta aperto, senza ordine particolare, senza calendario impegnato, e bloccato da vero hardware Hailo:**
+
+* La vera esportazione ONNX da modelli PyTorch/YOLO addestrati.
+* L'integrazione con il Hailo Dataflow Compiler per la quantizzazione INT8/INT4.
+* Il pacchettizzazione HAR/HEF che popolerebbe davvero un file di registro che il `registry.py` di questo progetto sa già leggere e validare.
+* Pubblicare l'output `.hef` compilato nella cartella `models/` di [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE).

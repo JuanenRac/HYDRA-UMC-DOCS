@@ -1,0 +1,8 @@
+- **[docs/ADAPTER_MANIFEST.md](docs/ADAPTER_MANIFEST.md)** — el contrato real completo, campo a campo, y por qué `authenticationRef` es una referencia.
+- **[docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md)** — la propia integración real de la Entrega 3 con la puerta de seguridad de HYDRA-UMC-SDK y su única simplificación nombrada.
+- **[docs/CERTIFICATION.md](docs/CERTIFICATION.md)** — el propio contrato real de registro de certificación de la Entrega 4 y su hueco honesto de verificación de hardware.
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — cada subcomando, sus formas de salida, y el contrato de códigos de salida.
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** — stack tecnológico y pautas de codificación para un pull request.
+- **[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)** — los estándares de comportamiento esperados en esta comunidad.
+- **[SECURITY.md](SECURITY.md)** — cómo reportar una vulnerabilidad, y las áreas reales de enfoque en seguridad de este proyecto.
+- **[SUPPORT.md](SUPPORT.md)** — dónde hacer preguntas y reportar errores.

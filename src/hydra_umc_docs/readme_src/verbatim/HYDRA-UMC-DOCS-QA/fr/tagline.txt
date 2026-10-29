@@ -1,0 +1,1 @@
+🤖 Assistant IA basé sur le RAG pour la maintenance et la documentation du matériel

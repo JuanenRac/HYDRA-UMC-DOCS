@@ -1,0 +1,83 @@
+### 前提条件
+
+* `PATH` 中存在 **Python 3.10 或更新版本**（脚本先尝试 `python3`，再回退到 `python`）。
+* 目前不需要任何 ONNX/Hailo Dataflow Compiler 工具——此阶段**没有任何第三方运行时依赖**（`pyproject.toml` 中 `dependencies = []`）。
+* 本地虚拟环境（`.venv/` 下）需要数十 MB 磁盘空间。
+
+### 逐步说明
+
+```bash
+# Linux / macOS
+./build.sh
+```
+
+1. **版本读取** —— 读取并显示项目版本；构建绝不会更改它（只有 `python tools/hydra_project_tool.py bump` 才会提升）。
+2. **虚拟环境** —— 若 `.venv/` 不存在则创建；否则复用。
+3. **可编辑安装** —— `pip install -e ".[dev]"`，使 `src/` 下的修改立即生效，安装 `pytest`，并注册 `hydra-umc-detection-hef` 控制台入口点。
+4. **编译检查** —— `python -m compileall -q src` 对 `src/` 下每个文件进行字节码编译，在整个生态系统范围内捕获语法错误。
+5. **真实测试套件** —— `python -m pytest tests/ -q`（{tests} 个测试，覆盖注册表、安全加载关卡和 CLI）。
+
+`set -euo pipefail` 会在第一个失败步骤处停止脚本；只有全部 5 个步骤均
+成功时，构建才会报告成功。
+
+```bash
+./run.sh
+```
+
+在 `.venv` 内定位解释器（同时处理 POSIX 和 Windows 的 `.venv` 目录结构），
+运行 `python -m hydra_umc_detection_hef.main` 并转发所有参数——裸调用会
+打印名称 + 版本 + 角色。
+
+真实示例——校验一个注册表并查找某个模型的最新版本：
+
+```bash
+./run.sh registry validate --registry registry.json --models-dir models/
+# 2 entries in registry.json
+#   pcb-defect 0.1.0: pcb-defect-0.1.0.hef not present locally, skipped
+#   pcb-defect 0.2.0: checksum OK
+# registry OK
+
+./run.sh registry latest --registry registry.json --name pcb-defect
+# pcb-defect 0.2.0  task=detection  input_shape=(640, 640, 3)
+# classes: solder_bridge, missing_component
+# hef_path: pcb-defect-0.2.0.hef
+# sha256: 1c8a52bb4a34927d55efc913b23f06bd08ff5eeee0aca2ccd8d2c0fd34c81497
+```
+
+每条注册表条目还会声明自己的目标 `hailo_arch`（例如 `hailo8`）。真实的
+`registry load` 子命令会把上面的校验和检查与一次真实的架构兼容性检查
+结合在一起，只有两者都通过时才会报告模型已就绪：
+
+```bash
+./run.sh registry load --registry registry.json --models-dir models/ --name pcb-defect --target-arch hailo8
+# READY: pcb-defect 0.2.0 (hailo8) verified and ready
+
+./run.sh registry load --registry registry.json --models-dir models/ --name pcb-defect --target-arch hailo15h
+# REJECTED_ARCH_MISMATCH: model compiled for 'hailo8', this deployment targets 'hailo15h'
+```
+
+添加新模型不再意味着手动编辑 JSON(包括 sha256——`verify_checksum()` 只会校验它,从不生成它)—— `registry add` 会对真实的本地 `.hef` 文件计算哈希,并追加一条已验证的条目:
+
+```bash
+./run.sh registry add --registry registry.json --models-dir models/ --hef-path pcb-defect-0.3.0.hef \
+  --name pcb-defect --version 0.3.0 --task detection --input-shape 640,640,3 \
+  --classes solder_bridge,missing_component --hailo-arch hailo8
+# added pcb-defect 0.3.0 to registry.json (sha256=<真实计算出的摘要>)
+```
+
+注册表文件以原子方式重写（先写到它旁边、fsync，再重命名覆盖），因此添加模型时遇到断电或磁盘已满，保留下来的是之前的注册表，而不是一个被截断的文件。
+
+同样的注册表/安全加载检查也可以通过 `./run.sh serve --registry registry.json --models-dir models/`（默认 `127.0.0.1:8093`）作为长期运行的 JSON/HTTP API 使用。完整的命令与端点参考（每个示例均来自真实运行）见 [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md)。
+
+```bat
+:: Windows - 步骤相同，批处理语法
+build.bat
+run.bat
+```
+
+### 故障排查
+
+* **找不到 `python`/`python3`** —— 安装 Python 3.10+ 并确保其在 `PATH` 中。
+* **`compileall` 失败** —— 意味着 `src/` 下确实引入了语法错误；构建会故意在不触及安装的情况下停止。
+* **`run.sh`/`run.bat` 提示"未找到 `.venv`"** —— 先至少运行一次 `build.sh`/`build.bat`。
+* **可编辑安装过期** —— 删除 `.venv/` 并重新构建；很少需要这样做。

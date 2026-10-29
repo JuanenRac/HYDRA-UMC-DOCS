@@ -1,0 +1,99 @@
+# HYDRA-UMC-DOCS - readme_src/repos/HYDRA_UMC_BRIDGE_AMR.py
+# Copyright (C) 2026 JuanenRac (Electro Hobby 3D). GPL-3.0-or-later.
+"""What is specific to the README of HYDRA-UMC-BRIDGE-AMR."""
+from __future__ import annotations
+
+from ...readme_kit import P, arch, code, table, LIMITS, WHY
+from .. import bridge_kit as B
+
+ICON = "🚚"
+COMMENT = "AMR/AGV coordination bridge"
+BADGES = [("Python", "3.11%2B", "3776AB"), ("Safety", "Fails%20Closed", "red")]
+NO_UI = True
+
+
+def DOCS(lg, ctx):
+    return [B.docs_item(lg, "docs/BRIDGE_GUIDE.md", P("scope, the VDA 5050 messages, frames, scripts", "alcance, los mensajes VDA 5050, marcos de referencia, scripts", "Umfang, die VDA-5050-Nachrichten, Bezugssysteme, Skripte", "périmètre, messages VDA 5050, repères, scripts",
+                                                       "ambito, i messaggi VDA 5050, sistemi di riferimento, script", "範囲、VDA 5050 メッセージ、座標系、スクリプト", "范围、VDA 5050 消息、坐标系、脚本", "âmbito, as mensagens VDA 5050, referenciais, scripts"))]
+
+
+def BODY(lg, ctx):
+    out = {"overview": ctx.v(lg, "overview")}
+    out["role"] = "\n\n".join([
+        P("**HYDRA-UMC-BRIDGE-AMR** coordinates an AGV or AMR fleet with a robot cell. It turns a gated cell job into a VDA 5050 order (never raw motion) and reads the vehicle's own `state` and `connection` messages back, so the gate knows whether the vehicle can take an order.",
+          "**HYDRA-UMC-BRIDGE-AMR** coordina una flota de AGV o AMR con una celda de robots. Convierte un trabajo de celda ya validado en una orden VDA 5050 (nunca movimiento crudo) y lee de vuelta los mensajes `state` y `connection` del propio vehículo, para que la puerta sepa si puede aceptar una orden.",
+          "**HYDRA-UMC-BRIDGE-AMR** koordiniert eine AGV- oder AMR-Flotte mit einer Roboterzelle. Er macht aus einem geprüften Zellenauftrag einen VDA-5050-Auftrag (nie rohe Bewegung) und liest die Nachrichten `state` und `connection` des Fahrzeugs zurück, damit das Tor weiß, ob es einen Auftrag annehmen kann.",
+          "**HYDRA-UMC-BRIDGE-AMR** coordonne une flotte d'AGV ou d'AMR avec une cellule de robots. Il transforme un travail de cellule validé en ordre VDA 5050 (jamais de mouvement brut) et relit les messages `state` et `connection` du véhicule, pour que la porte sache s'il peut prendre un ordre.",
+          "**HYDRA-UMC-BRIDGE-AMR** coordina una flotta di AGV o AMR con una cella di robot. Trasforma un lavoro di cella già validato in un ordine VDA 5050 (mai movimento grezzo) e rilegge i messaggi `state` e `connection` del veicolo, così la porta sa se può accettare un ordine.",
+          "**HYDRA-UMC-BRIDGE-AMR** は AGV/AMR 群とロボットセルを協調させます。ゲートを通ったセルのジョブを VDA 5050 の命令（生の動作は不可）に変換し、車両自身の `state` と `connection` を読み戻して、命令を受けられるかをゲートが判断できるようにします。",
+          "**HYDRA-UMC-BRIDGE-AMR** 让 AGV/AMR 车队与机器人单元协同。它把已通过关口的任务转成 VDA 5050 订单（绝不发原始运动），并读回车辆自己的 `state` 和 `connection` 消息，使关口知道车辆能否接受订单。",
+          "O **HYDRA-UMC-BRIDGE-AMR** coordena uma frota de AGV ou AMR com uma célula de robôs. Converte um trabalho de célula já validado numa ordem VDA 5050 (nunca movimento bruto) e lê de volta as mensagens `state` e `connection` do próprio veículo, para a porta saber se ele pode aceitar uma ordem.")[lg],
+        B.ROLE_SHARED_MQTT[lg],
+    ])
+    out["architecture"] = arch(lg, "HYDRA-UMC-BRIDGE-AMR architecture", ctx.v(lg, "mermaid0"), after=WHY[lg] + "\n\n" + ctx.v(lg, "design"))
+    out["features"] = ctx.v(lg, "features")
+    out["security"] = B.security(lg, [
+        [P("A raw motion order sent to a vehicle", "Una orden de movimiento crudo enviada a un vehículo", "Ein roher Bewegungsbefehl an ein Fahrzeug", "Un ordre de mouvement brut envoyé à un véhicule", "Un ordine di movimento grezzo inviato a un veicolo", "車両に送られる生の動作命令", "向车辆发送原始运动命令", "Uma ordem de movimento bruto enviada a um veículo"),
+         P("The coordinator maps a job to an AMR-local order only; `simulated_amr.TRANSITIONS` says which action is legal from which state (for example `MOVE_TO_STAGING` only from `IDLE`)", "El coordinador solo convierte el trabajo en una orden local del AMR; `simulated_amr.TRANSITIONS` dice qué acción es legal desde qué estado (por ejemplo `MOVE_TO_STAGING` solo desde `IDLE`)",
+           "Der Koordinator setzt einen Auftrag nur in einen AMR-lokalen Befehl um; `simulated_amr.TRANSITIONS` sagt, welche Aktion aus welchem Zustand erlaubt ist (z. B. `MOVE_TO_STAGING` nur aus `IDLE`)", "Le coordinateur ne transforme un travail qu'en ordre local AMR ; `simulated_amr.TRANSITIONS` dit quelle action est légale depuis quel état (par exemple `MOVE_TO_STAGING` seulement depuis `IDLE`)",
+           "Il coordinatore trasforma un lavoro solo in un ordine locale AMR; `simulated_amr.TRANSITIONS` dice quale azione è legale da quale stato (per esempio `MOVE_TO_STAGING` solo da `IDLE`)", "コーディネーターはジョブを AMR ローカルの命令にしか変換しません。`simulated_amr.TRANSITIONS` が、どの状態からどの動作が許されるかを定めます（例：`MOVE_TO_STAGING` は `IDLE` からのみ）",
+           "协调器只把任务转为 AMR 本地命令；`simulated_amr.TRANSITIONS` 规定哪个状态下允许哪个动作（例如 `MOVE_TO_STAGING` 只能从 `IDLE` 开始）", "O coordenador só converte o trabalho numa ordem local do AMR; `simulated_amr.TRANSITIONS` diz que ação é legal a partir de que estado (por exemplo `MOVE_TO_STAGING` só a partir de `IDLE`)"),
+         "`coordinator.py`, `simulated_amr.py`"],
+        [P("A malformed VDA 5050 message", "Un mensaje VDA 5050 mal formado", "Eine fehlerhafte VDA-5050-Nachricht", "Un message VDA 5050 mal formé", "Un messaggio VDA 5050 malformato", "不正な VDA 5050 メッセージ", "格式错误的 VDA 5050 消息", "Uma mensagem VDA 5050 malformada"),
+         P("Every `order` and `instantActions` message the publisher builds is validated in the tests against the official VDA 5050 2.0.0 JSON schemas, vendored unchanged", "Cada mensaje `order` e `instantActions` que construye el publicador se valida en las pruebas contra los esquemas JSON oficiales de VDA 5050 2.0.0, copiados sin cambios",
+           "Jede vom Publisher gebaute Nachricht `order` und `instantActions` wird in den Tests gegen die offiziellen JSON-Schemas von VDA 5050 2.0.0 geprüft, unverändert übernommen", "Chaque message `order` et `instantActions` construit par l'éditeur est validé dans les tests contre les schémas JSON officiels de VDA 5050 2.0.0, copiés sans changement",
+           "Ogni messaggio `order` e `instantActions` costruito dal publisher è validato nei test contro gli schemi JSON ufficiali di VDA 5050 2.0.0, copiati senza modifiche", "パブリッシャーが作る `order` と `instantActions` の各メッセージは、変更せずに取り込んだ VDA 5050 2.0.0 公式 JSON スキーマに対してテストで検証されます",
+           "发布器构造的每条 `order` 和 `instantActions` 消息，都在测试中按原样引入的 VDA 5050 2.0.0 官方 JSON 模式验证", "Cada mensagem `order` e `instantActions` que o publicador constrói é validada nos testes contra os esquemas JSON oficiais do VDA 5050 2.0.0, copiados sem alterações"),
+         "`tests/test_vda5050_schemas.py`"],
+        [P("A vehicle that cannot take an order", "Un vehículo que no puede aceptar una orden", "Ein Fahrzeug, das keinen Auftrag annehmen kann", "Un véhicule qui ne peut pas prendre d'ordre", "Un veicolo che non può accettare un ordine", "命令を受けられない車両", "无法接受订单的车辆", "Um veículo que não pode aceitar uma ordem"),
+         P("A rejected dispatch never reaches the network; the observer treats a missing or stale (over 90 seconds) `state` or `connection` as not ready", "Un despacho rechazado nunca llega a la red; el observador trata un `state` o `connection` ausente o viejo (más de 90 segundos) como no listo", "Ein abgelehnter Versand erreicht nie das Netz; der Beobachter behandelt ein fehlendes oder altes (über 90 Sekunden) `state` oder `connection` als nicht bereit",
+           "Un envoi refusé n'atteint jamais le réseau ; l'observateur traite un `state` ou `connection` absent ou ancien (plus de 90 secondes) comme non prêt", "Un invio rifiutato non raggiunge mai la rete; l'osservatore tratta uno `state` o `connection` mancante o vecchio (oltre 90 secondi) come non pronto", "拒否されたディスパッチはネットワークに出ません。オブザーバーは `state` や `connection` が無い、または 90 秒より古い場合を未準備として扱います",
+           "被拒绝的派发绝不会到达网络；观察者把缺失或过期（超过 90 秒）的 `state` 或 `connection` 视为未就绪", "Um envio recusado nunca chega à rede; o observador trata um `state` ou `connection` em falta ou antigo (mais de 90 segundos) como não pronto"),
+         "`mqtt_transport.py`, `observer.py`"],
+    ], P("it never sends raw motion, and it has never run against a real vehicle or fleet manager.", "nunca envía movimiento crudo y nunca ha corrido contra un vehículo ni un gestor de flota reales.", "er sendet nie rohe Bewegung und lief nie gegen ein echtes Fahrzeug oder Flottenmanagement.", "il n'envoie jamais de mouvement brut et n'a jamais tourné contre un véhicule ni un gestionnaire de flotte réels.",
+         "non invia mai movimento grezzo e non ha mai girato contro un veicolo o un gestore di flotta reali.", "生の動作は送らず、実際の車両やフリート管理に対して動かしたことはありません。", "它从不发送原始运动，也从未对真实车辆或车队管理器运行过。", "nunca envia movimento bruto e nunca correu contra um veículo ou gestor de frota reais."), common=("gate", "limits", "idem"))
+    out["interfaces"] = "\n\n".join([
+        P("The VDA 5050 topics are `{interface_name}/{major_version}/{manufacturer}/{serial_number}/{channel}` (`Vda5050Target.topic()`), for example `vda5050/v2/acme/agv-01/order`.",
+          "Los topics VDA 5050 son `{interface_name}/{major_version}/{manufacturer}/{serial_number}/{channel}` (`Vda5050Target.topic()`), por ejemplo `vda5050/v2/acme/agv-01/order`.",
+          "Die VDA-5050-Topics sind `{interface_name}/{major_version}/{manufacturer}/{serial_number}/{channel}` (`Vda5050Target.topic()`), zum Beispiel `vda5050/v2/acme/agv-01/order`.",
+          "Les topics VDA 5050 sont `{interface_name}/{major_version}/{manufacturer}/{serial_number}/{channel}` (`Vda5050Target.topic()`), par exemple `vda5050/v2/acme/agv-01/order`.",
+          "I topic VDA 5050 sono `{interface_name}/{major_version}/{manufacturer}/{serial_number}/{channel}` (`Vda5050Target.topic()`), per esempio `vda5050/v2/acme/agv-01/order`.",
+          "VDA 5050 のトピックは `{interface_name}/{major_version}/{manufacturer}/{serial_number}/{channel}`（`Vda5050Target.topic()`）で、例は `vda5050/v2/acme/agv-01/order` です。",
+          "VDA 5050 主题为 `{interface_name}/{major_version}/{manufacturer}/{serial_number}/{channel}`（`Vda5050Target.topic()`），例如 `vda5050/v2/acme/agv-01/order`。",
+          "Os tópicos VDA 5050 são `{interface_name}/{major_version}/{manufacturer}/{serial_number}/{channel}` (`Vda5050Target.topic()`), por exemplo `vda5050/v2/acme/agv-01/order`.")[lg],
+        table(lg, "topic", [
+            ["`order`, `instantActions`", P("published; each has its own `header_id` counter and a UTC timestamp", "se publican; cada uno lleva su propio contador `header_id` y una marca de tiempo UTC", "werden veröffentlicht; jedes hat einen eigenen `header_id`-Zähler und einen UTC-Zeitstempel", "publiés ; chacun a son compteur `header_id` et un horodatage UTC", "pubblicati; ognuno ha il proprio contatore `header_id` e un timestamp UTC", "発行されます。それぞれ独自の `header_id` カウンターと UTC のタイムスタンプを持ちます", "被发布；各自有独立的 `header_id` 计数器和 UTC 时间戳", "são publicados; cada um tem o seu contador `header_id` e uma marca de tempo UTC")],
+            ["`state`, `connection`", P("observed by `Vda5050Observer`; the subscription is renewed after every reconnect", "los observa `Vda5050Observer`; la suscripción se renueva tras cada reconexión", "vom `Vda5050Observer` beobachtet; das Abonnement wird nach jeder Wiederverbindung erneuert", "observés par `Vda5050Observer` ; l'abonnement est renouvelé après chaque reconnexion", "osservati da `Vda5050Observer`; la sottoscrizione viene rinnovata a ogni riconnessione", "`Vda5050Observer` が監視し、再接続のたびに購読し直します", "由 `Vda5050Observer` 观察；每次重连后重新订阅", "observados pelo `Vda5050Observer`; a subscrição é renovada a cada reconexão")],
+        ]),
+        P("The library: `AmrCoordinator`, `FrameTransform`, `Vda5050Publisher`, `Vda5050Target`, `Vda5050Observer`, `SimulatedAmr`, `open_mqtt_client()`. The default MQTT client ID is `hydra-umc-bridge-amr`.", "La biblioteca: `AmrCoordinator`, `FrameTransform`, `Vda5050Publisher`, `Vda5050Target`, `Vda5050Observer`, `SimulatedAmr`, `open_mqtt_client()`. El ID de cliente MQTT por defecto es `hydra-umc-bridge-amr`.",
+          "Die Bibliothek: `AmrCoordinator`, `FrameTransform`, `Vda5050Publisher`, `Vda5050Target`, `Vda5050Observer`, `SimulatedAmr`, `open_mqtt_client()`. Die Standard-Client-ID ist `hydra-umc-bridge-amr`.", "La bibliothèque : `AmrCoordinator`, `FrameTransform`, `Vda5050Publisher`, `Vda5050Target`, `Vda5050Observer`, `SimulatedAmr`, `open_mqtt_client()`. L'identifiant client MQTT par défaut est `hydra-umc-bridge-amr`.",
+          "La libreria: `AmrCoordinator`, `FrameTransform`, `Vda5050Publisher`, `Vda5050Target`, `Vda5050Observer`, `SimulatedAmr`, `open_mqtt_client()`. L'ID client MQTT predefinito è `hydra-umc-bridge-amr`.", "ライブラリ：`AmrCoordinator`、`FrameTransform`、`Vda5050Publisher`、`Vda5050Target`、`Vda5050Observer`、`SimulatedAmr`、`open_mqtt_client()`。既定の MQTT クライアント ID は `hydra-umc-bridge-amr` です。",
+          "库：`AmrCoordinator`、`FrameTransform`、`Vda5050Publisher`、`Vda5050Target`、`Vda5050Observer`、`SimulatedAmr`、`open_mqtt_client()`。默认 MQTT 客户端 ID 为 `hydra-umc-bridge-amr`。", "A biblioteca: `AmrCoordinator`, `FrameTransform`, `Vda5050Publisher`, `Vda5050Target`, `Vda5050Observer`, `SimulatedAmr`, `open_mqtt_client()`. O ID de cliente MQTT predefinido é `hydra-umc-bridge-amr`.")[lg],
+    ])
+    out["configuration"] = "\n\n".join([
+        B.mqtt_env_table(lg),
+        P("There is no configuration file: the broker, `interface_name`, `major_version`, `manufacturer`, `serial_number` and the abort action (`cancelOrder`, `startPause` or both) are arguments of the constructors.", "No hay fichero de configuración: el broker, `interface_name`, `major_version`, `manufacturer`, `serial_number` y la acción de aborto (`cancelOrder`, `startPause` o ambas) son argumentos de los constructores.",
+          "Es gibt keine Konfigurationsdatei: Broker, `interface_name`, `major_version`, `manufacturer`, `serial_number` und die Abbruchaktion (`cancelOrder`, `startPause` oder beide) sind Argumente der Konstruktoren.", "Il n'y a pas de fichier de configuration : le broker, `interface_name`, `major_version`, `manufacturer`, `serial_number` et l'action d'abandon (`cancelOrder`, `startPause` ou les deux) sont des arguments des constructeurs.",
+          "Non c'è un file di configurazione: il broker, `interface_name`, `major_version`, `manufacturer`, `serial_number` e l'azione di interruzione (`cancelOrder`, `startPause` o entrambe) sono argomenti dei costruttori.", "設定ファイルはありません。ブローカー、`interface_name`、`major_version`、`manufacturer`、`serial_number`、中止動作（`cancelOrder`、`startPause`、または両方）はコンストラクターの引数です。",
+          "没有配置文件：代理、`interface_name`、`major_version`、`manufacturer`、`serial_number` 和中止动作（`cancelOrder`、`startPause` 或两者）都是构造函数的参数。", "Não há ficheiro de configuração: o broker, `interface_name`, `major_version`, `manufacturer`, `serial_number` e a ação de aborto (`cancelOrder`, `startPause` ou ambas) são argumentos dos construtores.")[lg],
+    ])
+    out["quickstart"] = B.quickstart(lg, [
+        "from hydra_umc_bridge_amr import AmrCoordinator, FrameTransform, Vda5050Publisher, Vda5050Target, open_mqtt_client",
+        "client = open_mqtt_client(\"192.168.0.180\")        # connects; the credentials come from HYDRA_MQTT_*",
+        "target = Vda5050Target(\"vda5050\", \"v2\", \"acme\", \"agv-01\")",
+        "dispatch = AmrCoordinator().dispatch(job, cell_state, FrameTransform(map_id=\"hall\", origin_x=0.0, origin_y=0.0, heading_rad=0.0))",
+        "Vda5050Publisher().publish(client, target, None, None, dispatch)   # a rejected dispatch is never sent",
+    ])
+    out["testing"] = B.testing(lg, ctx.tests, [
+        ["`test_coordinator.py`, `test_observed_and_order_ids.py`, `test_edge_cases.py`", "-", P("job to order mapping, the rigid-body frame transform, ids, edge cases", "paso de trabajo a orden, transformación rígida de marco, ids, casos límite", "Auftrag-zu-Befehl-Abbildung, die starre Koordinatentransformation, IDs, Randfälle", "passage du travail à l'ordre, transformation rigide de repère, identifiants, cas limites", "passaggio da lavoro a ordine, trasformazione rigida di sistema, id, casi limite", "ジョブから命令への変換、剛体座標変換、ID、境界ケース", "任务到订单的映射、刚体坐标变换、ID、边界情况", "mapeamento de trabalho para ordem, transformação rígida de referencial, ids, casos limite")],
+        ["`test_vda5050_schemas.py`", "-", P("every message validated against the official VDA 5050 2.0.0 schemas", "cada mensaje validado contra los esquemas oficiales VDA 5050 2.0.0", "jede Nachricht gegen die offiziellen VDA-5050-2.0.0-Schemas geprüft", "chaque message validé contre les schémas officiels VDA 5050 2.0.0", "ogni messaggio validato contro gli schemi ufficiali VDA 5050 2.0.0", "全メッセージを公式 VDA 5050 2.0.0 スキーマで検証", "每条消息都按官方 VDA 5050 2.0.0 模式验证", "cada mensagem validada contra os esquemas oficiais VDA 5050 2.0.0")],
+        ["`test_vda5050_emulator.py`, `vda5050_emulator.py`", "-", P("the real coordinator and publisher against a shape-level VDA 5050 vehicle on the MQTT bus", "el coordinador y el publicador reales contra un vehículo VDA 5050 a nivel de forma en el bus MQTT", "der echte Koordinator und Publisher gegen ein formgetreues VDA-5050-Fahrzeug am MQTT-Bus", "le vrai coordinateur et éditeur contre un véhicule VDA 5050 au niveau des formes sur le bus MQTT", "il vero coordinatore e publisher contro un veicolo VDA 5050 a livello di forma sul bus MQTT", "実物のコーディネーターとパブリッシャーを、MQTT バス上の形式レベルの VDA 5050 車両と突き合わせ", "真实的协调器和发布器对 MQTT 总线上形态级的 VDA 5050 车辆", "o coordenador e o publicador reais contra um veículo VDA 5050 ao nível da forma no barramento MQTT")],
+        ["`test_mqtt_transport.py`, `test_mqtt_environment.py`, `test_hardening.py`, `test_simulated_amr.py`", "-", P("publisher against a fake MQTT client, environment credentials, hostile inputs, the state table", "publicador contra un cliente MQTT simulado, credenciales del entorno, entradas hostiles, la tabla de estados", "Publisher gegen einen Schein-MQTT-Client, Umgebungs-Zugangsdaten, feindliche Eingaben, die Zustandstabelle", "éditeur contre un faux client MQTT, identifiants d'environnement, entrées hostiles, la table d'états", "publisher contro un client MQTT finto, credenziali d'ambiente, input ostili, la tabella degli stati", "偽の MQTT クライアントに対するパブリッシャー、環境の認証情報、悪意ある入力、状態表", "针对假 MQTT 客户端的发布器、环境凭据、恶意输入、状态表", "publicador contra um cliente MQTT simulado, credenciais do ambiente, entradas hostis, a tabela de estados")],
+    ])
+    out["build"] = ctx.v(lg, "build")
+    out["troubleshooting"] = B.trouble_table(lg, [B.TROUBLE_SDK, B.TROUBLE_PAHO, B.TROUBLE_CREDS,
+        B.TROUBLE_REACH, B.TROUBLE_CONNREFUSED,
+        B.TROUBLE_REFUSED])
+    out["roadmap"] = LIMITS[lg] + "\n\n" + ctx.v(lg, "roadmap")
+    out["related"] = ctx.v(lg, "related")
+    return out

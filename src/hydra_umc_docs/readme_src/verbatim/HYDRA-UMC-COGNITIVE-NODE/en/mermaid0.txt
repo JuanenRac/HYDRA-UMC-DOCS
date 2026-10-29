@@ -1,0 +1,8 @@
+flowchart TB
+    INPUT["Voice / Text Input"] --> VOICE["VOICE-UI (STT)"]
+    VOICE --> PLANNER["SEMANTIC-PLANNER (LLM)"]
+    VIS["Vision Node Data"] --> VLA["VLA-ENGINE"]
+    VLA --> PLANNER
+    PLANNER --> ORCH["HYDRA-ORCHESTRATOR"]
+    DOCS["Technical Manuals"] --> RAG["DOCS-QA (RAG)"]
+    RAG --> PLANNER

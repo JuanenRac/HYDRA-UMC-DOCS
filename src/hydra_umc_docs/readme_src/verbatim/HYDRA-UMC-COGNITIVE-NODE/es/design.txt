@@ -1,0 +1,66 @@
+Este repositorio es el **punto padre/de integración** de la familia
+Cognitive AI Node. No ejecuta ningún modelo por sí mismo - posee los
+recursos compartidos y el cableado que permite a sus cuatro hijos actuar
+como una sola unidad cognitiva sobre la misma placa física:
+
+* **Por qué este nodo no tiene hardware/firmware propio.** A diferencia
+  del firmware a nivel de placa madre de HYDRA-UMC, este nodo corre por
+  completo sobre una Raspberry Pi CM5 + módulo M.2 Hailo-10 ya
+  existentes - no hay ninguna PCB o microcontrolador propio que diseñar
+  aquí, así que las carpetas `hardware/`/`firmware/` se podaron en vez de
+  dejarlas vacías.
+* **Por qué `os/` y `models/` viven solo en el padre.** La imagen HydraOS
+  y los pesos LLM/VLA cuantizados son recursos compartidos a nivel de
+  placa - mantener una única copia en el padre y montarla de solo lectura
+  en cada contenedor hijo (ver `docker-compose.yml`) evita cuatro copias
+  divergentes de pesos de varios gigabytes.
+* **Por qué una estructura `src/`.** Mantiene el paquete instalable
+  (`hydra_umc_cognitive_node`) separado del tooling en la raíz del repo
+  (`bump_version.py`, `docker-compose.yml`), igual que el resto de
+  proyectos Python del ecosistema.
+* **Por qué el punto de entrada solo imprime identidad/versión/rol hoy.**
+  Esta es la etapa de andamiaje: demostrar que el paquete se instala,
+  compila e importa correctamente - en la versión real de Python objetivo
+  - es un requisito previo antes de añadir lógica real de orquestación
+  LLM/VLA/voz, y mantiene ese trabajo posterior aislado de los problemas
+  de empaquetado.
+* **Por qué `docker-compose.yml` documenta el contrato de integración,
+  no solo conecta imágenes.** Decidir qué servicio depende de cuál y qué
+  montajes de dispositivo/volumen necesita cada uno se documentó antes
+  de que ningún hijo tuviera Dockerfile, evitando que esa forma se
+  inventara más adelante de manera improvisada. Los 4 hijos (VLA-Engine,
+  Voice-UI, Semantic-Planner, Docs-QA) ya tienen su propio Dockerfile
+  real, cerrando un hueco real - `docker compose up` construye y
+  ejecuta lo real.
+* **Cómo encaja en el resto del ecosistema.** Este nodo se sitúa una capa
+  por encima de la percepción (HYDRA-UMC-VISION-NODE, Hailo-8) y una capa
+  por debajo de la orquestación de misión (HYDRA-UMC-ORCHESTRATOR):
+  convierte instrucciones de voz/texto y detecciones en decisiones
+  semánticas, que el orquestador convierte después en comandos físicos
+  para los robots.
+* **Por qué `family-status` lee el manifiesto propio de cada hijo en vez
+  de una lista mantenida a mano.** `hydra-umc.project.json` ya es la
+  única fuente de verdad en la que confían el dashboard y el updater de
+  todo el ecosistema - una segunda lista
+  aquí se desincronizaría en cuanto cambiara la madurez real de un hijo y
+  nadie se acordara de actualizarla.
+* **Por qué un hijo sin checkout local es un "no encontrado" real y
+  honesto, no un error.** Un centro de integración genuinamente no sabe
+  si un desarrollador tiene los cuatro hijos clonados en local -
+  `manifest.py` devuelve `None` para cada fallo real (repo ausente,
+  manifiesto ausente, JSON malformado) para que `family-status` lo
+  reporte con claridad en vez de reventar.
+* **Por qué las lecturas del manifiesto de un hermano tienen un límite de
+  64 KiB.** Cada manifiesto real de todo este ecosistema pesa de unos
+  pocos cientos de bytes a un par de KiB - un checkout corrupto o
+  malicioso cuyo manifiesto haya sido reemplazado por un archivo de
+  tamaño desmedido nunca debe hacer que un chequeo de disponibilidad
+  rutinario cargue una cantidad ilimitada de datos en memoria. Degrada a
+  `None`, igual que cualquier otro manifiesto malformado.
+* **Por qué `family-status` reporta `models/` aunque este nodo no
+  ejecute ningún modelo.** "Los repos hermanos están clonados" y "los
+  pesos compartidos que necesitarían están realmente presentes" son dos
+  hechos reales distintos - `check_shared_models()` de `models.py`
+  comprueba el segundo con honestidad (vacío pero presente cuenta como
+  ausente) en vez de dejar que un operador asuma disponibilidad solo por
+  la presencia de los hijos.

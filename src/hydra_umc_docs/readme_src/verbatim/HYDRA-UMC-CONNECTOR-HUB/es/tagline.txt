@@ -1,0 +1,1 @@
+🧩 Un registro declarativo y validador para adaptadores de máquinas externas

@@ -1,0 +1,5 @@
+只读产物通道支持 OrcaSlicer、Ultimaker Cura、PrusaSlicer、Bambu Studio 和其他切片软件生成的常规 FDM G-code(`.gcode`、`.gco`、`.gc`)。熟悉的注释会提供来源提示；没有标记时保持为 `unknown-slicer`。`.gcode.3mf` 和通用 `.3mf` 会被识别，但绝不会解包。来自兼容 Lychee 工作流的树脂切片(`.ctb`、`.goo`、`.photon`、`.pwmo`、`.pws`、`.sl1`)被有意作为不透明内容处理，绝不会归属到某台特定打印机或切片软件。
+
+这是与**输出产物**的兼容，而不是对这些应用的远程控制。桥接不会启动切片软件、修改配置文件、解析/执行 G-code、上传文件、联系云服务或启动打印。准确矩阵和未来控制前置条件见[切片软件产物兼容性](docs/SLICER_ARTIFACT_COMPATIBILITY.md)。
+
+产物/配置文件匹配仍然只是证据，绝不是打印许可。[Print Profile Admission Boundary](docs/PRINT_PROFILE_BOUNDARY.md) 记录了未来任何原生控制器操作之前所需的独立验证。

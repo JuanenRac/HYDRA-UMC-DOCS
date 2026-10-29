@@ -1,0 +1,71 @@
+Dieses Repository ist ein **Kind** der Cognitive-AI-Node-Familie - sein
+Elternprojekt, [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+besitzt das gemeinsam genutzte HydraOS-Image und die quantisierten
+Modellgewichte und bindet diesen Dienst in der eigenen
+`docker-compose.yml` neben seinen drei Geschwistern (VLA-Engine,
+Voice-UI, Semantic-Planner) ein:
+
+* **Warum dieses Kind keine eigene Hardware/Firmware/`os/`/`models/`
+  hat.** Es läuft vollständig auf dem bereits vom Elternprojekt
+  besessenen CM5 + Hailo-10-M.2-Modul - die Zentralisierung von
+  Modellgewichten und HydraOS-Image an einem Ort vermeidet vier
+  divergierende, mehrere Gigabyte große Kopien innerhalb der Familie.
+* **Warum eine `src/`-Struktur.** Hält das installierbare Paket
+  (`hydra_umc_docs_qa`) getrennt vom Tooling im Repo-Root
+  (`bump_version.py`), passend zum Layout jedes anderen
+  Python-Projekts im Ökosystem.
+* **Warum der nackte Aufruf (ohne Unterbefehl) weiterhin nur
+  Identität/Version/Rolle ausgibt.** Das war das ursprüngliche
+  Andamiaje-Verhalten (Gerüstbau), das nachwies, dass das Paket sich
+  korrekt installiert, kompiliert und importiert, bevor überhaupt echte
+  Logik existierte - es bleibt heute der Standard als schneller
+  "ist das wirklich installiert und funktioniert es"-Check, neben den
+  echten Unterbefehlen `query` (TF-IDF-Suche) und `serve`
+  (JSON/HTTP-API), für die dieses Gerüst eine Voraussetzung war.
+* **Wie sich das ins restliche Ökosystem einfügt.** Dieser Assistent
+  fundiert seine Antworten auf der eigenen Dokumentation des
+  Ökosystems und gibt seinem Geschwisterprojekt
+  HYDRA-UMC-SEMANTIC-PLANNER eine technische Wissensquelle, die es
+  während des Reasonings abfragen kann, und bietet Technikern vor Ort
+  freihändige Fehlerbehebungsunterstützung neben HYDRA-UMC-VOICE-UI.
+* **Warum das Retrieval von `index.py` echtes TF-IDF ist, kein
+  Embedding-Modell.** Embedding-basierte semantische Suche benötigt
+  eine echte Modellabhängigkeit (idealerweise den eigenen Hailo-10, den
+  dieses README bereits erwähnt) - ein reiner stdlib-TF-IDF-/
+  Kosinus-Ähnlichkeits-Index ist echt, testbar und braucht nichts
+  außer Python selbst, was diesem Projekt schon heute einen
+  funktionierenden Retrieval-Kern gibt, den ein künftiger
+  embedding-basierter Index hinter demselben `search()`-Vertrag
+  ersetzen kann, ohne CLI oder Ingestion-Schritt anzufassen.
+* **Warum eine Anfrage ohne Treffer einen ehrlichen Fehlschlag liefert,
+  keine Ausweichantwort.** v0 hat keinen LLM-Syntheseschritt - eine
+  Frage, deren Wörter sich nicht mit dem eingelesenen Korpus
+  überschneiden, erhält `No relevant passages found` (siehe
+  `main.py`), niemals eine erfundene oder halluzinierte Antwort,
+  getarnt als echtes Retrieval-Ergebnis.
+* **Warum ein nicht zulässiger `--docs`-Pfad abgelehnt wird, statt
+  stillschweigend übersprungen oder eingelesen zu werden.** Ein
+  QA-Assistent, der "auf der eigenen Dokumentation des Ökosystems
+  fundiert" sein soll, darf nicht stillschweigend jede Datei lesen und
+  zitieren, auf die ein Aufrufer zufällig zeigt - ein fehlender Pfad
+  oder eine Nicht-Markdown-Datei (eine verirrte `.env`, eine
+  Firmware-Binärdatei) erhält eine echte, eigene
+  `REJECTED ... : <Grund>`-Zeile (siehe `validate_doc_path` in
+  `ingest.py`) statt eines aggregierten "nichts gefunden", das
+  verbirgt, *warum*.
+* **Warum die Kosinus-Ähnlichkeit gemeinsame Terme vor der Summierung
+  sortiert.** `dict.keys() & dict.keys()` ist ein Set, und die
+  Iterationsreihenfolge von Sets in CPython hängt von der
+  prozessweiten Zufälligkeit des String-Hashings ab - würde man
+  Gleitkomma-Terme in dieser Reihenfolge summieren, hinge ein Score
+  davon ab, welcher Prozess die Anfrage zufällig ausgeführt hat, nicht
+  nur von Korpus und Anfrage-Text. Vorheriges Sortieren macht den
+  Score zu einer reinen, reproduzierbaren Funktion seiner
+  tatsächlichen Eingaben.
+* **Warum Zitate ein `#index` tragen, nicht nur einen Dateinamen.** Ein
+  bloßer Dateiname kann zwei Abschnitte mit gleicher Überschrift nicht
+  unterscheiden (oder später zwei eingelesene Dateien mit gleichem
+  Namen) - `DocChunk.index` ist die tatsächliche Ordinalposition jedes
+  Chunks innerhalb seiner eigenen Quelle und gibt jedem Zitat einen
+  stabilen Schlüssel, mit dem ein Aufrufer dieselbe Passage
+  deterministisch wiederfinden kann.

@@ -1,0 +1,1 @@
+🤖 Semantic Reasoning & GenAI Edge Node (Hailo-10 + Raspberry Pi CM5)

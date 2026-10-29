@@ -1,0 +1,3 @@
+**HYDRA-UMC-HIL-BRIDGE** est l'artère de communication destinée à permettre la fonctionnalité Hardware-in-the-Loop (HIL). Elle achemine les commandes entre les contrôleurs physiques et le moteur de Digital Twin et reflète l'état entre les deux ; aucun contrôleur réel ne lui a encore été connecté.
+
+Il permet aux développeurs d'envoyer des commandes depuis n'importe quelle interface (App, Suite, Studio) au simulateur comme s'il s'agissait d'un robot physique, et inversement, il peut refléter les mouvements d'un robot physique dans le monde virtuel pour une supervision à distance et un suivi (shadowing) du jumeau numérique.

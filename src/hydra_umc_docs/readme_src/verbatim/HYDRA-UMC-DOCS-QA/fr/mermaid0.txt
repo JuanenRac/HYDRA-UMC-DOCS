@@ -1,0 +1,6 @@
+flowchart LR
+    Q["Question de l'utilisateur"] --> VEC["Requête vectorielle"]
+    DB[("Base de connaissances du projet")] --> VEC
+    VEC --> CONTEXT["Extraits contextuels"]
+    CONTEXT --> LLM["LLM Hailo-10"]
+    LLM --> ANS["Réponse technique fondée"]

@@ -1,0 +1,6 @@
+flowchart LR
+    Q["Benutzerfrage"] --> VEC["Vektor-Abfrage"]
+    DB[("Projekt-Wissensdatenbank")] --> VEC
+    VEC --> CONTEXT["Kontextuelle Schnipsel"]
+    CONTEXT --> LLM["Hailo-10 LLM"]
+    LLM --> ANS["Fundierte technische Antwort"]

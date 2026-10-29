@@ -1,0 +1,67 @@
+Ce dépôt est un **enfant** de la famille Cognitive AI Node - son parent,
+[HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+détient l'image HydraOS partagée et les poids de modèles quantifiés, et
+relie ce service dans son `docker-compose.yml` aux côtés de ses trois
+frères (VLA-Engine, Voice-UI, Semantic-Planner) :
+
+* **Pourquoi cet enfant n'a pas de matériel/firmware/`os/`/`models/`
+  propres.** Il fonctionne entièrement sur le module CM5 + Hailo-10 M.2
+  déjà détenu par le parent - centraliser les poids de modèles et
+  l'image HydraOS à un seul endroit évite quatre copies divergentes de
+  plusieurs gigaoctets au sein de la famille.
+* **Pourquoi une structure `src/`.** Sépare le paquet installable
+  (`hydra_umc_docs_qa`) de l'outillage à la racine du dépôt
+  (`bump_version.py`), conformément au reste des projets Python de
+  l'écosystème.
+* **Pourquoi l'invocation nue (sans sous-commande) se contente encore
+  d'afficher identité/version/rôle.** C'était le comportement d'origine
+  de l'étape d'échafaudage, prouvant que le paquet s'installe, se
+  compile et s'importe correctement avant qu'aucune vraie logique
+  n'existe - cela reste le comportement par défaut aujourd'hui comme
+  vérification rapide que « c'est bien installé et ça fonctionne »,
+  aux côtés des vraies sous-commandes `query` (recherche TF-IDF) et
+  `serve` (API JSON/HTTP) pour lesquelles cet échafaudage était un
+  prérequis.
+* **Comment cela s'intègre dans le reste de l'écosystème.** Cet
+  assistant fonde ses réponses sur la documentation propre de
+  l'écosystème, donnant à son frère HYDRA-UMC-SEMANTIC-PLANNER une
+  source de connaissances techniques qu'il peut consulter pendant son
+  raisonnement, et offrant aux techniciens sur site un support mains
+  libres aux côtés de HYDRA-UMC-VOICE-UI.
+* **Pourquoi la récupération d'`index.py` est du vrai TF-IDF, pas un
+  modèle d'embeddings.** La recherche sémantique par embeddings a besoin
+  d'une vraie dépendance de modèle (idéalement le Hailo-10 que ce README
+  cible déjà) - un index TF-IDF/similarité cosinus pur stdlib est réel,
+  testable, et ne nécessite rien au-delà de Python lui-même, donnant à
+  ce projet un noyau de récupération fonctionnel dès aujourd'hui qu'un
+  futur index à base d'embeddings pourra remplacer derrière le même
+  contrat `search()`, sans toucher à la CLI ni à l'étape d'ingestion.
+* **Pourquoi une requête sans correspondance renvoie un échec honnête,
+  pas une réponse de repli.** v0 n'a pas d'étape de synthèse par LLM -
+  une question dont les mots ne recoupent pas le corpus ingéré reçoit
+  `No relevant passages found` (voir `main.py`), jamais une réponse
+  inventée ou hallucinée déguisée en vrai résultat de récupération.
+* **Pourquoi un chemin `--docs` non autorisé est rejeté, et non ignoré
+  ou ingéré silencieusement.** Un assistant de QA censé être « fondé
+  sur la documentation propre de l'écosystème » ne doit pas lire et
+  citer silencieusement n'importe quel fichier pointé par l'appelant -
+  un chemin manquant ou un fichier non-Markdown (un `.env` égaré, un
+  binaire de firmware) reçoit une ligne réelle et distincte
+  `REJECTED ... : <raison>` (voir `validate_doc_path` dans
+  `ingest.py`) au lieu d'un « rien trouvé » agrégé qui masque
+  *pourquoi*.
+* **Pourquoi la similarité cosinus trie les termes partagés avant de
+  les additionner.** `dict.keys() & dict.keys()` est un ensemble (set),
+  et l'ordre d'itération des sets sous CPython dépend de la
+  randomisation du hachage de chaînes par processus - additionner des
+  termes en virgule flottante dans cet ordre ferait dépendre un score
+  du processus ayant exécuté la requête, et non uniquement du corpus
+  et du texte de la requête. Trier d'abord rend le score une fonction
+  pure et reproductible de ses véritables entrées.
+* **Pourquoi les citations portent un `#index`, pas seulement un nom de
+  fichier.** Un simple nom de fichier ne peut pas désambiguïser deux
+  sections partageant un titre (ou, plus tard, deux fichiers ingérés
+  partageant un nom) - `DocChunk.index` est la position ordinale
+  réelle de chaque fragment au sein de sa propre source, donnant à
+  chaque citation une clé stable permettant de récupérer de manière
+  déterministe le même passage.

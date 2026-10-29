@@ -1,0 +1,7 @@
+flowchart LR
+    APP["Steuerungsschnittstelle - geplant"] --> BRIDGE["HIL-BRIDGE - echtes v0-Routing"]
+    BRIDGE -- Simulationsmodus --> TWIN["HYDRA-UMC-TWIN - geplant"]
+    BRIDGE -- "Realmodus (verriegelt - echtes v0)" --> CORE["HYDRA-UMC Core (STM32) - geplant"]
+    CORE -- Feedback --> BRIDGE
+    TWIN -- Feedback --> BRIDGE
+    BRIDGE --> APP

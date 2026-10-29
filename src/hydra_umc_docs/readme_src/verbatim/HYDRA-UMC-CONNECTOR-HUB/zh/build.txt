@@ -1,0 +1,25 @@
+```bash
+chmod +x build.sh   # 仅需一次
+./build.sh          # 创建 .venv，pip install -e ".[dev]"，编译检查 + 测试
+./run.sh                                   # 真实演示：校验十个真实 fixture
+./run.sh validate fixtures/industrial-opcua.json
+./run.sh validate fixtures/invalid/*.json  # 其中每一份都应报告 INVALID
+./run.sh catalog --registry-dir fixtures
+./run.sh serve-catalog --registry-dir fixtures --port 8801   # Ctrl+C 停止
+pip install -e ".[sdk]"                    # 仅在对一个 write/abort 能力使用 `gate` 时需要
+./run.sh gate fixtures/cnc-grbl.json --capability sendControlByte --job-id j1 \
+    --idempotency-key i1 --source studio --cell-state READY --machine-state IDLE
+./run.sh certify fixtures/cnc-grbl.json --machine-model "Genmitsu 3018-PROVer" \
+    --certified-by "你的名字" --evidence-file real-status.json --out-dir certifications/
+```
+
+在 Windows 上：先 `build.bat`，然后 `run.bat`（不带参数时执行同一演示）/
+上面任意一个子命令。`build-test.sh`/`.bat` 执行与本项目自身 CI 相同的编译检查(仅 Python 语法)，不会改动项目版本或 CHANGELOG——但它自身并**不**运行测试套件；CI 会将 `pytest` 作为单独的、更晚的一个步骤来运行。要在本地运行完整的测试套件，请执行 `./build.sh`/`build.bat`(或直接执行 `pytest tests/`)。
+
+**故障排查**
+
+- `validate` 对一份你认为正确的清单报告 `INVALID`：请阅读列出的每一条原因——校验器会报告全部原因，而不只是第一条。字段级的确切契约见 [docs/ADAPTER_MANIFEST.md](docs/ADAPTER_MANIFEST.md)。
+- `validate` 报告 `ERROR: ... is not valid JSON`：文件本身是格式错误的 JSON，这与"格式正确但内容无效"的清单是两回事——先检查是否漏了逗号或引号，再去检查契约本身。
+- `catalog`/`serve-catalog` 以退出码 `1` 结束，或在 `invalidFiles` 中列出了某个文件：该文件未通过结构校验，因而被有意排除在目录之外——对它直接运行 `validate` 即可看到完整原因列表。
+- `gate` 失败并报告 `ERROR: the optional 'hydra-umc-sdk' package is not installed`：先运行 `pip install -e ".[sdk]"`——只有 `write`/`abort` 能力才需要它。
+- `gate`/`certify` 失败并报告 `ERROR: unknown cell_state ...` 或 `... does not match evidenceSchema`：确切的预期取值/形状见 [docs/CAPABILITY_GATE.md](docs/CAPABILITY_GATE.md)/[docs/CERTIFICATION.md](docs/CERTIFICATION.md)。

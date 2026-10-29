@@ -1,0 +1,3 @@
+O **HYDRA-UMC-DATALAKE** é o armazém atual de séries temporais da fábrica. Fornece um repositório real apoiado em SQLite para a telemetria normalizada gerada pelo ecossistema, incluindo correntes de motores, ângulos de juntas, leituras de sensores e registos de inferência de IA.
+
+É a base de software para a análise, a manutenção preditiva e os relatórios de produção. A sua implementação atual em SQLite está testada localmente; uma implementação externa em InfluxDB/TimescaleDB continua a ser uma decisão futura de infraestrutura, e não uma funcionalidade dada como já em execução.

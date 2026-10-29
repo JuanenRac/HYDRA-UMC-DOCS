@@ -1,0 +1,1 @@
+📦 Registre de modèles compilés et contrôle de chargement sécurisé pour les modèles Hailo HEF (aucun modèle n'est encore compilé ni exécuté)

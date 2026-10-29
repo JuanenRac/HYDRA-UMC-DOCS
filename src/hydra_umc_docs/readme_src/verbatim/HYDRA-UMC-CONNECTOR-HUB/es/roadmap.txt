@@ -1,0 +1,29 @@
+Las cuatro entregas del plan nombrado en el propio manifiesto y
+CHANGELOG de este proyecto ya envían código real y probado. Lo que
+queda, dicho con honestidad:
+
+- **El hueco de verificación de hardware de la Entrega 4 queda abierto
+  a propósito.** `certify` registra una evidencia atestiguada por un
+  humano y comprobada contra el `evidenceSchema` propio de un adaptador,
+  pero nada en este proyecto confirma de forma independiente que esa
+  evidencia proviene de la máquina real nombrada - eso necesita el
+  hardware físico en sí, en una célula real, que esta máquina de
+  desarrollo no tiene. Ver
+  [docs/CERTIFICATION.md](docs/CERTIFICATION.md).
+- **Integración con un cliente real: empezada, no terminada.**
+  HYDRA-UMC-SERVER ya sondea `serve-catalog` de verdad -
+  `GET /api/adapters` y `GET /api/adapters/:adapterId` reenvían el
+  catálogo real de este proyecto, de extremo a extremo (ver el propio
+  `tools/verify_connector_hub_relay_contract.mjs` de HYDRA-UMC-SERVER,
+  que lanza el `serve-catalog` real de este proyecto contra sus propios
+  `fixtures/` reales y una instancia real de Server, nunca un mock).
+  También se ha instalado como un wheel real en un venv fuera del propio
+  checkout de este proyecto y se ha ejecutado desde ahí, confirmando que
+  el empaquetado en sí (no solo una instalación editable) funciona. Que
+  Studio/Suite/Updater llamen a `gate` por sí mismos sigue siendo trabajo
+  real, separado y futuro.
+- **Falta un transporte real entre quien llama a `gate`/`certify` y el
+  estado real de la célula/máquina.** Hoy, `--cell-state`/
+  `--machine-state` los aporta quien llama como valores ya conocidos -
+  no hay ningún camino de código aquí que los obtenga en vivo desde
+  HYDRA-UMC-SERVER o un servicio de zonas de seguridad.

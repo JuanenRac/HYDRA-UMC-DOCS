@@ -1,0 +1,67 @@
+Questo repository è il **punto padre/di integrazione** della famiglia
+Cognitive AI Node. Non esegue esso stesso alcun modello - possiede le
+risorse condivise e il cablaggio che permettono ai suoi quattro figli di
+agire come un'unica unità cognitiva sulla stessa scheda fisica:
+
+* **Perché questo nodo non ha hardware/firmware proprio.** A differenza
+  del firmware a livello di scheda madre di HYDRA-UMC, questo nodo gira
+  interamente su un modulo Raspberry Pi CM5 + Hailo-10 M.2 già
+  esistente - non c'è alcun PCB o microcontrollore proprio da
+  progettare qui, quindi le cartelle `hardware/`/`firmware/` sono state
+  potate invece di essere lasciate vuote.
+* **Perché `os/` e `models/` vivono solo nel padre.** L'immagine HydraOS
+  e i pesi LLM/VLA quantizzati sono risorse condivise a livello di
+  scheda - mantenere un'unica copia nel padre e montarla in sola lettura
+  in ogni container figlio (vedi `docker-compose.yml`) evita quattro
+  copie divergenti di pesi di più gigabyte.
+* **Perché una struttura `src/`.** Mantiene il pacchetto installabile
+  (`hydra_umc_cognitive_node`) separato dal tooling nella radice del repo
+  (`bump_version.py`, `docker-compose.yml`), coerentemente con il resto
+  dei progetti Python dell'ecosistema.
+* **Perché il punto di ingresso oggi si limita a stampare
+  identità/versione/ruolo.** Questa è la fase di andamiaje
+  (impalcatura): dimostrare che il pacchetto si installa, compila e
+  importa correttamente - sulla versione Python reale di destinazione -
+  è un prerequisito prima di aggiungere la vera logica di orchestrazione
+  LLM/VLA/vocale, e mantiene quel lavoro successivo isolato dalle
+  questioni di packaging.
+* **Perché `docker-compose.yml` documenta il contratto di integrazione,
+  non solo collega le immagini.** Decidere quale servizio dipende da
+  quale e quali mount di dispositivo/volume serve a ciascuno è stato
+  scritto prima che qualsiasi figlio avesse un Dockerfile - evitando che
+  questa forma venisse inventata più tardi in modo improvvisato. Tutti e
+  4 i figli (VLA-Engine, Voice-UI, Semantic-Planner, Docs-QA) hanno ora
+  un proprio vero Dockerfile, chiudendo un vero gap - `docker compose up`
+  ora compila ed esegue davvero.
+* **Come si inserisce nel resto dell'ecosistema.** Questo nodo si trova
+  un livello sopra la percezione (HYDRA-UMC-VISION-NODE, Hailo-8) e un
+  livello sotto l'orchestrazione della missione
+  (HYDRA-UMC-ORCHESTRATOR): trasforma istruzioni vocali/testuali e
+  rilevamenti in decisioni semantiche, che l'orchestratore trasforma poi
+  in comandi fisici per i robot.
+* **Perché `family-status` legge il manifest proprio di ciascun figlio
+  invece di un elenco mantenuto a mano.** `hydra-umc.project.json` è già
+  l'unica fonte di verità di cui si fidano dashboard e updater di tutto
+  l'ecosistema - un secondo elenco qui
+  andrebbe fuori sincrono non appena la maturità reale di un figlio
+  cambiasse e nessuno si ricordasse di aggiornarlo.
+* **Perché un figlio senza checkout locale è un "non trovato" reale e
+  onesto, non un errore.** Un hub di integrazione non sa davvero se uno
+  sviluppatore ha clonato localmente tutti e quattro i figli -
+  `manifest.py` restituisce `None` per ogni fallimento reale (repo
+  assente, manifest assente, JSON malformato) affinché `family-status`
+  lo segnali chiaramente invece di andare in crash.
+* **Perché le letture del manifest di un fratello sono limitate a
+  64 KiB.** Ogni manifest reale in questo ecosistema pesa da poche
+  centinaia di byte a un paio di KiB - un checkout corrotto o malevolo il
+  cui manifest sia stato sostituito con un file sovradimensionato non
+  deve mai far caricare in memoria una quantità illimitata di dati da un
+  normale controllo di disponibilità. Degrada a `None`, come qualsiasi
+  altro manifest malformato.
+* **Perché `family-status` segnala `models/` anche se questo nodo non
+  esegue esso stesso alcun modello.** "I repository fratelli sono
+  clonati" e "i pesi condivisi di cui avrebbero bisogno sono realmente
+  presenti" sono due fatti reali distinti - `check_shared_models()` di
+  `models.py` verifica onestamente il secondo (vuoto ma presente conta
+  come mancante) invece di lasciare che un operatore presuma la
+  disponibilità solo dalla presenza dei figli.

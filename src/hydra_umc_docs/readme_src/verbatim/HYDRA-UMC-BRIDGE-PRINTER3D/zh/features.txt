@@ -1,0 +1,10 @@
+* ✅ **真实的 Moonraker 就绪探测:** `moonraker.py` 中的 `MoonrakerProbe` 使用一个仅依赖标准库的小型客户端(`urlopen` + `json`)读取 Moonraker 文档化的 `/printer/info` 接口——除 Python 标准库外没有任何额外依赖。*(已实现,并在 `tests/test_moonraker.py` 中测试)*
+* ✅ **真实的故障安全状态解析:** `parse_info()` 只把字面字符串 `"ready"` 映射为 `MachineState.IDLE`;`shutdown`/`error` 映射为 `FAULT`,其余情况(包括格式错误的响应)一律映射为 `OFFLINE`——绝不会映射到允许围绕打印机规划机器人动作的状态。*(已实现)*
+* ✅ **真实的共享安全门控:** 每个被观察到的任务都会通过 `HYDRA-UMC-SDK` 的 `bridge_contract` 中的 `evaluate_job()` 重新评估,这与所有兄弟桥接使用的是同一个门控。*(已实现)*
+* ✅ **独立于切片软件的产物检查:** `artifacts.py` 只通过本地证据识别 OrcaSlicer、Ultimaker Cura、PrusaSlicer、Bambu Studio 和其他切片软件生成的普通 FDM G-code；它也能识别 3MF 包和兼容 Lychee 的树脂切片，且不会解包、解析命令、上传或打印。*(已实现,并在 `tests/test_artifacts.py` 中测试)*
+* ✅ **配置文件证据边界:** `profiles.py` 可以将检查过的产物与已声明的 FDM 或树脂配置文件进行匹配,但即使匹配成功也会返回 `execution_authorized=False`。*(已实现,在 `tests/test_profiles.py` 中测试)*
+* ✅ **真实的、由 SDK 门控的作业命令:** `MoonrakerJobControl` 向 Moonraker 文档化的 `/printer/print/start|pause|resume|cancel` 端点发送真实的 `POST` 请求——`start_job()` 受与本生态系统中所有生产性调度相同的 `evaluate_job()` 决策门控;`pause_job()`/`cancel_job()` 始终被允许(与 `ABORT` 相同的降级逻辑);`resume_job()` 要求打印机真正处于 `HOLDING` 状态。它只按名称启动一个已上传、已切片的文件——从不流式传输原始 G-code。*(已实现,在 `tests/test_moonraker.py` 中测试)*
+* ✅ **非变更式构建/测试:** `build-test.bat`/`.sh` 编译响应解析器和安全门控,不发送 G-code、不改变版本、不触碰打印机。*(已实现,见下方"构建与运行")*
+* 🔜 **原始 G-code 流式传输:** 刻意仍然推迟——发送任意底层命令(而非一个已命名、已切片的作业)需要经过测试的配置文件、身份验证以及本桥目前还不具备的物理安全评审。*(计划中)*
+* ✅ **重复的幂等键：** `PrinterMqttBridge` 接受 `IdempotencyStore`：重复的作业键会得到第一次给出的答复，而不是被重新评估，因此重复的 `cmd/start` 绝不会启动第二次打印。*（已实现，已在 `tests/test_idempotency.py` 中测试）*
+* ✅ **加固的 MQTT 循环:** 过大(超过 16 KiB)或无法读取的负载、深度嵌套的 JSON 以及任何意外故障,都会在结果主题上得到拒绝回复,绝不会终止循环;暂停、取消和新增的 `cmd/emergency_stop`(Klipper 的 M112)在独立通道上处理,因此缓慢的 Moonraker 绝不会拖延停止;幂等键按动词区分(`job:`/`start:`);`cmd/job` 的回复带有 `"mode": "gate-only"`,通过它发出的 ABORT 会说明没有停止任何东西;状态带有 `observed_at`,桥接在带遗嘱(Last Will)的 `availability` 主题上宣告自己;支持 Moonraker API 密钥(`MOONRAKER_API_KEY`,以 `X-Api-Key` 发送),并且仅对 Moonraker 认识的文件才发送启动。*(已实现,在 `tests/test_hardening.py` 中测试)*

@@ -1,0 +1,1 @@
+🤖 Nœud d'IA Edge pour Raisonnement Sémantique & GenAI (Hailo-10 + Raspberry Pi CM5)

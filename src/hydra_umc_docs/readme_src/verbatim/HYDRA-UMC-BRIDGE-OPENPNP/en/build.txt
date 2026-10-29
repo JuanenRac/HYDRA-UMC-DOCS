@@ -1,0 +1,13 @@
+Requires Python 3.11+. `tools/build_test.py` expects `HYDRA-UMC-SDK` checked out as a sibling directory (`../HYDRA-UMC-SDK`) or pointed at via the `HYDRA_UMC_SDK_ROOT` environment variable.
+
+```bash
+# Windows
+build-test.bat      # validate only — no version/CHANGELOG change
+build.bat            # Validate and build (building never changes the version)
+
+# Linux/macOS
+bash build-test.sh
+bash build.sh
+```
+
+`build-test` compiles every module under `src/` with `py_compile` and runs the full `unittest` suite discovered under `tests/` (`test_board_flow.py`, `test_mqtt_transport.py` - {tests} tests), proving board-traceability rejection and fail-safe gating among everything else covered — it never modifies the repository. `build` runs that same validation first and, only on success, calls `tools/bump_version.py` to synchronize the version across `pyproject.toml`, `hydra-umc.project.json` and `CHANGELOG.md`. There is no live machine `run` command yet — that requires a validated OpenPnP integration.

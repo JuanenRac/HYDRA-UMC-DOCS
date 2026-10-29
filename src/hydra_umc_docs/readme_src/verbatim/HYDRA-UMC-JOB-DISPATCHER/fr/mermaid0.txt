@@ -1,0 +1,8 @@
+flowchart LR
+    REQ["Nouvelle demande de mission"] --> Q["File d'attente globale des missions"]
+    Q --> SCHED["Planificateur du répartiteur"]
+    DB[("Registre des outils et des robots")] --> SCHED
+    SCHED --> R1["Robot A (PnP)"]
+    SCHED --> R2["Robot B (Laser)"]
+    R1 -- Succès/Échec --> SCHED
+    SCHED -.-> LOG["Rapports de production (prévu)"]

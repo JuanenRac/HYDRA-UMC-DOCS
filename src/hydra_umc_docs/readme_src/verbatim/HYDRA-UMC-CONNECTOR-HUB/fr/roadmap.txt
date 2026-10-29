@@ -1,0 +1,29 @@
+Les quatre livraisons du plan nommé dans le propre manifeste et
+CHANGELOG de ce projet expédient maintenant du code réel et testé. Ce
+qui reste, dit honnêtement :
+
+- **Le manque de vérification matérielle de la Livraison 4 reste ouvert
+  délibérément.** `certify` enregistre une preuve attestée par un
+  humain, vérifiée contre l'`evidenceSchema` propre d'un adaptateur,
+  mais rien dans ce projet ne confirme de façon indépendante que cette
+  preuve provient réellement de la machine nommée - cela nécessite le
+  matériel physique lui-même, dans une cellule réelle, que cette machine
+  de développement n'a pas. Voir
+  [docs/CERTIFICATION.md](docs/CERTIFICATION.md).
+- **Intégration avec un vrai client : commencée, pas terminée.**
+  HYDRA-UMC-SERVER sonde désormais réellement `serve-catalog` -
+  `GET /api/adapters` et `GET /api/adapters/:adapterId` relaient le vrai
+  catalogue de ce projet, de bout en bout (voir le propre
+  `tools/verify_connector_hub_relay_contract.mjs` de HYDRA-UMC-SERVER,
+  qui démarre le vrai `serve-catalog` de ce projet contre ses propres
+  `fixtures/` réels et une vraie instance de Server, jamais un mock).
+  Il a aussi été installé comme un vrai wheel dans un venv en dehors du
+  propre checkout de ce projet et exécuté depuis là, confirmant que
+  l'empaquetage lui-même (pas seulement une installation éditable)
+  fonctionne. Que Studio/Suite/Updater appellent `gate` eux-mêmes reste
+  un vrai travail futur, séparé.
+- **Un vrai transport manque entre un appelant `gate`/`certify` et
+  l'état réel de la cellule/machine.** Aujourd'hui, `--cell-state`/
+  `--machine-state` sont fournis par l'appelant comme des valeurs déjà
+  connues - il n'existe ici aucun chemin de code qui les récupère en
+  direct depuis HYDRA-UMC-SERVER ou un service de zones de sécurité.

@@ -1,0 +1,5 @@
+La división por modo en `BRIDGE` y la compuerta del enclavamiento de
+seguridad en la ruta `Modo Real` son reales hoy (`bridge.rs`/
+`interlock.rs`), encaminando hacia un receptor en memoria en vez de un
+proceso real en vivo. Todo lo que toca un proceso real `APP`, `TWIN` o
+`CORE` mediante una conexión real sigue siendo trabajo futuro.

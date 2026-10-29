@@ -1,0 +1,67 @@
+Questo repository è un **figlio** della famiglia Cognitive AI Node - il
+suo genitore, [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE),
+possiede l'immagine HydraOS condivisa e i pesi dei modelli quantizzati, e
+collega questo servizio nel proprio `docker-compose.yml` insieme ai suoi
+tre fratelli (VLA-Engine, Voice-UI, Semantic-Planner):
+
+* **Perché questo figlio non ha hardware/firmware/`os/`/`models/`
+  propri.** Funziona interamente sul modulo CM5 + Hailo-10 M.2 già
+  posseduto dal genitore - centralizzare i pesi dei modelli e l'immagine
+  HydraOS in un unico posto evita quattro copie divergenti da svariati
+  gigabyte all'interno della famiglia.
+* **Perché una struttura `src/`.** Mantiene il pacchetto installabile
+  (`hydra_umc_docs_qa`) separato dal tooling nella radice del repo
+  (`bump_version.py`), come il resto dei progetti Python
+  dell'ecosistema.
+* **Perché l'invocazione nuda (senza sottocomando) continua a stampare
+  solo identità/versione/ruolo.** Era il comportamento originale della
+  fase di andamiaje, che dimostrava che il pacchetto si installa,
+  compila e importa correttamente prima che esistesse una vera logica -
+  oggi resta il comportamento predefinito come rapido controllo che
+  "è davvero installato e funziona", accanto ai veri sottocomandi
+  `query` (ricerca TF-IDF) e `serve` (API JSON/HTTP) per cui
+  quell'andamiaje era un prerequisito.
+* **Come si inserisce nel resto dell'ecosistema.** Questo assistente
+  fonda le proprie risposte sulla documentazione propria
+  dell'ecosistema, offrendo al fratello HYDRA-UMC-SEMANTIC-PLANNER una
+  fonte di conoscenza tecnica da consultare durante il ragionamento, e
+  offrendo ai tecnici in loco supporto di risoluzione dei problemi a
+  mani libere insieme a HYDRA-UMC-VOICE-UI.
+* **Perché il recupero di `index.py` è vero TF-IDF, non un modello di
+  embedding.** La ricerca semantica basata su embedding richiede una
+  vera dipendenza da un modello (idealmente lo stesso Hailo-10 che
+  questo README già menziona) - un indice TF-IDF/similarità coseno puro
+  stdlib è reale, testabile, e non richiede nulla oltre Python stesso,
+  dando a questo progetto un nucleo di recupero funzionante oggi che un
+  futuro indice basato su embedding potrà sostituire dietro lo stesso
+  contratto `search()`, senza toccare la CLI né il passo di ingestione.
+* **Perché una query senza corrispondenze restituisce un fallimento
+  onesto, non una risposta di ripiego.** v0 non ha un passo di sintesi
+  tramite LLM - una domanda le cui parole non si sovrappongono al corpus
+  ingerito riceve `No relevant passages found` (vedi `main.py`), mai una
+  risposta inventata o allucinata travestita da vero risultato di
+  recupero.
+* **Perché un percorso `--docs` non consentito viene rifiutato, non
+  ignorato o ingerito silenziosamente.** Un assistente QA che dovrebbe
+  essere "fondato sulla documentazione propria dell'ecosistema" non
+  deve leggere e citare silenziosamente qualsiasi file a cui punti chi
+  lo invoca - un percorso mancante o un file non Markdown (un `.env`
+  sperduto, un binario di firmware) riceve una riga reale e distinta
+  `REJECTED ... : <motivo>` (vedi `validate_doc_path` in `ingest.py`)
+  invece di un "nessun risultato trovato" aggregato che nasconde *il
+  perché*.
+* **Perché la similarità coseno ordina i termini condivisi prima di
+  sommarli.** `dict.keys() & dict.keys()` è un set, e l'ordine di
+  iterazione dei set in CPython dipende dalla randomizzazione
+  dell'hash delle stringhe per processo - sommare termini in virgola
+  mobile in quell'ordine farebbe dipendere un punteggio dal processo
+  che ha eseguito la query, non solo dal corpus e dal testo della
+  query. Ordinare prima rende il punteggio una funzione pura e
+  riproducibile dei suoi input reali.
+* **Perché le citazioni portano un `#index`, non solo un nome di
+  file.** Un semplice nome di file non può disambiguare due sezioni
+  che condividono un'intestazione (o, in futuro, due file ingeriti che
+  condividono un nome) - `DocChunk.index` è la posizione ordinale
+  reale di ciascun frammento all'interno della propria fonte, dando a
+  ogni citazione una chiave stabile che chi la usa può sfruttare per
+  recuperare di nuovo, in modo deterministico, lo stesso passaggio.
