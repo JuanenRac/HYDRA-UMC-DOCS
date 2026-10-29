@@ -2,12 +2,16 @@
   "repos": {
     "HYDRA-UMC": {
       "hardware": "not_run",
-      "target": "board"
+      "target": "board",
+      "tests": {
+        "count": 148,
+        "command": "python -m unittest discover -s tests -p 'test_*.py'"
+      }
     },
     "HYDRA-UMC-ANDROID-CONTROL": {
       "hardware": "not_run",
       "tests": {
-        "count": 300,
+        "count": 303,
         "command": "./gradlew testDebugUnitTest"
       },
       "target": "android"
@@ -138,12 +142,17 @@
       }
     },
     "HYDRA-UMC-EDITOR-STL": {
-      "hardware": "not_applicable"
+      "hardware": "not_applicable",
+      "tests": {
+        "count": 215,
+        "command": "python -m pytest tests -q"
+      }
     },
     "HYDRA-UMC-EDITOR-URDF": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 355
+        "count": 366,
+        "command": "python -m pytest tests -q"
       }
     },
     "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
@@ -162,7 +171,11 @@
     },
     "HYDRA-UMC-IOS-CONTROL": {
       "hardware": "not_run",
-      "target": "ios"
+      "target": "ios",
+      "tests": {
+        "count": 220,
+        "command": "flutter test"
+      }
     },
     "HYDRA-UMC-JOB-DISPATCHER": {
       "hardware": "not_run",

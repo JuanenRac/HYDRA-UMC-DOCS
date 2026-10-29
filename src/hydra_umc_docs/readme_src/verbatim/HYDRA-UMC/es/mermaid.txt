@@ -1,0 +1,36 @@
+```mermaid
+flowchart TB
+    CM5["<b>Compute Module 5 (Host / Cerebro)</b><br/>Broadcom BCM2712 Quad Cortex-A76 a 2.4 GHz<br/>GPU VideoCore VII (OpenGL ES 3.1 / Vulkan 1.2)<br/>Controladores host RP1 Dual USB 3.0 (2x 5 Gbps)<br/>SO Linux con parche PREEMPT_RT<br/>UI táctil de alto FPS (Qt6 / Flutter) vía MIPI-DSI<br/>Planificación de trayectoria, parseo de G-code e IA de Visión"]
+
+    CM5 -- "PCIe Gen 3.0 x1 (hasta 8 Gbps)" --> PCIESW["<b>Switch PCIe Gen3</b><br/>Reparto de 1 a 2 carriles"]
+    PCIESW -- "PCIe x1" --> HAILO8["<b>Acelerador de IA Hailo-8 M.2</b><br/>26 TOPS - visión de alta velocidad"]
+    PCIESW -- "PCIe x1" --> HAILO10["<b>Acelerador de IA Hailo-10 M.2</b><br/>40 TOPS - razonamiento cognitivo / GenAI local"]
+    CM5 -- "Canal USB3 1" --> HUB1["Hub #1 GL3523"]
+    CM5 -- "Canal USB3 2" --> HUB2["Hub #2 GL3523"]
+    HUB1 --> CAM14["4x puertos de cámara USB3<br/>(Cam 1-4)"]
+    HUB2 --> CAM58["4x puertos de cámara USB3<br/>(Cam 5-8)"]
+
+    CM5 -- "Bus SPI de alta velocidad + DMA + pin IRQ" --> MCU
+
+    subgraph MCU["Co-Procesador de Tiempo Real STM32H745ZIT6 (LQFP-144)"]
+        direction LR
+        CM7["<b>Cortex-M7 a 480 MHz</b><br/>Cinemática de curva en S<br/>Temporizadores por hardware<br/>Etapa local de 6 ejes"]
+        CM4["<b>Cortex-M4 a 240 MHz</b><br/>Controlador FDCAN1<br/>Filtrado de sensores<br/>IPC entre núcleos"]
+    end
+    MEM["1 MB SRAM / 2 MB flash interna de doble banco<br/>Interfaz SPI2 dedicada a 64 KB de FRAM"]
+    MCU --- MEM
+
+    MCU -- "Bus FDCAN1 - STACK A" --> ROBOTS["Placas Robot Controller Board A1...A8<br/>(hasta 8 módulos esclavos)"]
+```
+
+```mermaid
+flowchart LR
+    FDCAN1["STM32H745<br/>Controlador FDCAN1"] --> XCVR["Transceptor<br/>TCAN1044"] --> BUS["Bus STACK A<br/>(Robots A1 - A8)"]
+```
+
+```mermaid
+flowchart LR
+    MCU["STM32H745<br/>FDCAN1 (STACK A)"] --> RCB["<b>Robot Controller Board</b><br/>x1 por robot, hasta 8<br/>6x STEP/DIR/EN, fines de carrera"]
+    RCB -- CAN --> URTC["<b>Cabezal de Herramienta URTC</b><br/>+ placa de expansión opcional"]
+    URTC -- CAN --> RCB
+```

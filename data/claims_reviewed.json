@@ -29,17 +29,21 @@
   },
   "HYDRA-UMC": {
    "1ac4d0d4c921": "— the documentation and tooling hub of the ecosystem: architecture, interfaces, security baseline, capability ",
-   "bc0c419a6fdf": "🎛️ MCU: STMicroelectronics STM32G474RET6 (Cortex-M4 @ 170 MHz, LQFP-64, 512 KB flash), using 2 of its 3 onboar",
-   "d0eaaba184aa": "👁️ Octal Camera Vision & Inspection Matrix: Integrated dual USB 3.0 controllers driving 8x dedicated USB camer",
-   "e6cf5a266725": "Identical connector definition on the Kinematic Brain's own port and every Robot Controller Board's pair of po"
+   "33fc54b732b2": ", , on 127.0.0.1:8765 | the local service of the SPI bridge: a board's version, the error counters of its CAN ",
+   "43877b68595c": "development key | 64 hexadecimal digits: the Ed25519 public key that an update must be signed for",
+   "d0eaaba184aa": "👁️ Octal Camera Vision & Inspection Matrix: Integrated dual USB 3.0 controllers driving 8x dedicated USB camer"
   },
   "HYDRA-UMC-ANDROID-CONTROL": {
+   "064f22f53f09": ", , , , | the state of the robots, the family, the compute module, the safety limits and the reservations",
+   "10859347df2c": "A token stolen from the phone | The sign-in token and the refresh token are kept with EncryptedSharedPreferenc",
    "4c02b8991167": "Every control command (Jog, Play and the server's global stop) is validated by the server using signed tokens,",
    "87e72ccd6be2": "— iOS/iPadOS control app (Flutter) with real-time WebSocket sync; this app's direct iOS/iPadOS counterpart, sa",
    "902c960672f0": "— web control dashboard with real-time multi-robot 3D visualization; its own 3D viewport is embedded directly ",
    "9209ec6774ac": "System Health Monitor ( ) - Real-time metrics for the connected Compute Module 5, including Hostname, Formatte",
+   "ac8544ccabd6": "Screens of the app: login (server address, password, fingerprint or face), dashboard (a 3D carousel of the rob",
    "bbf77ca60c53": "Real-time Octal Vision ( , ) - Native MJPEG Streamer.",
-   "e41e9c4cd1de": "Industrial Telemetry Terminal ( ) - A dedicated real-time log viewer with a terminal-style interface."
+   "e41e9c4cd1de": "Industrial Telemetry Terminal ( ) - A dedicated real-time log viewer with a terminal-style interface.",
+   "f52a36f2226e": "Settings > Notifications | on | alerts when a robot finishes a job or a critical event happens (two channels: "
   },
   "HYDRA-UMC-ANOMALY-DETECTOR": {
    "a024622a6823": "🔍 Signature Analysis: FFT (Fast Fourier Transform) of motor current samples to detect mechanical imbalance."
@@ -103,11 +107,13 @@
   },
   "HYDRA-UMC-EDITOR-STL": {
    "1cb6f37a914e": "Assembled view - robots, CNC, PnP and laser models open already assembled at their home pose (read from 's own",
-   "65f9bab8dced": "— sibling desktop editor for the same model catalog's own URDF/kinematics side, rather than the raw STL geomet"
+   "3ed231d580b6": "An upload that is too large or hangs | The whole upload must fit in 49 MiB (the server limit is 50 MB) and eve",
+   "65f9bab8dced": "— sibling desktop editor for the same model catalog's own URDF/kinematics side, rather than the raw STL geomet",
+   "df40efc1f2cc": "Jump to: Overview · Architecture · Security & Safety · Interfaces · Configuration · Quick start · Testing · Tr"
   },
   "HYDRA-UMC-EDITOR-URDF": {
    "083d918ea6e3": "This app automates that entire pass - pull the source files from a GitHub URL or an already-downloaded local f",
-   "435d5f302e7c": "Current version: 0.1.5 ( - see the Production Build section below for how this number moves)",
+   "50d1c435874c": "It loads a URDF from a GitHub repository or a local folder, tells whether the robot fits the 3 to 6 degrees of",
    "a885b988f1c6": "Every real robot model in STUDIO's catalog got there the same way in the past: find a description repo on GitH",
    "e0ccbc10b518": "— sibling desktop editor for the same model catalog's own raw STL geometry, rather than the URDF/kinematics si",
    "e25b674d0681": "Retype and re-limit a joint - change a joint's type (any of the 6 the URDF spec defines) and its lower/upper l"
@@ -121,6 +127,7 @@
    "e986c5583a2a": "docs/INTERLOCK_CERTIFICATE.md - what the signed interlock certificate says and how it is checked"
   },
   "HYDRA-UMC-IOS-CONTROL": {
+   "47a046fc3f5b": ", , , | the state of the robots, the compute module (every 5 s), the safety limits of each model and the reser",
    "902c960672f0": "— web control dashboard with real-time multi-robot 3D visualization; its own 3D viewport is embedded directly "
   },
   "HYDRA-UMC-JOB-DISPATCHER": {

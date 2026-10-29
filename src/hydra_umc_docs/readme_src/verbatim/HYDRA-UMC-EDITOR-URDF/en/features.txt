@@ -1,0 +1,119 @@
+### Source Loading - GitHub or Local Folder
+
+Two ways to point the app at a robot's source files, both landing in the same import path:
+
+- **From a GitHub URL** - accepts a full `https://github.com/owner/repo` URL (with or without `/tree/<branch>`), an SSH-style `git@github.com:owner/repo.git`, or the bare `owner/repo` shorthand. Deliberately does **not** shell out to `git clone`, which would make a `git` install a hard runtime dependency on both Windows and Linux for something a plain HTTPS download already does: GitHub serves a zipball of any branch/tag/commit from `codeload.github.com` with no authentication needed for a public repo, so this uses the standard library's own `urllib.request` + `zipfile` and nothing else. Only public repos are supported - there's no token/credential handling, and a private repo's zipball 404s the same as a nonexistent one.
+- **From a local folder** - for a repo already downloaded by hand, or a working copy the operator is actively editing outside this app.
+- **From the Gallery** - a small "Gallery" dropdown above the GitHub URL field (`hydra_editor_urdf/gallery.py`) lists a short, hand-checked starter set of real, currently-active robot-description repos (ROS-Industrial's `universal_robot`, ROBOTIS' `open_manipulator`). Picking an entry only fills the URL field and shows its description - it never fetches on its own, the operator still presses Fetch, same as typing a URL by hand. A deliberately short, hand-picked list rather than an auto-scraped one: a gallery entry pointing at a dead or malicious repo would be worse than no gallery at all.
+
+Either way, the app then recursively finds every `*.urdf`/`*.xacro` file under the chosen folder, lists all of them (a real robot description repo often ships more than one - a bare arm plus a "with gripper" variant is a common pairing), and auto-picks the largest by file size as a reasonable default for "the main one" - switching to a different candidate afterward is one double-click in the Source panel, not a re-fetch.
+
+**Mesh reference resolution** is the actual unglamorous work every past manual robot-porting session in this ecosystem did by hand: a URDF's `<mesh filename="package://some_pkg/meshes/link1.stl"/>` is essentially never a directly-openable path once the file is sitting in a plain downloaded folder instead of a live ROS workspace, where `package://` resolves through the ROS package index. The resolver tries, in order: (1) the reference as a path relative to the URDF's own folder, (2) the same reference with a leading `package://`-style package-name segment stripped, (3) as an absolute path if it happens to already be one, and (4) by bare basename anywhere under the source folder - which is what actually handles a real `package://` URI, since the scheme and package name are meaningless outside a live ROS workspace but the mesh's own filename is still findable.
+
+### DOF Feasibility Validation
+
+The automated version of the same judgment call this ecosystem's own past sessions made by hand for every robot added to STUDIO's catalog: **STUDIO's own kinematics supports 3, 4, 5, and 6-DOF serial chains today** (its `RobotState.joints` is a fixed `j1..j6` map) - a handful of real, license-clear candidate arms researched in the past turned out to be 7, 8, or 9-DOF and were discarded for exactly this reason, not hypothetically. On every import (and after every live edit that could change the count - retyping a joint, for instance), the app walks the actual parent/child joint graph and reports:
+
+- **DOF count** - only `revolute`/`continuous`/`prismatic` joints count as a real, controllable degree of freedom; `fixed` contributes none.
+- **Unsupported joint types** - a single `floating` or `planar` joint anywhere in the chain makes the whole robot infeasible regardless of DOF count, since STUDIO's joint model has no representation for either.
+- **Tree integrity** - exactly one root link is required (a proper tree, not a forest or a cycle); any link not reachable from that root by a joint chain is flagged as disconnected, and any link referenced by no joint at all as an orphan.
+- **Missing `<limit>`** - required by the URDF spec for anything but a `continuous` joint; flagged per-joint if absent.
+
+The verdict and every reason behind it render live in the DOF panel, and the Upload panel refuses to push an infeasible robot to a server.
+
+### Live Editing with a Real 3D Preview
+
+The Properties panel edits whichever link is selected in the Viewport panel's link tree, and every edit mutates the loaded model in place and re-validates/re-renders through one signal (`EditorController.notify_tree_changed`) - no panel has to know how the viewport or the DOF report reacts to its own edit:
+
+- **Recolor** - a link's visual material, picked through a standard color dialog. A material shared by name across several links (a real URDF's top-level `<material name="...">` declaration referenced by more than one `<visual>`) recolors every link sharing it together, matching what that shared-material syntax actually means in the spec.
+- **Rescale** - per-axis (X/Y/Z) scale factor on a mesh geometry's own `<mesh scale="...">` transform, not a destructive rewrite of the mesh's triangle data itself - the same edit re-applied later starts from the original, unmodified mesh every time.
+- **Retype and re-limit a joint** - change a joint's type (any of the 6 the URDF spec defines) and its lower/upper limit, with the DOF panel's verdict updating immediately since a retype can change the DOF count or introduce an unsupported type.
+- **Mass & inertia** - "Auto-calculate" fills mass/Ixx/Iyy/Izz from the selected link's own geometry using `inertia_calc.py`'s closed-form uniform-density formulas (Box/Cylinder/Sphere exact, Mesh a bounding-box approximation - said so explicitly, since there's no per-triangle mesh integrator here); an operator-entered mass always wins over the density-based guess, and with no mass entered yet it assumes a generic aluminum density (2700 kg/m³) and notes that it did. "Apply" commits the fields to `Link.inertial` - the same calculate-then-apply two-step pattern as Scale/Joint above, so a computed value can be eyeballed or hand-tweaked before it's written to the model.
+
+The **Viewport panel** hosts the actual OpenGL 3D view plus a jog slider per movable joint, so the operator can preview the URDF moving through its own real range before ever touching STUDIO. Forward kinematics (`render/kinematics.py`) is generic over whatever tree was just imported - unlike HYDRA-UMC SUITE's own kinematics module, which drives a fixed registry of a few dozen known, hand-verified robot models, this app has to pose an arbitrary, previously-unseen URDF, so it composes each joint's real `<origin>`/`<axis>` (Rodrigues' rotation formula for an arbitrary revolute axis, not just the cardinal-direction shortcut a fixed registry could rely on) walking the actual parent/child graph.
+
+**Z-up, not Y-up** - the one deliberate divergence from HYDRA-UMC SUITE's own viewport convention: URDF itself is a Z-up format (gravity is `-Z`, every `<origin>`/`<axis>` in a source file is authored assuming it), and this app's job is to show and edit a URDF faithfully in its own convention, not re-orient it into whatever a downstream viewer (STUDIO's Three.js scene, SUITE's own OpenGL scene) happens to prefer.
+
+### Mesh Loading
+
+`.stl` (via `numpy-stl`) and `.obj` (a small hand-rolled Wavefront loader - `v`/`vn`/`f` only, n-gon faces fan-triangulated) are both first-class. **COLLADA (`.dae`) is not supported** - it's a much larger XML scene-graph format (skeletal animation, multiple coordinate systems, embedded materials/textures) that would need a real parser to handle honestly rather than a best-effort guess at whichever tags a "simple" `.dae` happens to use; a link that references one gets a clear, named error instead of silently missing from the viewport or crashing the whole import. Every loaded mesh also gets the same defensive millimeter-vs-meter guard HYDRA-UMC STUDIO's own `useRealScaleSTL()` and HYDRA-UMC SUITE's own mesh loader apply: a link larger than 5 real-world meters in any axis is far more likely to be a millimeter-scale export with no unit metadata than an actual giant robot part, and gets rescaled by 0.001 automatically.
+
+---
+
+Mesh paths are confined: a `<mesh filename>` is only resolved to a `.stl`, `.obj` or `.dae` file inside the opened folder, the URDF folder or a folder you added with "Locate Missing Meshes"; `..` segments, absolute paths and `file://` URIs that lead anywhere else are ignored, and only those files are ever uploaded. Meshes that are empty, truncated or malformed are reported as not loaded instead of stopping the viewer. The millimetre-to-metre guard rescales any mesh larger than 5 units before the URDF `scale` is applied, so a mesh that is already scaled by the URDF can be reduced twice. Tags the editor does not model (`<dynamics>`, `<safety_controller>`, `<mimic>`, `<transmission>`, `<gazebo>`, material textures) are not kept when a URDF is re-exported.
+
+### URDF Parsing and Export
+
+Plain XML via the standard library's own `xml.etree.ElementTree` - no `lxml` dependency needed for a format this simple. The in-memory model (`hydra_editor_urdf/models.py`) is a deliberately plain, mutable, in-house dataclass tree rather than a wrapper around an existing Python URDF library such as `urdfpy` or `yourdfpy`: this app needs to *edit* the tree interactively and re-render every change live, which a read-mostly parsing library isn't shaped for, and owning the model outright keeps it small, inspectable, and free of a third-party dependency's own release cadence. Field names and defaults follow the real [URDF XML schema](http://wiki.ros.org/urdf/XML) closely, so the parser/writer pair stays a thin, obvious XML↔object mapping.
+
+**xacro is not expanded.** [xacro](http://wiki.ros.org/xacro) is a Python/XML macro preprocessor with its own ROS package and dependency chain, and a real xacro file is only reliably resolvable inside the same ROS package environment it was authored against (macro arguments, `$(find pkg)`-style includes, etc.) - something this app has no way to reproduce honestly. A file that uses `<xacro:...>` tags or declares the xacro namespace gets a clear error explaining the limitation and pointing at the ROS `xacro` command-line tool to preprocess it first, rather than a silent misparse.
+
+Export (`urdf/writer.py`) re-serializes the current in-memory tree from scratch rather than patching the original source XML text, so every live edit - regardless of which panel made it - is reflected exactly once, through one code path, in both the "Export URDF" menu action and the payload sent to a STUDIO server.
+
+### Dockable Workspace
+
+Real `QDockWidget` panels - drag to float, drag back to dock, merge into tabs, split the workspace - the same mechanism and reasoning HYDRA-UMC SUITE's own main window already applies: Qt's own docking system already does exactly what a Photoshop/Fusion-360-style workspace needs, and a hand-rolled one would only reinvent it with more bugs. Five panels, arranged with a sensible default layout that's fully rearrangeable afterward:
+
+- **Source** - GitHub URL / local folder input, found-`.urdf` list.
+- **DOF** - the feasibility verdict and every reason behind it.
+- **Viewport** - the live 3D view, link tree, and jog sliders.
+- **Properties** - recolor / rescale / retype-and-relimit for the selected link.
+- **Upload** - connect to a STUDIO server, push, or pull.
+
+### Server Round-Trip
+
+Talks to HYDRA-UMC-SERVER's own model-submission contract (`POST /api/models/submit`, `GET /api/models`, `GET /api/models/:category/:slug/download` in that project's own `server.ts`, gated behind its own **Config > Models > "Accept model submissions"** toggle) using the standard library's own `urllib.request` - one more HTTP call didn't justify pulling in `httpx`/`requests` for a project that only ever needs 4 endpoints, not a persistent live connection. Every call runs on a background `QThread` so a slow or unreachable server never freezes the UI. This contract used to live inside HYDRA-UMC-STUDIO's own process before that project split into a pure frontend (STUDIO) plus a separate headless backend (HYDRA-UMC-SERVER, see **Related Projects** below) - this app doesn't hardcode either name, the operator just points the **Upload** panel's host/port fields at wherever the real backend is running.
+
+- **Login** - `POST /api/login`; only an `admin`-role token can actually reach `POST /api/models/submit` server-side, so this app is only really usable against an admin account, same as every other admin-only STUDIO feature.
+- **Push** - serializes the current robot back to URDF XML and base64-encodes every mesh file its visuals reference (resolved through the same mesh resolver built at import time) inline in the request body, tagged with the operator-picked category (mirroring STUDIO's own Config > UI > Module Visibility categories: Robot 3-6DOF, CNC, Pick & Place, Laser, Vacuum Table, XY Table, Heated Bed, ATC Tools - a URDF has no field of its own that says which of these it is). A name collision comes back as the server's own 409 response; the operator decides whether to resubmit with **Overwrite** checked or rename, this app never guesses.
+- **Pull** - downloads an already-submitted model's URDF + meshes back down into a local working folder and loads it straight into the editor - the "extract, edit, resend" round-trip half of this app's own purpose, letting an existing catalog entry be touched up without starting from its original source repo again.
+
+### Multi-Language UI
+
+Full interface translation across **English, Spanish, Italian, French, German, Chinese (simplified), Japanese and Portuguese** (`language/*.lng`), using the exact same plain `KEY=Value` file mechanism as every other Python tool in this ecosystem (URTC Flasher, URTC Tester, HYDRA-UMC SUITE) - not reinvented here, since the mechanism itself carries no project-specific logic. A language switch takes effect after an app restart rather than retranslating every already-built widget live, matching that same convention. `language/` sits **next to** the executable rather than bundled inside it via PyInstaller's `--add-data`, so a translator can edit or add a `.lng` file without a rebuild.
+
+### Theme
+
+The dock workspace's top toolbar is a real `QToolBar`/`QLabel`/`QToolButton`
+command deck, not a separate Qt Quick/QML UI - an earlier version embedded
+through QQuickWidget (same renderer as HYDRA-UMC-UPDATER and HYDRA-UMC-SUITE)
+rendered as a solid black bar with no console error once placed inside this
+`QMainWindow`'s real `QDockWidget` layout, so it was reverted to plain
+widgets; see `CHANGELOG.md` for the full story. Its Source, DOF, Viewport,
+Properties and Upload buttons only raise the existing docks; Export and About
+forward to the existing actions, and Export stays disabled until a model is
+actually loaded. After a URDF load (and after every live property edit), its
+status chip shows the loaded model's name, DOF count, and current feasibility
+verdict. It does not replace the OpenGL viewport, editor, parser or
+server-upload implementation.
+
+Reuses HYDRA-UMC SUITE's own `assets/qss/industrial_dark.qss` verbatim (same relative path, same file) rather than designing a new visual theme for a sibling desktop tool in the same ecosystem.
+
+### Visual command deck (`--qtquick`)
+
+That embed attempt is a different, separate thing from the real Qt Quick
+command deck this app now has:
+
+~~~
+python main.py --qtquick
+~~~
+
+A genuinely standalone QML `ApplicationWindow` (`qt_editor_urdf.py` +
+`assets/qml/EditorDeck.qml`), never embedded inside the classic
+`QMainWindow` - the same proven pattern HYDRA-UMC-OS-REBUILDER,
+HYDRA-UMC-UPDATER, URTC-TESTER, URTC-FLASHER and HYDRA-UMC-SUITE already
+use, launched alongside the unchanged classic entry point rather than
+replacing it. It mirrors the classic dockable workspace's own real
+layout (Source and DOF tabbed on the left, Viewport and Properties side
+by side, Upload across the bottom) and every one of its 5 panels' real
+features - GitHub/gallery/local-folder loading, live DOF validation, an
+orbit/pan/zoom 3D preview with a clickable link tree and per-joint jog
+sliders, color/scale/joint-limit/mass-and-inertia editing, and the
+STUDIO server connect/push/pull round-trip - through the same
+`EditorController`, without a second implementation of any of it. The
+3D preview reuses the classic viewport's own real rendering code
+(`render/viewport.py`'s `UrdfGLRenderer`) through a dedicated
+`OffscreenUrdfRenderer`, the same real `QOpenGLContext`/
+`QOffscreenSurface`/framebuffer approach HYDRA-UMC-SUITE's own Qt Quick
+Viewport panel already uses, fed into QML through a
+`QQuickImageProvider`.

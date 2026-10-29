@@ -1,0 +1,13 @@
+La spécification détaillée de la conception (onze sous-systèmes, de l'ordinateur hôte à la tête d'outil) est un document à part ; chaque ligne ci-dessous ouvre sa section :
+
+- [SOUS-SYSTÈME DE CALCUL HÔTE (HMI ET HAUT NIVEAU)](docs/HARDWARE_SPECIFICATION_fra.md#2--sous-système-de-calcul-hôte-hmi-et-haut-niveau)
+- [SOUS-SYSTÈME ACCÉLÉRATEUR IA PCIE (NPU DOUBLE HAILO-8 + HAILO-10)](docs/HARDWARE_SPECIFICATION_fra.md#3--sous-système-accélérateur-ia-pcie-npu-double-hailo-8--hailo-10)
+- [SOUS-SYSTÈME DE VISION DOUBLE USB 3.0 (8x PORTS CAMÉRA)](docs/HARDWARE_SPECIFICATION_fra.md#4--sous-système-de-vision-double-usb-30-8x-ports-caméra)
+- [SOUS-SYSTÈME DE CO-TRAITEMENT TEMPS RÉEL (CONCEPTION)](docs/HARDWARE_SPECIFICATION_fra.md#5--sous-système-de-co-traitement-temps-réel-conception)
+- [COMMUNICATION BUS DE TERRAIN DISTRIBUÉ (BUS CAN UNIQUE ; PÉRIPHÉRIQUE FDCAN EN MODE CLASSIQUE)](docs/HARDWARE_SPECIFICATION_fra.md#6--communication-bus-de-terrain-distribué-bus-can-unique--périphérique-fdcan-en-mode-classique)
+- [MÉMOIRE NON VOLATILE ULTRA-RAPIDE (SPI FRAM)](docs/HARDWARE_SPECIFICATION_fra.md#7--mémoire-non-volatile-ultra-rapide-spi-fram)
+- [SUITE LOCALE DE MOUVEMENT, ACTIONNEMENT ET CAPTEURS](docs/HARDWARE_SPECIFICATION_fra.md#8--suite-locale-de-mouvement-actionnement-et-capteurs)
+- [DISTRIBUTION ET RÉGULATION DE PUISSANCE](docs/HARDWARE_SPECIFICATION_fra.md#9--distribution-et-régulation-de-puissance)
+- [COMMUNICATION INTER-PROCESSEUR (IPC)](docs/HARDWARE_SPECIFICATION_fra.md#10--communication-inter-processeur-ipc)
+- [SPÉCIFICATIONS MATÉRIELLES PCB 4 COUCHES](docs/HARDWARE_SPECIFICATION_fra.md#11--spécifications-matérielles-pcb-4-couches)
+- [CARTES ROBOT CONTROLLER BOARD ET TÊTE D'OUTIL URTC (NIVEAU DISTRIBUÉ)](docs/HARDWARE_SPECIFICATION_fra.md#12--cartes-robot-controller-board-et-tête-doutil-urtc-niveau-distribué)

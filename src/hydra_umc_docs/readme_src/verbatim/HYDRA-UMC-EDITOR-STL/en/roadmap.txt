@@ -1,0 +1,4 @@
+- A packaged standalone GUI executable (PyInstaller, matching
+  HYDRA-UMC-SUITE's own `build_exe.bat`/`.sh` convention).
+- Undo/redo over a session's own `.trash/` history, instead of a manual
+  file restore.

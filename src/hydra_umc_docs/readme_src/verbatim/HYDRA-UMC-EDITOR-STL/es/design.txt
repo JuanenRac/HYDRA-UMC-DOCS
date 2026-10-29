@@ -1,0 +1,40 @@
+### ARQUITECTURA Y DECISIONES DE DISEÑO
+
+- **Dos librerías reales, un solo módulo de descubrimiento.** La propia
+  constante `LIBRARIES` de `model_catalog.py` nombra los dos árboles
+  reales que edita esta herramienta (`HYDRA-UMC-STUDIO/public/models/`,
+  `HYDRA-UMC-SUITE/assets/meshes/`) - añadir una tercera librería más
+  adelante significa añadir una entrada ahí, no una segunda
+  implementación de descubrimiento.
+- **`stl_ops.py` es el único sitio que muta un fichero.**
+  `model_catalog.py` se mantiene estrictamente de solo lectura; tanto
+  `--cli` como el puente Qt Quick llaman exactamente a las mismas
+  funciones `transform_part()`/`replace_part()`/`remove_part()`/
+  `add_part()`, así que la GUI nunca puede hacer nada que la CLI misma
+  no pudiera.
+- **Un STL real, no solo un nombre de fichero terminado en `.stl`.**
+  `is_real_stl()` de verdad analiza un candidato a reemplazo/adición con
+  `numpy-stl` antes de copiarlo nunca a una carpeta de modelo real - y,
+  un fallo real encontrado escribiendo los propios tests de este
+  proyecto, también rechaza un resultado de análisis con **0
+  triángulos**: la propia ruta de reserva ASCII de `numpy-stl` no lanza
+  excepción ante bytes de basura arbitrarios, los analiza en silencio
+  como una malla vacía, así que un simple try/except por sí solo habría
+  dejado pasar un fichero que no es un STL en absoluto.
+- **GUI Qt Quick por defecto, `--cli` para sistemas sin pantalla.**
+  `main.py` solo importa PySide6 en la ruta que no es `--cli`, así que
+  `--cli categories`/`models`/`parts`/`transform`/`replace`/`remove`/
+  `add` funcionan en una máquina sin pantalla ni runtime de Qt instalado
+  en absoluto.
+- **La misma capa visual real que HYDRA-UMC-UPDATER.** `qml/Main.qml`
+  reutiliza literalmente los componentes propios `GameButton`/
+  `GameCombo`/`SectionPanel` de ese proyecto y su tema oscuro
+  cian/azul/ámbar/rojo, a petición explícita del dueño del proyecto -
+  una herramienta de PC nueva en este ecosistema debe sentirse como la
+  misma herramienta, no como una diseñada aparte.
+- **Raíz del ecosistema, no una ruta fija.** Igual que la raíz de
+  workspace propia de HYDRA-UMC-UPDATER, el directorio padre de este
+  propio proyecto es el valor por defecto (`default_ecosystem_root()`
+  de `main.py`), siempre sobreescribible (`--root` en `--cli`,
+  "Examinar" en la GUI) y recordado entre lanzamientos de la GUI
+  (`settings.py`).

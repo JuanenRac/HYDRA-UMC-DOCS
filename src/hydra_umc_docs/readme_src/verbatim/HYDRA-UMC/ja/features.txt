@@ -1,0 +1,13 @@
+設計の詳細な仕様（ホストコンピューターからツールヘッドまでの 11 のサブシステム）は別のドキュメントになっています。以下の各行がその節を開きます：
+
+- [ホストコンピューティングサブシステム（HMI・上位処理系）](docs/HARDWARE_SPECIFICATION_jpn.md#2--ホストコンピューティングサブシステムhmi上位処理系)
+- [PCIE AI アクセラレータサブシステム（HAILO-8 + HAILO-10 デュアル NPU）](docs/HARDWARE_SPECIFICATION_jpn.md#3--pcie-ai-アクセラレータサブシステムhailo-8--hailo-10-デュアル-npu)
+- [デュアル USB 3.0 ビジョンサブシステム（カメラポート ×8）](docs/HARDWARE_SPECIFICATION_jpn.md#4--デュアル-usb-30-ビジョンサブシステムカメラポート-8)
+- [リアルタイムコプロセッシングサブシステム（設計）](docs/HARDWARE_SPECIFICATION_jpn.md#5--リアルタイムコプロセッシングサブシステム設計)
+- [分散フィールドバス通信（単一 CAN バス、FDCAN ペリフェラルをクラシックモードで使用）](docs/HARDWARE_SPECIFICATION_jpn.md#6--分散フィールドバス通信単一-can-バスfdcan-ペリフェラルをクラシックモードで使用)
+- [超高速不揮発性メモリ（SPI FRAM）](docs/HARDWARE_SPECIFICATION_jpn.md#7--超高速不揮発性メモリspi-fram)
+- [ローカルモーション・駆動・センサー系](docs/HARDWARE_SPECIFICATION_jpn.md#8--ローカルモーション駆動センサー系)
+- [電源分配・レギュレーション](docs/HARDWARE_SPECIFICATION_jpn.md#9--電源分配レギュレーション)
+- [プロセッサ間通信（IPC）](docs/HARDWARE_SPECIFICATION_jpn.md#10--プロセッサ間通信ipc)
+- [4 層 PCB ハードウェア仕様](docs/HARDWARE_SPECIFICATION_jpn.md#11--4-層-pcb-ハードウェア仕様)
+- [ロボットコントローラーボードと URTC ツールヘッド（分散階層）](docs/HARDWARE_SPECIFICATION_jpn.md#12--ロボットコントローラーボードと-urtc-ツールヘッド分散階層)

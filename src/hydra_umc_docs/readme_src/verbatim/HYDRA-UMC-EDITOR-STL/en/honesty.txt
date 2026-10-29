@@ -1,0 +1,25 @@
+**Honesty check - what actually runs today:** `model_catalog.py` (real,
+read-only discovery of both model libraries), `stl_ops.py` (real STL
+mutation via `numpy-stl` - transform/replace/remove/add, plus
+`model_bounds()` for the 3D viewer's own camera framing),
+`part_colors.py` (real per-part color sidecar), `stl_geometry.py`
+(real Qt Quick 3D geometry loading) and `catalog_push.py` (real
+assembly-URDF generation plus a real HTTP client for
+`POST /api/models/submit`) are all tested against real, generated STL
+fixtures and a real, session-scoped `QGuiApplication` where needed
+(`pytest tests/`, {tests} passing cases) and have been smoke-tested end to end
+against this ecosystem's own real
+`HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` checkouts (`--cli categories`/
+`models`/`parts` against the real trees; `transform`/`remove` against a
+throwaway copy, never the real checkout). `qt_gui.py`'s `EditorBridge`
+itself is also directly tested (color slot, selection preserved across
+a color change). `qml/Main.qml` loads and renders with no QML errors
+(verified headlessly with `QT_QPA_PLATFORM=offscreen`, including with a
+real model's parts loaded into the 3D viewer), but the QML scene graph
+itself has no automated test of its own - driving a real Qt event loop
+isn't attempted here, the same honesty boundary HYDRA-UMC-UPDATER's own
+README already draws for its own Qt Quick shell.
+
+---
+
+> **Safety and security status:** this ecosystem is not a certified safety system. There is no hardware E-STOP path, no firmware-enforced limits or interlocks and no verified motion command yet; firmware images are checked with CRC32 and a shared-key HMAC-SHA256, not with an asymmetric signature; TLS and mutual TLS are optional and off by default; no custom board has been populated or tested yet. Read the [security baseline](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md) and the [threat model](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md) before relying on any statement here for the safety of a person.

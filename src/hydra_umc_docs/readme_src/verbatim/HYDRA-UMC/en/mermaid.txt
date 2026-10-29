@@ -1,0 +1,36 @@
+```mermaid
+flowchart TB
+    CM5["<b>Compute Module 5 (Host / Cerebro)</b><br/>Broadcom BCM2712 Quad Cortex-A76 @ 2.4 GHz<br/>VideoCore VII GPU (OpenGL ES 3.1 / Vulkan 1.2)<br/>RP1 Dual USB 3.0 Host Controllers (2x 5 Gbps)<br/>Linux OS with PREEMPT_RT patchset<br/>High-FPS touch UI (Qt6 / Flutter) via MIPI-DSI<br/>Trajectory planning, G-code parsing &amp; Vision AI"]
+
+    CM5 -- "PCIe Gen 3.0 x1 (up to 8 Gbps)" --> PCIESW["<b>PCIe Gen3 Switch</b><br/>1-to-2 lane fan-out"]
+    PCIESW -- "PCIe x1" --> HAILO8["<b>Hailo-8 M.2 AI Accelerator</b><br/>26 TOPS - high-speed vision"]
+    PCIESW -- "PCIe x1" --> HAILO10["<b>Hailo-10 M.2 AI Accelerator</b><br/>40 TOPS - cognitive reasoning / local GenAI"]
+    CM5 -- "USB3 Channel 1" --> HUB1["GL3523 Hub #1"]
+    CM5 -- "USB3 Channel 2" --> HUB2["GL3523 Hub #2"]
+    HUB1 --> CAM14["4x USB3 camera ports<br/>(Cam 1-4)"]
+    HUB2 --> CAM58["4x USB3 camera ports<br/>(Cam 5-8)"]
+
+    CM5 -- "High-Speed SPI bus + DMA + IRQ pin" --> MCU
+
+    subgraph MCU["STM32H745ZIT6 Real-Time Co-Processor (LQFP-144)"]
+        direction LR
+        CM7["<b>Cortex-M7 @ 480 MHz</b><br/>S-Curve kinematics<br/>Hardware timers<br/>6-axis local stage"]
+        CM4["<b>Cortex-M4 @ 240 MHz</b><br/>FDCAN1 controller<br/>Sensor filtering<br/>Inter-core IPC"]
+    end
+    MEM["1 MB SRAM / 2 MB dual-bank internal flash<br/>Dedicated SPI2 interface to 64 KB FRAM"]
+    MCU --- MEM
+
+    MCU -- "FDCAN1 - STACK A bus" --> ROBOTS["Robot Controller Boards A1...A8<br/>(up to 8 slave modules)"]
+```
+
+```mermaid
+flowchart LR
+    FDCAN1["STM32H745<br/>FDCAN1 Controller"] --> XCVR["TCAN1044<br/>Transceiver"] --> BUS["STACK A Bus<br/>(Robots A1 - A8)"]
+```
+
+```mermaid
+flowchart LR
+    MCU["STM32H745<br/>FDCAN1 (STACK A)"] --> RCB["<b>Robot Controller Board</b><br/>x1 per robot, up to 8<br/>6x STEP/DIR/EN, endstops"]
+    RCB -- CAN --> URTC["<b>URTC Tool Head</b><br/>+ optional expansion board"]
+    URTC -- CAN --> RCB
+```

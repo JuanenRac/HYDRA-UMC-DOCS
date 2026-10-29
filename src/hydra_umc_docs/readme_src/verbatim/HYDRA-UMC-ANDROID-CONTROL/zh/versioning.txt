@@ -1,0 +1,7 @@
+### 版本管理
+
+本仓库遵循生态系统统一的策略：构建绝不会更改版本号。`app/version.properties` 保存当前的 `versionMajor`/`versionMinor`/`versionPatch`/`versionCode`；只有显式的 `bump` 命令才会提升它们（`python tools/hydra_project_tool.py bump`：`bump_manifest_version.py` 处理原生版本、`hydra-umc.project.json` 清单和 `CHANGELOG.md`，`bump_version_code.py` 处理独立且始终单调递增的 Android `versionCode`）。`app/build.gradle.kts` 只*读取* `version.properties`，从不写入。
+
+- **`versionCode`：** 一个纯粹的单调计数器,每次 bump +1,不进位——Android 要求它在每一个曾经发布过的构建中都严格递增。
+
+单纯执行 `./gradlew assembleDebug`（上面的"手动构建"方式,事先不运行任何递增脚本）只会沿用 `version.properties` 中已有的值——它本身不会递增任何东西。当前运行的版本可在 **About** 对话框中实时查看（`BuildConfig.VERSION_NAME`,读取的是 `version.properties` 中最后保存的 `versionName`）。完整版本历史见 [CHANGELOG.md](CHANGELOG.md)。

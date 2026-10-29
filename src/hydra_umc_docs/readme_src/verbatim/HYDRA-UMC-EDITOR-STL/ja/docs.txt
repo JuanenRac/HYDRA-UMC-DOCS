@@ -1,0 +1,1 @@
+- [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) - 実在するすべての `--cli` サブコマンドを、引数ごとに解説。

@@ -1,0 +1,13 @@
+La specifica dettagliata del progetto (undici sottosistemi, dal computer host alla testa utensile) è un documento a parte; ogni riga qui sotto apre la sua sezione:
+
+- [SOTTOSISTEMA DI COMPUTAZIONE HOST (HMI E ALTO LIVELLO)](docs/HARDWARE_SPECIFICATION_ita.md#2--sottosistema-di-computazione-host-hmi-e-alto-livello)
+- [SOTTOSISTEMA ACCELERATORE IA PCIE (NPU DOPPIO HAILO-8 + HAILO-10)](docs/HARDWARE_SPECIFICATION_ita.md#3--sottosistema-acceleratore-ia-pcie-npu-doppio-hailo-8--hailo-10)
+- [SOTTOSISTEMA DI VISIONE DOPPIO USB 3.0 (8x PORTE CAMERA)](docs/HARDWARE_SPECIFICATION_ita.md#4--sottosistema-di-visione-doppio-usb-30-8x-porte-camera)
+- [SOTTOSISTEMA DI CO-PROCESSING REAL-TIME (PROGETTO)](docs/HARDWARE_SPECIFICATION_ita.md#5--sottosistema-di-co-processing-real-time-progetto)
+- [COMUNICAZIONE FIELDBUS DISTRIBUITA (BUS CAN UNICO; PERIFERICA FDCAN IN MODALITÀ CLASSICA)](docs/HARDWARE_SPECIFICATION_ita.md#6--comunicazione-fieldbus-distribuita-bus-can-unico-periferica-fdcan-in-modalità-classica)
+- [MEMORIA NON VOLATILE ULTRA-VELOCE (SPI FRAM)](docs/HARDWARE_SPECIFICATION_ita.md#7--memoria-non-volatile-ultra-veloce-spi-fram)
+- [SUITE LOCALE DI MOVIMENTO, ATTUAZIONE E SENSORI](docs/HARDWARE_SPECIFICATION_ita.md#8--suite-locale-di-movimento-attuazione-e-sensori)
+- [DISTRIBUZIONE E REGOLAZIONE DI POTENZA](docs/HARDWARE_SPECIFICATION_ita.md#9--distribuzione-e-regolazione-di-potenza)
+- [COMUNICAZIONE INTER-PROCESSORE (IPC)](docs/HARDWARE_SPECIFICATION_ita.md#10--comunicazione-inter-processore-ipc)
+- [SPECIFICHE HARDWARE PCB A 4 STRATI](docs/HARDWARE_SPECIFICATION_ita.md#11--specifiche-hardware-pcb-a-4-strati)
+- [SCHEDE ROBOT CONTROLLER BOARD E TESTINA UTENSILE URTC (LIVELLO DISTRIBUITO)](docs/HARDWARE_SPECIFICATION_ita.md#12--schede-robot-controller-board-e-testina-utensile-urtc-livello-distribuito)

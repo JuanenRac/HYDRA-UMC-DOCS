@@ -1,0 +1,13 @@
+A especificação detalhada do desenho (onze subsistemas, do computador anfitrião à cabeça de ferramenta) é um documento à parte; cada linha abaixo abre a sua secção:
+
+- [SUBSISTEMA DE COMPUTAÇÃO ANFITRIÃO (HMI E ALTO NÍVEL)](docs/HARDWARE_SPECIFICATION_por.md#2--subsistema-de-computação-anfitrião-hmi-e-alto-nível)
+- [SUBSISTEMA DE ACELERADORES DE IA PCIE (DUPLO NPU HAILO-8 + HAILO-10)](docs/HARDWARE_SPECIFICATION_por.md#3--subsistema-de-aceleradores-de-ia-pcie-duplo-npu-hailo-8--hailo-10)
+- [SUBSISTEMA DE VISÃO USB 3.0 DUPLO (8x PORTAS DE CÂMARA)](docs/HARDWARE_SPECIFICATION_por.md#4--subsistema-de-visão-usb-30-duplo-8x-portas-de-câmara)
+- [SUBSISTEMA DE COPROCESSAMENTO EM TEMPO REAL (DESENHO)](docs/HARDWARE_SPECIFICATION_por.md#5--subsistema-de-coprocessamento-em-tempo-real-desenho)
+- [COMUNICAÇÃO DE BARRAMENTO DE CAMPO DISTRIBUÍDO (BARRAMENTO CAN ÚNICO; PERIFÉRICO FDCAN EM MODO CLÁSSICO)](docs/HARDWARE_SPECIFICATION_por.md#6--comunicação-de-barramento-de-campo-distribuído-barramento-can-único-periférico-fdcan-em-modo-clássico)
+- [MEMÓRIA NÃO VOLÁTIL ULTRARRÁPIDA (FRAM SPI)](docs/HARDWARE_SPECIFICATION_por.md#7--memória-não-volátil-ultrarrápida-fram-spi)
+- [CONJUNTO LOCAL DE MOVIMENTO, ATUAÇÃO E SENSORES](docs/HARDWARE_SPECIFICATION_por.md#8--conjunto-local-de-movimento-atuação-e-sensores)
+- [DISTRIBUIÇÃO E REGULAÇÃO DE ENERGIA](docs/HARDWARE_SPECIFICATION_por.md#9--distribuição-e-regulação-de-energia)
+- [COMUNICAÇÃO ENTRE PROCESSADORES (IPC)](docs/HARDWARE_SPECIFICATION_por.md#10--comunicação-entre-processadores-ipc)
+- [ESPECIFICAÇÕES DE HARDWARE DA PCB DE 4 CAMADAS](docs/HARDWARE_SPECIFICATION_por.md#11--especificações-de-hardware-da-pcb-de-4-camadas)
+- [PLACAS CONTROLADORAS DE ROBÔ E CABEÇA DE FERRAMENTA URTC (NÍVEL DISTRIBUÍDO)](docs/HARDWARE_SPECIFICATION_por.md#12--placas-controladoras-de-robô-e-cabeça-de-ferramenta-urtc-nível-distribuído)

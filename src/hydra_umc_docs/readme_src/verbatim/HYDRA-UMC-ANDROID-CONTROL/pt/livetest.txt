@@ -1,0 +1,6 @@
+### Testar contra um servidor em direto
+
+1. Execute o back-end: `cd HYDRA-UMC-SERVER && npm run dev` (porta 3000) - esta é a API REST/WS real com que esta aplicação fala (ver Projetos relacionados abaixo); o `npm run dev` do próprio `HYDRA-UMC-STUDIO` apenas arranca o seu servidor de desenvolvimento Vite de frontend (porta 5173) contra esse mesmo back-end, não é o servidor da API em si.
+2. Ligue o seu dispositivo Android à mesma rede Wi-Fi.
+3. Use o **Seletor global de servidor** ou introduza o IP manualmente no cabeçalho.
+4. **Biometria:** ative «Início de sessão biométrico» no seu Perfil do utilizador para saltar o ecrã de palavra-passe no próximo arranque.

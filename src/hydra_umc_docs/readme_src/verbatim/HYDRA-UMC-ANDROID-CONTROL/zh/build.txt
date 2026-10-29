@@ -1,0 +1,27 @@
+需要**特别是 JDK 21** 以及 Android SDK。
+
+1. 安装 [Android Studio](https://developer.android.com/studio)。
+2. 打开项目根目录,等待 Gradle 同步完成。
+3. 连接一台设备并按下 ▶️ 运行,或使用下方的脚本。
+
+### 🛠️ 构建 + 安装脚本
+
+从仓库根目录的终端出发的最快路径——一步构建调试版 APK、通过 `adb` 列出已连接设备,并将其安装：
+
+```bash
+./build-android.sh     # Linux/macOS
+build-android.bat      # Windows
+```
+
+如果 `adb` 不在 `PATH` 中,脚本仍会完成构建,并打印出 APK 所在位置,以便手动安装。
+
+### ⚙️ 手动构建
+
+不使用脚本的等效步骤,适用于 CI 或纯终端环境：
+
+```bash
+./gradlew assembleDebug        # Linux/macOS
+gradlew.bat assembleDebug      # Windows
+```
+
+APK 会生成在 `app/build/outputs/apk/debug/app-debug.apk`。使用 `adb install -r -d app/build/outputs/apk/debug/app-debug.apk` 安装,或手动传输到设备上。将 `assembleDebug` 替换为 `assembleRelease` 即可构建发布版本——存在 `keystore.properties`（或发布签名环境变量）时使用私有发布密钥签名，否则回退到调试密钥；调试密钥可正常安装用于测试，但绝不能用于分发。

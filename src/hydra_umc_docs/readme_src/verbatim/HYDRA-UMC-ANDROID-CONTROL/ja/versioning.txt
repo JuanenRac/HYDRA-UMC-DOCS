@@ -1,0 +1,7 @@
+### バージョン管理
+
+このリポジトリはエコシステム全体の方針に従います：ビルドはバージョンを一切変更しません。`app/version.properties` には現在の `versionMajor`/`versionMinor`/`versionPatch`/`versionCode` が入っており、明示的な `bump` コマンドだけがそれらを上げます（`python tools/hydra_project_tool.py bump`：ネイティブバージョン、`hydra-umc.project.json` マニフェスト、`CHANGELOG.md` は `bump_manifest_version.py`、独立した常に単調増加の Android `versionCode` は `bump_version_code.py`）。`app/build.gradle.kts` は `version.properties` を*読む*だけで、書き込むことはありません。
+
+- **`versionCode`：** 単純な単調カウンター、bump のたびに +1、繰り上がりなし——Android は、これまでに出荷されたすべてのビルドにわたって厳密に増加することを要求します。
+
+単純に `./gradlew assembleDebug`(上記の「手動ビルド」の方法で、加算スクリプトを先に実行しない場合)を実行しても、`version.properties` に最後にあった値をそのまま使うだけで、それ自体は何も加算しません。現在実行中のバージョンは **About** ダイアログでリアルタイムに確認できます（`BuildConfig.VERSION_NAME`、`version.properties` に最後に保持されていた `versionName` を読み取ります）。バージョン履歴は [CHANGELOG.md](CHANGELOG.md) を参照してください。

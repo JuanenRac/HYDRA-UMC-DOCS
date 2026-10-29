@@ -1,0 +1,13 @@
+- `categories`/`models`/`parts` gibt nichts aus: die Ökosystem-Wurzel
+  enthält `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` tatsächlich nicht als
+  Geschwister - `--root` explizit angeben oder "Durchsuchen" in der
+  GUI verwenden.
+- `transform`/`replace`/`add` schlägt fehl mit "not a real, parseable
+  STL file": die Quelldatei ist tatsächlich kein gültiges STL (oder
+  eines mit 0 Dreiecken) - in einem echten CAD-/Mesh-Viewer öffnen, um
+  das zu bestätigen.
+- Ein entferntes/ersetztes Teil ist nicht aus der eigenen Teileliste
+  der GUI verschwunden: es wurde tatsächlich auf der Festplatte nach
+  `.trash/` verschoben - die Teileliste zeigt nur echte, aktuelle
+  Dateien der obersten Ebene, und ein `.trash/`-Unterordner ist
+  absichtlich davon ausgeschlossen.

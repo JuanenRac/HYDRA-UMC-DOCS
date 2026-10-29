@@ -1,0 +1,1 @@
+- [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) - every real `--cli` subcommand, argument by argument.

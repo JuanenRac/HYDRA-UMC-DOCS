@@ -1,0 +1,36 @@
+```mermaid
+flowchart TB
+    CM5["<b>Compute Module 5 (Anfitrião / Cérebro)</b><br/>Broadcom BCM2712 Quad Cortex-A76 @ 2.4 GHz<br/>GPU VideoCore VII (OpenGL ES 3.1 / Vulkan 1.2)<br/>RP1 Dual USB 3.0 Host Controllers (2x 5 Gbps)<br/>SO Linux com o conjunto de patches PREEMPT_RT<br/>Interface tátil de alto FPS (Qt6 / Flutter) via MIPI-DSI<br/>Planeamento de trajetórias, análise de G-code &amp; IA de visão"]
+
+    CM5 -- "PCIe Gen 3.0 x1 (até 8 Gbps)" --> PCIESW["<b>Comutador PCIe Gen3</b><br/>Distribuição de 1 para 2 vias"]
+    PCIESW -- "PCIe x1" --> HAILO8["<b>Acelerador de IA Hailo-8 M.2</b><br/>26 TOPS - visão de alta velocidade"]
+    PCIESW -- "PCIe x1" --> HAILO10["<b>Acelerador de IA Hailo-10 M.2</b><br/>40 TOPS - raciocínio cognitivo / GenAI local"]
+    CM5 -- "Canal USB3 1" --> HUB1["Hub GL3523 n.º 1"]
+    CM5 -- "Canal USB3 2" --> HUB2["Hub GL3523 n.º 2"]
+    HUB1 --> CAM14["4x portas de câmara USB3<br/>(Cam 1-4)"]
+    HUB2 --> CAM58["4x portas de câmara USB3<br/>(Cam 5-8)"]
+
+    CM5 -- "Barramento SPI de alta velocidade + DMA + pino IRQ" --> MCU
+
+    subgraph MCU["Coprocessador em tempo real STM32H745ZIT6 (LQFP-144)"]
+        direction LR
+        CM7["<b>Cortex-M7 @ 480 MHz</b><br/>Cinemática em curva S<br/>Temporizadores de hardware<br/>Estágio local de 6 eixos"]
+        CM4["<b>Cortex-M4 @ 240 MHz</b><br/>Controlador FDCAN1<br/>Filtragem de sensores<br/>IPC entre núcleos"]
+    end
+    MEM["1 MB de SRAM / 2 MB de flash interna de duplo banco<br/>Interface SPI2 dedicada para FRAM de 64 KB"]
+    MCU --- MEM
+
+    MCU -- "FDCAN1 - barramento STACK A" --> ROBOTS["Placas controladoras de robô A1...A8<br/>(até 8 módulos escravos)"]
+```
+
+```mermaid
+flowchart LR
+    FDCAN1["STM32H745<br/>Controlador FDCAN1"] --> XCVR["TCAN1044<br/>Transcetor"] --> BUS["Barramento STACK A<br/>(Robôs A1 - A8)"]
+```
+
+```mermaid
+flowchart LR
+    MCU["STM32H745<br/>FDCAN1 (STACK A)"] --> RCB["<b>Placa controladora de robô</b><br/>x1 por robô, até 8<br/>6x STEP/DIR/EN, fins de curso"]
+    RCB -- CAN --> URTC["<b>Cabeça de ferramenta URTC</b><br/>+ placa de expansão opcional"]
+    URTC -- CAN --> RCB
+```

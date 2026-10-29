@@ -1,0 +1,23 @@
+[Flutter SDK](https://docs.flutter.dev/get-started/install)（stable チャンネル）が必要です。本リポジトリは Flutter 3.47.0 に対してビルド/検証されています。本リポジトリでは `windows/` と `ios/` のみがプラットフォームとして設定されています（`android/`、`linux/`、`web/`、`macos/` フォルダはありません）——Windows は、Mac なしで本アプリ自身のロジックをビルド・実行できるようにするために存在します。iOS が真のターゲットです。
+
+### ビルドスクリプト
+
+```bash
+./build.sh     # Git Bash / WSL —— flutter pub get + flutter build windows
+build.bat      # cmd.exe / PowerShell —— flutter pub get + flutter build windows
+```
+
+どちらも `build/windows/x64/runner/Release/hydra_umc_control.exe` を生成し、どちらもアプリのバージョンを変更しません——下記の[バージョン管理](#-バージョン管理)参照。
+
+### 手動ビルド
+
+```bash
+flutter pub get
+flutter analyze          # 静的解析——コンパイラ不要
+flutter test             # ウィジェットテスト
+dart run tool/bump_version.dart  # バージョンを加算、build.sh/build.bat が行うのと同じ
+flutter build windows    # build/windows/x64/runner/Release/hydra_umc_control.exe を生成
+flutter run -d windows   # または Mac 上で -d <ios-device-id>
+```
+
+**実際の iOS `.ipa` をビルドする**には、macOS 上の Xcode が必要です——そのマシンから：`flutter build ipa`（または Xcode で `ios/Runner.xcworkspace` を直接開く）。これは Windows からは行えません。上記「ネイティブ Swift ではなく Flutter を選んだ理由」を参照してください。

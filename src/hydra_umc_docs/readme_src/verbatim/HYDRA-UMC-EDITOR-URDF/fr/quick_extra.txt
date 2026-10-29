@@ -1,0 +1,21 @@
+### Prérequis
+- [Python](https://www.python.org/) 3.11 ou supérieur
+- pip
+
+### Installation
+
+```bash
+pip install -r requirements.txt
+```
+
+Ceci récupère le jeu de dépendances figé : **PySide6** (interface Qt6), **PyOpenGL** (rendu de la vue 3D), **numpy** / **numpy-stl** (calcul de maillage et chargement STL). Aucune installation de `git` n'est requise - le chemin de chargement de source GitHub télécharge une simple archive zip par HTTPS.
+
+### Mode développement
+
+```bash
+python main.py
+```
+
+Ou utilisez le script pratique - `run.bat` (Windows) / `run.sh` (Linux/Mac), qui active `.venv` s'il existe à côté et transmet les arguments à `main.py`; aucun des deux ne ferme sa fenêtre de terminal tout seul en double-clic.
+
+Démarre maximisé (pas un plein écran véritablement natif au niveau du système d'exploitation, de sorte que la barre de titre native et les contrôles de la fenêtre restent visibles) - appuyez sur **F11** pour basculer vers un véritable plein écran sans bordure et inversement.

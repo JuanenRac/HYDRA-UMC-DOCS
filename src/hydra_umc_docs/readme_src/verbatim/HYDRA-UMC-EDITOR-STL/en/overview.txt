@@ -1,0 +1,52 @@
+HYDRA-UMC-EDITOR-STL is a small desktop tool - windowed GUI by default,
+full CLI with `--cli` - for editing the real STL parts that make up
+every robot/machine model HYDRA-UMC-STUDIO and HYDRA-UMC-SUITE ship.
+Both of those apps reorganized their own model folders in 2026-09 into
+the same real category layout (`robots-5-dof`/`robots-6-dof`/
+`robots-7-dof`, `machine-pnp`/`machine-cnc`/`machine-laser`,
+`heatedbeds`/`racks`/`vacuum-tables`, each model with its own
+`metadata.json` alongside its `ATTRIBUTION.txt`) - this tool reads that
+exact real layout, not a separate copy or a database of its own.
+
+A real Qt Quick 3D viewer renders every editable part of the selected
+model (`stl_geometry.py`, a real `QQuick3DGeometry` loading each part's
+own triangles straight from its STL file) - drag to orbit, wheel to
+zoom, click a part to select it (real `View3D.pick()`, not a hit-test
+guess). The camera frames itself on the model's own real combined
+bounding box (`stl_ops.py`'s `model_bounds()`), so a 400mm robot base
+and a 5mm screw both frame correctly.
+
+Six real operations, each backed by real file I/O against the actual
+checkout on disk:
+
+- **Transform** - translate/rotate/scale a part's own real vertex data
+  (via `numpy-stl`, the same library HYDRA-UMC-SUITE's own
+  `render/mesh.py` already depends on) and save it back in place.
+- **Change color** - a real per-part color annotation (`part_colors.json`,
+  a sidecar this tool owns) shown in the 3D view - a binary STL carries
+  no reliable color of its own, so this sidecar is the real source of
+  truth. HYDRA-UMC-STUDIO's own `hooks/usePartColors.ts` and
+  HYDRA-UMC-SUITE's own `render/part_colors.py` both read the exact same
+  file back, so a color saved here reaches their live 3D viewers too,
+  not just this tool's own preview.
+- **Replace** - overwrite a part with another real STL file.
+- **Remove** - take a part out of a model.
+- **Add** - bring a new real STL file into a model.
+- **Push to server** - submit the selected model's own current editable
+  parts to a running HYDRA-UMC-SERVER's real model-submission catalog
+  (`catalog_push.py`, `POST /api/models/submit` - admin login required,
+  same as HYDRA-UMC-EDITOR-URDF's own equivalent feature). Since that
+  endpoint's own contract is URDF-shaped, this wraps the parts in the
+  smallest real URDF it accepts: one root link plus one un-jointed
+  (`fixed`) child link per part, since each part's actual position is
+  already baked into its own STL vertices - never a synthetic pose.
+- **Floating viewer toolbar** - Select, Move (a real draggable 3-axis gizmo), Edit (rotate/scale), Color, Add, Delete, Pin (bakes the move/rotate/scale permanently), Copy, Paste and Cut, right inside the 3D view. Heated beds, vacuum tables and racks are independent size variants, so the viewer shows only the selected one instead of piling them up.
+- **Assembled view** - robots, CNC, PnP and laser models open already assembled at their home pose (read from HYDRA-UMC-SUITE's own kinematics next to this checkout, display only); a toolbar button switches to the raw parts for editing.
+
+**Limits of the push and of the transform:** only `.stl` parts are uploaded (the others are reported), the whole upload must fit the server's 50 MB request limit, and the model is only stored in the server's catalog (HYDRA-UMC-STUDIO does not read it yet). The identity pose is correct for independent pieces (heated beds, racks, vacuum tables); the parts of a robot or machine are stored in their own link frame, so they arrive stacked at the origin without joints. Prefer an `https://` host (or `HYDRA_UMC_PASSWORD` / the password prompt instead of `--password`). A transform scales first, then rotates about X, Y and Z, then translates, and the rotation is about the file's origin, not about the centre of the part.
+
+**Nothing is ever permanently deleted.** A remove or a replace moves the
+real original file into that model's own `.trash/` subfolder first -
+the same "never destroy, move aside instead" discipline this ecosystem's
+own internal working conventions already follow, applied here as a real
+product feature, not just an internal habit.

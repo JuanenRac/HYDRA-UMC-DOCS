@@ -1,0 +1,13 @@
+Die ausführliche Spezifikation des Entwurfs (elf Subsysteme, vom Host-Rechner bis zum Werkzeugkopf) ist ein eigenes Dokument; jede Zeile unten öffnet ihren Abschnitt:
+
+- [HOST-COMPUTING-SUBSYSTEM (HMI & HOCHNIVEAU)](docs/HARDWARE_SPECIFICATION_deu.md#2--host-computing-subsystem-hmi--hochniveau)
+- [PCIE-KI-BESCHLEUNIGER-SUBSYSTEM (DOPPELTE HAILO-8+HAILO-10-NPU)](docs/HARDWARE_SPECIFICATION_deu.md#3--pcie-ki-beschleuniger-subsystem-doppelte-hailo-8hailo-10-npu)
+- [DOPPEL-USB-3.0-VISION-SUBSYSTEM (8x KAMERAPORTS)](docs/HARDWARE_SPECIFICATION_deu.md#4--doppel-usb-30-vision-subsystem-8x-kameraports)
+- [ECHTZEIT-CO-PROCESSING-SUBSYSTEM (ENTWURF)](docs/HARDWARE_SPECIFICATION_deu.md#5--echtzeit-co-processing-subsystem-entwurf)
+- [VERTEILTE FELDBUS-KOMMUNIKATION (EIN CAN-BUS; FDCAN-PERIPHERIE IM KLASSISCHEN MODUS)](docs/HARDWARE_SPECIFICATION_deu.md#6--verteilte-feldbus-kommunikation-ein-can-bus-fdcan-peripherie-im-klassischen-modus)
+- [ULTRASCHNELLER NICHTFLÜCHTIGER SPEICHER (SPI FRAM)](docs/HARDWARE_SPECIFICATION_deu.md#7--ultraschneller-nichtflüchtiger-speicher-spi-fram)
+- [LOKALE BEWEGUNGS-, ANSTEUERUNGS- UND SENSOR-SUITE](docs/HARDWARE_SPECIFICATION_deu.md#8--lokale-bewegungs--ansteuerungs--und-sensor-suite)
+- [STROMVERTEILUNG UND -REGELUNG](docs/HARDWARE_SPECIFICATION_deu.md#9--stromverteilung-und--regelung)
+- [INTERPROZESSOR-KOMMUNIKATION (IPC)](docs/HARDWARE_SPECIFICATION_deu.md#10--interprozessor-kommunikation-ipc)
+- [HARDWARE-SPEZIFIKATIONEN DER 4-LAGEN-LEITERPLATTE](docs/HARDWARE_SPECIFICATION_deu.md#11--hardware-spezifikationen-der-4-lagen-leiterplatte)
+- [ROBOT-CONTROLLER-BOARDS UND URTC-WERKZEUGKOPF (VERTEILTE EBENE)](docs/HARDWARE_SPECIFICATION_deu.md#12--robot-controller-boards-und-urtc-werkzeugkopf-verteilte-ebene)

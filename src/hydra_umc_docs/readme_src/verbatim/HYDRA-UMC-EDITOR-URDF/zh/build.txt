@@ -1,0 +1,60 @@
+### 生产构建
+
+通过 PyInstaller 编译一个独立的可执行文件（运行它无需安装 Python）：
+
+- **Windows：** 运行 `build_exe.bat` → 生成 `dist\HYDRA-UMC_EDITOR-URDF.exe`
+- **Linux：** 运行 `./build_exe.sh`（首次需先 `chmod +x build_exe.sh`）→ 生成 `dist/HYDRA-UMC_EDITOR-URDF`
+
+两个脚本都会创建自己的 `.venv`，安装 `requirements.txt` 加上 `pyinstaller`，清理任何先前的 `build`/`dist`，编译，最后将 `README.md`、`LICENSE` 以及整个 `language/` 文件夹复制到生成的二进制文件旁边（`language/` 刻意**不**通过 `--add-data` 打包进可执行文件内部，因此之后可以编辑或添加一个 `.lng` 文件而无需重新构建）。
+
+
+如果你更愿意手动执行等效步骤而非使用脚本——这对于在脚本未覆盖的平台上适配构建，或调试某个 PyInstaller 标志很有用——手动流程如下：
+
+```bash
+# 1. 创建并激活虚拟环境
+python -m venv .venv
+# Windows: .venv\Scripts\activate.bat   |   Linux/Mac: source .venv/bin/activate
+
+# 2. 安装依赖 + PyInstaller
+pip install -r requirements.txt
+pip install pyinstaller
+
+# 3. 定位 PySide6 自身的安装目录（其 Qt 插件位于其下）
+python -c "import PySide6, os; print(os.path.dirname(PySide6.__file__))"
+# -> 即下方的 $PYSIDE_DIR
+
+# 4. 编译——仅显式暂存了 4 个 Qt 插件子文件夹
+#    （platforms/styles/imageformats/iconengines），而非
+#    --collect-all PySide6，那样会拉入 Qt6WebEngineCore.dll 及其他
+#    数百 MB 级、本应用从未使用过的组件。PyInstaller 自身的依赖分析器
+#    通过跟随 main.py 的真实导入图找到实际的 Qt6Core/Gui/Widgets/OpenGL
+#    DLL——只有插件文件夹需要手动添加。
+#
+#    Windows（插件直接位于 PySide6/plugins/ 下）：
+pyinstaller --onefile --windowed --noconfirm --name "HYDRA-UMC_EDITOR-URDF" \
+    --add-data "assets;assets" \
+    --add-data "%PYSIDE_DIR%\plugins\platforms;PySide6\plugins\platforms" \
+    --add-data "%PYSIDE_DIR%\plugins\styles;PySide6\plugins\styles" \
+    --add-data "%PYSIDE_DIR%\plugins\imageformats;PySide6\plugins\imageformats" \
+    --add-data "%PYSIDE_DIR%\plugins\iconengines;PySide6\plugins\iconengines" \
+    --hidden-import PySide6.QtOpenGL --hidden-import PySide6.QtOpenGLWidgets \
+    --hidden-import OpenGL.platform.win32 \
+    main.py
+
+#    Linux（插件位于 PySide6/Qt/plugins/ 下——与 Windows 不同的布局，
+#    通过阅读 PyInstaller 自身的运行时钩子 pyi_rth_pyside6.py 确认）：
+pyinstaller --onefile --noconfirm --name "HYDRA-UMC_EDITOR-URDF" \
+    --add-data "assets:assets" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/platforms:PySide6/Qt/plugins/platforms" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/styles:PySide6/Qt/plugins/styles" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/imageformats:PySide6/Qt/plugins/imageformats" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/iconengines:PySide6/Qt/plugins/iconengines" \
+    --hidden-import PySide6.QtOpenGL --hidden-import PySide6.QtOpenGLWidgets \
+    main.py
+
+# 5. 复制必须位于二进制文件旁边、而非其内部的文件
+cp README.md LICENSE dist/
+cp -r language dist/language
+```
+
+在 Linux 上，运行编译好的二进制文件需要系统自身的 OpenGL 运行时（`libGL.so.1`——例如 Debian/Ubuntu 上的 `libgl1`、Fedora 上的 `mesa-libGL`、Arch 上的 `libglvnd`），加上 Qt 自身 XCB 平台插件所需的 `libxkbcommon-x11-0`/`xcb-util-cursor`；`build_exe.sh` 会预先检查 `libGL.so.1`，如果缺失会为每个发行版打印正确的安装命令，而不是让失败深藏在一次 PyInstaller 运行内部。

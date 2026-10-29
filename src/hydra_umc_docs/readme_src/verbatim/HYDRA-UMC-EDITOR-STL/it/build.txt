@@ -1,0 +1,21 @@
+```bash
+chmod +x build.sh   # una sola volta
+./build.sh          # crea .venv, pip install -e ".[dev,gui]", compila e testa
+./run.sh                                                    # GUI a finestra (predefinita)
+./run.sh --cli categories studio                            # elenca le categorie in una libreria
+./run.sh --cli models studio robots-6-dof                   # elenca i modelli in una categoria
+./run.sh --cli parts studio robots-6-dof ar3                 # elenca i veri file di pezzi di un modello
+./run.sh --cli transform studio robots-6-dof ar3 base_link.STL --tz 10
+./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /percorso/nuovo.stl
+./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
+./run.sh --cli add studio robots-6-dof ar3 /percorso/nuovo.stl
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
+```
+
+Su Windows: `build.bat`, poi `run.bat` (GUI) o `run.bat --cli ...` /
+doppio clic su `run-gui.vbs` per un lancio della GUI senza console.
+
+`library` è sempre `studio` o `suite`; `category`/`model` sono i veri
+nomi di cartella appena stampati da `categories`/`models`. `--root`
+sovrascrive la radice dell'ecosistema per qualsiasi comando `--cli`
+(predefinito: la propria directory padre di questo strumento).

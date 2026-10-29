@@ -1,0 +1,27 @@
+Requiere **específicamente un JDK 21** y el Android SDK.
+
+1. Instala [Android Studio](https://developer.android.com/studio).
+2. Abre la raíz del proyecto y deja que termine la sincronización de Gradle.
+3. Conecta un dispositivo y pulsa ▶️ Run, o usa los scripts de abajo.
+
+### 🛠️ Scripts de Compilación + Instalación
+
+La ruta más rápida desde una terminal en la raíz del repositorio - compila el APK de depuración, lista los dispositivos conectados vía `adb`, y lo instala todo en un solo paso:
+
+```bash
+./build-android.sh     # Linux/macOS
+build-android.bat      # Windows
+```
+
+Si `adb` no está en el `PATH`, el script igualmente termina la compilación e imprime dónde quedó el APK para poder instalarlo a mano.
+
+### ⚙️ Compilación Manual
+
+Pasos equivalentes sin los scripts, para CI o una terminal normal:
+
+```bash
+./gradlew assembleDebug        # Linux/macOS
+gradlew.bat assembleDebug      # Windows
+```
+
+El APK queda en `app/build/outputs/apk/debug/app-debug.apk`. Instálalo con `adb install -r -d app/build/outputs/apk/debug/app-debug.apk`, o transfiérelo al dispositivo manualmente. Cambia `assembleDebug` por `assembleRelease` para una compilación de release - firma con la clave de release privada cuando existe `keystore.properties` (o las variables de entorno de firma de release) y, si no, recurre a la clave de debug, que se instala sin problemas para pruebas pero nunca debe distribuirse.

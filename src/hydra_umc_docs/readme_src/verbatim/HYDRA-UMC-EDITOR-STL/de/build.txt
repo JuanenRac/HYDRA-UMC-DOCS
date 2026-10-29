@@ -1,0 +1,22 @@
+```bash
+chmod +x build.sh   # einmalig
+./build.sh          # erstellt .venv, pip install -e ".[dev,gui]", kompiliert und testet
+./run.sh                                                    # Fenster-GUI (Standard)
+./run.sh --cli categories studio                            # listet Kategorien in einer Bibliothek
+./run.sh --cli models studio robots-6-dof                   # listet Modelle in einer Kategorie
+./run.sh --cli parts studio robots-6-dof ar3                 # listet die echten Teildateien eines Modells
+./run.sh --cli transform studio robots-6-dof ar3 base_link.STL --tz 10
+./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /pfad/neu.stl
+./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
+./run.sh --cli add studio robots-6-dof ar3 /pfad/neu.stl
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
+```
+
+Unter Windows: `build.bat`, dann `run.bat` (GUI) oder
+`run.bat --cli ...` / Doppelklick auf `run-gui.vbs` für einen
+konsolenfreien GUI-Start.
+
+`library` ist immer `studio` oder `suite`; `category`/`model` sind die
+echten Ordnernamen, die `categories`/`models` gerade ausgegeben haben.
+`--root` überschreibt die Ökosystem-Wurzel für jeden `--cli`-Befehl
+(Standard: das eigene übergeordnete Verzeichnis dieses Werkzeugs).

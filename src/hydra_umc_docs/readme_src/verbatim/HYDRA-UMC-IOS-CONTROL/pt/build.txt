@@ -1,0 +1,23 @@
+Requer o [Flutter SDK](https://docs.flutter.dev/get-started/install) (canal estável). Este repositório é compilado/verificado com o Flutter 3.47.0. Só `windows/` e `ios/` estão configuradas como plataformas neste repositório (sem pastas `android/`, `linux/`, `web/` nem `macos/`) - o Windows existe para que a lógica desta aplicação possa ser compilada e executada sem um Mac; o iOS é o alvo real.
+
+### Scripts de compilação
+
+```bash
+./build.sh     # Git Bash / WSL - flutter pub get + flutter build windows
+build.bat      # cmd.exe / PowerShell - flutter pub get + flutter build windows
+```
+
+Ambos produzem `build/windows/x64/runner/Release/hydra_umc_control.exe`, e ambos não alteram a versão da aplicação - ver [Versionamento](#-versionamento) abaixo.
+
+### Compilação manual
+
+```bash
+flutter pub get
+flutter analyze          # análise estática - não precisa de compilador
+flutter test             # testes de widgets
+dart run tool/bump_version.dart  # sobe a versão, tal como o build.sh/build.bat fazem
+flutter build windows    # produz build/windows/x64/runner/Release/hydra_umc_control.exe
+flutter run -d windows   # ou -d <id-do-dispositivo-ios> a partir de um Mac
+```
+
+**Compilar o `.ipa` real de iOS** exige o Xcode no macOS - a partir dessa máquina: `flutter build ipa` (ou abra o `ios/Runner.xcworkspace` diretamente no Xcode). Isto não pode ser feito a partir do Windows; ver «Porquê Flutter e não Swift nativo» acima.

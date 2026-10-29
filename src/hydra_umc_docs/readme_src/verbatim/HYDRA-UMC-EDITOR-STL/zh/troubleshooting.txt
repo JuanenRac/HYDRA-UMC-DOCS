@@ -1,0 +1,9 @@
+- `categories`/`models`/`parts` 什么都不打印：生态系统根目录实际上并未
+  将 `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` 作为同级目录包含在内——请显式
+  传入 `--root`，或在 GUI 中使用"浏览"。
+- `transform`/`replace`/`add` 报错 "not a real, parseable STL file"：
+  源文件实际上不是有效的 STL（或者是一个 0 三角形的 STL）——请在真实的
+  CAD/网格查看器中打开它以确认。
+- 一个被移除/替换的部件没有从 GUI 自己的部件列表中消失：它确实已经在
+  磁盘上被移动到了 `.trash/`——部件列表只显示当前真实的顶层文件，
+  `.trash/` 子文件夹被有意排除在外。

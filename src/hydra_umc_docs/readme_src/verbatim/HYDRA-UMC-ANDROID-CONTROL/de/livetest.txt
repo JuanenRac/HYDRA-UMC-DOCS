@@ -1,0 +1,6 @@
+### Testen gegen einen echten Server
+
+1. Backend ausführen: `cd HYDRA-UMC-SERVER && npm run dev` (Port 3000) - das ist die eigentliche REST/WS-API, mit der diese App spricht (siehe Verwandte Projekte weiter unten); das eigene `npm run dev` von `HYDRA-UMC-STUDIO` startet nur dessen Vite-Frontend-Entwicklungsserver (Port 5173) gegen dasselbe Backend, es ist nicht der API-Server selbst.
+2. Verbinden Sie Ihr Android-Gerät mit demselben Wi-Fi.
+3. Verwenden Sie den **globalen Serverauswähler** oder geben Sie die IP manuell in der Kopfzeile ein.
+4. **Biometrie:** Aktivieren Sie "Biometric Login" in Ihrem Benutzerprofil, um beim nächsten Start den Passwortbildschirm zu überspringen.

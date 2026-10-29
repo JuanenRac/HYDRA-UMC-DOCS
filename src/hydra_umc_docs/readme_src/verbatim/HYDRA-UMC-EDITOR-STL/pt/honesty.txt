@@ -1,0 +1,25 @@
+**Verificação de honestidade - o que realmente funciona hoje:** o
+`model_catalog.py` (descoberta real e só de leitura de ambas as bibliotecas
+de modelos), o `stl_ops.py` (mutação real de STL via `numpy-stl` -
+transformar/substituir/remover/adicionar, mais `model_bounds()` para o
+enquadramento da câmara do visualizador 3D), o `part_colors.py` (ficheiro
+auxiliar real de cor por peça), o `stl_geometry.py` (carregamento real de
+geometria Qt Quick 3D) e o `catalog_push.py` (geração real de URDF de
+montagem mais um cliente HTTP real para `POST /api/models/submit`) estão
+todos testados contra fixtures STL reais e geradas e, quando necessário,
+uma `QGuiApplication` real de sessão (`pytest tests/`, {tests} casos a passar) e
+foram testados de ponta a ponta contra as cópias reais do
+`HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` deste ecossistema (`--cli categories`/
+`models`/`parts` contra as árvores reais; `transform`/`remove` contra uma
+cópia descartável, nunca a cópia real). O próprio `EditorBridge` do
+`qt_gui.py` também é testado diretamente (slot de cor, seleção preservada
+após uma mudança de cor). O `qml/Main.qml` carrega e renderiza sem erros de
+QML (verificado sem cabeça com `QT_QPA_PLATFORM=offscreen`, incluindo com as
+peças de um modelo real carregadas no visualizador 3D), mas o próprio grafo
+de cena QML não tem teste automático próprio - não se tenta conduzir um
+ciclo de eventos Qt real, a mesma fronteira de honestidade que o README do
+próprio HYDRA-UMC-UPDATER já traça para o seu shell Qt Quick.
+
+---
+
+> **Estado de segurança (safety e security):** este ecossistema não é um sistema de segurança certificado. Ainda não existe um caminho de E-STOP por hardware, nem limites ou interlocks impostos pelo firmware, nem um comando de movimento verificado; as imagens de firmware são verificadas com CRC32 e um HMAC-SHA256 de chave partilhada, não com uma assinatura assimétrica; TLS e TLS mútuo são opcionais e estão desativados por defeito; nenhuma placa própria foi ainda montada ou testada. Leia a [base de segurança](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md) e o [modelo de ameaças](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md) antes de confiar em qualquer afirmação aqui para a segurança de uma pessoa.

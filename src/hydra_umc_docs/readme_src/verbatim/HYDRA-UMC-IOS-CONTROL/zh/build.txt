@@ -1,0 +1,23 @@
+需要 [Flutter SDK](https://docs.flutter.dev/get-started/install)（stable 渠道）。本仓库基于 Flutter 3.47.0 构建/验证。本仓库中只配置了 `windows/` 和 `ios/` 两个平台（没有 `android/`、`linux/`、`web/` 或 `macos/` 文件夹）——Windows 的存在是为了让本应用自身的逻辑能够在没有 Mac 的情况下构建和运行;iOS 才是真正的目标平台。
+
+### 构建脚本
+
+```bash
+./build.sh     # Git Bash / WSL —— flutter pub get + flutter build windows
+build.bat      # cmd.exe / PowerShell —— flutter pub get + flutter build windows
+```
+
+两者都会生成 `build/windows/x64/runner/Release/hydra_umc_control.exe`,并且都不会更改应用的版本号——见下文[版本管理](#-版本管理)。
+
+### 手动构建
+
+```bash
+flutter pub get
+flutter analyze          # 静态分析——无需编译器
+flutter test             # 组件测试
+dart run tool/bump_version.dart  # 递增版本号，与 build.sh/build.bat 所做的相同
+flutter build windows    # 生成 build/windows/x64/runner/Release/hydra_umc_control.exe
+flutter run -d windows   # 或在 Mac 上使用 -d <ios-device-id>
+```
+
+**构建真正的 iOS `.ipa`** 需要在 macOS 上使用 Xcode——在该机器上运行：`flutter build ipa`（或直接在 Xcode 中打开 `ios/Runner.xcworkspace`）。这无法在 Windows 上完成；见上文“为何选择 Flutter，而非原生 Swift”。

@@ -1,0 +1,13 @@
+La especificación detallada del diseño (once subsistemas, del ordenador anfitrión a la cabeza de herramienta) es un documento aparte; cada línea de abajo abre su sección:
+
+- [SUBSISTEMA DE COMPUTACIÓN HOST (HMI Y ALTO NIVEL)](docs/HARDWARE_SPECIFICATION_spa.md#2--subsistema-de-computación-host-hmi-y-alto-nivel)
+- [SUBSISTEMA ACELERADOR DE IA POR PCIE (NPU DOBLE HAILO-8 + HAILO-10)](docs/HARDWARE_SPECIFICATION_spa.md#3--subsistema-acelerador-de-ia-por-pcie-npu-doble-hailo-8--hailo-10)
+- [SUBSISTEMA DE VISIÓN DOBLE USB 3.0 (8x PUERTOS DE CÁMARA)](docs/HARDWARE_SPECIFICATION_spa.md#4--subsistema-de-visión-doble-usb-30-8x-puertos-de-cámara)
+- [SUBSISTEMA DE COPROCESAMIENTO EN TIEMPO REAL (DISEÑO)](docs/HARDWARE_SPECIFICATION_spa.md#5--subsistema-de-coprocesamiento-en-tiempo-real-diseño)
+- [COMUNICACIÓN DE BUS DE CAMPO DISTRIBUIDO (UN ÚNICO BUS CAN; PERIFÉRICO FDCAN EN MODO CLÁSICO)](docs/HARDWARE_SPECIFICATION_spa.md#6--comunicación-de-bus-de-campo-distribuido-un-único-bus-can-periférico-fdcan-en-modo-clásico)
+- [MEMORIA NO VOLÁTIL ULTRA-RÁPIDA (SPI FRAM)](docs/HARDWARE_SPECIFICATION_spa.md#7--memoria-no-volátil-ultra-rápida-spi-fram)
+- [SUITE LOCAL DE MOVIMIENTO, ACTUACIÓN Y SENSORES](docs/HARDWARE_SPECIFICATION_spa.md#8--suite-local-de-movimiento-actuación-y-sensores)
+- [DISTRIBUCIÓN Y REGULACIÓN DE POTENCIA](docs/HARDWARE_SPECIFICATION_spa.md#9--distribución-y-regulación-de-potencia)
+- [COMUNICACIÓN ENTRE PROCESADORES (IPC)](docs/HARDWARE_SPECIFICATION_spa.md#10--comunicación-entre-procesadores-ipc)
+- [ESPECIFICACIONES DE HARDWARE DE LA PCB DE 4 CAPAS](docs/HARDWARE_SPECIFICATION_spa.md#11--especificaciones-de-hardware-de-la-pcb-de-4-capas)
+- [PLACAS ROBOT CONTROLLER BOARD Y CABEZAL DE HERRAMIENTA URTC (NIVEL DISTRIBUIDO)](docs/HARDWARE_SPECIFICATION_spa.md#12--placas-robot-controller-board-y-cabezal-de-herramienta-urtc-nivel-distribuido)

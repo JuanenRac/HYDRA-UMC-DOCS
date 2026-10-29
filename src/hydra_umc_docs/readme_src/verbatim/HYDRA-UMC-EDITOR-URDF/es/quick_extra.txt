@@ -1,0 +1,21 @@
+### Requisitos
+- [Python](https://www.python.org/) 3.11 o superior
+- pip
+
+### Instalación
+
+```bash
+pip install -r requirements.txt
+```
+
+Esto trae el conjunto de dependencias con versiones fijadas: **PySide6** (interfaz Qt6), **PyOpenGL** (renderizado del viewport 3D), **numpy** / **numpy-stl** (matemática de mallas y carga de STL). No se requiere una instalación de `git` - la ruta de carga de fuentes de GitHub descarga un simple zipball por HTTPS.
+
+### Modo de Desarrollo
+
+```bash
+python main.py
+```
+
+O usa el script de conveniencia - `run.bat` (Windows) / `run.sh` (Linux/Mac), que activa `.venv` si existe junto a él y reenvía los argumentos a `main.py`; ninguno de los dos cierra su ventana de terminal por sí solo al hacer doble clic.
+
+Arranca maximizado (no pantalla completa real a nivel de sistema operativo, así que la barra de título y los controles nativos de la ventana siguen visibles) - pulsa **F11** para alternar la pantalla completa real sin bordes y volver.

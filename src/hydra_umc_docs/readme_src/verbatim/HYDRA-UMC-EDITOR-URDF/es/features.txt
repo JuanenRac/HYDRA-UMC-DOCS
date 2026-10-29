@@ -1,0 +1,102 @@
+### Carga de Fuentes - GitHub o Carpeta Local
+
+Dos formas de apuntar la aplicación a los archivos fuente de un robot, ambas terminando en la misma ruta de importación:
+
+- **Desde una URL de GitHub** - acepta una URL completa `https://github.com/owner/repo` (con o sin `/tree/<branch>`), un formato estilo SSH `git@github.com:owner/repo.git`, o el atajo simple `owner/repo`. Deliberadamente **no** invoca `git clone`, lo cual convertiría una instalación de `git` en una dependencia dura en tiempo de ejecución tanto en Windows como en Linux para algo que una simple descarga HTTPS ya resuelve: GitHub sirve un zipball de cualquier rama/tag/commit desde `codeload.github.com` sin necesidad de autenticación para un repositorio público, así que esto usa el propio `urllib.request` + `zipfile` de la biblioteca estándar y nada más. Solo se soportan repositorios públicos - no hay manejo de tokens/credenciales, y el zipball de un repositorio privado da un 404 igual que uno inexistente.
+- **Desde una carpeta local** - para un repositorio ya descargado a mano, o una copia de trabajo que el operador está editando activamente fuera de esta aplicación.
+- **Desde la Galería** - un desplegable "Gallery" encima del campo de URL de GitHub (`hydra_editor_urdf/gallery.py`) lista un pequeño conjunto inicial de repositorios de descripción de robots reales y verificados a mano (`universal_robot` de ROS-Industrial, `open_manipulator` de ROBOTIS). Elegir una entrada solo rellena la URL y muestra su descripción - nunca descarga por sí sola, el operador sigue pulsando Fetch, igual que si escribiera la URL a mano.
+
+De cualquier forma, la aplicación después busca recursivamente cada archivo `*.urdf`/`*.xacro` bajo la carpeta elegida, los lista todos (un repositorio real de descripción de robot a menudo trae más de uno - un brazo desnudo más una variante "con pinza" es un emparejamiento habitual), y elige automáticamente el de mayor tamaño de archivo como valor por defecto razonable para "el principal" - cambiar a otro candidato después es un doble clic en el panel Source, no una nueva descarga.
+
+**La resolución de referencias a mallas** es el trabajo poco glamuroso que toda sesión pasada de portado manual de robots en este ecosistema hizo a mano: un `<mesh filename="package://some_pkg/meshes/link1.stl"/>` de un URDF prácticamente nunca es una ruta abrible directamente una vez que el archivo está sentado en una simple carpeta descargada en vez de un espacio de trabajo ROS en vivo, donde `package://` se resuelve a través del índice de paquetes de ROS. El resolvedor prueba, en orden: (1) la referencia como una ruta relativa a la propia carpeta del URDF, (2) la misma referencia quitando el segmento inicial de nombre de paquete al estilo `package://`, (3) como ruta absoluta si resulta que ya lo es, y (4) por nombre base a secas en cualquier lugar bajo la carpeta fuente - que es lo que realmente maneja una URI `package://` real, ya que el esquema y el nombre del paquete no significan nada fuera de un espacio de trabajo ROS en vivo, pero el propio nombre de archivo de la malla sigue siendo localizable.
+
+### Validación de Viabilidad de DOF
+
+La versión automatizada del mismo juicio que las propias sesiones pasadas de este ecosistema hicieron a mano para cada robot añadido al catálogo de STUDIO: **la propia cinemática de STUDIO soporta hoy cadenas seriales de 3, 4, 5 y 6 DOF** (su `RobotState.joints` es un mapa fijo `j1..j6`) - un puñado de brazos candidatos reales, con licencia clara, investigados en el pasado resultaron ser de 7, 8 o 9 DOF y fueron descartados exactamente por esta razón, no hipotéticamente. En cada importación (y después de cada edición en vivo que pueda cambiar el recuento - retipar una junta, por ejemplo), la aplicación recorre el grafo real de juntas padre/hijo e informa:
+
+- **Recuento de DOF** - solo las juntas `revolute`/`continuous`/`prismatic` cuentan como un grado de libertad real y controlable; `fixed` no aporta ninguno.
+- **Tipos de junta no soportados** - una sola junta `floating` o `planar` en cualquier lugar de la cadena hace que todo el robot sea inviable sin importar el recuento de DOF, ya que el modelo de juntas de STUDIO no tiene representación para ninguna de las dos.
+- **Integridad del árbol** - se requiere exactamente un enlace raíz (un árbol propio, no un bosque ni un ciclo); cualquier enlace no alcanzable desde esa raíz por una cadena de juntas se marca como desconectado, y cualquier enlace al que ninguna junta hace referencia en absoluto se marca como huérfano.
+- **`<limit>` faltante** - requerido por la especificación URDF para cualquier junta que no sea `continuous`; se marca por junta si está ausente.
+
+El veredicto y cada razón detrás de él se renderizan en vivo en el panel DOF, y el panel Upload rechaza subir un robot inviable a un servidor.
+
+### Edición en Vivo con una Vista Previa 3D Real
+
+El panel Properties edita el enlace que esté seleccionado en el árbol de enlaces del panel Viewport, y cada edición muta el modelo cargado in situ y revalida/vuelve a renderizar a través de una sola señal (`EditorController.notify_tree_changed`) - ningún panel necesita saber cómo reacciona el viewport o el informe de DOF a su propia edición:
+
+- **Recolorear** - el material visual de un enlace, elegido mediante un diálogo de color estándar. Un material compartido por nombre entre varios enlaces (una declaración `<material name="...">` de nivel superior de un URDF real, referenciada por más de un `<visual>`) recolorea juntos a todos los enlaces que lo comparten, respetando lo que esa sintaxis de material compartido realmente significa en la especificación.
+- **Reescalar** - factor de escala por eje (X/Y/Z) sobre la propia transformación `<mesh scale="...">` de una geometría de malla, no una reescritura destructiva de los propios datos de triángulos de la malla - la misma edición vuelta a aplicar más tarde parte siempre de la malla original, sin modificar.
+- **Retipar y re-limitar una junta** - cambiar el tipo de una junta (cualquiera de los 6 que define la especificación URDF) y su límite inferior/superior, con el veredicto del panel DOF actualizándose de inmediato ya que un retipado puede cambiar el recuento de DOF o introducir un tipo no soportado.
+- **Masa e inercia** - "Auto-calculate" rellena masa/Ixx/Iyy/Izz a partir de la geometría del enlace seleccionado usando las fórmulas de forma cerrada de densidad uniforme de `inertia_calc.py` (exactas para Caja/Cilindro/Esfera, una aproximación por caja envolvente para Malla); una masa introducida a mano siempre gana sobre la estimación por densidad, y si aún no hay masa introducida asume una densidad genérica de aluminio (2700 kg/m³) y lo indica en una nota. "Apply" confirma los campos en `Link.inertial` - el mismo patrón de dos pasos calcular-y-aplicar que Scale/Joint arriba.
+
+El **panel Viewport** aloja la propia vista 3D OpenGL más un control deslizante de jog por cada junta móvil, para que el operador pueda previsualizar el URDF moviéndose por su propio rango real antes de tocar STUDIO. La cinemática directa (`render/kinematics.py`) es genérica sobre cualquier árbol que se acabe de importar - a diferencia del propio módulo de cinemática de HYDRA-UMC SUITE, que maneja un registro fijo de unas pocas docenas de modelos de robot conocidos y verificados a mano, esta aplicación tiene que posar un URDF arbitrario, nunca antes visto, así que compone el propio `<origin>`/`<axis>` real de cada junta (fórmula de rotación de Rodrigues para un eje revolute arbitrario, no solo el atajo de dirección cardinal en el que podría apoyarse un registro fijo) recorriendo el propio grafo padre/hijo.
+
+**Z-arriba, no Y-arriba** - la única divergencia deliberada respecto a la propia convención de viewport de HYDRA-UMC SUITE: URDF en sí mismo es un formato Z-arriba (la gravedad es `-Z`, cada `<origin>`/`<axis>` en un archivo fuente está redactado asumiendo eso), y el trabajo de esta aplicación es mostrar y editar un URDF fielmente en su propia convención, no reorientarlo hacia lo que un visor posterior (la escena Three.js de STUDIO, la propia escena OpenGL de SUITE) prefiera tener.
+
+### Carga de Mallas
+
+`.stl` (vía `numpy-stl`) y `.obj` (un pequeño cargador Wavefront escrito a mano - solo `v`/`vn`/`f`, caras n-gon trianguladas en abanico) son ambos de primera clase. **COLLADA (`.dae`) no está soportado** - es un formato de grafo de escena XML mucho más grande (animación esquelética, múltiples sistemas de coordenadas, materiales/texturas embebidos) que necesitaría un parser real para manejarse con honestidad en vez de una conjetura de mejor esfuerzo sobre cualesquiera etiquetas que use un `.dae` "simple"; un enlace que referencia uno recibe un error claro y nombrado en vez de desaparecer silenciosamente del viewport o hacer fallar toda la importación. Cada malla cargada también recibe la misma protección defensiva milímetros-contra-metros que aplican el propio `useRealScaleSTL()` de HYDRA-UMC STUDIO y el propio cargador de mallas de HYDRA-UMC SUITE: un enlace más grande que 5 metros reales en cualquier eje es mucho más probable que sea una exportación a escala de milímetros sin metadatos de unidad que una pieza de robot realmente gigante, y se reescala automáticamente por 0.001.
+
+---
+
+Las rutas de malla están confinadas: un `<mesh filename>` solo se resuelve a un archivo `.stl`, `.obj` o `.dae` dentro de la carpeta abierta, la carpeta del URDF o una carpeta añadida con «Locate Missing Meshes»; los segmentos `..`, las rutas absolutas y los URI `file://` que lleven a otro sitio se ignoran, y solo esos archivos se suben. Las mallas vacías, truncadas o mal formadas se notifican como no cargadas en lugar de detener el visor. La guarda de milímetros a metros reescala cualquier malla mayor de 5 unidades antes de aplicar la `scale` del URDF, de modo que una malla ya escalada por el URDF puede reducirse dos veces. Las etiquetas que el editor no modela (`<dynamics>`, `<safety_controller>`, `<mimic>`, `<transmission>`, `<gazebo>`, texturas de material) no se conservan al reexportar un URDF.
+
+### Parseo y Exportación de URDF
+
+XML plano vía el propio `xml.etree.ElementTree` de la biblioteca estándar - no se necesita una dependencia de `lxml` para un formato tan simple. El modelo en memoria (`hydra_editor_urdf/models.py`) es deliberadamente un árbol de dataclasses propio, plano y mutable, en vez de un envoltorio sobre una biblioteca Python de URDF ya existente como `urdfpy` o `yourdfpy`: esta aplicación necesita *editar* el árbol de forma interactiva y volver a renderizar cada cambio en vivo, algo para lo que una biblioteca de parseo pensada mayormente para lectura no está diseñada, y ser dueño del modelo por completo lo mantiene pequeño, inspeccionable y libre del propio ritmo de publicación de una dependencia de terceros. Los nombres de campo y los valores por defecto siguen de cerca el [esquema XML real de URDF](http://wiki.ros.org/urdf/XML), así que el par parser/writer se mantiene como un mapeo XML↔objeto delgado y evidente.
+
+**xacro no se expande.** [xacro](http://wiki.ros.org/xacro) es un preprocesador de macros Python/XML con su propio paquete ROS y cadena de dependencias, y un archivo xacro real solo se puede resolver de forma fiable dentro del mismo entorno de paquete ROS contra el que fue redactado (argumentos de macro, includes al estilo `$(find pkg)`, etc.) - algo que esta aplicación no tiene forma de reproducir con honestidad. Un archivo que use etiquetas `<xacro:...>` o declare el namespace de xacro recibe un error claro que explica la limitación y señala hacia la herramienta de línea de comandos `xacro` de ROS para preprocesarlo primero, en vez de un mal-parseo silencioso.
+
+La exportación (`urdf/writer.py`) reserializa el árbol actual en memoria desde cero en vez de parchear el texto XML fuente original, así que cada edición en vivo -sin importar qué panel la hizo- se refleja exactamente una vez, a través de una sola ruta de código, tanto en la acción de menú "Export URDF" como en el payload enviado a un servidor STUDIO.
+
+### Espacio de Trabajo Acoplable
+
+Paneles `QDockWidget` reales - arrastrar para flotar, arrastrar de vuelta para acoplar, fusionar en pestañas, dividir el espacio de trabajo - el mismo mecanismo y razonamiento que la propia ventana principal de HYDRA-UMC SUITE ya aplica: el propio sistema de acoplamiento de Qt ya hace exactamente lo que un espacio de trabajo al estilo Photoshop/Fusion-360 necesita, y uno hecho a mano solo lo reinventaría con más errores. Cinco paneles, dispuestos con una disposición por defecto sensata que es completamente reorganizable después:
+
+- **Source** - entrada de URL de GitHub / carpeta local, lista de `.urdf` encontrados.
+- **DOF** - el veredicto de viabilidad y cada razón detrás de él.
+- **Viewport** - la vista 3D en vivo, el árbol de enlaces, y los controles deslizantes de jog.
+- **Properties** - recolorear / reescalar / retipar-y-re-limitar para el enlace seleccionado.
+- **Upload** - conectar a un servidor STUDIO, subir, o descargar.
+
+### Ida y Vuelta con el Servidor
+
+Habla con el propio contrato de envío de modelos de HYDRA-UMC-SERVER (`POST /api/models/submit`, `GET /api/models`, `GET /api/models/:category/:slug/download` en el propio `server.ts` de ese proyecto, protegido tras su propio interruptor **Config > Models > "Accept model submissions"**) usando el propio `urllib.request` de la biblioteca estándar - una llamada HTTP más no justificaba traer `httpx`/`requests` para un proyecto que solo necesita 4 endpoints, no una conexión en vivo persistente. Cada llamada corre en un `QThread` en segundo plano para que un servidor lento o inalcanzable nunca congele la interfaz. Este contrato solía vivir dentro del propio proceso de HYDRA-UMC-STUDIO antes de que ese proyecto se dividiera en un frontend puro (STUDIO) más un backend headless separado (HYDRA-UMC-SERVER, ver **Proyectos Relacionados** más abajo) - esta app no fija ningún nombre por código, el operador simplemente apunta los campos host/puerto del panel **Upload** a donde esté corriendo el backend real.
+
+- **Login** - `POST /api/login`; solo un token con rol `admin` puede realmente alcanzar `POST /api/models/submit` en el lado del servidor, así que esta aplicación solo es realmente usable contra una cuenta admin, igual que cualquier otra función de STUDIO exclusiva para administradores.
+- **Push** - serializa el robot actual de vuelta a XML URDF y codifica en base64 cada archivo de malla que sus visuales referencian (resuelto a través del mismo resolvedor de mallas construido en el momento de importar) inline en el cuerpo de la petición, etiquetado con la categoría elegida por el operador (reflejando las propias categorías de Config > UI > Module Visibility de STUDIO: Robot 3-6DOF, CNC, Pick & Place, Laser, Vacuum Table, XY Table, Heated Bed, ATC Tools - un URDF no tiene un campo propio que diga cuál de estas es). Una colisión de nombre vuelve como la propia respuesta 409 del servidor; el operador decide si reenviar con **Overwrite** marcado o renombrar, esta aplicación nunca adivina.
+- **Pull** - descarga el URDF + mallas de un modelo ya enviado de vuelta a una carpeta de trabajo local y lo carga directamente en el editor - la mitad "extraer, editar, reenviar" del propio propósito de esta aplicación, permitiendo retocar una entrada de catálogo existente sin volver a empezar desde su repositorio fuente original.
+
+### Interfaz Multi-Idioma
+
+Traducción completa de la interfaz a través de **inglés, español, italiano, francés, alemán, chino simplificado, japonés y portugués** (`language/*.lng`), usando exactamente el mismo mecanismo de archivo plano `CLAVE=Valor` que cualquier otra herramienta Python de este ecosistema (URTC Flasher, URTC Tester, HYDRA-UMC SUITE) - no reinventado aquí, ya que el propio mecanismo no lleva ninguna lógica específica del proyecto. Un cambio de idioma surte efecto después de reiniciar la aplicación en vez de retraducir en vivo cada widget ya construido, siguiendo esa misma convención. `language/` está **junto a** el ejecutable en vez de empaquetado dentro de él vía el `--add-data` de PyInstaller, así que un traductor puede editar o añadir un archivo `.lng` sin necesidad de recompilar.
+
+### Tema
+
+La barra superior del espacio de trabajo acoplable es un panel de comandos
+real con `QToolBar`/`QLabel`/`QToolButton`, no una UI Qt Quick/QML aparte -
+una versión anterior integrada mediante QQuickWidget (mismo motor visual que
+HYDRA-UMC-UPDATER y HYDRA-UMC-SUITE) se renderizaba como una barra negra
+sólida sin ningún error en consola una vez colocada dentro del
+`QDockWidget` real de este `QMainWindow`, así que se revirtió a widgets
+planos; ver `CHANGELOG.md` para la historia completa. Sus botones Source,
+DOF, Viewport, Properties y Upload sólo enfocan los docks existentes; Export
+y About reusan las acciones existentes, y Export permanece deshabilitado
+hasta que hay un modelo realmente cargado. Tras cargar un URDF (y tras cada
+edición de propiedad en vivo), su chip de estado muestra el nombre del
+modelo cargado, el conteo de DOF y el veredicto de viabilidad actual. No
+sustituye el visor OpenGL, editor, parser ni la implementación de subida al
+servidor.
+
+Reutiliza el propio `assets/qss/industrial_dark.qss` de HYDRA-UMC SUITE tal cual (misma ruta relativa, mismo archivo) en vez de diseñar un tema visual nuevo para una herramienta de escritorio hermana en el mismo ecosistema.
+
+### Panel de comandos visual (`--qtquick`)
+
+Ese intento de integración es algo distinto y separado del panel de comandos Qt Quick real que esta app tiene ahora:
+
+~~~
+python main.py --qtquick
+~~~
+
+Una `ApplicationWindow` QML totalmente independiente (`qt_editor_urdf.py` + `assets/qml/EditorDeck.qml`), nunca embebida dentro del `QMainWindow` clásico - el mismo patrón ya probado que usan HYDRA-UMC-OS-REBUILDER, HYDRA-UMC-UPDATER, URTC-TESTER, URTC-FLASHER y HYDRA-UMC-SUITE, lanzada junto al punto de entrada clásico sin reemplazarlo. Reproduce fielmente la disposición real del espacio de trabajo acoplable clásico (Source y DOF en pestañas a la izquierda, Viewport y Properties lado a lado, Upload abajo del todo) y las 5 funciones reales de cada panel - carga desde GitHub/galería/carpeta local, validación DOF en vivo, un preview 3D con orbit/pan/zoom con árbol de enlaces clicable y controles deslizantes de jog por articulación, edición de color/escala/límites de joint/masa e inercia, y el ciclo real de conectar/subir/descargar con el servidor STUDIO - a través del mismo `EditorController`, sin una segunda implementación de nada de esto. El preview 3D reutiliza el propio renderizado real del viewport clásico (`UrdfGLRenderer` de `render/viewport.py`) mediante un `OffscreenUrdfRenderer` dedicado, el mismo enfoque real de `QOpenGLContext`/`QOffscreenSurface`/framebuffer que ya usa el propio panel Viewport de Qt Quick de HYDRA-UMC-SUITE, alimentado a QML mediante un `QQuickImageProvider`.

@@ -1,0 +1,10 @@
+- `categories`/`models`/`parts` prints nothing: the ecosystem root
+  doesn't actually contain `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` as
+  siblings - pass `--root` explicitly, or use "Browse" in the GUI.
+- `transform`/`replace`/`add` fails with "not a real, parseable STL
+  file": the source file genuinely isn't a valid STL (or is a
+  0-triangle one) - open it in a real CAD/mesh viewer to confirm.
+- A removed/replaced part didn't disappear from the GUI's own part
+  list: it did move to `.trash/` on disk - the part list only shows
+  real, current top-level files, and a `.trash/` subfolder is
+  deliberately excluded from it.

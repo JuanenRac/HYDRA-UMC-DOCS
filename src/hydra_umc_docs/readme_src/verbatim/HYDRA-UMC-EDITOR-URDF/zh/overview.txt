@@ -1,0 +1,5 @@
+**HYDRA-UMC EDITOR-URDF** 是一款桌面工具，将“把一个新机器人移植进 [HYDRA-UMC STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO) 的模型目录”这件事，从一次性的、逐机器人的人工调查，变成了一套可重复的图形化工作流程。STUDIO 目录中的每一个真实机器人型号，过去都是通过同样的方式进入的：在 GitHub 上找到一个描述仓库、弄清楚其网格引用如何解析、数清其运动学链中的自由度数量、检查 STUDIO 是否真的能驱动这么多自由度，然后手动将结果放入 `public/models/`。本应用将整个流程自动化——从一个 GitHub URL 或一个已下载的本地文件夹拉取源文件，针对磁盘上的真实文件解析每一个 `<mesh filename="...">` 引用（包括 `package://` URI），根据 STUDIO 当前运动学所支持的范围验证该链条的自由度数量，通过实时 3D 预览编辑颜色/比例/关节限位/关节类型，并将完成的结果直接推送到一个正在运行的 STUDIO 服务器。
+
+使用 **Python** 和 **PySide6/Qt6** 构建，采用与本生态系统中另一款桌面工具 [HYDRA-UMC SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE) 中已经验证过的相同架构模式：类 Photoshop/Fusion-360 的可停靠工作区（`QDockWidget`）、一个手写的 OpenGL 3D 视口（`QOpenGLWidget` + GLSL 3.3 核心配置着色器，不使用 `glBegin`/`glEnd` 遗留路径），以及一个持有状态的中央控制器对象，每个 UI 面板都通过 Qt 信号监听它。在本生态系统的同类工具上复用这一模式——而非为其探索一套新的 UI/渲染技术栈——是一个刻意的选择，而非疏忽。
+
+**诚实说明，与本生态系统其余文档所采用的惯例一致：** 本应用不展开 [xacro](http://wiki.ros.org/xacro) 宏，也不加载 COLLADA（`.dae`）网格。两者都是明确命名的限制（一条清晰的错误信息，而非静默的解析错误或视口中缺失的连杆），而非半成品式的尝试——具体原因见下方“URDF 解析”和“网格加载”两节。

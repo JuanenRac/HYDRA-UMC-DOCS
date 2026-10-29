@@ -1,0 +1,1 @@
+- [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) - ogni vero sottocomando di `--cli`, argomento per argomento.

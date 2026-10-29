@@ -1,0 +1,4 @@
+- Eine gepackte, eigenständige GUI-Ausführungsdatei (PyInstaller, nach
+  derselben `build_exe.bat`/`.sh`-Konvention wie HYDRA-UMC-SUITE).
+- Rückgängig/Wiederholen über die eigene `.trash/`-Historie einer
+  Sitzung, statt einer manuellen Dateiwiederherstellung.

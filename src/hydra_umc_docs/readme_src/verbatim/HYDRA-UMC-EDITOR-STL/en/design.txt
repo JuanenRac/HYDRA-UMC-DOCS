@@ -1,0 +1,34 @@
+### ARCHITECTURE & DESIGN DECISIONS
+
+- **Two real libraries, one discovery module.** `model_catalog.py`'s own
+  `LIBRARIES` constant names both real trees this tool edits
+  (`HYDRA-UMC-STUDIO/public/models/`, `HYDRA-UMC-SUITE/assets/meshes/`) -
+  adding a third library later means adding one entry there, not a
+  second discovery implementation.
+- **`stl_ops.py` is the only place that ever mutates a file.**
+  `model_catalog.py` stays strictly read-only; both `--cli` and the Qt
+  Quick bridge call the exact same `transform_part()`/`replace_part()`/
+  `remove_part()`/`add_part()` functions, so the GUI can never do
+  anything the CLI itself couldn't.
+- **A real STL, not just a filename ending in `.stl`.** `is_real_stl()`
+  actually parses a candidate replacement/addition with `numpy-stl`
+  before it's ever copied into a real model folder - and, a real gap
+  found writing this project's own tests, also rejects a **0-triangle**
+  parse result: `numpy-stl`'s own ASCII fallback path does not raise on
+  arbitrary garbage bytes, it silently parses them as an empty mesh, so
+  a bare try/except alone would have let a completely non-STL file
+  through.
+- **Qt Quick GUI by default, `--cli` for headless.** `main.py` only
+  imports PySide6 on the non-`--cli` path, so `--cli categories`/
+  `models`/`parts`/`transform`/`replace`/`remove`/`add` work on a
+  machine with no display or Qt runtime installed at all.
+- **The same real visual shell as HYDRA-UMC-UPDATER.** `qml/Main.qml`
+  reuses that project's own `GameButton`/`GameCombo`/`SectionPanel`
+  components and dark cyan/blue/amber/red theme verbatim, per the
+  project owner's own request - a new PC tool in this ecosystem should
+  feel like the same tool, not a separately designed one.
+- **Ecosystem root, not a hardcoded path.** Like HYDRA-UMC-UPDATER's own
+  workspace root, this project's own parent directory is the default
+  (`main.py`'s `default_ecosystem_root()`), always overridable
+  (`--root` on `--cli`, "Browse" in the GUI) and remembered across GUI
+  launches (`settings.py`).

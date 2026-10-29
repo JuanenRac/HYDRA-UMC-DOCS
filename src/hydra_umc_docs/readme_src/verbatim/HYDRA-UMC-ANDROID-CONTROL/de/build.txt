@@ -1,0 +1,27 @@
+Erfordert **speziell ein JDK 21** und das Android SDK.
+
+1. Installieren Sie [Android Studio](https://developer.android.com/studio).
+2. Öffnen Sie das Projekt-Root-Verzeichnis und lassen Sie die Gradle-Synchronisierung abschließen.
+3. Schließen Sie ein Gerät an und drücken Sie ▶️ Run, oder verwenden Sie die untenstehenden Skripte.
+
+### 🛠️ Build- + Installationsskripte
+
+Der schnellste Weg von einem Terminal im Repository-Root aus - kompiliert die Debug-APK, listet verbundene Geräte über `adb` auf und installiert sie in einem Schritt:
+
+```bash
+./build-android.sh     # Linux/macOS
+build-android.bat      # Windows
+```
+
+Wenn `adb` nicht im `PATH` ist, schließt das Skript den Build trotzdem ab und gibt aus, wo die APK gelandet ist, damit sie manuell installiert werden kann.
+
+### ⚙️ Manueller Build
+
+Äquivalente Schritte ohne die Skripte, für CI oder ein einfaches Terminal:
+
+```bash
+./gradlew assembleDebug        # Linux/macOS
+gradlew.bat assembleDebug      # Windows
+```
+
+Die APK landet unter `app/build/outputs/apk/debug/app-debug.apk`. Installieren Sie sie mit `adb install -r -d app/build/outputs/apk/debug/app-debug.apk`, oder übertragen Sie sie manuell auf das Gerät. Tauschen Sie `assembleDebug` gegen `assembleRelease` für einen Release-Build - dieser signiert mit dem privaten Release-Schlüssel, wenn `keystore.properties` (oder die Umgebungsvariablen für die Release-Signatur) vorhanden ist, und fällt sonst auf den Debug-Schlüssel zurück, der sich zum Testen problemlos installieren lässt, aber nie verteilt werden darf.

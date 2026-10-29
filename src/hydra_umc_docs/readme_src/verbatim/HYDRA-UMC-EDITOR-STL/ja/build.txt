@@ -1,0 +1,22 @@
+```bash
+chmod +x build.sh   # 一度だけ
+./build.sh          # .venv を作成、pip install -e ".[dev,gui]"、コンパイルチェックとテスト
+./run.sh                                                    # ウィンドウ GUI（デフォルト）
+./run.sh --cli categories studio                            # あるライブラリのカテゴリを一覧表示
+./run.sh --cli models studio robots-6-dof                   # あるカテゴリのモデルを一覧表示
+./run.sh --cli parts studio robots-6-dof ar3                 # あるモデルの実在するパーツファイルを一覧表示
+./run.sh --cli transform studio robots-6-dof ar3 base_link.STL --tz 10
+./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /path/new.stl
+./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
+./run.sh --cli add studio robots-6-dof ar3 /path/new.stl
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
+```
+
+Windows では：`build.bat`、続いて `run.bat`（GUI）または
+`run.bat --cli ...` / コンソールなしで GUI を起動するには
+`run-gui.vbs` をダブルクリックします。
+
+`library` は常に `studio` か `suite` です。`category`/`model` は
+`categories`/`models` がちょうど出力した実在のフォルダ名です。
+`--root` は任意の `--cli` コマンドについてエコシステムのルートを
+上書きします（デフォルト：本ツール自身の親ディレクトリ）。

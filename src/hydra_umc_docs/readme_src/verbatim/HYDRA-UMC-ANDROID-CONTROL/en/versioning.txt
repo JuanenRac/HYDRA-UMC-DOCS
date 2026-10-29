@@ -1,0 +1,7 @@
+### Versioning
+
+This repo follows an ecosystem-wide policy: building never changes the version. `app/version.properties` holds the current `versionMajor`/`versionMinor`/`versionPatch`/`versionCode`; only the explicit bump command raises them (`python tools/hydra_project_tool.py bump`: `bump_manifest_version.py` for the native version, the `hydra-umc.project.json` manifest and `CHANGELOG.md`, and `bump_version_code.py` for the separate, always-monotonic Android `versionCode`). `app/build.gradle.kts` only ever *reads* `version.properties` and never writes it.
+
+- **`versionCode`:** a plain monotonic counter, +1 on every bump, no carry - Android requires it to strictly increase across every build that ever ships.
+
+A plain `./gradlew assembleDebug` (the "Manual Build" path above, with neither bump script run first) reuses whatever `version.properties` last had - it does not bump anything on its own. The running version is visible live in the **About** dialog (`BuildConfig.VERSION_NAME`, reading whichever `versionName` `version.properties` last held). See [CHANGELOG.md](CHANGELOG.md) for the version history.

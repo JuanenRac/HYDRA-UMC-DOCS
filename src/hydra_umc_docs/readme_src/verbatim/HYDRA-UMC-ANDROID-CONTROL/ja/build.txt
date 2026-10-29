@@ -1,0 +1,27 @@
+**特に JDK 21** と Android SDK が必要です。
+
+1. [Android Studio](https://developer.android.com/studio) をインストールします。
+2. プロジェクトルートを開き、Gradle の同期が完了するのを待ちます。
+3. デバイスを接続して ▶️ 実行を押すか、下記のスクリプトを使用します。
+
+### 🛠️ ビルド + インストールスクリプト
+
+リポジトリルートのターミナルから最も速い経路——デバッグ APK をビルドし、`adb` 経由で接続中のデバイスを一覧表示し、一括でインストールします：
+
+```bash
+./build-android.sh     # Linux/macOS
+build-android.bat      # Windows
+```
+
+`adb` が `PATH` にない場合でも、スクリプトはビルドを完了させ、APK の格納場所を表示するので、手動でインストールできます。
+
+### ⚙️ 手動ビルド
+
+スクリプトを使わない同等の手順、CI やプレーンなターミナル向け：
+
+```bash
+./gradlew assembleDebug        # Linux/macOS
+gradlew.bat assembleDebug      # Windows
+```
+
+APK は `app/build/outputs/apk/debug/app-debug.apk` に生成されます。`adb install -r -d app/build/outputs/apk/debug/app-debug.apk` でインストールするか、手動でデバイスに転送してください。リリースビルドには `assembleDebug` の代わりに `assembleRelease` を使用してください——`keystore.properties`（またはリリース署名用の環境変数）がある場合は非公開のリリースキーで署名し、ない場合はデバッグキーにフォールバックします。デバッグキーはテスト用には問題なくインストールできますが、配布してはいけません。

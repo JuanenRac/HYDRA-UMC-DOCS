@@ -1,0 +1,31 @@
+### 架构与设计决策
+
+- **两个真实库，一个发现模块。** `model_catalog.py` 自己的
+  `LIBRARIES` 常量列出了本工具编辑的两棵真实目录树
+  （`HYDRA-UMC-STUDIO/public/models/`、
+  `HYDRA-UMC-SUITE/assets/meshes/`）——以后再加入第三个库，意味着在
+  那里加一条记录，而不是再实现第二套发现逻辑。
+- **`stl_ops.py` 是唯一会修改文件的地方。** `model_catalog.py`
+  严格保持只读；`--cli` 和 Qt Quick 桥接层调用的是完全相同的
+  `transform_part()`/`replace_part()`/`remove_part()`/`add_part()`
+  函数，因此 GUI 永远不能做任何命令行本身做不到的事。
+- **是真正的 STL，而不仅仅是以 `.stl` 结尾的文件名。**
+  `is_real_stl()` 在把候选的替换/新增文件复制进真实模型文件夹之前，
+  会真的用 `numpy-stl` 去解析它——而且，在编写本项目自己的测试时发现
+  的一个真实漏洞是，它还会拒绝**0 三角形**的解析结果：`numpy-stl`
+  自己的 ASCII 回退路径对任意垃圾字节并不会抛出异常，而是悄悄把它们
+  解析成一个空网格，所以仅靠一个简单的 try/except 本会放行一个根本
+  不是 STL 的文件。
+- **默认 Qt Quick GUI，`--cli` 供无显示器环境使用。** `main.py`
+  只在非 `--cli` 路径上导入 PySide6，因此
+  `--cli categories`/`models`/`parts`/`transform`/`replace`/
+  `remove`/`add` 可以在完全没有显示器或 Qt 运行时的机器上运行。
+- **与 HYDRA-UMC-UPDATER 完全相同的真实视觉外壳。** `qml/Main.qml`
+  按项目所有者本人的明确要求，原样复用了该项目自己的
+  `GameButton`/`GameCombo`/`SectionPanel` 组件及其深色青/蓝/琥珀/红
+  主题——本生态系统中的新 PC 工具应当给人以"同一个工具"的感觉，而不是
+  另行设计的一个。
+- **生态系统根目录，而非写死的路径。** 就像 HYDRA-UMC-UPDATER 自己的
+  工作区根目录一样，本项目自身的父目录就是默认值（`main.py` 的
+  `default_ecosystem_root()`），始终可被覆盖（`--cli` 上的 `--root`，
+  GUI 中的"浏览"），并且会在多次 GUI 启动之间被记住（`settings.py`）。

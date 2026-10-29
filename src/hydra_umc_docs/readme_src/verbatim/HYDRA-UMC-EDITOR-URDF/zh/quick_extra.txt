@@ -1,0 +1,21 @@
+### 系统要求
+- [Python](https://www.python.org/) 3.11 或更高版本
+- pip
+
+### 安装
+
+```bash
+pip install -r requirements.txt
+```
+
+这会拉取已锁定版本的依赖集：**PySide6**（Qt6 界面）、**PyOpenGL**（3D 视口渲染）、**numpy** / **numpy-stl**（网格数学与 STL 加载）。无需安装 `git`——GitHub 源加载路径通过 HTTPS 下载一个纯粹的 zip 压缩包。
+
+### 开发模式
+
+```bash
+python main.py
+```
+
+或者使用便捷脚本——`run.bat`（Windows）/ `run.sh`（Linux/Mac），若旁边存在 `.venv` 则会激活它，并将参数转发给 `main.py`；双击运行时两者都不会自行关闭终端窗口。
+
+以最大化方式启动（并非真正的操作系统级全屏，因此原生窗口标题栏和控件保持可见）——按 **F11** 切换真正的无边框全屏及返回。

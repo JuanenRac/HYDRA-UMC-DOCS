@@ -1,0 +1,59 @@
+HYDRA-UMC-EDITOR-STL è un piccolo strumento desktop - GUI a finestra per
+impostazione predefinita, CLI completa con `--cli` - per modificare i
+veri pezzi STL che compongono ogni modello di robot/macchina distribuito
+da HYDRA-UMC-STUDIO e HYDRA-UMC-SUITE. Entrambe le app hanno
+riorganizzato le proprie cartelle di modelli nel 2026-09 nella stessa
+vera struttura di categorie (`robots-5-dof`/`robots-6-dof`/
+`robots-7-dof`, `machine-pnp`/`machine-cnc`/`machine-laser`,
+`heatedbeds`/`racks`/`vacuum-tables`, ogni modello con il proprio
+`metadata.json` accanto al proprio `ATTRIBUTION.txt`) - questo
+strumento legge quella stessa struttura reale, non una copia separata
+né un proprio database.
+
+Un vero visualizzatore 3D Qt Quick 3D mostra ogni pezzo modificabile
+del modello selezionato (`stl_geometry.py`, un vero `QQuick3DGeometry`
+che carica i triangoli di ogni pezzo direttamente dal suo file STL) -
+trascina per orbitare, rotella per zoomare, clicca su un pezzo per
+selezionarlo (vero `View3D.pick()`, non una stima). La fotocamera si
+inquadra da sola sul vero bounding box combinato del modello
+(`model_bounds()` di `stl_ops.py`), così una base robot da 400mm e una
+vite da 5mm si inquadrano entrambe correttamente.
+
+Sei operazioni reali, ciascuna sostenuta da vera I/O di file contro
+il vero checkout su disco:
+
+- **Trasformare** - traslare/ruotare/scalare i veri vertici di un pezzo
+  (via `numpy-stl`, la stessa libreria da cui già dipende
+  `render/mesh.py` di HYDRA-UMC-SUITE) e salvarlo di nuovo nello stesso
+  posto.
+- **Cambiare colore** - una vera annotazione di colore per pezzo
+  (`part_colors.json`, un file laterale di proprietà di questo
+  strumento) mostrata nella vista 3D - un STL binario non porta un
+  colore proprio affidabile, quindi questo file laterale è la vera fonte
+  di verità. Il proprio `hooks/usePartColors.ts` di HYDRA-UMC-STUDIO e il
+  proprio `render/part_colors.py` di HYDRA-UMC-SUITE rileggono questo
+  stesso file, quindi un colore salvato qui raggiunge anche i loro
+  visualizzatori 3D live, non solo l'anteprima di questo strumento.
+- **Sostituire** - sovrascrivere un pezzo con un altro vero file STL.
+- **Rimuovere** - togliere un pezzo da un modello.
+- **Aggiungere** - portare un nuovo vero file STL in un modello.
+- **Invia al server** - invia i pezzi modificabili attuali del modello
+  selezionato al vero catalogo di invio modelli di un HYDRA-UMC-SERVER in
+  esecuzione (`catalog_push.py`, `POST /api/models/submit` - richiede un
+  accesso amministratore, come la funzionalità equivalente di
+  HYDRA-UMC-EDITOR-URDF). Poiché il contratto di quell'endpoint è
+  pensato per URDF, questo avvolge i pezzi nel più piccolo URDF reale
+  che accetta: un link radice più un link figlio non articolato
+  (`fixed`) per pezzo, dato che la posizione reale di ogni pezzo è già
+  incorporata nei propri vertici STL - mai una posa inventata.
+- **Barra mobile del visualizzatore** - Seleziona, Sposta (un vero gizmo a 3 assi trascinabile), Modifica (ruota/scala), Colore, Aggiungi, Elimina, Fissa (salva in modo permanente spostamento/rotazione/scala), Copia, Incolla e Taglia, direttamente nella vista 3D. Piani riscaldati, tavoli a vuoto e rack sono varianti di dimensione indipendenti: il visualizzatore mostra solo quella selezionata invece di sovrapporle.
+- **Vista assemblata** - robot, CNC, PnP e laser si aprono già assemblati nella posa di riposo (letta dalla cinematica di HYDRA-UMC-SUITE accanto a questo checkout, solo visualizzazione); un pulsante della barra passa ai pezzi grezzi per modificarli.
+
+**Limiti dell'invio e della trasformazione:** vengono caricate solo le parti `.stl` (le altre vengono segnalate), l'intero invio deve rientrare nel limite di richiesta di 50 MB del server e il modello viene salvato solo nel catalogo del server (HYDRA-UMC-STUDIO non lo legge ancora). La posa identità è corretta per parti indipendenti (piani riscaldati, rack, tavoli a vuoto); le parti di un robot o di una macchina sono salvate nel proprio sistema di riferimento del link, quindi arrivano impilate nell'origine e senza giunti. Preferisci un host `https://` (o `HYDRA_UMC_PASSWORD` / la richiesta della password invece di `--password`). Una trasformazione scala prima, poi ruota attorno a X, Y e Z e infine trasla; la rotazione è attorno all'origine del file, non al centro della parte.
+
+**Niente viene mai eliminato in modo permanente.** Una rimozione o una
+sostituzione sposta prima il vero file originale nella propria
+sottocartella `.trash/` di quel modello - la stessa disciplina "mai
+distruggere, spostare da parte" già seguita dalle convenzioni di lavoro
+interne di questo ecosistema, applicata qui come una vera funzionalità
+di prodotto, non solo come un'abitudine interna.

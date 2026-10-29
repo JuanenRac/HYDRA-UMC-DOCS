@@ -1,0 +1,36 @@
+```mermaid
+flowchart TB
+    CM5["<b>Compute Module 5 (Hôte / Cerveau)</b><br/>Broadcom BCM2712 Quad Cortex-A76 à 2.4 GHz<br/>GPU VideoCore VII (OpenGL ES 3.1 / Vulkan 1.2)<br/>Contrôleurs hôte RP1 Dual USB 3.0 (2x 5 Gbps)<br/>OS Linux avec patch PREEMPT_RT<br/>UI tactile haute fréquence (Qt6 / Flutter) via MIPI-DSI<br/>Planification de trajectoire, analyse G-code et IA de Vision"]
+
+    CM5 -- "PCIe Gen 3.0 x1 (jusqu'à 8 Gbps)" --> PCIESW["<b>Switch PCIe Gen3</b><br/>Répartition 1 vers 2 voies"]
+    PCIESW -- "PCIe x1" --> HAILO8["<b>Accélérateur IA Hailo-8 M.2</b><br/>26 TOPS - vision haute vitesse"]
+    PCIESW -- "PCIe x1" --> HAILO10["<b>Accélérateur IA Hailo-10 M.2</b><br/>40 TOPS - raisonnement cognitif / GenAI local"]
+    CM5 -- "Canal USB3 1" --> HUB1["Hub #1 GL3523"]
+    CM5 -- "Canal USB3 2" --> HUB2["Hub #2 GL3523"]
+    HUB1 --> CAM14["4x ports caméra USB3<br/>(Cam 1-4)"]
+    HUB2 --> CAM58["4x ports caméra USB3<br/>(Cam 5-8)"]
+
+    CM5 -- "Bus SPI haute vitesse + DMA + broche IRQ" --> MCU
+
+    subgraph MCU["Co-Processeur Temps Réel STM32H745ZIT6 (LQFP-144)"]
+        direction LR
+        CM7["<b>Cortex-M7 à 480 MHz</b><br/>Cinématique en courbe en S<br/>Timers matériels<br/>Étage local 6 axes"]
+        CM4["<b>Cortex-M4 à 240 MHz</b><br/>Contrôleur FDCAN1<br/>Filtrage des capteurs<br/>IPC inter-cœurs"]
+    end
+    MEM["1 Mo SRAM / 2 Mo flash interne double banque<br/>Interface SPI2 dédiée vers 64 Ko de FRAM"]
+    MCU --- MEM
+
+    MCU -- "Bus FDCAN1 - STACK A" --> ROBOTS["Cartes Robot Controller Board A1...A8<br/>(jusqu'à 8 modules esclaves)"]
+```
+
+```mermaid
+flowchart LR
+    FDCAN1["STM32H745<br/>Contrôleur FDCAN1"] --> XCVR["Transceiver<br/>TCAN1044"] --> BUS["Bus STACK A<br/>(Robots A1 - A8)"]
+```
+
+```mermaid
+flowchart LR
+    MCU["STM32H745<br/>FDCAN1 (STACK A)"] --> RCB["<b>Robot Controller Board</b><br/>x1 par robot, jusqu'à 8<br/>6x STEP/DIR/EN, fins de course"]
+    RCB -- CAN --> URTC["<b>Tête d'Outil URTC</b><br/>+ carte d'extension optionnelle"]
+    URTC -- CAN --> RCB
+```

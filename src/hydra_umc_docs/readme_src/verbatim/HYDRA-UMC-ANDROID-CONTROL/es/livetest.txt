@@ -1,0 +1,6 @@
+### Pruebas contra un servidor real
+
+1. Ejecuta el backend: `cd HYDRA-UMC-SERVER && npm run dev` (Puerto 3000) - esta es la API REST/WS real con la que habla la app (ver Proyectos Relacionados más abajo); el propio `npm run dev` de `HYDRA-UMC-STUDIO` solo arranca su servidor de desarrollo Vite del frontend (puerto 5173) contra ese mismo backend, no es el servidor de la API en sí.
+2. Conecta tu dispositivo Android a la misma Wi-Fi.
+3. Usa el **Selector Global de Servidor** o introduce la IP manualmente en la cabecera.
+4. **Biometría:** Activa "Biometric Login" en tu Perfil de Usuario para saltarte la pantalla de contraseña en el siguiente arranque.

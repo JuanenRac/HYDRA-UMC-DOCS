@@ -1,0 +1,22 @@
+**诚实检查——今天到底能真正运行什么：** `model_catalog.py`（对两个模型库
+进行真实的、只读的发现）、`stl_ops.py`（通过 `numpy-stl` 进行真实的 STL
+变更——变换/替换/移除/添加，外加为 3D 查看器摄像机取景服务的
+`model_bounds()`）、`part_colors.py`（真实的按部件颜色附属文件）、
+`stl_geometry.py`（真实的 Qt Quick 3D 几何体加载）和 `catalog_push.py`
+（真实生成装配用 URDF，外加一个真实的 `POST /api/models/submit` HTTP
+客户端）全部都针对真实生成的
+STL 文件、以及在需要时一个真实的、会话范围的 `QGuiApplication` 进行了
+测试（`pytest tests/`，{tests} 个用例通过），并已针对本生态系统真实的
+`HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` 检出进行了端到端的冒烟测试
+（`--cli categories`/`models`/`parts` 针对真实的目录树；`transform`/`remove`
+针对一份可丢弃的副本，绝不是真实的检出本身）。`qt_gui.py` 自己的
+`EditorBridge` 也被直接测试（颜色 slot、颜色更改后选中状态被保留）。
+`qml/Main.qml` 能够加载并渲染而不出现任何 QML 错误（已用
+`QT_QPA_PLATFORM=offscreen` 无界面验证，包括把一个真实模型的部件加载到
+3D 查看器中的情况），但 QML 场景图本身没有自己的自动化测试——驱动
+一个真实的 Qt 事件循环在这里并未尝试，这与 HYDRA-UMC-UPDATER 自己的
+README 已经为其自身 Qt Quick 层划出的诚实界限相同。
+
+---
+
+> **安全与安防现状:**本生态系统不是经认证的安全系统。目前尚无硬件 E-STOP 通路,没有由固件强制执行的限位或联锁,也没有经过验证的运动指令;固件映像使用 CRC32 和共享密钥的 HMAC-SHA256 校验,而非非对称签名;TLS 与双向 TLS 均为可选项,默认关闭;自制电路板尚未组装或测试。在依赖此处任何说法来保障人身安全之前,请先阅读[安全基线](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md)和[威胁模型](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md)。

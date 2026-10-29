@@ -1,0 +1,21 @@
+### Requirements
+- [Python](https://www.python.org/) 3.11 or higher
+- pip
+
+### Installation
+
+```bash
+pip install -r requirements.txt
+```
+
+This pulls in the pinned dependency set: **PySide6** (Qt6 UI), **PyOpenGL** (3D viewport rendering), **numpy** / **numpy-stl** (mesh math and STL loading). No `git` install is required - the GitHub source-loading path downloads a plain zipball over HTTPS.
+
+### Development Mode
+
+```bash
+python main.py
+```
+
+Or use the convenience wrapper - `run.bat` (Windows) / `run.sh` (Linux/Mac), which activates `.venv` if one exists next to it and forwards any arguments to `main.py`; neither script closes its terminal window on its own when double-clicked.
+
+Starts maximized (not true OS-level fullscreen, so the native window title bar and controls stay visible) - press **F11** to toggle real borderless fullscreen and back.

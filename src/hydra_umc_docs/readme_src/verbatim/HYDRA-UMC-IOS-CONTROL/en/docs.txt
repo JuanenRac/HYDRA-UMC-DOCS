@@ -1,0 +1,1 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — the Wi-Fi transport contract this app speaks against `server.ts` (endpoint by endpoint), why there's still no Bluetooth path, the real dual-path discovery mechanism, and this app's relationship to the rest of the ecosystem.

@@ -1,0 +1,13 @@
+- `categories`/`models`/`parts` n'affiche rien : la racine de
+  l'écosystème ne contient en réalité pas `HYDRA-UMC-STUDIO`/
+  `HYDRA-UMC-SUITE` comme frères - passez `--root` explicitement, ou
+  utilisez "Parcourir" dans la GUI.
+- `transform`/`replace`/`add` échoue avec "not a real, parseable STL
+  file" : le fichier source n'est en réalité pas un STL valide (ou en
+  est un à 0 triangle) - ouvrez-le dans un vrai visualiseur CAO/maillage
+  pour confirmer.
+- Une pièce retirée/remplacée n'a pas disparu de la propre liste de
+  pièces de la GUI : elle a bien été déplacée vers `.trash/` sur le
+  disque - la liste de pièces ne montre que les vrais fichiers actuels
+  de premier niveau, et un sous-dossier `.trash/` en est délibérément
+  exclu.

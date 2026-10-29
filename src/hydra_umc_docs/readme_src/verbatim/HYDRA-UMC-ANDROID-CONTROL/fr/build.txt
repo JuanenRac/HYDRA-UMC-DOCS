@@ -1,0 +1,27 @@
+Nécessite **spécifiquement un JDK 21** et le Android SDK.
+
+1. Installez [Android Studio](https://developer.android.com/studio).
+2. Ouvrez la racine du projet et laissez la synchronisation Gradle se terminer.
+3. Connectez un appareil et appuyez sur ▶️ Run, ou utilisez les scripts ci-dessous.
+
+### 🛠️ Scripts de compilation + installation
+
+Le chemin le plus rapide depuis un terminal à la racine du dépôt - compile l'APK de débogage, liste les appareils connectés via `adb`, et l'installe en une seule fois :
+
+```bash
+./build-android.sh     # Linux/macOS
+build-android.bat      # Windows
+```
+
+Si `adb` n'est pas dans le `PATH`, le script termine quand même la compilation et affiche où l'APK a atterri afin qu'il puisse être installé manuellement.
+
+### ⚙️ Compilation manuelle
+
+Étapes équivalentes sans les scripts, pour l'intégration continue ou un simple terminal :
+
+```bash
+./gradlew assembleDebug        # Linux/macOS
+gradlew.bat assembleDebug      # Windows
+```
+
+L'APK atterrit dans `app/build/outputs/apk/debug/app-debug.apk`. Installez-le avec `adb install -r -d app/build/outputs/apk/debug/app-debug.apk`, ou transférez-le manuellement sur l'appareil. Remplacez `assembleDebug` par `assembleRelease` pour une compilation de release - elle signe avec la clé de release privée lorsque `keystore.properties` (ou les variables d'environnement de signature de release) est présent, et revient sinon à la clé de débogage, qui s'installe sans problème pour tester mais ne doit jamais être distribuée.

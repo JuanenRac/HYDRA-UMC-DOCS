@@ -1,0 +1,7 @@
+### Versionamento
+
+Este repositório segue uma política de todo o ecossistema: compilar nunca altera a versão. O `app/version.properties` guarda os valores atuais de `versionMajor`/`versionMinor`/`versionPatch`/`versionCode`; só o comando `bump` explícito os sobe (`python tools/hydra_project_tool.py bump`: `bump_manifest_version.py` para a versão nativa, o manifesto `hydra-umc.project.json` e o `CHANGELOG.md`, e `bump_version_code.py` para o `versionCode` do Android, separado e sempre monótono). O `app/build.gradle.kts` apenas *lê* o `version.properties` e nunca o escreve.
+
+- **`versionCode`:** um contador monótono simples, +1 em cada bump, sem transporte - o Android exige que aumente estritamente em cada compilação que alguma vez seja distribuída.
+
+Um simples `./gradlew assembleDebug` (o caminho de «Compilação manual» acima, sem que nenhum dos scripts de subida tenha corrido antes) reutiliza o que o `version.properties` tinha por último - não sobe nada por si. A versão em execução é visível em direto na caixa **Acerca de** (`BuildConfig.VERSION_NAME`, que lê o `versionName` que o `version.properties` tiver por último). Consulte o [CHANGELOG.md](CHANGELOG.md) para o histórico de versões.

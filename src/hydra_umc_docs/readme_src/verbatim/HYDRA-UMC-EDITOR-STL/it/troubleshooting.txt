@@ -1,0 +1,12 @@
+- `categories`/`models`/`parts` non stampa nulla: la radice
+  dell'ecosistema in realtà non contiene `HYDRA-UMC-STUDIO`/
+  `HYDRA-UMC-SUITE` come fratelli - passa `--root` esplicitamente, o
+  usa "Sfoglia" nella GUI.
+- `transform`/`replace`/`add` fallisce con "not a real, parseable STL
+  file": il file sorgente in realtà non è un STL valido (o ne è uno da
+  0 triangoli) - aprilo in un vero visualizzatore CAD/mesh per
+  confermarlo.
+- Un pezzo rimosso/sostituito non è scomparso dalla propria lista pezzi
+  della GUI: è stato davvero spostato in `.trash/` su disco - la lista
+  pezzi mostra solo i veri file attuali di primo livello, e una
+  sottocartella `.trash/` ne è deliberatamente esclusa.

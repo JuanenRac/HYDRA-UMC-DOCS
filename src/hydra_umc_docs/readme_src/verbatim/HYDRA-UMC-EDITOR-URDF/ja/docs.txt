@@ -1,0 +1,3 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** —— エディター自身の内部構造: パース、実現可能性検証、メッシュ解決、3D プレビューがなぜ別々の経路になっているか、そしてこのアプリが意図的に**行わない**こと(ロボットへの接続、URDF のアップロード、自発的な動作指示)。
+- **[docs/BUILD_AND_RUN.md](docs/BUILD_AND_RUN.md)** —— 非破壊的な `build-test.bat`/`.sh` 検証パスと、実際にパッケージ化する `build_exe.bat`/`.sh` との違い、そしてコマンドデッキが実際には何であるか(`QToolBar` であり Qt Quick/QML ではない —— 上記の**テーマ**セクションを参照)。
+- **[docs/INTEGRATION_CONTRACT.md](docs/INTEGRATION_CONTRACT.md)** —— エクスポートされた URDF ファイルの下流の利用者が自分で検証すべき内容。本プロジェクト自体はネットワークエンドポイントやハードウェア制御権限を一切提供しません。

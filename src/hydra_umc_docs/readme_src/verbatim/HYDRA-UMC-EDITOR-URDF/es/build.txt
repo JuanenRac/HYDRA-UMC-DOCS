@@ -1,0 +1,62 @@
+### Compilación de Producción
+
+Compila un ejecutable independiente (no necesita una instalación de Python para ejecutarse) vía PyInstaller:
+
+- **Windows:** ejecuta `build_exe.bat` → produce `dist\HYDRA-UMC_EDITOR-URDF.exe`
+- **Linux:** ejecuta `./build_exe.sh` (`chmod +x build_exe.sh` una vez primero) → produce `dist/HYDRA-UMC_EDITOR-URDF`
+
+Ambos scripts crean su propio `.venv`, instalan `requirements.txt` más `pyinstaller`, limpian cualquier `build`/`dist` previo, compilan, y finalmente copian `README.md`, `LICENSE`, y toda la carpeta `language/` junto al binario resultante (`language/` deliberadamente **no** se empaqueta dentro del ejecutable vía `--add-data`, así que un archivo `.lng` se puede editar o añadir después sin necesidad de recompilar).
+
+**Versionado:** la versión de la aplicación (`hydra_editor_urdf/__version__`, mostrada en el diálogo Ayuda → Acerca de) sigue el esquema `MAJOR.MINOR.PATCH`. Compilar con `build_exe.bat`/`build_exe.sh` nunca la cambia; `python tools/hydra_project_tool.py bump` ejecuta `bump_version.py`, que aplica una subida al estilo cuentakilómetros: `PATCH` sube en 1; en cuanto `PATCH` superaría 9 vuelve a 0 y en su lugar `MINOR` sube en 1 (p.ej. `0.0.9` → `0.1.0`). `MAJOR` nunca se toca automáticamente - eso sigue siendo una decisión manual y deliberada. Ver `CHANGELOG.md` para el historial de versiones.
+
+Si prefieres ejecutar los pasos equivalentes a mano en vez del script -útil para adaptar la compilación a una plataforma que los scripts no cubren, o para depurar un flag de PyInstaller- el proceso manual es:
+
+```bash
+# 1. Crear y activar un entorno virtual
+python -m venv .venv
+# Windows: .venv\Scripts\activate.bat   |   Linux/Mac: source .venv/bin/activate
+
+# 2. Instalar dependencias + PyInstaller
+pip install -r requirements.txt
+pip install pyinstaller
+
+# 3. Localizar la propia carpeta de instalación de PySide6 (sus plugins Qt viven bajo ella)
+python -c "import PySide6, os; print(os.path.dirname(PySide6.__file__))"
+# -> $PYSIDE_DIR abajo
+
+# 4. Compilar - solo se preparan explícitamente 4 subcarpetas de plugins Qt (platforms/
+#    styles/imageformats/iconengines), NO --collect-all PySide6, que de otro modo
+#    traería Qt6WebEngineCore.dll y otras piezas de varios cientos de MB que
+#    esta aplicación nunca usa. El propio analizador de dependencias de PyInstaller
+#    encuentra las verdaderas DLL de Qt6Core/Gui/Widgets/OpenGL siguiendo el grafo
+#    de importación real de main.py - solo las carpetas de plugins hay que añadirlas a mano.
+#
+#    Windows (los plugins viven directamente bajo PySide6/plugins/):
+pyinstaller --onefile --windowed --noconfirm --name "HYDRA-UMC_EDITOR-URDF" \
+    --add-data "assets;assets" \
+    --add-data "%PYSIDE_DIR%\plugins\platforms;PySide6\plugins\platforms" \
+    --add-data "%PYSIDE_DIR%\plugins\styles;PySide6\plugins\styles" \
+    --add-data "%PYSIDE_DIR%\plugins\imageformats;PySide6\plugins\imageformats" \
+    --add-data "%PYSIDE_DIR%\plugins\iconengines;PySide6\plugins\iconengines" \
+    --hidden-import PySide6.QtOpenGL --hidden-import PySide6.QtOpenGLWidgets \
+    --hidden-import OpenGL.platform.win32 \
+    main.py
+
+#    Linux (los plugins viven bajo PySide6/Qt/plugins/ en su lugar - una disposición
+#    distinta a la de Windows, confirmada leyendo el propio runtime hook de PyInstaller
+#    pyi_rth_pyside6.py):
+pyinstaller --onefile --noconfirm --name "HYDRA-UMC_EDITOR-URDF" \
+    --add-data "assets:assets" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/platforms:PySide6/Qt/plugins/platforms" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/styles:PySide6/Qt/plugins/styles" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/imageformats:PySide6/Qt/plugins/imageformats" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/iconengines:PySide6/Qt/plugins/iconengines" \
+    --hidden-import PySide6.QtOpenGL --hidden-import PySide6.QtOpenGLWidgets \
+    main.py
+
+# 5. Copiar los archivos que deben estar JUNTO AL binario, no dentro de él
+cp README.md LICENSE dist/
+cp -r language dist/language
+```
+
+En Linux, ejecutar el binario compilado necesita que el propio runtime de OpenGL del sistema esté presente (`libGL.so.1` - por ejemplo `libgl1` en Debian/Ubuntu, `mesa-libGL` en Fedora, `libglvnd` en Arch) más `libxkbcommon-x11-0`/`xcb-util-cursor` para el propio plugin de plataforma XCB de Qt; `build_exe.sh` comprueba `libGL.so.1` de antemano e imprime el comando de instalación correcto según la distribución si falta, en vez de fallar en lo profundo de una ejecución de PyInstaller.

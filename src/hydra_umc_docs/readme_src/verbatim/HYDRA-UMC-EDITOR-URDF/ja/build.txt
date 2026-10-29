@@ -1,0 +1,63 @@
+### プロダクションビルド
+
+PyInstaller を通じて、独立した実行ファイル（実行に Python のインストールが不要）をコンパイルします：
+
+- **Windows：** `build_exe.bat` を実行 → `dist\HYDRA-UMC_EDITOR-URDF.exe` を生成
+- **Linux：** `./build_exe.sh` を実行（初回のみ先に `chmod +x build_exe.sh`）→ `dist/HYDRA-UMC_EDITOR-URDF` を生成
+
+どちらのスクリプトも、自身の `.venv` を作成し、`requirements.txt` に加えて `pyinstaller` をインストールし、以前の `build`/`dist` があれば削除し、コンパイルし、最後に `README.md`、`LICENSE`、そして `language/` フォルダ全体を、生成されたバイナリの隣にコピーします（`language/` は意図的に `--add-data` で実行ファイルの内部にバンドルされていないため、後から再ビルドなしに `.lng` ファイルを編集または追加できます）。
+
+
+スクリプトの代わりに手動で等価な手順を実行したい場合——スクリプトがカバーしていないプラットフォームでビルドを調整する場合や、PyInstaller のフラグをデバッグする場合に便利です——手動プロセスは次のとおりです：
+
+```bash
+# 1. 仮想環境を作成して有効化
+python -m venv .venv
+# Windows: .venv\Scripts\activate.bat   |   Linux/Mac: source .venv/bin/activate
+
+# 2. 依存関係 + PyInstaller をインストール
+pip install -r requirements.txt
+pip install pyinstaller
+
+# 3. PySide6 自身のインストールディレクトリを特定（その Qt プラグインはその下にあります）
+python -c "import PySide6, os; print(os.path.dirname(PySide6.__file__))"
+# -> 以下の $PYSIDE_DIR
+
+# 4. コンパイル——明示的にステージングされるのは 4 つの Qt プラグイン
+#    サブフォルダ（platforms/styles/imageformats/iconengines）のみで、
+#    --collect-all PySide6 ではありません。それをすると、
+#    本アプリが決して使用しない Qt6WebEngineCore.dll などの数百 MB 級の
+#    部品まで引き込まれてしまいます。PyInstaller 自身の依存関係アナライザーは、
+#    main.py の実際のインポートグラフを追跡して、実際の
+#    Qt6Core/Gui/Widgets/OpenGL DLL を見つけます——プラグインフォルダのみ
+#    手動で追加する必要があります。
+#
+#    Windows（プラグインは PySide6/plugins/ 直下にあります）：
+pyinstaller --onefile --windowed --noconfirm --name "HYDRA-UMC_EDITOR-URDF" \
+    --add-data "assets;assets" \
+    --add-data "%PYSIDE_DIR%\plugins\platforms;PySide6\plugins\platforms" \
+    --add-data "%PYSIDE_DIR%\plugins\styles;PySide6\plugins\styles" \
+    --add-data "%PYSIDE_DIR%\plugins\imageformats;PySide6\plugins\imageformats" \
+    --add-data "%PYSIDE_DIR%\plugins\iconengines;PySide6\plugins\iconengines" \
+    --hidden-import PySide6.QtOpenGL --hidden-import PySide6.QtOpenGLWidgets \
+    --hidden-import OpenGL.platform.win32 \
+    main.py
+
+#    Linux（プラグインは PySide6/Qt/plugins/ の下にあります——Windows とは
+#    異なるレイアウトで、PyInstaller 自身のランタイムフック
+#    pyi_rth_pyside6.py を読んで確認済み）：
+pyinstaller --onefile --noconfirm --name "HYDRA-UMC_EDITOR-URDF" \
+    --add-data "assets:assets" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/platforms:PySide6/Qt/plugins/platforms" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/styles:PySide6/Qt/plugins/styles" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/imageformats:PySide6/Qt/plugins/imageformats" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/iconengines:PySide6/Qt/plugins/iconengines" \
+    --hidden-import PySide6.QtOpenGL --hidden-import PySide6.QtOpenGLWidgets \
+    main.py
+
+# 5. バイナリの内部ではなく、隣に置く必要があるファイルをコピー
+cp README.md LICENSE dist/
+cp -r language dist/language
+```
+
+Linux では、コンパイル済みバイナリの実行に、システム自身の OpenGL ランタイム（`libGL.so.1`——例：Debian/Ubuntu では `libgl1`、Fedora では `mesa-libGL`、Arch では `libglvnd`）に加えて、Qt 自身の XCB プラットフォームプラグイン向けの `libxkbcommon-x11-0`/`xcb-util-cursor` が必要です。`build_exe.sh` は事前に `libGL.so.1` の有無を確認し、それが見つからない場合、PyInstaller の実行の奥深くで失敗させるのではなく、ディストリビューションごとの正しいインストールコマンドを表示します。

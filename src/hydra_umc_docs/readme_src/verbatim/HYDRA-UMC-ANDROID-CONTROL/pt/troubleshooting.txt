@@ -1,0 +1,6 @@
+| Sintoma | Causa | Solução |
+|---|---|---|
+| Sem notificações | Permissão negada | Conceda a permissão «Notificações» nas definições do Android para esta aplicação |
+| Sem biometria | Hardware não configurado | Garanta que tem uma impressão digital/rosto registado na Segurança do sistema Android |
+| O robô não se move | Sessão expirada, robô reservado por outra conta ou trajetória em curso | Leia a mensagem na barra de estado; o servidor reproduz as trajetórias por si e não é preciso nenhum separador do navegador |
+| Bluetooth desativado | Chip físico desligado | Use o botão 3D «ENABLE SYSTEM BT» na aplicação |

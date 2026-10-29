@@ -1,0 +1,13 @@
+The detailed specification of the design (eleven subsystems, from the host computer to the tool head) is a separate document; each line below opens its section:
+
+- [HOST COMPUTING SUBSYSTEM (HMI & HIGH-LEVEL)](docs/HARDWARE_SPECIFICATION.md#2--host-computing-subsystem-hmi--high-level)
+- [PCIE AI ACCELERATOR SUBSYSTEM (HAILO-8 + HAILO-10 DUAL NPU)](docs/HARDWARE_SPECIFICATION.md#3--pcie-ai-accelerator-subsystem-hailo-8--hailo-10-dual-npu)
+- [DUAL USB 3.0 VISION SUBSYSTEM (8x CAMERA PORTS)](docs/HARDWARE_SPECIFICATION.md#4--dual-usb-30-vision-subsystem-8x-camera-ports)
+- [REAL-TIME CO-PROCESSING SUBSYSTEM (DESIGN)](docs/HARDWARE_SPECIFICATION.md#5--real-time-co-processing-subsystem-design)
+- [DISTRIBUTED FIELDBUS COMMUNICATION (SINGLE CAN BUS; FDCAN PERIPHERAL IN CLASSIC MODE)](docs/HARDWARE_SPECIFICATION.md#6--distributed-fieldbus-communication-single-can-bus-fdcan-peripheral-in-classic-mode)
+- [ULTRA-FAST NON-VOLATILE MEMORY (SPI FRAM)](docs/HARDWARE_SPECIFICATION.md#7--ultra-fast-non-volatile-memory-spi-fram)
+- [LOCAL MOTION, ACTUATION & SENSOR SUITE](docs/HARDWARE_SPECIFICATION.md#8--local-motion-actuation--sensor-suite)
+- [POWER DISTRIBUTION & REGULATION](docs/HARDWARE_SPECIFICATION.md#9--power-distribution--regulation)
+- [INTER-PROCESSOR COMMUNICATION (IPC)](docs/HARDWARE_SPECIFICATION.md#10--inter-processor-communication-ipc)
+- [4-LAYER PCB HARDWARE SPECIFICATIONS](docs/HARDWARE_SPECIFICATION.md#11--4-layer-pcb-hardware-specifications)
+- [ROBOT CONTROLLER BOARDS & URTC TOOL HEAD (DISTRIBUTED TIER)](docs/HARDWARE_SPECIFICATION.md#12--robot-controller-boards--urtc-tool-head-distributed-tier)

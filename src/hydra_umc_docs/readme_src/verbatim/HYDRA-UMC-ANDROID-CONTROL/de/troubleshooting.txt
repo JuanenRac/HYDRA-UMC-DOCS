@@ -1,0 +1,6 @@
+| Symptom | Ursache | Behebung |
+|---|---|---|
+| Keine Benachrichtigungen | Berechtigung verweigert | Erteilen Sie die Berechtigung "Benachrichtigungen" in den Android-Einstellungen für diese App |
+| Keine Biometrie | Hardware nicht eingerichtet | Stellen Sie sicher, dass ein Fingerabdruck/Gesicht in Ihrer Android-Systemsicherheit registriert ist |
+| Roboter bewegt sich nicht | Sitzung abgelaufen, Roboter von einem anderen Konto reserviert oder Trajektorie läuft | Lesen Sie die Meldung in der Statusleiste; der Server spielt Trajektorien selbst ab, ein Browser-Tab ist nicht nötig |
+| Bluetooth deaktiviert | Physischer Chip aus | Verwenden Sie die 3D-Taste "ENABLE SYSTEM BT" in der App |

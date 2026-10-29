@@ -1,0 +1,12 @@
+### Versionierung
+
+Dieses Repository folgt einer Richtlinie für das gesamte Ökosystem: Bauen ändert die Version nie. Der explizite `bump`-Befehl (`python tools/hydra_project_tool.py bump`) führt `tool/bump_version.dart` aus und wendet dabei an:
+
+- **Build-Nummer** (der Teil nach `+`): ein einfacher monotoner
+  Zähler, +1 bei jedem Bump, ohne Übertrag.
+
+Dasselbe Skript regeneriert `lib/app_version.dart` (generiert, nicht
+manuell bearbeitet - eine einfache `const`-Datei, keine neue
+Laufzeit-Abhängigkeit wie `package_info_plus`), die die App zur
+Laufzeit liest, um ihre eigene Version auf dem **Einstellungen**-Bildschirm
+anzuzeigen. Siehe [CHANGELOG.md](CHANGELOG.md) für die Versionshistorie.

@@ -1,0 +1,28 @@
+**Vérification d'honnêteté - ce qui fonctionne vraiment aujourd'hui :**
+`model_catalog.py` (découverte réelle, en lecture seule, des deux
+bibliothèques de modèles), `stl_ops.py` (mutation STL réelle via
+`numpy-stl` - transformer/remplacer/retirer/ajouter, plus
+`model_bounds()` pour le cadrage de caméra de la visionneuse 3D),
+`part_colors.py` (vrai fichier annexe de couleur par pièce),
+`stl_geometry.py` (vrai chargement de géométrie Qt Quick 3D) et
+`catalog_push.py` (vraie génération d'un URDF d'assemblage plus un vrai
+client HTTP pour `POST /api/models/submit`) sont tous
+testés contre de vrais fichiers STL générés et une vraie
+`QGuiApplication` à portée de session quand nécessaire (`pytest tests/`,
+{tests} cas réussis) et ont été vérifiés de bout en bout contre les vrais
+checkouts `HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` de cet écosystème
+(`--cli categories`/`models`/`parts` contre les vrais arbres ;
+`transform`/`remove` contre une copie jetable, jamais le vrai checkout).
+Le propre `EditorBridge` de `qt_gui.py` est aussi testé directement (le
+slot de couleur, la sélection préservée après un changement de
+couleur). `qml/Main.qml` se charge et s'affiche sans erreur QML
+(vérifié sans interface avec `QT_QPA_PLATFORM=offscreen`, y compris
+avec les vraies pièces d'un modèle chargées dans la visionneuse 3D),
+mais le graphe de scène QML lui-même n'a pas de test automatisé propre -
+piloter une vraie boucle d'événements Qt n'est pas tenté ici, la même
+limite d'honnêteté que le propre README de HYDRA-UMC-UPDATER trace déjà
+pour sa propre couche Qt Quick.
+
+---
+
+> **État de la sûreté et de la cybersécurité :** cet écosystème n'est pas un système de sécurité certifié. Il n'existe pas encore de chaîne d'E-STOP matérielle, ni de limites ou de verrouillages imposés par le firmware, ni de commande de mouvement vérifiée ; les images de firmware sont contrôlées par CRC32 et un HMAC-SHA256 à clé partagée, pas par une signature asymétrique ; TLS et TLS mutuel sont optionnels et désactivés par défaut ; aucune carte propre n'a encore été assemblée ni testée. Lisez la [base de sécurité](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md) et le [modèle de menaces](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md) avant de vous fier à une affirmation d'ici pour la sécurité d'une personne.

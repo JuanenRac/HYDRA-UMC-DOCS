@@ -1,0 +1,1 @@
+- [`docs/CLI_REFERENCE.md`](docs/CLI_REFERENCE.md) - 每一个真实的 `--cli` 子命令，逐参数说明。

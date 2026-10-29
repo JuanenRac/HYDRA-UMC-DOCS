@@ -1,0 +1,20 @@
+```bash
+chmod +x build.sh   # 一次性
+./build.sh          # 创建 .venv，pip install -e ".[dev,gui]"，编译检查并测试
+./run.sh                                                    # 窗口化 GUI（默认）
+./run.sh --cli categories studio                            # 列出某个库中的分类
+./run.sh --cli models studio robots-6-dof                   # 列出某个分类中的模型
+./run.sh --cli parts studio robots-6-dof ar3                 # 列出某个模型的真实部件文件
+./run.sh --cli transform studio robots-6-dof ar3 base_link.STL --tz 10
+./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /路径/new.stl
+./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
+./run.sh --cli add studio robots-6-dof ar3 /路径/new.stl
+./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
+```
+
+在 Windows 上：先 `build.bat`，然后 `run.bat`（GUI）或
+`run.bat --cli ...`；双击 `run-gui.vbs` 可无控制台启动 GUI。
+
+`library` 始终是 `studio` 或 `suite`；`category`/`model` 是
+`categories`/`models` 刚刚打印出来的真实文件夹名。`--root` 会为任意
+`--cli` 命令覆盖生态系统根目录（默认：本工具自身的父目录）。

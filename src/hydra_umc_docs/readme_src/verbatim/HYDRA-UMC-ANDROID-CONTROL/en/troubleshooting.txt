@@ -1,0 +1,6 @@
+| Symptom | Cause | Fix |
+|---|---|---|
+| No Notifications | Permission denied | Grant "Notifications" permission in Android settings for this app |
+| No Biometrics | Hardware not set | Ensure you have a Fingerprint/Face registered in your Android System Security |
+| Robot won't move | Session expired, robot reserved by another account, or a trajectory is running | Read the message in the status bar; the server plays trajectories itself and no browser tab is needed |
+| Bluetooth disabled | Physical chip off | Use the "ENABLE SYSTEM BT" 3D button in the app |

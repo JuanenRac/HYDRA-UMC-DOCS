@@ -1,0 +1,61 @@
+### Compilação de produção
+
+Compila um executável autónomo (não é preciso instalação de Python para o executar) via PyInstaller:
+
+- **Windows:** execute `build_exe.bat` → produz `dist\HYDRA-UMC_EDITOR-URDF.exe`
+- **Linux:** execute `./build_exe.sh` (`chmod +x build_exe.sh` uma vez antes) → produz `dist/HYDRA-UMC_EDITOR-URDF`
+
+Ambos os scripts criam o seu próprio `.venv`, instalam o `requirements.txt` mais o `pyinstaller`, limpam qualquer `build`/`dist` anterior, compilam e, por fim, copiam o `README.md`, o `LICENSE` e toda a pasta `language/` para junto do binário resultante (a `language/` deliberadamente **não** é empacotada dentro do executável via `--add-data`, para que um ficheiro `.lng` possa ser editado ou acrescentado depois sem recompilar).
+
+
+Se preferir executar à mão os passos equivalentes em vez do script - útil para adaptar a compilação a uma plataforma que os scripts não cobrem, ou para depurar uma flag do PyInstaller - o processo manual é:
+
+```bash
+# 1. Create and activate a virtual environment
+python -m venv .venv
+# Windows: .venv\Scripts\activate.bat   |   Linux/Mac: source .venv/bin/activate
+
+# 2. Install dependencies + PyInstaller
+pip install -r requirements.txt
+pip install pyinstaller
+
+# 3. Locate PySide6's own install directory (its Qt plugins live under it)
+python -c "import PySide6, os; print(os.path.dirname(PySide6.__file__))"
+# -> $PYSIDE_DIR below
+
+# 4. Compile - only 4 Qt plugin subfolders are staged explicitly (platforms/
+#    styles/imageformats/iconengines), NOT --collect-all PySide6, which would
+#    otherwise pull in Qt6WebEngineCore.dll and other multi-hundred-MB pieces
+#    this app never uses. PyInstaller's own dependency analyzer finds the
+#    actual Qt6Core/Gui/Widgets/OpenGL DLLs by following main.py's real import
+#    graph - only the plugin folders need to be added by hand.
+#
+#    Windows (plugins live directly under PySide6/plugins/):
+pyinstaller --onefile --windowed --noconfirm --name "HYDRA-UMC_EDITOR-URDF" \
+    --add-data "assets;assets" \
+    --add-data "%PYSIDE_DIR%\plugins\platforms;PySide6\plugins\platforms" \
+    --add-data "%PYSIDE_DIR%\plugins\styles;PySide6\plugins\styles" \
+    --add-data "%PYSIDE_DIR%\plugins\imageformats;PySide6\plugins\imageformats" \
+    --add-data "%PYSIDE_DIR%\plugins\iconengines;PySide6\plugins\iconengines" \
+    --hidden-import PySide6.QtOpenGL --hidden-import PySide6.QtOpenGLWidgets \
+    --hidden-import OpenGL.platform.win32 \
+    main.py
+
+#    Linux (plugins live under PySide6/Qt/plugins/ instead - a different
+#    layout than Windows, confirmed by reading PyInstaller's own runtime hook
+#    pyi_rth_pyside6.py):
+pyinstaller --onefile --noconfirm --name "HYDRA-UMC_EDITOR-URDF" \
+    --add-data "assets:assets" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/platforms:PySide6/Qt/plugins/platforms" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/styles:PySide6/Qt/plugins/styles" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/imageformats:PySide6/Qt/plugins/imageformats" \
+    --add-data "$PYSIDE_DIR/Qt/plugins/iconengines:PySide6/Qt/plugins/iconengines" \
+    --hidden-import PySide6.QtOpenGL --hidden-import PySide6.QtOpenGLWidgets \
+    main.py
+
+# 5. Copy files that must sit NEXT TO the binary, not inside it
+cp README.md LICENSE dist/
+cp -r language dist/language
+```
+
+No Linux, executar o binário compilado precisa de o runtime OpenGL do próprio sistema presente (`libGL.so.1` - p. ex. `libgl1` em Debian/Ubuntu, `mesa-libGL` em Fedora, `libglvnd` em Arch) mais `libxkbcommon-x11-0`/`xcb-util-cursor` para o plugin de plataforma XCB do próprio Qt; o `build_exe.sh` verifica logo de início a presença de `libGL.so.1` e imprime o comando de instalação certo por distribuição se faltar, em vez de falhar nas profundezas de uma execução do PyInstaller.

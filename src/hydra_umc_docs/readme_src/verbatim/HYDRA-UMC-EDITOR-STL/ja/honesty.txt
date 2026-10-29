@@ -1,0 +1,27 @@
+**誠実さの確認 - 今日実際に動くもの：** `model_catalog.py`
+（両方のモデルライブラリに対する実在の読み取り専用ディスカバリ）、
+`stl_ops.py`（`numpy-stl` による実在の STL 変更 - 変換/置換/削除/追加、
+さらに 3D ビューアのカメラ取景用の `model_bounds()`）、`part_colors.py`
+（実在のパーツごとの色サイドカーファイル）、`stl_geometry.py`
+（実在の Qt Quick 3D ジオメトリ読み込み）、`catalog_push.py`
+（実在の組み立て用 URDF 生成に加え、`POST /api/models/submit` 向けの
+実在の HTTP クライアント）はすべて、実際に生成した
+実在の STL ファイルと、必要に応じて実在のセッションスコープの
+`QGuiApplication` に対してテストされており（`pytest tests/`、{tests} 件の
+ケースが合格）、本エコシステム自身の実在する
+`HYDRA-UMC-STUDIO`/`HYDRA-UMC-SUITE` のチェックアウトに対してエンド
+ツーエンドでスモークテスト済みです（`--cli categories`/`models`/
+`parts` は実在するツリーに対して実行、`transform`/`remove` は使い捨ての
+コピーに対してのみ実行し、実際のチェックアウト自体には触れていません）。
+`qt_gui.py` 自身の `EditorBridge` も直接テストされています（色の
+slot、色変更後も選択状態が保持されること）。`qml/Main.qml` は QML
+エラーなしでロード・描画されます（`QT_QPA_PLATFORM=offscreen` で
+ヘッドレス検証済み、実際のモデルのパーツを 3D ビューアに読み込んだ
+状態も含む）が、QML シーングラフ自体には自動テストがありません -
+実際の Qt イベントループを駆動することはここでは試みていません。
+これは HYDRA-UMC-UPDATER 自身の README がすでに自らの Qt Quick 層に
+ついて引いているのと同じ誠実さの境界線です。
+
+---
+
+> **安全性とセキュリティの現状:** このエコシステムは認証された安全システムではありません。ハードウェアの E-STOP 経路、ファームウェアが強制する制限やインターロック、検証済みの動作コマンドはまだありません。ファームウェアイメージは CRC32 と共有鍵の HMAC-SHA256 で検査しており、非対称署名ではありません。TLS と相互 TLS は任意で、既定では無効です。独自基板はまだ実装も試験もされていません。ここに書かれた内容を人の安全のために頼る前に、[セキュリティベースライン](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/SECURITY_BASELINE.md)と[脅威モデル](https://github.com/JuanenRac/HYDRA-UMC-DOCS/blob/main/docs/THREAT_MODEL.md)をお読みください。

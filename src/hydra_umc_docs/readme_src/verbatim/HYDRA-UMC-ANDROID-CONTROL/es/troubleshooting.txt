@@ -1,0 +1,6 @@
+| Síntoma | Causa | Solución |
+|---|---|---|
+| Sin Notificaciones | Permiso denegado | Concede el permiso de "Notificaciones" en los ajustes de Android para esta app |
+| Sin Biometría | Hardware no configurado | Asegúrate de tener una Huella/Rostro registrado en la Seguridad del Sistema Android |
+| El robot no se mueve | Sesión caducada, robot reservado por otra cuenta o trayectoria en curso | Lee el mensaje de la barra de estado; el servidor reproduce las trayectorias él mismo y no hace falta ninguna pestaña del navegador |
+| Bluetooth desactivado | Chip físico apagado | Usa el botón 3D "ENABLE SYSTEM BT" en la app |

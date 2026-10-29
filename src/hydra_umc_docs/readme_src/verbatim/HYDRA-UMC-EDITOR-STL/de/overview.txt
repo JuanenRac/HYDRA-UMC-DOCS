@@ -1,0 +1,61 @@
+HYDRA-UMC-EDITOR-STL ist ein kleines Desktop-Werkzeug - standardmäßig
+Fenster-GUI, vollständige CLI mit `--cli` - zum Bearbeiten der echten
+STL-Teile, aus denen jedes Roboter-/Maschinenmodell besteht, das
+HYDRA-UMC-STUDIO und HYDRA-UMC-SUITE ausliefern. Beide Apps haben ihre
+eigenen Modellordner 2026-09 in dieselbe echte Kategoriestruktur
+umorganisiert (`robots-5-dof`/`robots-6-dof`/`robots-7-dof`,
+`machine-pnp`/`machine-cnc`/`machine-laser`,
+`heatedbeds`/`racks`/`vacuum-tables`, jedes Modell mit eigener
+`metadata.json` neben seiner `ATTRIBUTION.txt`) - dieses Werkzeug liest
+genau diese echte Struktur, keine separate Kopie und keine eigene
+Datenbank.
+
+Ein echter Qt-Quick-3D-Viewer rendert jedes bearbeitbare Teil des
+ausgewählten Modells (`stl_geometry.py`, ein echtes `QQuick3DGeometry`,
+das die Dreiecke jedes Teils direkt aus dessen STL-Datei lädt) - Ziehen
+zum Umkreisen, Mausrad zum Zoomen, Klick auf ein Teil zum Auswählen
+(echtes `View3D.pick()`, keine Schätzung). Die Kamera rahmt sich selbst
+auf die echte, kombinierte Bounding-Box des Modells ein
+(`model_bounds()` aus `stl_ops.py`), sodass eine 400mm-Roboterbasis und
+eine 5mm-Schraube beide korrekt eingerahmt werden.
+
+Sechs echte Operationen, jede gestützt auf echte Datei-E/A gegen den
+echten Checkout auf der Festplatte:
+
+- **Transformieren** - die echten Vertices eines Teils verschieben/
+  drehen/skalieren (via `numpy-stl`, dieselbe Bibliothek, von der
+  bereits `render/mesh.py` von HYDRA-UMC-SUITE abhängt) und wieder am
+  selben Ort speichern.
+- **Farbe ändern** - eine echte Farbanmerkung pro Teil
+  (`part_colors.json`, eine eigene Sidecar-Datei dieses Tools) in der
+  3D-Ansicht angezeigt - eine binäre STL trägt keine zuverlässige eigene
+  Farbe, daher ist diese Sidecar-Datei die echte Quelle der Wahrheit.
+  Sowohl HYDRA-UMC-STUDIOs eigenes `hooks/usePartColors.ts` als auch
+  HYDRA-UMC-SUITEs eigenes `render/part_colors.py` lesen genau dieselbe
+  Datei zurück, sodass eine hier gespeicherte Farbe auch deren echte
+  3D-Viewer erreicht, nicht nur die Vorschau dieses Tools.
+- **Ersetzen** - ein Teil mit einer anderen echten STL-Datei
+  überschreiben.
+- **Entfernen** - ein Teil aus einem Modell herausnehmen.
+- **Hinzufügen** - eine neue echte STL-Datei in ein Modell einbringen.
+- **An Server senden** - die aktuellen bearbeitbaren Teile des
+  ausgewählten Modells an den echten Modell-Einreichungskatalog eines
+  laufenden HYDRA-UMC-SERVER senden (`catalog_push.py`,
+  `POST /api/models/submit` - erfordert einen Admin-Login, genau wie die
+  entsprechende Funktion von HYDRA-UMC-EDITOR-URDF). Da der Vertrag
+  dieses Endpunkts URDF-förmig ist, verpackt dies die Teile in das
+  kleinste echte URDF, das er akzeptiert: ein Wurzel-Link plus ein
+  ungelenktes (`fixed`) Kind-Link pro Teil, da die tatsächliche Position
+  jedes Teils bereits in dessen eigenen STL-Vertices verankert ist -
+  niemals eine erfundene Pose.
+- **Schwebende Viewer-Werkzeugleiste** - Auswählen, Verschieben (ein echtes ziehbares 3-Achsen-Gizmo), Bearbeiten (drehen/skalieren), Farbe, Hinzufügen, Löschen, Fixieren (speichert Verschiebung/Drehung/Skalierung dauerhaft), Kopieren, Einfügen und Ausschneiden, direkt in der 3D-Ansicht. Heizbetten, Vakuumtische und Racks sind unabhängige Größenvarianten, daher zeigt der Viewer nur die ausgewählte statt alle übereinander.
+- **Montierte Ansicht** - Roboter, CNC, PnP und Laser öffnen sich bereits in ihrer Grundstellung montiert (aus der Kinematik von HYDRA-UMC-SUITE neben diesem Checkout gelesen, nur Anzeige); eine Schaltfläche der Leiste wechselt zu den Rohteilen zum Bearbeiten.
+
+**Grenzen von Senden und Transformation:** Es werden nur `.stl`-Teile hochgeladen (die übrigen werden gemeldet), der gesamte Upload muss in das 50-MB-Anfragelimit des Servers passen, und das Modell wird nur im Katalog des Servers gespeichert (HYDRA-UMC-STUDIO liest es noch nicht). Die Identitätspose passt für unabhängige Teile (Heizbetten, Racks, Vakuumtische); die Teile eines Roboters oder einer Maschine liegen in ihrem eigenen Link-Koordinatensystem und kommen daher am Ursprung gestapelt und ohne Gelenke an. Bevorzugen Sie einen `https://`-Host (oder `HYDRA_UMC_PASSWORD` / die Passwortabfrage statt `--password`). Eine Transformation skaliert zuerst, dreht dann um X, Y und Z und verschiebt zuletzt; die Drehung erfolgt um den Ursprung der Datei, nicht um die Mitte des Teils.
+
+**Nichts wird jemals dauerhaft gelöscht.** Ein Entfernen oder Ersetzen
+verschiebt zuerst die echte Originaldatei in den eigenen
+`.trash/`-Unterordner dieses Modells - dieselbe "niemals zerstören,
+zur Seite verschieben"-Disziplin, der die internen Arbeitskonventionen
+dieses Ökosystems bereits folgen, hier als echtes Produktmerkmal
+angewendet, nicht nur als interne Gewohnheit.

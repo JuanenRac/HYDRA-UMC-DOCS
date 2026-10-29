@@ -1,0 +1,13 @@
+设计的详细规格（从主机到工具头共十一个子系统）是一份单独的文档；下面每一行都会打开对应的章节：
+
+- [主机计算子系统（HMI 与高层处理）](docs/HARDWARE_SPECIFICATION_zho.md#2--主机计算子系统hmi-与高层处理)
+- [PCIE AI 加速子系统（HAILO-8 + HAILO-10 双 NPU）](docs/HARDWARE_SPECIFICATION_zho.md#3--pcie-ai-加速子系统hailo-8--hailo-10-双-npu)
+- [双 USB 3.0 视觉子系统（8 路摄像头接口）](docs/HARDWARE_SPECIFICATION_zho.md#4--双-usb-30-视觉子系统8-路摄像头接口)
+- [实时协处理子系统（设计）](docs/HARDWARE_SPECIFICATION_zho.md#5--实时协处理子系统设计)
+- [分布式现场总线通信（单一 CAN 总线，FDCAN 外设以经典模式运行）](docs/HARDWARE_SPECIFICATION_zho.md#6--分布式现场总线通信单一-can-总线fdcan-外设以经典模式运行)
+- [超高速非易失性存储器（SPI FRAM）](docs/HARDWARE_SPECIFICATION_zho.md#7--超高速非易失性存储器spi-fram)
+- [本地运动、驱动与传感套件](docs/HARDWARE_SPECIFICATION_zho.md#8--本地运动驱动与传感套件)
+- [电源分配与稳压](docs/HARDWARE_SPECIFICATION_zho.md#9--电源分配与稳压)
+- [处理器间通信（IPC）](docs/HARDWARE_SPECIFICATION_zho.md#10--处理器间通信ipc)
+- [四层 PCB 硬件规格](docs/HARDWARE_SPECIFICATION_zho.md#11--四层-pcb-硬件规格)
+- [机器人控制板与 URTC 工具头（分布式层级）](docs/HARDWARE_SPECIFICATION_zho.md#12--机器人控制板与-urtc-工具头分布式层级)

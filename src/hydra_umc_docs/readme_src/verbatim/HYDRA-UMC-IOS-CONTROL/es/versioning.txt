@@ -1,0 +1,15 @@
+### Versionado
+
+Este repositorio sigue una política a nivel de ecosistema: compilar nunca cambia la versión. El comando `bump` explícito (`python tools/hydra_project_tool.py bump`) ejecuta `tool/bump_version.dart`, que aplica:
+
+- **Patch, estilo cuentakilómetros (base 10):** +1 en cada bump; al
+  superar 9 se resetea a 0 y minor sube +1 - p. ej. `0.0.9` ->
+  `0.1.0`. Major nunca se toca automáticamente.
+- **Build number** (la parte tras `+`): un contador monotónico simple,
+  +1 en cada bump, sin acarreo.
+
+El mismo script regenera `lib/app_version.dart` (generado, no editado a
+mano - un simple archivo `const`, no una dependencia nueva en tiempo de
+ejecución como `package_info_plus`), que la app lee en tiempo real para
+mostrar su propia versión en la pantalla de **Ajustes**. Ver
+[CHANGELOG.md](CHANGELOG.md) para el historial de versiones.

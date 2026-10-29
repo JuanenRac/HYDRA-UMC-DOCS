@@ -1,0 +1,6 @@
+| Symptôme | Cause | Solution |
+|---|---|---|
+| Aucune notification | Autorisation refusée | Accordez l'autorisation « Notifications » dans les réglages Android pour cette application |
+| Aucune biométrie | Matériel non configuré | Assurez-vous d'avoir une empreinte/un visage enregistré dans la sécurité système Android |
+| Le robot ne bouge pas | Session expirée, robot réservé par un autre compte ou trajectoire en cours | Lisez le message de la barre d'état ; le serveur joue lui-même les trajectoires, aucun onglet de navigateur n'est nécessaire |
+| Bluetooth désactivé | Puce physique éteinte | Utilisez le bouton 3D « ENABLE SYSTEM BT » dans l'application |

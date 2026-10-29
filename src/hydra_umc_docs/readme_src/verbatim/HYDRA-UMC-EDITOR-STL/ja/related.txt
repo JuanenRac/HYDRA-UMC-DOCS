@@ -1,0 +1,89 @@
+このプロジェクトは、同じ著者（JuanenRac / Electro Hobby 3D）による HYDRA-UMC ロボティクスエコシステムの一部です。ある依頼が実際にはこのリポジトリではなく、これらのいずれかに関するものである可能性があるため、知っておく価値があります。
+
+**親プロジェクト**
+- **[HYDRA-UMC-STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO)** — この編集ツールが読み書きする2つの実在するモデルライブラリのうちの1つ（`public/models/`）を所有しています。
+
+**直接関連**
+- **[HYDRA-UMC-SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE)** — この編集ツールが読み書きする2つ目の実在するモデルライブラリ（`assets/meshes/`）を所有しており、STUDIO のものと全く同じカテゴリ構造で維持されています。
+- **[HYDRA-UMC-EDITOR-URDF](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-URDF)** — 本ツールが編集する生の STL ジオメトリではなく、同じモデルカタログの URDF/運動学側を扱う姉妹デスクトップエディタです。
+- **[HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** — 本エディタが完成した編集内容を送信する実在する `POST /api/models/submit` エンドポイントを所有しています（`catalog_push.py`、GUI の「サーバーに送信...」または `--cli push`）。
+
+**エコシステムの他の一部**
+
+*コアハードウェアとプラットフォーム*
+- **[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)** — ロボットアームのマザーボードの設計——CM5 ホスト + デュアルコア STM32H745、CAN-OTA/SPI-OTA 経由で最大 8 本のツールアームを統括することを目指す(ファームウェアは初期段階で、実装済みの基板はまだない)。
+- **[HYDRA-UMC-OS](https://github.com/JuanenRac/HYDRA-UMC-OS)** — CM5 向けの再現可能な Raspberry Pi OS 製品層：読み取り専用エージェント、検証済みの設定/プロファイル、WiFi ファーストコンタクトプロビジョニング。
+- **[HYDRA-UMC-SDK](https://github.com/JuanenRac/HYDRA-UMC-SDK)** — すべてのブリッジが自身のコマンドを検証する共有 JSON-Schema 契約とソフトウェアのジョブゲート境界(認証済みの安全機能ではない)。
+- **[HYDRA-UMC-CONNECTOR-HUB](https://github.com/JuanenRac/HYDRA-UMC-CONNECTOR-HUB)** — 外部マシンコネクタ向けの宣言的なアダプタマニフェストレジストリとそのバリデータ。工業ゲートウェイ系プロジェクトを置き換えることなく、SDK 自身の契約という考え方を外部マシンへ拡張します。
+
+*コアバックエンドとクライアント*
+- **[HYDRA-UMC-ANDROID-CONTROL](https://github.com/JuanenRac/HYDRA-UMC-ANDROID-CONTROL)** — 生体認証ログインとペアリングされた Wear OS コンパニオンを備えたネイティブ Android 制御アプリ。
+- **[HYDRA-UMC-IOS-CONTROL](https://github.com/JuanenRac/HYDRA-UMC-IOS-CONTROL)** — リアルタイム WebSocket 同期を備えた iOS/iPadOS 制御アプリ（Flutter）。
+- **[HYDRA-UMC-DSI](https://github.com/JuanenRac/HYDRA-UMC-DSI)** — CM5 本体に組み込まれた 7 インチ DSI タッチスクリーン向けのネイティブタッチ UI。
+- **[HYDRA-UMC-EDITOR-URDF](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-URDF)** — GitHub/ローカルソースの読み込みとライブ 3D プレビュー編集を備えたグラフィカルなデスクトップ URDF 作成/編集ツール。
+- **[HYDRA-UMC-BRIDGE-AMR](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-AMR)** — VDA 5050 MQTT パブリッシャーによる AGV/AMR フリートの調整境界(エミュレートしたフリートに対してのみテスト済み)。
+- **[HYDRA-UMC-BRIDGE-CNC](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-CNC)** — GRBL ステータス/制御バイトへのアクセスを持つ、CNC セルの高レベルコーディネーター(エミュレーターに対してのみテスト済み)。
+- **[HYDRA-UMC-BRIDGE-DROIDS](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-DROIDS)** — Boston Dynamics Spot コマンド送信機能を持つ、脚型/ヒューマノイドドロイドの調整境界(エミュレーターに対してのみテスト済み)。
+- **[HYDRA-UMC-BRIDGE-LASER](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-LASER)** — キー/筐体/インターロックの GPIO 信号 3 系統を読み取るレーザーセルのコーディネーター(模擬チップに対してのみテスト済み。レーザーの武装や発射はできない)。
+- **[HYDRA-UMC-BRIDGE-OPENPNP](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-OPENPNP)** — OpenPnP のピックアンドプレース向けの安全な高レベル基板フローコーディネータ。
+- **[HYDRA-UMC-BRIDGE-PRINTER3D](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-PRINTER3D)** — 実在するゲート付きジョブコマンドを備えた、Moonraker/Klipper 3D プリンタ向けの安全な協調境界。
+- **[HYDRA-UMC-BRIDGE-ROS2](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-ROS2)** — 遅延インポートの rclpy ROS 2 トランスポートを持つコーディネーター(ROS 2 環境ではまだ実行していない)。
+- **[HYDRA-UMC-BRIDGE-UAV](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-UAV)** — MAVLink コマンド送信機能を持つ、カメラ搭載 UAV の調整境界(エミュレーターに対してのみテスト済み)。
+
+*URTC ツールプラットフォーム*
+- **[URTC](https://github.com/JuanenRac/URTC)** — 物理的な Universal Robot Tool Controller PCB 向けファームウェア、CAN バス経由で25以上のツールプロファイルに対応。
+- **[URTC-FLASHER](https://github.com/JuanenRac/URTC-FLASHER)** — URTC ボード向けデスクトップ GUI 書き込みツール、CAN-OTA に加えてフルチップ SWD/JTAG に対応。
+- **[URTC-TESTER](https://github.com/JuanenRac/URTC-TESTER)** — URTC ボード向けデスクトップのライブ CAN バス診断ツール、ツールプロファイルごとに1パネル。
+- **[URTC-WEB-STUDIO](https://github.com/JuanenRac/URTC-WEB-STUDIO)** — ローカルインストール不要な、Web Serial API 経由のブラウザベースの URTC-TESTER 代替。
+- **[URTC-GATEWAY](https://github.com/JuanenRac/URTC-GATEWAY)** — URTC の CAN バスの前に置くゲートウェイ：許可する識別子のリスト、レート制限、セッション鍵。コンピューター上でテスト済みで、実際のバスではまだ試していません。
+
+*ビジョン AI ノード（Hailo-8）*
+- **[HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE)** — 段階ごとの実在するハードウェア準備状況チェックを備えた、Hailo-8 ビジョンパイプラインの統合ハブ。
+- **[HYDRA-UMC-DETECTION-HEF](https://github.com/JuanenRac/HYDRA-UMC-DETECTION-HEF)** — Hailo のアーキテクチャ/チェックサムによる安全なロード検証を備えた、実在するコンパイル済みモデルレジストリ。
+- **[HYDRA-UMC-VISION-STREAMER](https://github.com/JuanenRac/HYDRA-UMC-VISION-STREAMER)** — 実在する HailoRT 統合境界を備えた、実在する GStreamer パイプライン + MediaMTX 設定ジェネレータ。
+- **[HYDRA-UMC-VISUAL-SERVOING-API](https://github.com/JuanenRac/HYDRA-UMC-VISUAL-SERVOING-API)** — ゾーン状態を条件に承認する Position-Based Visual Servoing 補正則。カメラによる姿勢推定はまだない。
+- **[HYDRA-UMC-SAFETY-ZONES](https://github.com/JuanenRac/HYDRA-UMC-SAFETY-ZONES)** — ファイルから物体位置を受け取る、ゾーン侵入・キャリブレーション鮮度・E-STOP 要求の v0 ロジック。検出器は接続されておらず、物理 E-STOP もまだ配線されていない。
+
+*認知 AI ノード（Hailo-10）*
+- **[HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE)** — Hailo-10 認知パイプライン（LLM/VLA/音声オーケストレーション）の統合ハブ。
+- **[HYDRA-UMC-VLA-ENGINE](https://github.com/JuanenRac/HYDRA-UMC-VLA-ENGINE)** — Vision-Language-Action モデル向けの、実在するアクショントークンのエンコード/デコードと軌道生成。
+- **[HYDRA-UMC-VOICE-UI](https://github.com/JuanenRac/HYDRA-UMC-VOICE-UI)** — 制限付きで確認ゲートされた Watch リレーを備えた、実在する音声フロントエンド（VAD + インテントパーサー）。
+- **[HYDRA-UMC-SEMANTIC-PLANNER](https://github.com/JuanenRac/HYDRA-UMC-SEMANTIC-PLANNER)** — MCU エラーコードに対する、実在するルールベースのタスク分解とセマンティックなエラー復旧。
+- **[HYDRA-UMC-DOCS-QA](https://github.com/JuanenRac/HYDRA-UMC-DOCS-QA)** — 本エコシステム自身の Markdown ドキュメントに対する、標準ライブラリのみで実装された実在の TF-IDF ドキュメント検索。
+- **[HYDRA-UMC-LOCAL-TECHNICIAN](https://github.com/JuanenRac/HYDRA-UMC-LOCAL-TECHNICIAN)** — エコシステム自身のための、ポリシーでゲートされたローカル AI メンテナンス技師 - 観察し、診断し、修正案を提案します。最も高い2つのリスクレベルは意図的にまだ実装されていません。
+
+*オーケストレーションとスウォーム*
+- **[HYDRA-UMC-ORCHESTRATOR](https://github.com/JuanenRac/HYDRA-UMC-ORCHESTRATOR)** — 実在する gRPC/Protobuf ヘルスレポート契約とミッションステートマシンを備えた統合ハブ。
+- **[HYDRA-UMC-JOB-DISPATCHER](https://github.com/JuanenRac/HYDRA-UMC-JOB-DISPATCHER)** — 実在する HTTP API 上の、重複排除機能を備えた実在する優先度ベースのジョブキュー。
+- **[HYDRA-UMC-NODE-HEALING](https://github.com/JuanenRac/HYDRA-UMC-NODE-HEALING)** — リトライ/バックオフと ID の不一致検出を備えた、実在する gRPC ベースのフリートヘルスウォッチドッグ。
+- **[HYDRA-UMC-PATH-PLANNER-3D](https://github.com/JuanenRac/HYDRA-UMC-PATH-PLANNER-3D)** — 実在する障害物/作業空間の衝突検証を備えた、実在する RRT ベースの 3D パスプランナー。
+- **[HYDRA-UMC-SWARM-SYNC](https://github.com/JuanenRac/HYDRA-UMC-SWARM-SYNC)** — マルチセル収束についてプロパティテストされた、実在する CRDT LWW-Element-Map 状態同期。
+
+*デジタルツインとシミュレーション*
+- **[HYDRA-UMC-TWIN](https://github.com/JuanenRac/HYDRA-UMC-TWIN)** — HYDRA-UMC-EDITOR-URDF が生成する URDF モデルを消費する、実在する物理シミュレーションデジタルツイン。
+- **[HYDRA-UMC-PHYSICS-REPLICA](https://github.com/JuanenRac/HYDRA-UMC-PHYSICS-REPLICA)** — 同じ URDF モデルを消費して自身の物理シミュレーションを駆動します。
+- **[HYDRA-UMC-SYNTHETIC-DATA-GEN](https://github.com/JuanenRac/HYDRA-UMC-SYNTHETIC-DATA-GEN)** — それら同じモデルからトレーニングデータを生成します。
+- **[HYDRA-UMC-HIL-BRIDGE](https://github.com/JuanenRac/HYDRA-UMC-HIL-BRIDGE)** — シミュレーションと実機の間にソフトウェアの衝突インターロックを備えたハードウェア・イン・ザ・ループのルーター(実機なしでテスト済み)。
+
+*データと分析*
+- **[HYDRA-UMC-DATALAKE](https://github.com/JuanenRac/HYDRA-UMC-DATALAKE)** — 実在する取り込み/クエリ HTTP API を備えた、sqlite3 を裏付けとする実在する時系列ストア。
+- **[HYDRA-UMC-ANOMALY-DETECTOR](https://github.com/JuanenRac/HYDRA-UMC-ANOMALY-DETECTOR)** — ドリフト監視を備えた、実在する FFT + 統計ベースラインの異常検知器。
+- **[HYDRA-UMC-PRODUCTION-REPORTS](https://github.com/JuanenRac/HYDRA-UMC-PRODUCTION-REPORTS)** — 再現可能な CSV エクスポートを備えた、DATALAKE の履歴に対する実在する OEE/可用性計算。
+- **[HYDRA-UMC-TELEMETRY-COLLECTOR](https://github.com/JuanenRac/HYDRA-UMC-TELEMETRY-COLLECTOR)** — シーケンスの重複排除を備えた、DATALAKE への実在する CAN/WebSocket 取り込みパイプライン。
+
+*インダストリアルゲートウェイ*
+- **[HYDRA-UMC-GATEWAY-INDUSTRIAL](https://github.com/JuanenRac/HYDRA-UMC-GATEWAY-INDUSTRIAL)** — 実在するコマンドのアローリスト/バックプレッシャー層を備えた、産業用プロトコルへ中継する統合ハブ。
+- **[HYDRA-UMC-OPCUA-SERVER](https://github.com/JuanenRac/HYDRA-UMC-OPCUA-SERVER)** — 実在するバイナリプロトコルのクライアントセッションで検証された、実在する OPC-UA アドレス空間。
+- **[HYDRA-UMC-MQTT-BROKER](https://github.com/JuanenRac/HYDRA-UMC-MQTT-BROKER)** — クライアントごとの認証とトピック ACL をオプションで備えた実在する MQTT ブローカー。
+- **[HYDRA-UMC-MTCONNECT-ADAPTER](https://github.com/JuanenRac/HYDRA-UMC-MTCONNECT-ADAPTER)** — 劣化モード出力を備えた、実在する MTConnect の `/probe` および `/current` XML エンドポイント。
+
+*補完ツールとエコシステム運用*
+- **[HYDRA-UMC-DASHBOARD-AI](https://github.com/JuanenRac/HYDRA-UMC-DASHBOARD-AI)** — 誠実な統計的フォールバックを備えた、DATALAKE/ANOMALY-DETECTOR 上のスマートサマリーと異常ハイライトのパネル。
+- **[HYDRA-UMC-TOOL-CLI](https://github.com/JuanenRac/HYDRA-UMC-TOOL-CLI)** — 実在する安定した終了コード契約を備えた、HYDRA-UMC-SERVER 自身の API の本物のライブクライアントであるフリート CLI。
+- **[HYDRA-UMC-WATCH](https://github.com/JuanenRac/HYDRA-UMC-WATCH)** — 触覚アラートのパターンとペアリング済みスマートフォンへの音声リレーを備えた WearOS コンパニオンアプリ(物理的なウォッチではまだ実行していない)。
+- **[URTC-SMART-RACK](https://github.com/JuanenRac/URTC-SMART-RACK)** — 実在するツール ID デコードと Smart Idle 予熱ロジックを備えた、基板搭載ラック向けファームウェア。
+- **[URTC-VISION-TOOL](https://github.com/JuanenRac/URTC-VISION-TOOL)** — サーマル/RGB 検査ツールヘッド向けの、ファームウェアと実在する Python ビジョンコンパニオン。
+- **[HYDRA-UMC-UPDATER](https://github.com/JuanenRac/HYDRA-UMC-UPDATER)** — 本エコシステムのすべてのリポジトリを発見・クローン・更新する管理用デスクトップツールであり、本プロジェクト自身の Qt Quick ビジュアルシェルの出所です。
+- **[HYDRA-UMC-OS-REBUILDER](https://github.com/JuanenRac/HYDRA-UMC-OS-REBUILDER)** — エコシステムの最新バージョンをプリロードした、フラッシュ可能な CM5 イメージを構築する Windows/Linux デスクトップツール。Raspberry Pi Imager 風の初回起動時 Wi-Fi/ユーザー/SSH 設定を備えています。
+- **[HYDRA-UMC-OPS-AGENT](https://github.com/JuanenRac/HYDRA-UMC-OPS-AGENT)** — メンテナンスインシデントのコーディネータ：低権限のエッジロールがサニタイズされたインベントリ/ヘルスのスナップショットを収集し、コントロールプレーンのロールがそれを読み取り専用で表示し、AI プロバイダに診断を提案するよう依頼します - パッチを適用したり何かをデプロイしたりすることは決してありません。
+- **[HYDRA-UMC-DEV-SERVER](https://github.com/JuanenRac/HYDRA-UMC-DEV-SERVER)** — エコシステムのソースを保存し、永続的なキューの下で範囲の限定されたビルド/テストタスクを実行する、再現可能な開発ホスト（Raspberry Pi 5 / CM5）。専用の開発ロールであり、明示的に稼働中の CM5 ではありません。

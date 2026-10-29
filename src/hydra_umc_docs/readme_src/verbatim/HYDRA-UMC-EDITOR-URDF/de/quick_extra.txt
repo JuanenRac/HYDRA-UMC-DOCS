@@ -1,0 +1,21 @@
+### Voraussetzungen
+- [Python](https://www.python.org/) 3.11 oder höher
+- pip
+
+### Installation
+
+```bash
+pip install -r requirements.txt
+```
+
+Dies zieht den festgelegten Abhängigkeitssatz nach: **PySide6** (Qt6-UI), **PyOpenGL** (3D-Viewport-Rendering), **numpy** / **numpy-stl** (Mesh-Mathematik und STL-Laden). Keine `git`-Installation ist erforderlich - der GitHub-Quellladepfad lädt eine einfache Zip-Datei über HTTPS herunter.
+
+### Entwicklungsmodus
+
+```bash
+python main.py
+```
+
+Oder das Komfort-Skript nutzen - `run.bat` (Windows) / `run.sh` (Linux/Mac), das `.venv` aktiviert, falls es daneben liegt, und Argumente an `main.py` weiterreicht; keines der beiden schließt sein Terminalfenster von selbst bei Doppelklick.
+
+Startet maximiert (kein echtes Vollbild auf Betriebssystemebene, sodass die native Fenstertitelleiste und ihre Steuerelemente sichtbar bleiben) - drücken Sie **F11**, um zwischen echtem randlosem Vollbild und diesem Zustand umzuschalten.

@@ -1,0 +1,63 @@
+**Linux/Mac:**
+```bash
+./build_firmware.sh          # compila cada objetivo MCU (Robot Controller Board + Kinematic Brain, ambos núcleos)
+./build_firmware.sh g474     # solo Robot Controller Board
+./build_firmware.sh h745     # solo Kinematic Brain (ambos núcleos)
+./build_firmware.sh --clean  # borra primero la caché de HAL/CMSIS obtenida
+```
+
+**Windows:**
+```bat
+build_firmware.bat          :: compila cada objetivo MCU (Robot Controller Board + Kinematic Brain, ambos núcleos)
+build_firmware.bat g474     :: solo Robot Controller Board
+build_firmware.bat h745     :: solo Kinematic Brain (ambos núcleos)
+build_firmware.bat --clean  :: borra primero la caché de HAL/CMSIS obtenida
+```
+
+`build_firmware.bat` es la misma compilación que `build_firmware.sh`
+traducida a batch (mismos pasos, mismas versiones fijas de HAL/CMSIS, mismo
+reporte pass/warn/fail) - ejecutada de principio a fin en una máquina
+Windows real con el [Arm GNU
+Toolchain](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
+instalado y `arm-none-eabi-gcc` en el `PATH`: cada módulo HAL, ambos
+bootloaders, y cada aplicación se compilaron y enlazaron limpio, y
+`firmware_manifest.json` se regeneró con CRC32s que coinciden con la propia
+salida de la compilación de Linux/Mac. Requiere las mismas herramientas que
+el script de Linux/Mac: el Arm GNU Toolchain, `git` (para obtener las propias
+fuentes HAL/CMSIS de ST), y `python` para el paso del manifest.
+
+**Compilación manual (cualquier SO, sin el script):** el script automatiza
+exactamente los pasos de `docs/COMPILE_STM32G474.TXT` y
+`docs/COMPILE_STM32H745.TXT` - obtiene las fuentes fijas de
+HAL/CMSIS/FreeRTOS listadas al principio de
+`build_firmware.sh`/`build_firmware.bat`, compila los módulos HAL y los
+archivos de arranque/sistema de cada objetivo con `arm-none-eabi-gcc` (las
+flags/listas de módulos están listadas en ese mismo script), luego enlaza
+cada bootloader y aplicación contra su propio script de enlazado (`*.ld`,
+junto a su fuente) con `arm-none-eabi-gcc`/`-Wl,--gc-sections` y convierte con
+`arm-none-eabi-objcopy` a `.bin`/`.hex`. Esos dos archivos
+`docs/COMPILE_*.TXT` son la referencia autoritativa paso a paso si prefieres
+no ejecutar ninguno de los scripts - los scripts existen para automatizarlos,
+no para reemplazarlos como fuente de verdad.
+
+La salida termina en `firmware/`, que está comiteada y subida a este
+repositorio (misma convención que la propia carpeta de salida `firmware/` de
+URTC) para que la función de descarga desde GitHub de HYDRA-UMC-STUDIO pueda
+encontrar de verdad archivos `.bin` reales ahí vía
+`firmware_manifest.json` - NO está en gitignore.
+Ver `docs/COMPILE_STM32G474.TXT` y `docs/COMPILE_STM32H745.TXT` para
+exactamente qué hace cada paso y por qué - y el propio `README.md` de cada
+carpeta de firmware para el estado actual. Los **bootloaders** de los 3
+objetivos (G474, H745 CM7, H745 CM4) son implementaciones reales y
+funcionales de CAN-OTA/SPI-OTA (verificación CRC32 + HMAC-SHA256,
+verificar-en-el-slot-de-respaldo-antes-de-copiar-al-principal, la misma
+disciplina anti-brickeo que el propio bootloader de URTC) - compilando limpio
+de principio a fin, todavía no verificados contra hardware real. Las
+**aplicaciones** siguen siendo pruebas de humo FreeRTOS de GPIO-toggle
+verificadas por compilación, todavía no el firmware real de
+movimiento/visión/relé. Ver `docs/architecture.md` (especialmente la tabla
+de estado de la sección 6 y las limitaciones de seguridad conocidas y
+aceptadas de la sección 8) para exactamente qué es real frente a lo que
+sigue abierto.
+
+> **Estado de seguridad:** este repositorio todavía no contiene ninguna ruta de E-STOP, límites por software, enclavamientos de seguridad, el volcado a FRAM por pérdida de alimentación (PVD) ni ningún comando de movimiento. Allí donde las secciones anteriores (u otro proyecto del ecosistema) los describen, es el diseño previsto: nada debe depender de ello para la seguridad hasta que esté implementado y probado en una placa real. Lo que hacen hoy las aplicaciones: las del CM4 y del G474 ejecutan el sondeo/respuesta AXIS_STATUS de STACK A y el túnel de relé de Tier 2/3; la del CM7 sigue siendo una prueba de humo con GPIO-toggle.

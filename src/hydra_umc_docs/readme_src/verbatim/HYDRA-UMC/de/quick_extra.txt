@@ -1,0 +1,31 @@
+### ENTWICKLUNGSUMGEBUNG
+
+Was die eigenen Entwicklungsmaschinen dieses Projekts tatsächlich installiert
+und funktionierend verifiziert haben
+(`build_firmware.sh`/`build_firmware.bat`, Ziele `g474`/`h745`/Standard, 0
+Fehler) - keine theoretische Liste:
+
+* 🔧 **ARM GNU Toolchain** (`arm-none-eabi-gcc` 10.3+) - kompiliert jedes
+  MCU-Firmware-Ziel. Es werden keine STM32CubeIDE-/CubeMX-Projektdateien
+  verwendet oder für den Build benötigt -
+  `build_firmware.sh`/`build_firmware.bat` holt STs eigene HAL-/CMSIS-Quellen
+  frisch von deren offiziellen GitHub-Repositories und steuert den Compiler
+  direkt an, dieselbe Philosophie, die bereits das eigene
+  `build_firmware.sh`/`build_firmware.bat` des Schwester-Repositorys `URTC`
+  etabliert hat.
+* 🧩 **VS Code + Erweiterungen** (`.vscode/extensions.json` listet alle
+  davon): [STM32 VS Code Extension](https://marketplace.visualstudio.com/items?itemName=stmicroelectronics.stm32-vscode-extension)
+  (Projekt-/Build-/Debug-Integration), **Cortex-Debug** (SWD/JTAG-Debugging -
+  unabhängig von `build_firmware.sh`, nützlich sobald reale Hardware
+  existiert), **CMake Tools** (für das eigene CMake-Projekt von
+  `src/cm5_host/hmi_qt6/`), **C/C++** (IntelliSense über jede
+  Firmware-/Host-Quelldatei), **Python** (`ai_inference/`-Pipeline-Skripte),
+  **Hex Editor** (Inspektion der `.bin`-Firmware-Ausgabe), **YAML** (die
+  eigene MediaMTX-Konfiguration von `video_streamer/`). Öffnen Sie das
+  Repository, akzeptieren Sie die Aufforderung für empfohlene Erweiterungen,
+  und nutzen Sie **Terminal → Run Task** für die vorkonfigurierten
+  Build-Tasks (`.vscode/tasks.json`).
+* 🗂️ **git** - sowohl für dieses Repository selbst als auch für das eigene
+  tag-fixierte Vendoring der HAL/CMSIS-Pakete von ST durch
+  `build_firmware.sh` (zwischengespeichert unter `build/`, in gitignore,
+  bei `--clean` erneut abgerufen).

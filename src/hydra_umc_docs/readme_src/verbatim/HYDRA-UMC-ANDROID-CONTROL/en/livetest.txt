@@ -1,0 +1,6 @@
+### Testing against a live server
+
+1. Run the backend: `cd HYDRA-UMC-SERVER && npm run dev` (Port 3000) - this is the actual REST/WS API this app talks to (see Related Projects below); `HYDRA-UMC-STUDIO`'s own `npm run dev` only starts its Vite frontend dev server (port 5173) against that same backend, it isn't the API server itself.
+2. Connect your Android device to the same Wi-Fi.
+3. Use the **Global Server Selector** or enter the IP manually in the header.
+4. **Biometrics:** Enable "Biometric Login" in your User Profile to skip the password screen on the next launch.

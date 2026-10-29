@@ -1,0 +1,4 @@
+- Um executável autónomo da GUI empacotado (PyInstaller, em linha com a
+  convenção `build_exe.bat`/`.sh` do próprio HYDRA-UMC-SUITE).
+- Anular/refazer sobre o histórico `.trash/` de uma sessão, em vez de um
+  restauro manual de ficheiros.

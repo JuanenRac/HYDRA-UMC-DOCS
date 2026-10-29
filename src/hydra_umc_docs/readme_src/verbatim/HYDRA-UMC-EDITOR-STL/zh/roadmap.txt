@@ -1,0 +1,3 @@
+- 一个打包好的独立 GUI 可执行文件（PyInstaller，遵循与
+  HYDRA-UMC-SUITE 相同的 `build_exe.bat`/`.sh` 约定）。
+- 基于某次会话自己的 `.trash/` 历史记录的撤销/重做，而不是手动恢复文件。
