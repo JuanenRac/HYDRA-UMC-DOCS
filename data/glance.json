@@ -4,7 +4,7 @@
       "hardware": "not_run",
       "target": "board",
       "tests": {
-        "count": 148,
+        "count": 154,
         "command": "python -m unittest discover -s tests -p 'test_*.py'"
       }
     },
