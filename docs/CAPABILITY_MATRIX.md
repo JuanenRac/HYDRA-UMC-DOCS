@@ -29,7 +29,7 @@ The four kinds of evidence are kept apart on purpose (`HYDRA-UMC-SDK/docs/PROJEC
 
 | Capability | Level | Evidence and limits |
 |---|---|---|
-| Bootloaders of the G474, the H745 CM7 and the H745 CM4 (CAN-OTA / SPI-OTA, CRC32 and HMAC-SHA256 verified into a backup slot before the copy) | Builds | Compile and link clean with the ARM toolchain; not run on real silicon. Helper logic with host tests: flash geometry, the data-length helpers, relay reassembly, source guards |
+| Bootloaders of the G474, the H745 CM7 and the H745 CM4 (CAN-OTA / SPI-OTA, CRC-32 and Ed25519 signature verified into a backup slot before the copy) | Builds | Compile and link clean with the ARM toolchain; not run on real silicon. Helper logic with host tests: flash geometry, the data-length helpers, relay reassembly, source guards |
 | G474 Robot Controller Board application: status responder and the FDCAN2 relay to the tool head | Builds | Real code (`RobotControllerRelay.c`); no board |
 | H745 CM4 application: FDCAN1 "STACK A" master (round-robin status queries over eight slots, watchdog refresh) | Builds | Real code; no board |
 | H745 CM7 application | Absent | Still a FreeRTOS smoke-test stub |
@@ -37,7 +37,7 @@ The four kinds of evidence are kept apart on purpose (`HYDRA-UMC-SDK/docs/PROJEC
 | E-STOP path, software limits, safety interlocks, power-loss dump to FRAM | Absent | The repository says so in its safety note: nothing may rely on them yet |
 | CAN FD | Absent | The silicon and the transceivers allow it; the protocols in use are classic frames of at most eight bytes |
 | Bus-off recovery on the CM4 | Absent | Planned |
-| Read-out protection of the chips | Absent | A known, accepted gap: the HMAC key is shared per board type, so physical access to one board exposes it |
+| Read-out protection of the chips | Absent | A known, accepted gap: the key of the local integrity check (HMAC-SHA256) is shared per board type, so physical access to one board exposes it; the board holds only the public half of the update signing key |
 | CM5 SPI-OTA bridge in Python (`spi_bridge`) | Local | Unit-tested against fakes; one SPI operation at a time |
 | CM5 IPC driver for the telemetry frame | Builds | Defaults to 10 MHz because the slave-side configuration has not been checked against hardware |
 | Build on Windows and on Linux with a pinned HAL | Verified | The README states a run end to end on a Windows machine with matching CRC32s |

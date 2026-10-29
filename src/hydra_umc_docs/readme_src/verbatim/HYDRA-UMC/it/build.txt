@@ -48,7 +48,7 @@ Vedi `docs/COMPILE_STM32G474.TXT` e `docs/COMPILE_STM32H745.TXT` per cosa fa
 esattamente ogni passo e perché - e il proprio `README.md` di ogni cartella
 firmware per lo stato attuale. I **bootloader** per tutti e 3 i target (G474,
 H745 CM7, H745 CM4) sono implementazioni CAN-OTA/SPI-OTA reali e funzionanti
-(verifica CRC32 + HMAC-SHA256, verifica-in-backup-prima-di-copiare-nel-main,
+(verifica CRC-32 + firma Ed25519, verifica-in-backup-prima-di-copiare-nel-main,
 stessa disciplina anti-brick del proprio bootloader di URTC) - compilano
 puliti end-to-end, non ancora verificati contro hardware reale. Le
 **applicazioni** sono ancora smoke test FreeRTOS GPIO-toggle verificati per

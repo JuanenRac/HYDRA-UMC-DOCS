@@ -53,7 +53,7 @@ The design is a trusted local network. The server listens on every interface (`0
 
 * Every service runs as its own non-login account; secrets are created on the CM5 under `/etc/hydra-umc/` with restrictive permissions and are never copied from Git; the base agent has a read-only view of the system except its state directory and opens no MCU, CAN, motion or update path.
 * **UPDATER:** clone, stage, verify, promote; one install at a time per workspace; time limits on git and build-test; no credential prompt. An optional gate verifies the signature of the candidate commit before anything runs (`HYDRA_UMC_UPDATER_REQUIRE_SIGNED=1`).
-* **Firmware:** the bootloaders verify a CRC32 and an HMAC-SHA256 into a backup slot before the copy, with a boot counter that parks a board only after repeated watchdog resets. A release build refuses to compile without a real `HYDRA_FW_HMAC_KEY_HEX`; a build without it carries a development key that is published in the repository and warns loudly.
+* **Firmware:** the bootloaders verify the CRC-32 of the image and an Ed25519 signature of its digest into a backup slot before the copy; the board holds only the public key, and an older image is accepted only with a downgrade token, itself an Ed25519 signature. A boot counter parks a board only after repeated watchdog resets. A release build (`HYDRA_UMC_RELEASE=1`) refuses to compile without a real `HYDRA_FW_UPDATE_PUBKEY_HEX` and a real `HYDRA_FW_HMAC_KEY_HEX` (the key of the local integrity check of the installed application); a build without them carries development keys that are published in the repository and warns loudly. The tool heads and expansion boards behind the relay run URTC bootloaders, which still take an HMAC-SHA256 with a shared key instead of a signature.
 
 ### The repositories themselves
 
@@ -78,7 +78,7 @@ These exist and work, but a default installation does not have them. They are th
 ## Not done yet
 
 * **No E-STOP in the firmware.** The firmware repository states that it contains no E-STOP path, software limits, safety interlocks or power-loss dump. The server's global stop changes the server's state; the MCU is documented as the final physical authority but cannot yet play that role. Nothing may rely on any of it for the safety of a person.
-* **No read-out protection** on the three chips: one board exposes the HMAC key shared by every board of that type; the authorisation of a firmware downgrade is a fixed four-byte value that is published in the CAN documents.
+* **No read-out protection** on the three chips: one board exposes the key of the local integrity check, which is shared by every board of that type; the update signing key is not exposed, because the board holds only its public half.
 * **Update manifests carry a hash, not a signature** (`UpdateManifest` has `sha256` and an HTTPS URL; the update model of the OS asks for a signature and the schema has no field for it).
 * **TLS is optional everywhere**, the broker's included. No link-level encryption or authentication of the SPI and CAN buses is documented: the bootloaders authenticate firmware images, not the traffic.
 * **No reviewed access list**, no secret store (secrets are files and environment variables), no backup policy, no penetration test.

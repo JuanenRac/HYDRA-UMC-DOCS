@@ -50,7 +50,7 @@ Siehe `docs/COMPILE_STM32G474.TXT` und `docs/COMPILE_STM32H745.TXT` für
 genau das, was jeder Schritt tut und warum - und das eigene `README.md`
 jedes Firmware-Ordners für den aktuellen Status. Die **Bootloader** für alle
 3 Ziele (G474, H745 CM7, H745 CM4) sind echte, funktionierende
-CAN-OTA/SPI-OTA-Implementierungen (CRC32 + HMAC-SHA256-Verifizierung,
+CAN-OTA/SPI-OTA-Implementierungen (CRC-32- und Ed25519-Signaturprüfung,
 verifizieren-in-Backup-vor-Kopieren-in-Haupt, dieselbe Anti-Brick-Disziplin
 wie der eigene Bootloader von URTC) - kompilieren end-to-end sauber, noch
 nicht gegen reale Hardware verifiziert. Die **Anwendungen** sind weiterhin

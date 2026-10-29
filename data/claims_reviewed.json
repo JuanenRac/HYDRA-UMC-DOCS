@@ -7,12 +7,11 @@
    "0447539cee13": "Production Build",
    "0a28eafebde8": "— iOS/iPadOS control app (Flutter) with real-time WebSocket sync.",
    "0d114bbf5ed3": "✅ Real shared safety gate: every observed job is re-evaluated through from 's , the same gate every sibling br",
-   "19df42ee4a6f": "how to report a vulnerability, and this project's own real security focus areas.",
    "21c5810d1c26": "— web control dashboard with real-time multi-robot 3D visualization.",
    "25c66ca9f16e": "See CONTRIBUTING.md, the code of conduct, SECURITY.md and SUPPORT.md.",
+   "2b29748e9dcd": ", | | who may use the local AI relay: is any signed-in account, only administrators",
    "416cfb6dbbca": "🔒 Security & Safety",
    "5b10e71477f5": "— real forward kinematics and joint-limit validation over a real URDF subset.",
-   "667ee408d2dc": "SECURITY.md",
    "69381d120c8a": "Maturity | Established",
    "727de1d5e23d": "Software | 🟢 | Complete for its purpose and stable; the honesty check above lists the known limits",
    "7e8a01a27faf": "Safety Safety Fails Closed red.svg",
@@ -21,11 +20,14 @@
    "b761ff15474b": "Maturity Maturity established 2EA44F.svg",
    "c586b9e8b347": "Jump to: Overview · Architecture · Security & Safety · Configuration · Quick start · Testing · Troubleshooting",
    "cfe823251d84": "✅ Real shared safety gate: every job dispatched through is evaluated by from 's , the same gate every sibling ",
+   "d7a3adfddd62": ", | on | the command characteristic is written, and the state read, only over an encrypted link; only in the v",
+   "df40efc1f2cc": "Jump to: Overview · Architecture · Security & Safety · Interfaces · Configuration · Quick start · Testing · Tr",
    "e3ca095a2f77": "/ | none | The client certificate and its key for a broker that demands mutual TLS; both are needed",
    "ecd0a62c2932": "— real procedural 2D scene generator with YOLO/COCO annotation export."
   },
   "ELECTRO-HOBBY-3D-UPDATER": {
-   "d7b2e3c28a0f": "(perimeter security and home automation), EH3D (the fabrication suite: CAM, CNC and machine control)."
+   "637cd34437ec": "Contributing, Security policy and Support.",
+   "7c6d999c3b51": "Report a vulnerability privately: SECURITY.md."
   },
   "HYDRA-UMC": {
    "1ac4d0d4c921": "— the documentation and tooling hub of the ecosystem: architecture, interfaces, security baseline, capability ",
@@ -88,12 +90,11 @@
    "4c65c09deee1": "— web control dashboard with real-time multi-robot 3D visualization; one of this node's own voice-control surf"
   },
   "HYDRA-UMC-CONNECTOR-HUB": {
-   "630977b87ac2": "fixtures, read-only catalog, SDK safety gate, certification records).",
-   "df40efc1f2cc": "Jump to: Overview · Architecture · Security & Safety · Interfaces · Configuration · Quick start · Testing · Tr"
+   "630977b87ac2": "fixtures, read-only catalog, SDK safety gate, certification records)."
   },
   "HYDRA-UMC-DASHBOARD-AI": {
    "37ea8219d430": "There it reads through the relay of that server, (read-only) and , with the access token of the person who sig",
-   "95bec08958b7": "how to report a vulnerability; see instead for this project's own external-content and deployment safety contr"
+   "bc75cd9f4b1c": "A hung service freezing the page | Every request has a 5 s time limit, a query asks for 5000 samples at most p"
   },
   "HYDRA-UMC-DATALAKE": {
    "6a8b224088fc": "To bring up this project together with its three children (Telemetry-Collector, Anomaly-Detector, Production-R",
@@ -108,8 +109,7 @@
   "HYDRA-UMC-EDITOR-STL": {
    "1cb6f37a914e": "Assembled view - robots, CNC, PnP and laser models open already assembled at their home pose (read from 's own",
    "3ed231d580b6": "An upload that is too large or hangs | The whole upload must fit in 49 MiB (the server limit is 50 MB) and eve",
-   "65f9bab8dced": "— sibling desktop editor for the same model catalog's own URDF/kinematics side, rather than the raw STL geomet",
-   "df40efc1f2cc": "Jump to: Overview · Architecture · Security & Safety · Interfaces · Configuration · Quick start · Testing · Tr"
+   "65f9bab8dced": "— sibling desktop editor for the same model catalog's own URDF/kinematics side, rather than the raw STL geomet"
   },
   "HYDRA-UMC-EDITOR-URDF": {
    "083d918ea6e3": "This app automates that entire pass - pull the source files from a GitHub URL or an already-downloaded local f",
@@ -165,41 +165,51 @@
    "fb126b77df76": "<!-- ============================================================================= - Safety zones and E-STOP r"
   },
   "HYDRA-UMC-SDK": {
+   "11e08209ad3e": "ten JSON Schema v1 contracts: capability, device descriptor, event envelope, health report, operation, project",
    "1ac4d0d4c921": "— the documentation and tooling hub of the ecosystem: architecture, interfaces, security baseline, capability ",
    "20ee4d7a4604": "— reproducible Raspberry Pi OS product layer for the CM5: read-only agent, validated config/profiles, WiFi fir",
-   "2181f78316fe": "an authenticated API producer and consumer governed by this SDK's own contracts."
+   "2181f78316fe": "an authenticated API producer and consumer governed by this SDK's own contracts.",
+   "6072d4fb855d": "Broker credentials in a configuration file, or an unverified broker | User and password come from the environm",
+   "614031a46b82": ", | - | the client certificate and key for a broker that demands mutual TLS; both are needed and they turn TLS"
   },
   "HYDRA-UMC-SERVER": {
+   "00ef15941846": "Weak access options left on: voice text, recognizer confidence, MAVLink signing, Bluetooth, MQTT, TLS | Every ",
    "026edee922d7": "Then start the production server with:",
    "0f8f5e39b57b": "Only failed logins count towards the login limit above.",
    "2ec1d884e3ac": "Every route, the WebSocket message contract, authentication, and the per-client remote-access model are docume",
    "436aef625d16": "You own a domain pointing at this server - use Let's Encrypt (e.g. via Certbot) for a real, browser-trusted ce",
+   "5ba1506ccd7d": "Prometheus text: uptime, WebSocket clients, write latency, commands by type, authentication failures, host fig",
    "6c9adaf43d5e": "See \"TLS / HTTPS\" below.",
+   "89114e34525d": ", , , , , | reservations, arming the jog, who holds what, the global stop and the safety limits",
+   "8d02210051e9": "Camera pictures open to anyone on the network | Live streams, photos and recordings need a signed ticket that ",
    "8fa4acaae0fc": "the Bluetooth LE service: (the default), (phones read the state) or (and send commands, each with the access t",
    "bc0b19bbbf96": "exposes process uptime, connected WebSocket clients, write latency, atomic robot commands by type, authenticat",
    "cbc59d583480": "TLS / HTTPS",
    "d028a0379a75": "The page reads the data lake ( , read-only: of , , , , and , anything else is refused) and the anomaly detecto",
    "d185bdc9bcde": "In production the server also refuses to start with an example /bootstrap password from a deployment template,",
    "dc54efc9a372": "is the global stop: one call, open to every signed-in account, stops every robot and switches every valve and ",
-   "dd2ccb9fef34": "JWT bearer-token authentication on every write; three account roles ( , , read-only ) gate settings/user-manag"
+   "dd2ccb9fef34": "JWT bearer-token authentication on every write; three account roles ( , , read-only ) gate settings/user-manag",
+   "fe8b55250344": ", , , , | administration: the access switches, the connected apps, the server log, a restart and the safety li"
   },
   "HYDRA-UMC-STUDIO": {
    "018b23a49041": "🏭 Kinova - Gen3 Lite, Gen2 (BSD-3-Clause meshes, official ros2_kortex geometry/kinematics)",
    "0d4a51c19b7e": "🏭 Comau - e.DO (BSD-3-Clause meshes, official eDO_description geometry/kinematics)",
    "15c303b8105d": "In production the first administrator comes from the deployment's bootstrap settings and the server refuses ex",
-   "33ce905fa741": "🏭 Kinematic Brain Stage",
+   "33ce905fa741": "Kinematic Brain Stage",
    "4645cd24dc1d": "🏭 Universal Robots - UR3e, UR5e, UR10e, UR16e, UR20 - official geometry, joint limits, and link kinematics pul",
    "48e043e5be7b": "🏭 UFACTORY - xArm6, Lite 6 (BSD-3-Clause meshes, official xarm_ros2 geometry/kinematics)",
    "4d4604dbed06": "Manage multiple independent 6-DOF robots simultaneously, each with its own real 3D model, kinematics, and jog/",
    "7f7a1073ca33": "🏭 Trossen Robotics - ViperX 300, WidowX 250 (BSD-3-Clause meshes, official interbotix_ros_manipulators geometr",
    "93b30bca7718": "🏭 AgileX - PiPER (Apache-2.0 meshes, official agilex_piper_arm_description geometry/kinematics)",
    "b99214c8635a": "🏭 FANUC - M-710iC (BSD-3-Clause meshes, official fanuc_m710ic_description geometry/kinematics)",
+   "c99c49ff5a7b": ", | the global stop and the safety limits the server enforces",
+   "f81603262333": "An access option lowered by mistake (voice, MAVLink, Bluetooth, TLS...) | Server Admin shows where each value ",
    "fa01582b9b21": "Preview the production build locally with:"
   },
   "HYDRA-UMC-SUITE": {
    "23c0cfbe617b": "The Ecosystem > Server Admin screen also sets who may use the local AI relay, whether the host information ask",
    "661bc473eaa6": "Math: NumPy (4x4 homogeneous transforms for forward kinematics)",
-   "a23fc703e659": "how to report a vulnerability, and this app's own real security focus areas."
+   "897914c21198": "An access option lowered by mistake (voice, MAVLink, Bluetooth, TLS...) | The Server Admin panel shows where e"
   },
   "HYDRA-UMC-SYNTHETIC-DATA-GEN": {
    "1a01b3374cb8": "Format Format YOLO %2F COCO FF6F00.svg",

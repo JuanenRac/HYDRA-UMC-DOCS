@@ -48,7 +48,7 @@ Out of scope here: a determined attacker with long physical access (secrets in f
 * **Clients to the server.** The server trusts a valid, unexpired, non-revoked Bearer token and the role inside it. Clients are not privileged: they cannot reach the firmware except through the server.
 * **The server to its local services.** Loopback HTTP with a token the server keeps; the services do not trust the network.
 * **Bridges to the server.** A bridge trusts nothing in the message: the machine state it uses is the one it observes. The server remains the authority for what a person may do; the SDK states that a bridge cannot bypass the server's authorisation.
-* **The server to the firmware.** A flash goes through the SPI bridge, administrators only; the bootloader trusts an image only after the CRC32 and the HMAC verify.
+* **The server to the firmware.** A flash goes through the SPI bridge, administrators only; the bootloader trusts an image only after the CRC-32 and the Ed25519 signature verify.
 * **The updater to a candidate repository.** It trusts git over HTTPS to the repositories of the owner. It runs the candidate's own build-test script, which is why the signature gate exists.
 
 ## Threats and what each piece does about them
@@ -64,7 +64,7 @@ Out of scope here: a determined attacker with long physical access (secrets in f
 | A forged MQTT job claims the machine is idle | The gate uses the observed state, ignores retained messages, handles a key once | Anyone allowed to publish to a bridge's command topic can still ask for a job; the broker ACL is the control, and it is optional outside production |
 | A compromised bridge process | It can only publish on its own `hydra/bridges/<name>/#` and read its own `cmd/#` | A compromised host is not contained by the broker |
 | A bridge or an AI service is made to actuate | No bridge sends raw CAN or SPI; voice needs a signed single-use confirmation; the maintenance assistant has an allowlist and no tool call from a retrieved text | All of these are software rules: the MCU-level interlock that would enforce them does not exist yet |
-| A malicious firmware image | CRC32 and HMAC-SHA256 into a backup slot; downgrade protection | The key is shared by all boards of a type, no read-out protection, a published development key unless a release key is given, a fixed downgrade-authorisation value in the CAN document |
+| A malicious firmware image | CRC-32 and Ed25519 signature into a backup slot; downgrade protection (an older image needs a signed token) | A published development key unless a release key is given (a release build refuses it), no read-out protection of the chips, the URTC bootloaders behind the relay still use a shared-key HMAC-SHA256 |
 | A malicious update of a repository | Clone, stage, verify, promote; an optional signed-commit gate; one install at a time; time limits | The gate is off by default; the candidate's build-test script runs before the commit is proven the maintainer's if the gate is off; the manifest has a hash and no signature |
 | Secrets in Git | `.env` ignored in every repository; the documentation-boundary check in the CI of each | A new repository must carry the same files; the publication check of this repository looks for keys, public addresses and e-mails, and can scan the history |
 | A hostile document poisons the assistant | Allowlisted document types, no symbolic links, control characters stripped; adversarial tests for the maintenance assistant | No language model runs today, so the exposure of a real model has not been tested |
@@ -79,7 +79,7 @@ A reader from outside the project read the READMEs of the family and concluded t
 |---|---|
 | A wired hardware E-STOP stops the machines | No E-STOP path exists in the firmware. `POST /api/stop-all` changes the state held by the server and the zone logic only *requests* a stop through a requester that sends nothing. A physical stop has to be a physical device |
 | The firmware enforces kinematic limits and torque limits | It does not. Limits exist only as software checks (server, kinematics validation, hardware-in-the-loop interlock), and no part of the family senses or controls torque |
-| Firmware updates are signed | Images are checked with a CRC32 and a symmetric HMAC-SHA256 whose key is shared by all boards of a type; the URTC release images are signed with the published development key. An asymmetric signature is planned, and the update manifest carries a hash, not a signature |
+| Firmware updates are signed | The HYDRA-UMC bootloaders check a CRC-32 and an Ed25519 signature of the image digest, and a release build refuses the published development keys. The bootloaders of URTC behind the relay still check a shared-key HMAC-SHA256, and the update manifest carries a hash, not a signature |
 | Nodes authenticate each other with mutual TLS | TLS and mutual TLS are optional, off by default and only offered by the broker and the gateway. There is no node-to-node mutual TLS |
 | The bus is FDCAN | The silicon has FDCAN peripherals, used in classic CAN mode: frames of at most eight bytes, no CAN FD |
 | A real-time motion engine with S-curve profiles and PID loops runs on the motion controller | It is not written. The motion core runs a smoke test; the CM4 core polls the slave boards and relays frames |
