@@ -313,7 +313,7 @@
     "HYDRA-UMC-SWARM-SYNC": {
       "hardware": "not_run",
       "tests": {
-        "count": 102,
+        "count": 105,
         "command": "cargo test"
       }
     },
