@@ -144,7 +144,7 @@
     "HYDRA-UMC-EDITOR-STL": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 218,
+        "count": 222,
         "command": "python -m pytest tests -q"
       }
     },
