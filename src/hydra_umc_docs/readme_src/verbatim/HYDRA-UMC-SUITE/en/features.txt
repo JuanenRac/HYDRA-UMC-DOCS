@@ -60,6 +60,7 @@ HYDRA-UMC SUITE has a single interface, written in Qt Quick (QML): a standalone 
   `moduleConfigComponent` implementation (STUDIO's own `CNC.tsx`/`Laser.tsx`
   are identical components apart from the module key); the other 7 each
   needed their own real, purpose-built panel. Heated beds and vacuum tables use STL in `render/module_rig.py`. PnP, CNC and laser use `render/pnp_rig.py`: 7 articulated meshes and 160 individual parts per independent machine directory. `OffscreenRobotRenderer` renders each assembly. See [machine assets](docs/MACHINE_ASSETS.md).
+- **🔑 Two-step sign-in** - **Ecosystem > Server Admin** has a card for the account you are logged in with (off until its owner turns it on): a QR code of the otpauth address (drawn here by a small encoder that makes the same symbol as the web program), the key to type by hand with a copy button, the first code and the ten one-time recovery codes shown once. The server-credentials dialog has a field for the code of an account that has it on (kept in memory for that one sign-in, never saved), and **Ecosystem > Users** has a button that removes the second step of an account that lost its phone and its recovery codes.
 
 ---
 

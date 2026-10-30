@@ -151,7 +151,7 @@
     "HYDRA-UMC-EDITOR-URDF": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 366,
+        "count": 372,
         "command": "python -m pytest tests -q"
       }
     },
@@ -299,14 +299,14 @@
     "HYDRA-UMC-STUDIO": {
       "hardware": "not_run",
       "tests": {
-        "count": 637,
+        "count": 659,
         "command": "npm test"
       }
     },
     "HYDRA-UMC-SUITE": {
       "hardware": "not_run",
       "tests": {
-        "count": 41,
+        "count": 43,
         "command": "python tools/run_offline_verifiers.py"
       }
     },
@@ -362,14 +362,14 @@
     "HYDRA-UMC-VISION-STREAMER": {
       "hardware": "not_run",
       "tests": {
-        "count": 142,
+        "count": 146,
         "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-VISUAL-SERVOING-API": {
       "hardware": "not_run",
       "tests": {
-        "count": 172,
+        "count": 194,
         "command": "python -m pytest -q tests"
       }
     },

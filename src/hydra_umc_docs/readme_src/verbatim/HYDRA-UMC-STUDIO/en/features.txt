@@ -109,6 +109,8 @@ Every backend seeds one account on its own first-ever start - username `admin`, 
 
 Each of the 5 remote clients (SUITE, Android, iOS, Watch, DSI) self-identifies via an `X-Hydra-Client` request header, so **Config > Remote Access** can allow or block each one independently instead of one combined switch for all five.
 
+**Server Admin** has a **Two-step sign-in** card for the account you are logged in with (off until its owner turns it on): the password, a QR code of the otpauth address (drawn in the app, no extra package) and the key to type by hand, the first code from the authenticator app, and ten one-time recovery codes shown once. The sign-in form then asks for the code of an account that has it on, and **Config > Users** lets an administrator remove the second step of an account that lost both its phone and its recovery codes.
+
 ### Persistent State
 
 HYDRA-UMC STUDIO itself is a pure client - it holds no state of its own beyond what's in memory for the current session. All persistence (`settings.json`, `users.json`, saved trajectories under `WORKS/`, submitted models) lives on the separate **[HYDRA-UMC SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER)** backend this app talks to over the network (see that project's own `data/` and README for the full picture) - state survives a page reload or this app's own redeploy, since neither of those touches the backend process at all. `settings.json` itself is deliberately excluded from that backend's static file serving (it holds controller IPs, CAN-OTA configuration, and full per-robot state), even though its `WORKS/` folder is served normally.

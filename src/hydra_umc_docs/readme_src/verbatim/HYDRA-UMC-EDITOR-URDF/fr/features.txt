@@ -50,6 +50,8 @@ XML pur via le propre `xml.etree.ElementTree` de la bibliothèque standard - auc
 
 L'export (`urdf/writer.py`) re-sérialise l'arbre en mémoire actuel entièrement depuis zéro plutôt que de rapiécer le texte XML source original, de sorte que chaque édition en direct - quel que soit le panneau qui l'a effectuée - se reflète exactement une fois, via un seul chemin de code, à la fois dans l'action de menu « Export URDF » et dans le payload envoyé à un serveur STUDIO.
 
+Les éléments pour lesquels le modèle n'a pas de champ (`<transmission>`, `<gazebo>`, le `<dynamics>`, le `<safety_controller>` et le `<calibration>` d'une articulation, et le multiplicateur et le décalage d'un `<mimic>`) sont conservés sous forme de texte à la lecture d'un fichier. Le bouton **Exporter** ouvre une fenêtre qui dit combien d'éléments de ce genre le fichier contient et qui a un interrupteur, désactivé par défaut et de nouveau désactivé à chaque robot chargé, pour les réécrire comme le fichier source les avait ; ceux qui nomment une articulation ou un lien supprimé ne sont jamais réécrits.
+
 ### Espace de travail ancrable
 
 De véritables panneaux `QDockWidget` - faites-les glisser pour les détacher, faites-les glisser en retour pour les ré-ancrer, fusionnez-les en onglets, divisez l'espace de travail - le même mécanisme et le même raisonnement que la propre fenêtre principale de HYDRA-UMC SUITE applique déjà : le propre système d'ancrage de Qt fait déjà exactement ce qu'un espace de travail de style Photoshop/Fusion 360 exige, et un système écrit à la main ne ferait que le réinventer avec plus de bugs. Cinq panneaux, disposés selon une mise en page par défaut sensée, entièrement réarrangeable ensuite :

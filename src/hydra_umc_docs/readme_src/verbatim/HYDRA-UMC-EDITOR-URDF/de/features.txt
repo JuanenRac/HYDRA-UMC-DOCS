@@ -50,6 +50,8 @@ Einfaches XML über das eigene `xml.etree.ElementTree` der Standardbibliothek - 
 
 Der Export (`urdf/writer.py`) serialisiert den aktuellen In-Memory-Baum von Grund auf neu, statt den ursprünglichen Quell-XML-Text zu patchen, sodass jede Live-Bearbeitung - unabhängig davon, welches Panel sie vorgenommen hat - genau einmal, über einen einzigen Codepfad, sowohl in der Menüaktion „Export URDF" als auch in der an einen STUDIO-Server gesendeten Payload widergespiegelt wird.
 
+Die Elemente, für die das Modell kein Feld hat (`<transmission>`, `<gazebo>`, `<dynamics>`, `<safety_controller>` und `<calibration>` eines Gelenks sowie Multiplikator und Versatz eines `<mimic>`), werden beim Lesen einer Datei als Text behalten. Die Schaltfläche **Exportieren** öffnet ein Fenster, das sagt, wie viele solche Elemente die Datei hat, und einen Schalter hat, standardmäßig aus und bei jedem geladenen Roboter wieder aus, um sie so zurückzuschreiben, wie die Quelldatei sie hatte; Elemente, die ein gelöschtes Gelenk oder Glied nennen, werden nie zurückgeschrieben.
+
 ### Andockbarer Arbeitsbereich
 
 Echte `QDockWidget`-Panels - zum Loslösen ziehen, zum Andocken zurückziehen, zu Tabs zusammenführen, den Arbeitsbereich aufteilen - derselbe Mechanismus und dieselbe Begründung, die das eigene Hauptfenster von HYDRA-UMC SUITE bereits anwendet: Das eigene Andocksystem von Qt leistet bereits genau das, was ein Arbeitsbereich im Stil von Photoshop/Fusion-360 braucht, und ein handgestricktes würde es nur mit mehr Fehlern neu erfinden. Fünf Panels, angeordnet in einem sinnvollen Standardlayout, das danach vollständig neu anordenbar ist:

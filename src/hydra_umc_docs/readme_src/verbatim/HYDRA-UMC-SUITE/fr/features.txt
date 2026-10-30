@@ -61,6 +61,7 @@ HYDRA-UMC SUITE a une seule interface, écrite en Qt Quick (QML) : une `Applicat
   `Laser.tsx` de STUDIO sont des composants identiques à l'exception de la
   clé du module) ; les 7 autres ont chacun nécessité leur propre panneau
   réel, construit sur mesure. Le lit chauffant et la table à vide utilisent des STL dans `render/module_rig.py`. PnP, CNC et laser utilisent `render/pnp_rig.py` : 7 maillages articulés et 160 pièces individuelles par dossier indépendant. `OffscreenRobotRenderer` affiche chaque assemblage. Voir [les modèles](docs/MACHINE_ASSETS.md).
+- **🔑 Connexion en deux étapes** - **Écosystème > Server Admin** a une carte pour le compte avec lequel vous êtes connecté (désactivée tant que son propriétaire ne l'active pas) : un code QR de l'adresse otpauth (dessiné ici par un petit encodeur qui fait le même symbole que le programme web), la clé à saisir à la main avec un bouton de copie, le premier code et les dix codes de récupération à usage unique montrés une fois. La boîte de dialogue des identifiants du serveur a un champ pour le code d'un compte qui l'a activée (gardé en mémoire pour cette seule connexion, jamais enregistré) et **Écosystème > Utilisateurs** a un bouton qui retire la deuxième étape d'un compte qui a perdu son téléphone et ses codes de récupération.
 
 ---
 

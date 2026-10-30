@@ -19,6 +19,7 @@
 * 🪪 **帧标识、最新帧以及单进程多摄像头：** MJPEG 流的每个部分都带有 `X-Frame-Id`、`X-Session-Id` 和 `X-Capture-Ts`（传感器交付该帧时的纪元毫秒数），使消费者能算出一帧有多旧；`GET /latest.jpg` 和 `GET /latest.json` 在不保持流打开的情况下返回最新帧及其标识和时龄。`stream serve --config cams.json --camera 名称` 从列表中读取设备、尺寸和帧率（以及 IP 摄像头的 RTSP 凭据），因此单元文件和进程列表都不会带有它们；`stream serve-all --config cams.json --port N` 用一个进程、一个端口提供列表中的所有摄像头（`/<名称>/stream`、`/<名称>/latest.jpg`、`/<名称>/latest.json`、`/<名称>/health`、`/health`），不再为每个摄像头各用一个解释器和一份 OpenCV。*（已用模拟源测试，未用真实摄像头）*
 * 🛠️ **动态配置：** 逐摄像头的分辨率、帧率和像素格式今天已经真实存在并会被校验（`config.py`）；曝光/增益控制需要真实的 V4L2 设备，属于未来工作。
 * 🧩 **为何作为独立项目存在：** 捕获/ISP 调优所需的技能和故障域与模型推理或安全逻辑不同——将其保持在独立进程中，意味着一个捕获方面的漏洞不会波及 [HYDRA-UMC-SAFETY-ZONES](https://github.com/JuanenRac/HYDRA-UMC-SAFETY-ZONES)，并且两者可以独立开发/测试。
+* 🔐 **用已验证的字节构建检测模型:** Hailo 检测模型可以用 `HYDRA-UMC-DETECTION-HEF` 已经读取并检查过的字节来构建，这里会再次计算哈希，且不会重新打开路径；空的或不同的字节会被拒绝。*(尚未在 Hailo 芯片上运行过任何模型。)*
 
 **诚实说明——今天实际运行的内容：** 配置校验、GStreamer 流水线描述生成、以及 MediaMTX 中继配置生成，以及真实的 HailoRT 集成边界（`config.py`、`pipeline.py`、`mediamtx_config.py`、`buffer.py`、`reconnect.py`、`hailo_runtime.py`）都是真实的并已经过测试（{tests} 个测试）。其中没有任何一处会打开 V4L2 设备、导入 GStreamer，或与物理摄像头通信——真正运行生成的流水线需要本环境不具备的真实运行时和硬件。具体已交付内容请参见 `/stream` 通过 `--max-clients` 限制并发观看者数量（默认 5，超出返回真实的 503），以保护 CM5 有限的 Wi-Fi 上行带宽，并在观看者停止读取 30 秒后将其断开（套接字超时），因此卡住的客户端不会永远占用名额。
 [`CHANGELOG.md`](CHANGELOG.md)，尚待完成的内容请参见下方"当前状态与
