@@ -110,7 +110,7 @@
     "HYDRA-UMC-DETECTION-HEF": {
       "hardware": "not_run",
       "tests": {
-        "count": 70
+        "count": 93
       }
     },
     "HYDRA-UMC-DEV-SERVER": {
