@@ -21,6 +21,7 @@
    "c586b9e8b347": "Jump to: Overview · Architecture · Security & Safety · Configuration · Quick start · Testing · Troubleshooting",
    "cfe823251d84": "✅ Real shared safety gate: every job dispatched through is evaluated by from 's , the same gate every sibling ",
    "d7a3adfddd62": ", | on | the command characteristic is written, and the state read, only over an encrypted link; only in the v",
+   "d91df1fe6ba6": "Jump to: Overview · Architecture · Security & Safety · Quick start · Testing · Repository Structure · Related ",
    "df40efc1f2cc": "Jump to: Overview · Architecture · Security & Safety · Interfaces · Configuration · Quick start · Testing · Tr",
    "e3ca095a2f77": "/ | none | The client certificate and its key for a broker that demands mutual TLS; both are needed",
    "ecd0a62c2932": "— real procedural 2D scene generator with YOLO/COCO annotation export."
@@ -241,8 +242,7 @@
    "3a2c4dc0d6c4": "— web control dashboard with real-time multi-robot 3D visualization; another voice-control surface for the eco"
   },
   "HYDRA-UMC-WATCH": {
-   "4b37d23f778f": "The official Wear OS channel enforces the same package name and signing certificate on Watch and phone, then c",
-   "d91df1fe6ba6": "Jump to: Overview · Architecture · Security & Safety · Quick start · Testing · Repository Structure · Related "
+   "4b37d23f778f": "The official Wear OS channel enforces the same package name and signing certificate on Watch and phone, then c"
   }
  }
 }

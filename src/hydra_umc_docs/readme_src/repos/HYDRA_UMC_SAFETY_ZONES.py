@@ -70,3 +70,14 @@ def BODY(lg, ctx):
     body = S.make_body(lg, ctx, SPEC)
     body.update(EXTRA(lg))
     return body
+
+# Text added for recent changes of the repository (section -> language -> paragraph), appended to what the section already says.
+from ... import readme_kit as _K
+
+ADDENDA = {'interfaces': {'en': '`serve --decision-log FILE` (or `SAFETY_ZONES_DECISION_LOG`; `-` for standard error) writes one JSON line per `POST /check` verdict with the time, the state, the reason, the hash of the configuration and the number of breaches and stop requests. It is off unless given, and a log that cannot be written never changes the verdict.', 'es': '`serve --decision-log FICHERO` (o `SAFETY_ZONES_DECISION_LOG`; `-` para la salida de error) escribe una línea JSON por cada veredicto de `POST /check` con la hora, el estado, el motivo, el hash de la configuración y el número de infracciones y peticiones de parada. Está apagado salvo que se indique, y un registro que no se pueda escribir nunca cambia el veredicto.', 'de': '`serve --decision-log DATEI` (oder `SAFETY_ZONES_DECISION_LOG`; `-` für die Standardfehlerausgabe) schreibt pro Urteil von `POST /check` eine JSON-Zeile mit Zeit, Zustand, Grund, Hash der Konfiguration sowie Anzahl der Verletzungen und Stopp-Anforderungen. Es ist nur aktiv, wenn es angegeben wird, und ein Protokoll, das nicht geschrieben werden kann, ändert nie das Urteil.', 'fr': "`serve --decision-log FICHIER` (ou `SAFETY_ZONES_DECISION_LOG` ; `-` pour la sortie d'erreur) écrit une ligne JSON par verdict de `POST /check` avec l'heure, l'état, la raison, le hachage de la configuration et le nombre de franchissements et de demandes d'arrêt. Désactivé sauf demande, et un journal qui ne peut pas être écrit ne change jamais le verdict.", 'it': "`serve --decision-log FILE` (o `SAFETY_ZONES_DECISION_LOG`; `-` per lo standard error) scrive una riga JSON per ogni verdetto di `POST /check` con l'ora, lo stato, il motivo, l'hash della configurazione e il numero di violazioni e richieste di arresto. È spento salvo indicazione, e un registro che non può essere scritto non cambia mai il verdetto.", 'ja': '`serve --decision-log FILE`（または `SAFETY_ZONES_DECISION_LOG`。標準エラー出力は `-`）は、`POST /check` の判定ごとに、時刻・状態・理由・設定のハッシュ・違反数と停止要求数を含む JSON を 1 行書き出します。指定しない限りオフで、書き込めないログが判定を変えることはありません。', 'zh': '`serve --decision-log 文件`（或 `SAFETY_ZONES_DECISION_LOG`；`-` 表示标准错误）会为每个 `POST /check` 裁决写一行 JSON，包含时间、状态、原因、配置的哈希以及违规和停止请求的数量。除非指定否则关闭，无法写入的日志绝不会改变裁决。', 'pt': '`serve --decision-log FICHEIRO` (ou `SAFETY_ZONES_DECISION_LOG`; `-` para o erro padrão) escreve uma linha JSON por cada veredito de `POST /check` com a hora, o estado, o motivo, o hash da configuração e o número de violações e pedidos de paragem. Está desligado a menos que seja indicado, e um registo que não possa ser escrito nunca altera o veredito.'}}
+
+_BODY_BASE = BODY
+
+
+def BODY(lg, ctx):
+    return _K.apply_addenda(_BODY_BASE(lg, ctx), ADDENDA, lg)

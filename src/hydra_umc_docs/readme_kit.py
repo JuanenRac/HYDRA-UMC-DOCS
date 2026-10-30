@@ -23,6 +23,15 @@ def pick(value, lg):
     return value[lg] if isinstance(value, dict) else value
 
 
+def apply_addenda(body: dict, addenda: dict, lg: str) -> dict:
+    """Adds the paragraph of each section in `addenda` (section -> {language: text}) after what the section already has, or makes the section."""
+    for key, texts in addenda.items():
+        text = pick(texts, lg).strip()
+        current = (body.get(key) or "").strip()
+        body[key] = (current + "\n\n" + text) if current else text
+    return body
+
+
 def verbatim(repo: str, lg: str, key: str, **fields) -> str:
     """A prose file kept from the earlier READMEs (already translated); {name} placeholders are filled from `fields`."""
     text = (VERBATIM / repo / lg / f"{key}.txt").read_text(encoding="utf-8").strip("\n")

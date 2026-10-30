@@ -68,3 +68,14 @@ def BODY(lg, ctx):
     body = S.make_body(lg, ctx, SPEC)
     body.update(EXTRA(lg))
     return body
+
+# Text added for recent changes of the repository (section -> language -> paragraph), appended to what the section already says.
+from ... import readme_kit as _K
+
+ADDENDA = {'security': {'en': 'The `?workspace=` override of the HTTP API is bounded by default to the served workspace, so a request cannot make the API probe other directories of the machine; `--strict-workspace-root PATH` picks another root and `--allow-any-workspace` brings back the earlier, unbounded behaviour.', 'es': 'El parámetro `?workspace=` de la API HTTP queda acotado por defecto al espacio de trabajo servido, de modo que una petición no puede hacer que la API examine otros directorios de la máquina; `--strict-workspace-root RUTA` elige otra raíz y `--allow-any-workspace` recupera el comportamiento anterior, sin límite.', 'de': 'Die Überschreibung `?workspace=` der HTTP-API ist standardmäßig auf den bereitgestellten Arbeitsbereich begrenzt, sodass eine Anfrage die API nicht andere Verzeichnisse des Rechners untersuchen lassen kann; `--strict-workspace-root PFAD` wählt eine andere Wurzel, und `--allow-any-workspace` bringt das frühere, unbegrenzte Verhalten zurück.', 'fr': "Le paramètre `?workspace=` de l'API HTTP est limité par défaut à l'espace de travail servi, de sorte qu'une requête ne puisse pas faire explorer à l'API d'autres répertoires de la machine ; `--strict-workspace-root CHEMIN` choisit une autre racine et `--allow-any-workspace` rétablit l'ancien comportement, sans limite.", 'it': "Il parametro `?workspace=` dell'API HTTP è limitato per impostazione predefinita all'area di lavoro servita, così che una richiesta non possa far esaminare all'API altre directory della macchina; `--strict-workspace-root PERCORSO` sceglie un'altra radice e `--allow-any-workspace` ripristina il comportamento precedente, senza limiti.", 'ja': 'HTTP API の `?workspace=` による上書きは、既定では配信中のワークスペースに限定されるため、リクエストによって API がマシン上の他のディレクトリを調べることはできません。`--strict-workspace-root PATH` で別のルートを選べ、`--allow-any-workspace` で以前の無制限の動作に戻せます。', 'zh': 'HTTP API 的 `?workspace=` 覆盖默认限制在所提供的工作区内，因此请求无法让 API 探查机器上的其他目录；`--strict-workspace-root 路径` 可选择另一个根目录，`--allow-any-workspace` 则恢复之前不受限制的行为。', 'pt': 'O parâmetro `?workspace=` da API HTTP fica limitado por predefinição ao espaço de trabalho servido, pelo que um pedido não pode fazer a API examinar outras pastas da máquina; `--strict-workspace-root CAMINHO` escolhe outra raiz e `--allow-any-workspace` repõe o comportamento anterior, sem limite.'}}
+
+_BODY_BASE = BODY
+
+
+def BODY(lg, ctx):
+    return _K.apply_addenda(_BODY_BASE(lg, ctx), ADDENDA, lg)

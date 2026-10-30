@@ -40,3 +40,14 @@ def DOCS(lg, ctx):
 
 def BODY(lg, ctx):
     return S.make_body(lg, ctx, SPEC)
+
+# Text added for recent changes of the repository (section -> language -> paragraph), appended to what the section already says.
+from ... import readme_kit as _K
+
+ADDENDA = {'configuration': {'en': "The listen port is read from `HYDRA_UMC_GATEWAY_PORT` first. The shared `PORT` still works as a last resort and prints a warning, so an environment file shared by several services cannot move the gateway onto another service's port by accident; the container health check follows the same order.", 'es': 'El puerto de escucha se lee primero de `HYDRA_UMC_GATEWAY_PORT`. El `PORT` compartido sigue valiendo como último recurso y avisa por consola, de modo que un fichero de entorno compartido por varios servicios no pueda mover la pasarela al puerto de otro servicio por accidente; el control de salud del contenedor sigue el mismo orden.', 'de': 'Der Listen-Port wird zuerst aus `HYDRA_UMC_GATEWAY_PORT` gelesen. Das gemeinsame `PORT` gilt weiter als letzter Ausweg und gibt eine Warnung aus, damit eine von mehreren Diensten geteilte Umgebungsdatei das Gateway nicht versehentlich auf den Port eines anderen Dienstes verschiebt; die Health-Prüfung des Containers folgt derselben Reihenfolge.', 'fr': "Le port d'écoute est lu d'abord dans `HYDRA_UMC_GATEWAY_PORT`. Le `PORT` partagé reste valable en dernier recours et affiche un avertissement, de sorte qu'un fichier d'environnement partagé par plusieurs services ne puisse pas déplacer la passerelle sur le port d'un autre service par accident ; le contrôle de santé du conteneur suit le même ordre.", 'it': 'La porta di ascolto viene letta prima da `HYDRA_UMC_GATEWAY_PORT`. Il `PORT` condiviso vale ancora come ultima risorsa e stampa un avviso, così che un file di ambiente condiviso da più servizi non possa spostare il gateway sulla porta di un altro servizio per errore; il controllo di salute del container segue lo stesso ordine.', 'ja': '待ち受けポートは、まず `HYDRA_UMC_GATEWAY_PORT` から読み取ります。共有の `PORT` は最後の手段として引き続き使え、警告を表示します。そのため、複数のサービスで共有する環境ファイルがゲートウェイを他のサービスのポートへうっかり移すことはありません。コンテナのヘルスチェックも同じ順序に従います。', 'zh': '监听端口首先从 `HYDRA_UMC_GATEWAY_PORT` 读取。共享的 `PORT` 仍可作为最后手段并会打印警告，这样多个服务共用的环境文件就不会意外把网关移到另一个服务的端口上；容器健康检查遵循相同的顺序。', 'pt': 'A porta de escuta é lida primeiro de `HYDRA_UMC_GATEWAY_PORT`. O `PORT` partilhado continua a valer como último recurso e mostra um aviso, para que um ficheiro de ambiente partilhado por vários serviços não possa mudar o gateway para a porta de outro serviço por acidente; a verificação de saúde do contentor segue a mesma ordem.'}}
+
+_BODY_BASE = BODY
+
+
+def BODY(lg, ctx):
+    return _K.apply_addenda(_BODY_BASE(lg, ctx), ADDENDA, lg)

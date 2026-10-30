@@ -74,3 +74,14 @@ def BODY(lg, ctx):
     out["roadmap"] = LIMITS[lg] + "\n\n" + ctx.v(lg, "roadmap")
     out["related"] = ctx.v(lg, "related")
     return out
+
+# Text added for recent changes of the repository (section -> language -> paragraph), appended to what the section already says.
+from ... import readme_kit as _K
+
+ADDENDA = {'security': {'en': '`GET /stats` shows file names, not absolute paths, so a caller does not learn where the host keeps its registry and models; `serve --stats-full-paths` shows the full paths again.', 'es': '`GET /stats` muestra nombres de fichero, no rutas absolutas, de modo que quien consulta no averigua dónde guarda el equipo su registro y sus modelos; `serve --stats-full-paths` vuelve a mostrar las rutas completas.', 'de': '`GET /stats` zeigt Dateinamen statt absoluter Pfade, sodass ein Aufrufer nicht erfährt, wo der Host sein Register und seine Modelle ablegt; `serve --stats-full-paths` zeigt wieder die vollständigen Pfade.', 'fr': "`GET /stats` affiche des noms de fichier et non des chemins absolus, de sorte qu'un appelant n'apprend pas où l'hôte garde son registre et ses modèles ; `serve --stats-full-paths` affiche de nouveau les chemins complets.", 'it': "`GET /stats` mostra nomi di file e non percorsi assoluti, così chi chiama non scopre dove l'host tiene il suo registro e i suoi modelli; `serve --stats-full-paths` mostra di nuovo i percorsi completi.", 'ja': '`GET /stats` は絶対パスではなくファイル名を表示するため、呼び出し側はホストがレジストリやモデルをどこに置いているかを知ることができません。`serve --stats-full-paths` で完全なパスが再び表示されます。', 'zh': '`GET /stats` 显示文件名而不是绝对路径，因此调用方无从得知主机把注册表和模型放在哪里；`serve --stats-full-paths` 会重新显示完整路径。', 'pt': '`GET /stats` mostra nomes de ficheiro e não caminhos absolutos, pelo que quem consulta não fica a saber onde o anfitrião guarda o seu registo e os seus modelos; `serve --stats-full-paths` volta a mostrar os caminhos completos.'}}
+
+_BODY_BASE = BODY
+
+
+def BODY(lg, ctx):
+    return _K.apply_addenda(_BODY_BASE(lg, ctx), ADDENDA, lg)
