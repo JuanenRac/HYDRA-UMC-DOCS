@@ -135,12 +135,24 @@ CAPTIONS.update({
         "ウィンドウ：イメージ用に見つかった CM5 プロジェクトのバージョン・役割・スタック、ビルドオプション、ビルドログ。",
         "A janela: os projetos da CM5 encontrados para a imagem com a sua versão, função e pilha, as opções de construção e o registo."),
 })
+CAPTIONS.update({
+    "dashboard_ai": _c(
+        "The two panels: the trend summary of a vibration series read from the data lake, and the anomaly check that scores its latest window against the fitted baseline.",
+        "Los dos paneles: el resumen de tendencia de una serie de vibración leída del lago de datos, y la comprobación de anomalías que puntúa su última ventana contra la línea base ajustada.",
+        "Les deux panneaux : le résumé de tendance d'une série de vibrations lue dans le lac de données, et le contrôle d'anomalies qui note sa dernière fenêtre par rapport à la base ajustée.",
+        "I due pannelli: il riepilogo di tendenza di una serie di vibrazioni letta dal data lake, e il controllo delle anomalie che valuta l'ultima finestra rispetto alla baseline adattata.",
+        "Die zwei Panels: die Trendzusammenfassung einer aus dem Data Lake gelesenen Schwingungsreihe und die Anomalieprüfung, die ihr jüngstes Fenster gegen die angepasste Baseline bewertet.",
+        "两个面板：从数据湖读取的振动序列的趋势摘要，以及将其最新窗口与已拟合基线进行评分的异常检查。",
+        "2 つのパネル：データレイクから読み取った振動系列のトレンド要約と、最新のウィンドウをフィット済みのベースラインに対して採点する異常チェック。",
+        "Os dois painéis: o resumo de tendência de uma série de vibração lida do lago de dados e a verificação de anomalias que pontua a sua última janela contra a linha de base ajustada."),
+})
 # repository -> [(file in images/screenshots/, caption key)]
 SHOTS: dict[str, list[tuple[str, str]]] = {
     "HYDRA-UMC-STUDIO": [("overview", "studio_overview"), ("robot-view", "studio_robot_view"), ("xy-table", "studio_xy_table"),
                          ("flasher-studio", "studio_flasher"), ("tester-center", "studio_tester"), ("safety-limits", "studio_safety_limits")],
     "HYDRA-UMC-SUITE": [("overview", "suite_overview"), ("robot-control", "suite_robot_control"), ("flasher-studio", "suite_flasher"), ("tester-center", "suite_tester"), ("safety-limits", "suite_safety_limits")],
     "HYDRA-UMC-OS-REBUILDER": [("overview", "rebuilder_overview")],
+    "HYDRA-UMC-DASHBOARD-AI": [("dashboard", "dashboard_ai")],
 }
 
 
