@@ -19,7 +19,7 @@
     "HYDRA-UMC-ANOMALY-DETECTOR": {
       "hardware": "not_run",
       "tests": {
-        "count": 154,
+        "count": 160,
         "command": "python -m pytest -q tests"
       }
     },
@@ -144,7 +144,7 @@
     "HYDRA-UMC-EDITOR-STL": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 215,
+        "count": 218,
         "command": "python -m pytest tests -q"
       }
     },
@@ -158,7 +158,7 @@
     "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
       "hardware": "not_run",
       "tests": {
-        "count": 127,
+        "count": 131,
         "command": "npm test"
       }
     },
@@ -194,7 +194,7 @@
     "HYDRA-UMC-MQTT-BROKER": {
       "hardware": "not_run",
       "tests": {
-        "count": 159,
+        "count": 163,
         "command": "npm test"
       }
     },
@@ -222,7 +222,7 @@
     "HYDRA-UMC-OPS-AGENT": {
       "hardware": "not_run",
       "tests": {
-        "count": 322,
+        "count": 323,
         "command": "python -m pytest -q tests"
       }
     },
@@ -243,7 +243,7 @@
     "HYDRA-UMC-OS-REBUILDER": {
       "hardware": "not_run",
       "tests": {
-        "count": 177,
+        "count": 183,
         "command": "python -m pytest -q tests"
       }
     },
@@ -285,7 +285,7 @@
     "HYDRA-UMC-SEMANTIC-PLANNER": {
       "hardware": "not_run",
       "tests": {
-        "count": 88,
+        "count": 102,
         "command": "python -m pytest -q tests"
       }
     },
@@ -376,7 +376,7 @@
     "HYDRA-UMC-VLA-ENGINE": {
       "hardware": "not_run",
       "tests": {
-        "count": 138,
+        "count": 150,
         "command": "python -m pytest -q tests"
       }
     },
