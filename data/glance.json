@@ -137,7 +137,7 @@
     "HYDRA-UMC-DSI": {
       "hardware": "not_run",
       "tests": {
-        "count": 174,
+        "count": 203,
         "command": "flutter test"
       }
     },
@@ -173,7 +173,7 @@
       "hardware": "not_run",
       "target": "ios",
       "tests": {
-        "count": 220,
+        "count": 249,
         "command": "flutter test"
       }
     },
