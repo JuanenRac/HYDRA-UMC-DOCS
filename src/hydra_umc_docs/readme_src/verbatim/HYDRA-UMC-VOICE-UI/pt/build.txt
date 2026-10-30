@@ -13,7 +13,7 @@ run.bat
 `build.sh`/`build.bat` nunca alteram a versão (só `python tools/hydra_project_tool.py bump` a sobe) e executam a suíte de testes real (`pytest tests/`). Saída esperada de um `run.sh` sem argumentos:
 
 ```text
-HYDRA-UMC-VOICE-UI v0.1.8
+HYDRA-UMC-VOICE-UI v{version}
 Voice UI (Hailo-10) - local STT/TTS pipeline for hands-free robotic mission control.
 ```
 

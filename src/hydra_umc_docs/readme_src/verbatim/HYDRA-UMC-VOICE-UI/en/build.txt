@@ -14,7 +14,7 @@ run.bat
 (`pytest tests/`). Expected output of a bare `run.sh`:
 
 ```text
-HYDRA-UMC-VOICE-UI v0.1.8
+HYDRA-UMC-VOICE-UI v{version}
 Voice UI (Hailo-10) - local STT/TTS pipeline for hands-free robotic mission control.
 ```
 
