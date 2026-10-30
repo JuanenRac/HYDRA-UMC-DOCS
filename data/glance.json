@@ -292,7 +292,7 @@
     "HYDRA-UMC-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 377,
+        "count": 409,
         "command": "npm run test:unit"
       }
     },
