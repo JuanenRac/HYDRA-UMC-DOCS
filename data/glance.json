@@ -376,7 +376,7 @@
     "HYDRA-UMC-VLA-ENGINE": {
       "hardware": "not_run",
       "tests": {
-        "count": 150,
+        "count": 155,
         "command": "python -m pytest -q tests"
       }
     },
