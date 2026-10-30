@@ -18,7 +18,6 @@ FAMILY_REPOS: tuple[tuple[str, tuple[str, ...]], ...] = (
         (
             "HYDRA-UMC-COGNITIVE-NODE",
             "HYDRA-UMC-DOCS-QA",
-            "HYDRA-UMC-LOCAL-TECHNICIAN",
             "HYDRA-UMC-SEMANTIC-PLANNER",
             "HYDRA-UMC-VLA-ENGINE",
             "HYDRA-UMC-VOICE-UI",
@@ -74,6 +73,7 @@ FAMILY_REPOS: tuple[tuple[str, tuple[str, ...]], ...] = (
         (
             "HYDRA-UMC-DEV-SERVER",
             "HYDRA-UMC-DOCS",
+            "HYDRA-UMC-LOCAL-TECHNICIAN",
             "HYDRA-UMC-OPS-AGENT",
             "HYDRA-UMC-OS-REBUILDER",
             "HYDRA-UMC-UPDATER",

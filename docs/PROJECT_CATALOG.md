@@ -25,7 +25,6 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 |---|---|---|---|---|---|---|---|
 | [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE) | 0.1.5 | Functional | service | python | cm5 | - | Integration hub of the Hailo-10 cognitive family; reports the readiness of its four children. |
 | [HYDRA-UMC-DOCS-QA](https://github.com/JuanenRac/HYDRA-UMC-DOCS-QA) | 0.1.5 | Functional | api | python | cm5 | HYDRA-UMC-COGNITIVE-NODE | Stdlib-only TF-IDF search over the ecosystem's own Markdown documents, with citations; lexical, not semantic. |
-| [HYDRA-UMC-LOCAL-TECHNICIAN](https://github.com/JuanenRac/HYDRA-UMC-LOCAL-TECHNICIAN) | 0.1.7 | Functional | service | python | cm5 | HYDRA-UMC-COGNITIVE-NODE | Read-only diagnostic assistant with a fixed risk-level policy and tool allowlist; a retrieved document can never trigger a tool call. |
 | [HYDRA-UMC-SEMANTIC-PLANNER](https://github.com/JuanenRac/HYDRA-UMC-SEMANTIC-PLANNER) | 0.1.4 | Functional | service | python | cm5 | HYDRA-UMC-COGNITIVE-NODE | Rule-based task decomposition and semantic recovery over MCU error codes. |
 | [HYDRA-UMC-VLA-ENGINE](https://github.com/JuanenRac/HYDRA-UMC-VLA-ENGINE) | 0.1.9 | Functional | service | python | cm5 | HYDRA-UMC-COGNITIVE-NODE | Action-token encoding and decoding and trajectory generation for a vision-language-action model. |
 | [HYDRA-UMC-VOICE-UI](https://github.com/JuanenRac/HYDRA-UMC-VOICE-UI) | 0.1.9 | Functional | service | python | cm5 | HYDRA-UMC-COGNITIVE-NODE | Voice front end: voice-activity detection, rule-based intent parsing and a confirmation-gated Watch relay. |
@@ -55,7 +54,7 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
-| [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) | 0.2.3 | Scaffolding | firmware | firmware-c | user-pc | - | Motion-control firmware (STM32H745 and STM32G474, six components with bootloaders) and the CM5 SPI-OTA bridge; not yet run on a real board. |
+| [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) | 0.2.4 | Scaffolding | firmware | firmware-c | user-pc | - | Motion-control firmware (STM32H745 and STM32G474, six components with bootloaders) and the CM5 SPI-OTA bridge; not yet run on a real board. |
 
 ### Data & Analytics
 
@@ -81,6 +80,7 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 |---|---|---|---|---|---|---|---|
 | [HYDRA-UMC-DEV-SERVER](https://github.com/JuanenRac/HYDRA-UMC-DEV-SERVER) | 0.1.9 | Functional | service | python | dev-server | - | Reproducible development host: policy-gated configuration and manifest inventory; no task has deploy permission. |
 | [HYDRA-UMC-DOCS](https://github.com/JuanenRac/HYDRA-UMC-DOCS) | 0.0.5 | Scaffolding | tool | python | user-pc | - | This repository: architecture, interfaces, security baseline, capability matrix and cross-repository tooling. |
+| [HYDRA-UMC-LOCAL-TECHNICIAN](https://github.com/JuanenRac/HYDRA-UMC-LOCAL-TECHNICIAN) | 0.1.7 | Functional | service | python | cm5 | - | Read-only diagnostic assistant with a fixed risk-level policy and tool allowlist; a retrieved document can never trigger a tool call. |
 | [HYDRA-UMC-OPS-AGENT](https://github.com/JuanenRac/HYDRA-UMC-OPS-AGENT) | 0.2.0 | Functional | service | python | cm5 | - | Maintenance-incident coordinator: a sanitised snapshot, a read-only control plane and an AI-provider diagnosis proposal. |
 | [HYDRA-UMC-UPDATER](https://github.com/JuanenRac/HYDRA-UMC-UPDATER) | 0.4.9 | Established | tool | python | user-pc | - | Detects, installs and updates the ecosystem's repositories from their manifests (clone, stage, verify, promote). |
 | [HYDRA-UMC-OS-REBUILDER](https://github.com/JuanenRac/HYDRA-UMC-OS-REBUILDER) | 0.3.3 | Functional | tool | python | user-pc | HYDRA-UMC-OS | Desktop tool that builds a ready-to-flash CM5 image with the current versions of the ecosystem; the image build is Linux-only, remotely over SSH from Windows. |
