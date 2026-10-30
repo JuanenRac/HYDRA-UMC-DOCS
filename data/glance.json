@@ -130,7 +130,7 @@
     "HYDRA-UMC-DOCS-QA": {
       "hardware": "not_run",
       "tests": {
-        "count": 100,
+        "count": 109,
         "command": "python -m pytest -q tests"
       }
     },
