@@ -33,7 +33,7 @@
     "HYDRA-UMC-BRIDGE-CNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 228,
+        "count": 238,
         "command": "python tools/build_test.py"
       }
     },
@@ -201,7 +201,7 @@
     "HYDRA-UMC-MTCONNECT-ADAPTER": {
       "hardware": "not_run",
       "tests": {
-        "count": 130,
+        "count": 131,
         "command": "npm test"
       }
     },
