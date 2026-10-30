@@ -243,7 +243,7 @@
     "HYDRA-UMC-OS-REBUILDER": {
       "hardware": "not_run",
       "tests": {
-        "count": 183,
+        "count": 187,
         "command": "python -m pytest -q tests"
       }
     },
