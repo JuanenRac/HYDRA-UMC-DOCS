@@ -1,0 +1,286 @@
+{
+  "schema_version": "1.0",
+  "ecosystem": "HYDRA-UMC",
+  "repositories": [
+    {
+      "name": "HYDRA-UMC",
+      "version": "0.2.4",
+      "commit": "e15f62f4e1b56590d059ee82c315611fecd5bb0c"
+    },
+    {
+      "name": "HYDRA-UMC-ANDROID-CONTROL",
+      "version": "0.7.3",
+      "commit": "895ac2f0a81d68916a25712abd4244d84fc0518d"
+    },
+    {
+      "name": "HYDRA-UMC-ANOMALY-DETECTOR",
+      "version": "0.1.8",
+      "commit": "7901703657c3c64fe4c5a3f7a12c108b96def53b"
+    },
+    {
+      "name": "HYDRA-UMC-BRIDGE-AMR",
+      "version": "0.1.4",
+      "commit": "e970799d6f72bf7879f943f6a847a4ae6cbdf202"
+    },
+    {
+      "name": "HYDRA-UMC-BRIDGE-CNC",
+      "version": "0.2.1",
+      "commit": "c50d84636353aea5f8271519ec8f43bfe8fffffe"
+    },
+    {
+      "name": "HYDRA-UMC-BRIDGE-DROIDS",
+      "version": "0.1.3",
+      "commit": "82eaced142664d5fed6ff67fb0c508b89c8dc979"
+    },
+    {
+      "name": "HYDRA-UMC-BRIDGE-LASER",
+      "version": "0.1.8",
+      "commit": "7a1f72b3352e1eb764bfc153e803d026d4409861"
+    },
+    {
+      "name": "HYDRA-UMC-BRIDGE-OPENPNP",
+      "version": "0.2.0",
+      "commit": "6757d964f8b45fc345518b18567f6afd5ddc5151"
+    },
+    {
+      "name": "HYDRA-UMC-BRIDGE-PRINTER3D",
+      "version": "0.1.9",
+      "commit": "dd93f0e8426aa10c9fb98182353ed107ee02e930"
+    },
+    {
+      "name": "HYDRA-UMC-BRIDGE-ROS2",
+      "version": "0.1.3",
+      "commit": "4c381b44e461426863c5f33ed5ac2bfe3b8644b0"
+    },
+    {
+      "name": "HYDRA-UMC-BRIDGE-UAV",
+      "version": "0.1.6",
+      "commit": "02743ad487b8d39e247650f387b431c988896171"
+    },
+    {
+      "name": "HYDRA-UMC-COGNITIVE-NODE",
+      "version": "0.1.5",
+      "commit": "07391a4fdf549e23faac868d1ae00900c81d8ff0"
+    },
+    {
+      "name": "HYDRA-UMC-CONNECTOR-HUB",
+      "version": "0.1.6",
+      "commit": "b2ed578b8543e71d3d9f0399139edd19a6fd6fea"
+    },
+    {
+      "name": "HYDRA-UMC-DASHBOARD-AI",
+      "version": "0.1.7",
+      "commit": "40ef985c5ac8a9d49c844b3d4eaafee25b764419"
+    },
+    {
+      "name": "HYDRA-UMC-DATALAKE",
+      "version": "0.1.9",
+      "commit": "380cbcf8205a9733f649ec5518d8eca648426e92"
+    },
+    {
+      "name": "HYDRA-UMC-DETECTION-HEF",
+      "version": "0.1.6",
+      "commit": "14ddc95e5aa1bdfa0cf340a6d301bd3779697437"
+    },
+    {
+      "name": "HYDRA-UMC-DEV-SERVER",
+      "version": "0.1.9",
+      "commit": "4cb617b687738b9c68fa0ad03bc72bb6da3bd2bf"
+    },
+    {
+      "name": "HYDRA-UMC-DOCS",
+      "version": "0.0.5",
+      "commit": "1af0d4541f8f0e325586c6b1d03774392540ed65"
+    },
+    {
+      "name": "HYDRA-UMC-DOCS-QA",
+      "version": "0.1.5",
+      "commit": "27080de4d86358338be6ffa540a51867dc90fda5"
+    },
+    {
+      "name": "HYDRA-UMC-DSI",
+      "version": "0.2.8",
+      "commit": "74a2c71f3a191b957645fde175329f944eeaa8b6"
+    },
+    {
+      "name": "HYDRA-UMC-EDITOR-STL",
+      "version": "0.1.8",
+      "commit": "843afc2a4c23e582a8642fb270a35933a10e8008"
+    },
+    {
+      "name": "HYDRA-UMC-EDITOR-URDF",
+      "version": "0.1.5",
+      "commit": "4f4c8f45d273cd50ab753dddbbc566be1d1d6423"
+    },
+    {
+      "name": "HYDRA-UMC-GATEWAY-INDUSTRIAL",
+      "version": "0.1.6",
+      "commit": "4cc4649dfe836f6bebd78a87c1379d391af60349"
+    },
+    {
+      "name": "HYDRA-UMC-HIL-BRIDGE",
+      "version": "0.1.0",
+      "commit": "55990c2339abf379250b8cbc253007827bba53fa"
+    },
+    {
+      "name": "HYDRA-UMC-IOS-CONTROL",
+      "version": "0.2.8",
+      "commit": "84f21785a19ec7e35f6fc3d5961a147278194687"
+    },
+    {
+      "name": "HYDRA-UMC-JOB-DISPATCHER",
+      "version": "0.2.4",
+      "commit": "5262580222270cbb6e62319efef4eb762a1dbe01"
+    },
+    {
+      "name": "HYDRA-UMC-LOCAL-TECHNICIAN",
+      "version": "0.1.7",
+      "commit": "1574df535dd9a534e1a9f512c3c0200779298c68"
+    },
+    {
+      "name": "HYDRA-UMC-MQTT-BROKER",
+      "version": "0.1.7",
+      "commit": "39d2fe5b2dd78a96034cbf26006a0a1075ad9f23"
+    },
+    {
+      "name": "HYDRA-UMC-MTCONNECT-ADAPTER",
+      "version": "0.2.0",
+      "commit": "9d3468dfe1b1723271b7b066db5a5db11bef34e0"
+    },
+    {
+      "name": "HYDRA-UMC-NODE-HEALING",
+      "version": "0.2.0",
+      "commit": "f6628431dd4ac2fcfaed88db43979a5ef592755c"
+    },
+    {
+      "name": "HYDRA-UMC-OPCUA-SERVER",
+      "version": "0.2.0",
+      "commit": "76675bc11f25206fb2f5dc7ebdc829152a8545b2"
+    },
+    {
+      "name": "HYDRA-UMC-OPS-AGENT",
+      "version": "0.2.0",
+      "commit": "6e0aabaa1028d75dda785a60157e5c9c030c1a7f"
+    },
+    {
+      "name": "HYDRA-UMC-ORCHESTRATOR",
+      "version": "0.1.9",
+      "commit": "8f37299f7d45daf1087943c9b9e88834b2b56801"
+    },
+    {
+      "name": "HYDRA-UMC-OS",
+      "version": "0.5.4",
+      "commit": "22041feeeaa3773b501e799216ee59783830f885"
+    },
+    {
+      "name": "HYDRA-UMC-OS-REBUILDER",
+      "version": "0.3.3",
+      "commit": "0421274e18d6a7b9a4163cf5cefdc4342dc1bdaa"
+    },
+    {
+      "name": "HYDRA-UMC-PATH-PLANNER-3D",
+      "version": "0.1.1",
+      "commit": "b3794071e13aa6f3ed59eb6144351e184c072ff6"
+    },
+    {
+      "name": "HYDRA-UMC-PHYSICS-REPLICA",
+      "version": "0.0.9",
+      "commit": "b7d4a87f9462abe65a6b633cf7b760710d7fb63c"
+    },
+    {
+      "name": "HYDRA-UMC-PRODUCTION-REPORTS",
+      "version": "0.1.6",
+      "commit": "a4ed6ac2b770bc8d28d2cfe417144c6588212f2b"
+    },
+    {
+      "name": "HYDRA-UMC-SAFETY-ZONES",
+      "version": "0.1.5",
+      "commit": "4997262b87d25545c34e8e3c2053f062ae5be63f"
+    },
+    {
+      "name": "HYDRA-UMC-SDK",
+      "version": "0.4.0",
+      "commit": "b71470f6715900049b1144bf227d6748d8fae02f"
+    },
+    {
+      "name": "HYDRA-UMC-SEMANTIC-PLANNER",
+      "version": "0.1.4",
+      "commit": "a006717e0388e4f4bf577a3d1f93c38f9164b318"
+    },
+    {
+      "name": "HYDRA-UMC-SERVER",
+      "version": "0.8.1.3",
+      "commit": "6ae7b9e69c86674becdd6404382ccd762b0da47c"
+    },
+    {
+      "name": "HYDRA-UMC-STUDIO",
+      "version": "0.8.0.3",
+      "commit": "fb2818cc852074efaa0fffa2dd2e84edac4c9e95"
+    },
+    {
+      "name": "HYDRA-UMC-SUITE",
+      "version": "0.7.2",
+      "commit": "465a160dc1c3d9a655ad9bf7573139aa8615921f"
+    },
+    {
+      "name": "HYDRA-UMC-SWARM-SYNC",
+      "version": "0.1.5",
+      "commit": "335371333e89840ccf2cc3a5b6d0e46c7ea3c47b"
+    },
+    {
+      "name": "HYDRA-UMC-SYNTHETIC-DATA-GEN",
+      "version": "0.1.1",
+      "commit": "9cd4af64e1feec72a14981c7d9099d7beb79c655"
+    },
+    {
+      "name": "HYDRA-UMC-TELEMETRY-COLLECTOR",
+      "version": "0.1.9",
+      "commit": "39e8ef5706e7e816041aa5e06053503a420d4bfd"
+    },
+    {
+      "name": "HYDRA-UMC-TOOL-CLI",
+      "version": "0.1.9",
+      "commit": "749a0239f8aa04bfa5df259ec9e238652944f05a"
+    },
+    {
+      "name": "HYDRA-UMC-TWIN",
+      "version": "0.1.1",
+      "commit": "a805057e003a9065e60be6d3772dfc3df7a7e350"
+    },
+    {
+      "name": "HYDRA-UMC-UPDATER",
+      "version": "0.4.9",
+      "commit": "997b96ab15af93bf98e8a6776449e4946cfdd590"
+    },
+    {
+      "name": "HYDRA-UMC-VISION-NODE",
+      "version": "0.1.7",
+      "commit": "5f3ca4a791973bf92a4b664b244afb063a7594e6"
+    },
+    {
+      "name": "HYDRA-UMC-VISION-STREAMER",
+      "version": "0.2.2",
+      "commit": "f6be4c179b87c3fb39163d261e6c8ab910dab3b7"
+    },
+    {
+      "name": "HYDRA-UMC-VISUAL-SERVOING-API",
+      "version": "0.2.1",
+      "commit": "1bae08568a0a2b927b87d983653162e4ae4d89e9"
+    },
+    {
+      "name": "HYDRA-UMC-VLA-ENGINE",
+      "version": "0.1.9",
+      "commit": "8b9a0d6558db369704076341fcae0e4016b5cadd"
+    },
+    {
+      "name": "HYDRA-UMC-VOICE-UI",
+      "version": "0.1.9",
+      "commit": "2fbb74de91555f7fff8073d97f678e696b06087b"
+    },
+    {
+      "name": "HYDRA-UMC-WATCH",
+      "version": "0.2.7",
+      "commit": "cbc0f3bf56c04bb096643675a22b3358d41c3611"
+    }
+  ]
+}
