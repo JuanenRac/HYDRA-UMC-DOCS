@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.0.6] - The service and contract READMEs from their sources, the CM5 test bench document, own roadmaps and the manual steps to compile a HEF
+
 - **README sources for the service and contract work:** a paragraph in the eight languages for the laser and CNC bridges (running as a service from one configuration file), the production reports (windows summed by the data lake and the cache of the aggregates), the twin (state schema and JSON Schema validation), the swarm sync (typed robot state), the physics replica (tests against two real arms), the semantic planner, the orchestrator and the job dispatcher (a plan as the common Operation) and the visual servoing API (the safety verdict by default in the unit); the count of contracts of the SDK is 13.
 - **`docs/CM5_TEST_BENCH.md`:** the bench document of the CM5, with one row per service (port, health path, unit) and three columns left empty on purpose (what the installer guarantees, what was tested on a real CM5, what was not), and how a bench run fills them.
 - **Own roadmaps in the READMEs of SYNTHETIC-DATA-GEN and VISUAL-SERVOING-API** (eight languages): the first one lists splits and fixed classes, masks, keypoints, PNG output and the TWIN integration; the second hand-eye calibration, image-based servoing, a rate limit and a watchdog. Both used the roadmap of other projects.
