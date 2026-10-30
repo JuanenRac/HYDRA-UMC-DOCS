@@ -33,7 +33,7 @@
     "HYDRA-UMC-BRIDGE-CNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 208,
+        "count": 228,
         "command": "python tools/build_test.py"
       }
     },
