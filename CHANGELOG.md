@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.0.5] - The readme sources describe the functions of the night batches, the decisions of the week and a corrected count of tests
+
 - **`docs/DESIGN_PROPOSALS.md`:** short designs, not implemented, for the larger features that would change a public contract or span several repositories (command lifecycle, signed and expiring commands, bridge health topic, server gateway to the bridges, orchestrated board updates, shadow mode, signed safety state, multi-stage missions, replicated mission registry, historical access for OPC-UA, shared session store, two-slot image, ecosystem map).
 - **The VISION-STREAMER README source no longer promises the Pi 5 ISP for USB cameras** (introduction and diagram, eight languages).
 - **A page of keys and secrets:** `docs/KEYS.md` lists every key, secret and token of the ecosystem (release signing, firmware, sessions, service tokens, MQTT, backup) with where it lives, who makes it, how it is replaced and what to do if it is lost or leaks. It holds no key material.

@@ -5,4 +5,4 @@
 # =============================================================================
 """HYDRA-UMC-DOCS: the documentation and cross-repository tooling hub of the HYDRA-UMC ecosystem."""
 
-__version__ = "0.0.4"
+__version__ = "0.0.5"
