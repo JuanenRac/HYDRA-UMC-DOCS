@@ -55,9 +55,9 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
 | Software | 🟠 | Nur Struktur und erste Teile; der größte Teil der Arbeit steht noch aus |
-| Tests | 🟢 | 153 automatische Tests, bei jeder Änderung ausgeführt |
-| Echte Hardware | 🟢 | Nicht zutreffend: nichts hiervon läuft auf Hardware |
-| Dokumentation | 🟢 | README in acht Sprachen, bei jeder Änderung gegen das Manifest geprüft |
+| Tests | 🟡 | 153 automatische Tests, bei jeder Änderung ausgeführt |
+| Echte Hardware | 🟡 | Nicht zutreffend: nichts hiervon läuft auf Hardware |
+| Dokumentation | 🟡 | README in acht Sprachen, bei jeder Änderung gegen das Manifest geprüft |
 
 ## 🎯 Überblick
 
@@ -104,6 +104,7 @@ python tools/make_catalog.py --check             # der Katalog ist aktuell (brau
 python tools/make_brand.py --check               # Banner, Symbol und Karte sind aktuell
 python tools/make_readmes.py --check             # die acht READMEs sind aktuell
 python tools/make_glance.py --check              # die Tabellen Auf einen Blick der Familie sind aktuell (braucht die Repositories neben diesem)
+python tools/status_lights.py --check            # die Ampeln der Tabelle Projektstatus bleiben innerhalb dessen, was das Manifest erlaubt
 python tools/publication_check.py                # nichts Privates würde mit einer Veröffentlichung hinausgehen
 python tools/check_claims.py --require-siblings  # kein README nennt eine riskante Fähigkeit ohne ihren Status (braucht die Repositorys neben diesem)
 bash tools/check_all.sh                          # die Prüfungen jedes Repositorys, eine Zeile je Repository

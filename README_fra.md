@@ -55,9 +55,9 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 | Domaine | État | Ce que cela veut dire ici |
 |---|---|---|
 | Logiciel | 🟠 | Seulement la structure et les premières pièces ; l'essentiel du travail reste à faire |
-| Tests | 🟢 | 153 tests automatiques, exécutés à chaque modification |
-| Matériel réel | 🟢 | Sans objet : rien ici ne s'exécute sur du matériel |
-| Documentation | 🟢 | README en huit langues, vérifié par rapport au manifeste à chaque modification |
+| Tests | 🟡 | 153 tests automatiques, exécutés à chaque modification |
+| Matériel réel | 🟡 | Sans objet : rien ici ne s'exécute sur du matériel |
+| Documentation | 🟡 | README en huit langues, vérifié par rapport au manifeste à chaque modification |
 
 ## 🎯 Présentation
 
@@ -104,6 +104,7 @@ python tools/make_catalog.py --check             # le catalogue est à jour (né
 python tools/make_brand.py --check               # la bannière, l'icône et la carte sont à jour
 python tools/make_readmes.py --check             # les huit README sont à jour
 python tools/make_glance.py --check              # les tableaux En un coup d'œil de la famille sont à jour (nécessite les dépôts à côté de celui-ci)
+python tools/status_lights.py --check            # les feux du tableau État du projet restent dans ce que le manifeste permet
 python tools/publication_check.py                # rien de privé ne partirait avec une publication
 python tools/check_claims.py --require-siblings  # aucun README n'affirme une capacité risquée sans son statut (nécessite les dépôts à côté de celui-ci)
 bash tools/check_all.sh                          # les vérifications de chaque dépôt, une ligne chacun

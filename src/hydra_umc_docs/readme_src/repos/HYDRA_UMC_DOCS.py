@@ -59,7 +59,18 @@ ROADMAP = T(
     "本仓库由文档和小工具组成。读取其他仓库的检查（目录、一览表、说法核对）需要把那些仓库检出到本仓库旁边。它不证明任何硬件方面的事：能力矩阵会逐项说明某项能力只是模拟过，还是真正试过。",
     "Este repositório é feito de documentos e pequenas ferramentas. As verificações que leem os outros repositórios (o catálogo, as tabelas Num relance, as afirmações) precisam desses repositórios descarregados ao lado deste. Não prova nada sobre hardware: a matriz de capacidades diz, para cada capacidade, se foi apenas simulada ou testada a sério.")
 
-COMMANDS = ("python tools/make_catalog.py --check", "python tools/make_brand.py --check", "python tools/make_readmes.py --check", "python tools/make_glance.py --check",
+STATUS_LIGHTS_COMMENT = {
+    "en": "the lights of the Project status table stay within what the manifest allows",
+    "es": "las luces de la tabla Estado del proyecto no pasan de lo que permite el manifiesto",
+    "de": "die Ampeln der Tabelle Projektstatus bleiben innerhalb dessen, was das Manifest erlaubt",
+    "fr": "les feux du tableau État du projet restent dans ce que le manifeste permet",
+    "it": "i semafori della tabella Stato del progetto restano entro ciò che il manifesto consente",
+    "ja": "プロジェクトの状況の表の信号が、マニフェストで許される範囲を超えていない",
+    "zh": "项目状态表的灯号不超过清单所允许的范围",
+    "pt": "as luzes da tabela Estado do projeto não passam do que o manifesto permite",
+}
+
+COMMANDS = ("python tools/make_catalog.py --check", "python tools/make_brand.py --check", "python tools/make_readmes.py --check", "python tools/make_glance.py --check", "python tools/status_lights.py --check",
             "python tools/publication_check.py", "python tools/check_claims.py --require-siblings", "bash tools/check_all.sh", "python -m pytest tests -q")
 
 
@@ -98,7 +109,8 @@ def DOCS(lg, ctx):
 def BODY(lg, ctx):
     text = TEXT[lg]
     comments = list(text["dev_comments"])
-    comments.insert(5, CLAIMS_COMMENT[lg])
+    comments.insert(4, STATUS_LIGHTS_COMMENT[lg])
+    comments.insert(6, CLAIMS_COMMENT[lg])
     quick = [(command, comment) for command, comment in zip(COMMANDS, comments)]
     return {
         "overview": _overview(lg),

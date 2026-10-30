@@ -55,9 +55,9 @@ GPL-3.0-or-later - see LICENSE
 | 領域 | 状態 | ここでの意味 |
 |---|---|---|
 | ソフトウェア | 🟠 | 構造と最初の部品のみで、作業の大部分はこれからです |
-| テスト | 🟢 | 自動テスト 153 件。変更のたびに実行されます |
-| 実機 | 🟢 | 対象外：ここにあるものはハードウェア上では動きません |
-| ドキュメント | 🟢 | 8 言語の README。変更のたびにマニフェストと照合されます |
+| テスト | 🟡 | 自動テスト 153 件。変更のたびに実行されます |
+| 実機 | 🟡 | 対象外：ここにあるものはハードウェア上では動きません |
+| ドキュメント | 🟡 | 8 言語の README。変更のたびにマニフェストと照合されます |
 
 ## 🎯 概要
 
@@ -104,6 +104,7 @@ python tools/make_catalog.py --check             # カタログが最新（こ�
 python tools/make_brand.py --check               # バナー、アイコン、マップが最新
 python tools/make_readmes.py --check             # 8 つの README が最新
 python tools/make_glance.py --check              # ファミリー全体の「ひと目で」の表が最新（このリポジトリの隣に他のリポジトリが必要）
+python tools/status_lights.py --check            # プロジェクトの状況の表の信号が、マニフェストで許される範囲を超えていない
 python tools/publication_check.py                # 公開で非公開のものが外に出ない
 python tools/check_claims.py --require-siblings  # どの README も、状態を示さずにリスクのある機能を主張していない(このリポジトリの隣に他のリポジトリが必要)
 bash tools/check_all.sh                          # 各リポジトリのチェックを 1 行ずつ

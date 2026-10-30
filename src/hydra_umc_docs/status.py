@@ -20,6 +20,7 @@ from . import glance
 LIGHTS = {"green": "🟢", "yellow": "🟡", "orange": "🟠", "red": "🔴"}
 
 MATURITY_LIGHT = {"scaffolding": "orange", "functional": "yellow", "established": "green", "production": "green"}
+LOW_MATURITY = {"scaffolding"}
 HARDWARE_LIGHT = {"not_applicable": "green", "not_run": "red", "simulated": "orange", "bench": "yellow", "in_use": "green"}
 
 UI: dict[str, dict[str, str]] = {
@@ -111,12 +112,16 @@ def rows(code: str, manifest: dict, entry: dict) -> list[tuple[str, str, str]]:
     ui, notes = UI[code], NOTES[code]
     maturity = str(manifest["maturity"])
     tests = entry.get("tests")
-    return [
+    made = [
         (ui["software"], MATURITY_LIGHT.get(maturity, "orange"), notes.get(maturity, notes["functional"])),
         (ui["tests"], "green" if tests else "orange", notes["tests"].format(n=tests["count"]) if tests else notes["tests_none"]),
         (ui["hardware"], HARDWARE_LIGHT[entry["hardware"]], glance.HARDWARE[code][entry["hardware"]]),
         (ui["docs"], "green", notes["docs"]),
     ]
+    if maturity in LOW_MATURITY:
+        # the same ceiling tools/status_lights.py checks: a repository that is still scaffolding has no green row
+        made = [(area, "yellow" if level == "green" else level, note) for area, level, note in made]
+    return made
 
 
 def render_section(code: str, manifest: dict, entry: dict) -> str:

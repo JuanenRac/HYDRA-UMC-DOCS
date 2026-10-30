@@ -44,3 +44,11 @@ def test_check_reports_a_missing_and_a_stale_table():
     assert status.check_text(readme("en"), section) == ["the status table is missing"]
     stale = status.apply_to_text(readme("en"), section).replace("🟠", "🟢")
     assert any("stale" in problem for problem in status.check_text(stale, section))
+
+
+def test_a_scaffolding_repository_has_no_green_row():
+    manifest = dict(MANIFEST, maturity="scaffolding")
+    entry = {"hardware": "not_applicable", "tests": {"count": 3, "command": "pytest"}}
+    lights = [light for _, light, _ in status.rows("en", manifest, entry)]
+    assert "green" not in lights
+    assert [light for _, light, _ in status.rows("en", MANIFEST, entry)].count("green") == 3

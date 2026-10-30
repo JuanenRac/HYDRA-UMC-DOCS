@@ -55,9 +55,9 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 | Área | Estado | Qué significa aquí |
 |---|---|---|
 | Software | 🟠 | Solo estructura y primeras piezas; falta la mayor parte del trabajo |
-| Pruebas | 🟢 | 153 pruebas automáticas, ejecutadas en cada cambio |
-| Hardware real | 🟢 | No aplica: nada de esto se ejecuta en hardware |
-| Documentación | 🟢 | README en ocho idiomas, comprobado contra el manifiesto en cada cambio |
+| Pruebas | 🟡 | 153 pruebas automáticas, ejecutadas en cada cambio |
+| Hardware real | 🟡 | No aplica: nada de esto se ejecuta en hardware |
+| Documentación | 🟡 | README en ocho idiomas, comprobado contra el manifiesto en cada cambio |
 
 ## 🎯 Resumen
 
@@ -104,6 +104,7 @@ python tools/make_catalog.py --check             # el catálogo está al día (n
 python tools/make_brand.py --check               # el banner, el icono y el mapa están al día
 python tools/make_readmes.py --check             # los ocho README están al día
 python tools/make_glance.py --check              # las tablas De un vistazo de la familia están al día (necesita los repositorios junto a este)
+python tools/status_lights.py --check            # las luces de la tabla Estado del proyecto no pasan de lo que permite el manifiesto
 python tools/publication_check.py                # nada privado saldría con una publicación
 python tools/check_claims.py --require-siblings  # ningún README afirma una capacidad de riesgo sin indicar su estado (necesita los repositorios junto a este)
 bash tools/check_all.sh                          # las comprobaciones de cada repositorio, una línea por cada uno

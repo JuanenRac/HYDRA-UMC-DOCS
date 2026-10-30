@@ -55,9 +55,9 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 | Area | Stato | Cosa significa qui |
 |---|---|---|
 | Software | 🟠 | Solo struttura e primi pezzi; gran parte del lavoro è ancora da fare |
-| Test | 🟢 | 153 test automatici, eseguiti a ogni modifica |
-| Hardware reale | 🟢 | Non applicabile: nulla qui gira su hardware |
-| Documentazione | 🟢 | README in otto lingue, verificato rispetto al manifesto a ogni modifica |
+| Test | 🟡 | 153 test automatici, eseguiti a ogni modifica |
+| Hardware reale | 🟡 | Non applicabile: nulla qui gira su hardware |
+| Documentazione | 🟡 | README in otto lingue, verificato rispetto al manifesto a ogni modifica |
 
 ## 🎯 Panoramica
 
@@ -104,6 +104,7 @@ python tools/make_catalog.py --check             # il catalogo è aggiornato (se
 python tools/make_brand.py --check               # il banner, l'icona e la mappa sono aggiornati
 python tools/make_readmes.py --check             # gli otto README sono aggiornati
 python tools/make_glance.py --check              # le tabelle In breve della famiglia sono aggiornate (servono i repository accanto a questo)
+python tools/status_lights.py --check            # i semafori della tabella Stato del progetto restano entro ciò che il manifesto consente
 python tools/publication_check.py                # nulla di privato uscirebbe con una pubblicazione
 python tools/check_claims.py --require-siblings  # nessun README afferma una capacità a rischio senza il suo stato (richiede i repository accanto a questo)
 bash tools/check_all.sh                          # i controlli di ogni repository, una riga ciascuno

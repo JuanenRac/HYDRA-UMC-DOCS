@@ -55,9 +55,9 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Software | 🟠 | Structure and first pieces only; most of the work is still to do |
-| Tests | 🟢 | 153 automated tests, run on every change |
-| Real hardware | 🟢 | Not applicable: nothing here runs on hardware |
-| Documentation | 🟢 | README in eight languages, checked against the manifest on every change |
+| Tests | 🟡 | 153 automated tests, run on every change |
+| Real hardware | 🟡 | Not applicable: nothing here runs on hardware |
+| Documentation | 🟡 | README in eight languages, checked against the manifest on every change |
 
 ## 🎯 Overview
 
@@ -104,6 +104,7 @@ python tools/make_catalog.py --check             # the catalogue is current (nee
 python tools/make_brand.py --check               # the banner, icon and map are current
 python tools/make_readmes.py --check             # the eight READMEs are current
 python tools/make_glance.py --check              # the At a glance tables of the family are current (needs the repositories next to this one)
+python tools/status_lights.py --check            # the lights of the Project status table stay within what the manifest allows
 python tools/publication_check.py                # nothing private would leave with a publication
 python tools/check_claims.py --require-siblings  # no README states a risky capability without its status (needs the repositories next to this one)
 bash tools/check_all.sh                          # the checks of every repository, one line each

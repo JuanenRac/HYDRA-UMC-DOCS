@@ -55,9 +55,9 @@ GPL-3.0-or-later - see LICENSE
 | 领域 | 状态 | 在这里的含义 |
 |---|---|---|
 | 软件 | 🟠 | 目前只有结构和最初的部分，大部分工作尚未完成 |
-| 测试 | 🟢 | 153 项自动测试，每次变更都会运行 |
-| 真实硬件 | 🟢 | 不适用：这里的内容不在硬件上运行 |
-| 文档 | 🟢 | 八种语言的 README，每次变更都会与清单核对 |
+| 测试 | 🟡 | 153 项自动测试，每次变更都会运行 |
+| 真实硬件 | 🟡 | 不适用：这里的内容不在硬件上运行 |
+| 文档 | 🟡 | 八种语言的 README，每次变更都会与清单核对 |
 
 ## 🎯 概述
 
@@ -104,6 +104,7 @@ python tools/make_catalog.py --check             # 目录是最新的（需要�
 python tools/make_brand.py --check               # 横幅、图标和家族图是最新的
 python tools/make_readmes.py --check             # 八份 README 是最新的
 python tools/make_glance.py --check              # 家族的“速览”表是最新的（需要本仓库旁边有其他仓库）
+python tools/status_lights.py --check            # 项目状态表的灯号不超过清单所允许的范围
 python tools/publication_check.py                # 发布时不会带出任何私有内容
 python tools/check_claims.py --require-siblings  # 没有任何 README 在不说明状态的情况下声称具备高风险能力(需要与本仓库相邻的其他仓库)
 bash tools/check_all.sh                          # 每个仓库的检查，每个一行
