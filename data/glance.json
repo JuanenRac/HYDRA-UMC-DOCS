@@ -383,7 +383,7 @@
     "HYDRA-UMC-VOICE-UI": {
       "hardware": "not_run",
       "tests": {
-        "count": 195,
+        "count": 239,
         "command": "python -m pytest -q tests"
       }
     },
