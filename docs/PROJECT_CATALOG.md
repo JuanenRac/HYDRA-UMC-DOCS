@@ -28,28 +28,28 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 | [HYDRA-UMC-LOCAL-TECHNICIAN](https://github.com/JuanenRac/HYDRA-UMC-LOCAL-TECHNICIAN) | 0.1.7 | Functional | service | python | cm5 | HYDRA-UMC-COGNITIVE-NODE | Read-only diagnostic assistant with a fixed risk-level policy and tool allowlist; a retrieved document can never trigger a tool call. |
 | [HYDRA-UMC-SEMANTIC-PLANNER](https://github.com/JuanenRac/HYDRA-UMC-SEMANTIC-PLANNER) | 0.1.4 | Functional | service | python | cm5 | HYDRA-UMC-COGNITIVE-NODE | Rule-based task decomposition and semantic recovery over MCU error codes. |
 | [HYDRA-UMC-VLA-ENGINE](https://github.com/JuanenRac/HYDRA-UMC-VLA-ENGINE) | 0.1.8 | Functional | service | python | cm5 | HYDRA-UMC-COGNITIVE-NODE | Action-token encoding and decoding and trajectory generation for a vision-language-action model. |
-| [HYDRA-UMC-VOICE-UI](https://github.com/JuanenRac/HYDRA-UMC-VOICE-UI) | 0.1.8 | Functional | service | python | cm5 | HYDRA-UMC-COGNITIVE-NODE | Voice front end: voice-activity detection, rule-based intent parsing and a confirmation-gated Watch relay. |
+| [HYDRA-UMC-VOICE-UI](https://github.com/JuanenRac/HYDRA-UMC-VOICE-UI) | 0.1.9 | Functional | service | python | cm5 | HYDRA-UMC-COGNITIVE-NODE | Voice front end: voice-activity detection, rule-based intent parsing and a confirmation-gated Watch relay. |
 
 ### Complementary Tools
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
 | [HYDRA-UMC-DASHBOARD-AI](https://github.com/JuanenRac/HYDRA-UMC-DASHBOARD-AI) | 0.1.7 | Functional | ui | node | cm5 | - | Text summaries of DATALAKE history (min, max, average, trend) and anomaly highlighting, with a statistical fallback when no AI provider is configured. |
-| [HYDRA-UMC-TOOL-CLI](https://github.com/JuanenRac/HYDRA-UMC-TOOL-CLI) | 0.1.8 | Functional | cli | go | user-pc | - | Command-line client: version, status, robots, doctor and a dry-run configuration apply. |
+| [HYDRA-UMC-TOOL-CLI](https://github.com/JuanenRac/HYDRA-UMC-TOOL-CLI) | 0.1.9 | Functional | cli | go | user-pc | - | Command-line client: version, status, robots, doctor and a dry-run configuration apply. |
 | [HYDRA-UMC-WATCH](https://github.com/JuanenRac/HYDRA-UMC-WATCH) | 0.2.6 | Functional | ui | android | wearable | - | Wear OS companion with haptic alert patterns and a voice-command capture. |
 
 ### Core Backend & Clients
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
-| [HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER) | 0.8.1.2 | Functional | api | node | cm5 | - | Headless Node.js/TypeScript backend: REST and WebSocket API, authentication, mDNS discovery and the global stop. |
+| [HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER) | 0.8.1.3 | Functional | api | node | cm5 | - | Headless Node.js/TypeScript backend: REST and WebSocket API, authentication, mDNS discovery and the global stop. |
 | [HYDRA-UMC-ANDROID-CONTROL](https://github.com/JuanenRac/HYDRA-UMC-ANDROID-CONTROL) | 0.7.2 | Functional | ui | android | mobile | HYDRA-UMC-SERVER | Native Android control app with biometric login, a client of HYDRA-UMC-SERVER. |
 | [HYDRA-UMC-DSI](https://github.com/JuanenRac/HYDRA-UMC-DSI) | 0.2.7 | Functional | ui | flutter | cm5 | HYDRA-UMC-SERVER | Flutter touch interface for the onboard 7 inch DSI display of the CM5. |
 | [HYDRA-UMC-EDITOR-STL](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-STL) | 0.1.7 | Scaffolding | tool | python | user-pc | HYDRA-UMC-STUDIO | Desktop STL editor for the model libraries shared by STUDIO and SUITE. |
 | [HYDRA-UMC-EDITOR-URDF](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-URDF) | 0.1.5 | Established | tool | python | user-pc | HYDRA-UMC-STUDIO | Desktop URDF creator and editor that pushes finished models into the shared model catalogue. |
 | [HYDRA-UMC-IOS-CONTROL](https://github.com/JuanenRac/HYDRA-UMC-IOS-CONTROL) | 0.2.7 | Functional | ui | flutter | mobile | HYDRA-UMC-SERVER | Flutter control app for iOS and iPadOS with a real-time WebSocket link to HYDRA-UMC-SERVER. |
-| [HYDRA-UMC-STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO) | 0.8.0.2 | Functional | ui | node | cm5 | HYDRA-UMC-SERVER | Web control dashboard (React) with 3D multi-robot visualisation, a client of HYDRA-UMC-SERVER. |
-| [HYDRA-UMC-SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE) | 0.7.1 | Functional | ui | python | user-pc | HYDRA-UMC-SERVER | Desktop (PySide6) command centre for several servers at once. |
+| [HYDRA-UMC-STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO) | 0.8.0.3 | Functional | ui | node | cm5 | HYDRA-UMC-SERVER | Web control dashboard (React) with 3D multi-robot visualisation, a client of HYDRA-UMC-SERVER. |
+| [HYDRA-UMC-SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE) | 0.7.2 | Functional | ui | python | user-pc | HYDRA-UMC-SERVER | Desktop (PySide6) command centre for several servers at once. |
 
 ### Core Hardware
 
@@ -64,7 +64,7 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 | [HYDRA-UMC-DATALAKE](https://github.com/JuanenRac/HYDRA-UMC-DATALAKE) | 0.1.9 | Functional | api | python | cm5 | - | SQLite time-series store with an HTTP ingest and query API. |
 | [HYDRA-UMC-ANOMALY-DETECTOR](https://github.com/JuanenRac/HYDRA-UMC-ANOMALY-DETECTOR) | 0.1.8 | Functional | api | python | cm5 | HYDRA-UMC-DATALAKE | FFT and statistical-baseline anomaly detector over DATALAKE history, with drift monitoring (no machine-learning model). |
 | [HYDRA-UMC-PRODUCTION-REPORTS](https://github.com/JuanenRac/HYDRA-UMC-PRODUCTION-REPORTS) | 0.1.6 | Functional | api | python | cm5 | HYDRA-UMC-DATALAKE | OEE and availability reports over DATALAKE history, with reproducible CSV export. |
-| [HYDRA-UMC-TELEMETRY-COLLECTOR](https://github.com/JuanenRac/HYDRA-UMC-TELEMETRY-COLLECTOR) | 0.1.8 | Functional | api | go | cm5 | HYDRA-UMC-DATALAKE | CAN and WebSocket ingestion with a bounded buffer, retry on outage and a DATALAKE sink. |
+| [HYDRA-UMC-TELEMETRY-COLLECTOR](https://github.com/JuanenRac/HYDRA-UMC-TELEMETRY-COLLECTOR) | 0.1.9 | Functional | api | go | cm5 | HYDRA-UMC-DATALAKE | CAN and WebSocket ingestion with a bounded buffer, retry on outage and a DATALAKE sink. |
 
 ### Digital Twin & Simulation
 
@@ -80,16 +80,16 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
 | [HYDRA-UMC-DEV-SERVER](https://github.com/JuanenRac/HYDRA-UMC-DEV-SERVER) | 0.1.9 | Functional | service | python | dev-server | - | Reproducible development host: policy-gated configuration and manifest inventory; no task has deploy permission. |
-| [HYDRA-UMC-DOCS](https://github.com/JuanenRac/HYDRA-UMC-DOCS) | 0.0.4 | Scaffolding | tool | python | user-pc | - | This repository: architecture, interfaces, security baseline, capability matrix and cross-repository tooling. |
-| [HYDRA-UMC-OPS-AGENT](https://github.com/JuanenRac/HYDRA-UMC-OPS-AGENT) | 0.1.9 | Functional | service | python | cm5 | - | Maintenance-incident coordinator: a sanitised snapshot, a read-only control plane and an AI-provider diagnosis proposal. |
+| [HYDRA-UMC-DOCS](https://github.com/JuanenRac/HYDRA-UMC-DOCS) | 0.0.5 | Scaffolding | tool | python | user-pc | - | This repository: architecture, interfaces, security baseline, capability matrix and cross-repository tooling. |
+| [HYDRA-UMC-OPS-AGENT](https://github.com/JuanenRac/HYDRA-UMC-OPS-AGENT) | 0.2.0 | Functional | service | python | cm5 | - | Maintenance-incident coordinator: a sanitised snapshot, a read-only control plane and an AI-provider diagnosis proposal. |
 | [HYDRA-UMC-UPDATER](https://github.com/JuanenRac/HYDRA-UMC-UPDATER) | 0.4.9 | Established | tool | python | user-pc | - | Detects, installs and updates the ecosystem's repositories from their manifests (clone, stage, verify, promote). |
-| [HYDRA-UMC-OS-REBUILDER](https://github.com/JuanenRac/HYDRA-UMC-OS-REBUILDER) | 0.3.2 | Functional | tool | python | user-pc | HYDRA-UMC-OS | Desktop tool that builds a ready-to-flash CM5 image with the current versions of the ecosystem; the image build is Linux-only, remotely over SSH from Windows. |
+| [HYDRA-UMC-OS-REBUILDER](https://github.com/JuanenRac/HYDRA-UMC-OS-REBUILDER) | 0.3.3 | Functional | tool | python | user-pc | HYDRA-UMC-OS | Desktop tool that builds a ready-to-flash CM5 image with the current versions of the ecosystem; the image build is Linux-only, remotely over SSH from Windows. |
 
 ### External Automation Bridges
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
-| [HYDRA-UMC-BRIDGE-CNC](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-CNC) | 0.2.0 | Functional | service | python | cm5 | HYDRA-UMC-SERVER | CNC cell coordinator with GRBL status and real-time control bytes; never streams a G-code program. |
+| [HYDRA-UMC-BRIDGE-CNC](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-CNC) | 0.2.1 | Functional | service | python | cm5 | HYDRA-UMC-SERVER | CNC cell coordinator with GRBL status and real-time control bytes; never streams a G-code program. |
 | [HYDRA-UMC-BRIDGE-LASER](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-LASER) | 0.1.8 | Functional | service | python | cm5 | HYDRA-UMC-SERVER | Laser cell coordinator that reads three safeguards (key, enclosure, interlock) and cannot arm or fire. |
 | [HYDRA-UMC-BRIDGE-OPENPNP](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-OPENPNP) | 0.2.0 | Functional | service | python | cm5 | HYDRA-UMC-SERVER | Board hand-off coordinator for OpenPnP; its results are tagged simulation-only. |
 | [HYDRA-UMC-BRIDGE-PRINTER3D](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-PRINTER3D) | 0.1.9 | Functional | service | python | cm5 | HYDRA-UMC-SERVER | Coordination boundary for Moonraker/Klipper 3D printers: readiness, start, pause, resume and cancel of an uploaded file. |
@@ -110,15 +110,15 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 |---|---|---|---|---|---|---|---|
 | [HYDRA-UMC-BRIDGE-AMR](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-AMR) | 0.1.4 | Functional | library | python | cm5 | HYDRA-UMC-SERVER | Coordination boundary for AGV/AMR fleets: frame transform and a VDA 5050 style order vocabulary behind the shared safety gate. |
 | [HYDRA-UMC-BRIDGE-DROIDS](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-DROIDS) | 0.1.3 | Functional | library | python | cm5 | HYDRA-UMC-SERVER | Coordination boundary for legged and humanoid droids: a small named action vocabulary behind the shared safety gate. |
-| [HYDRA-UMC-BRIDGE-UAV](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-UAV) | 0.1.5 | Functional | library | python | cm5 | HYDRA-UMC-SERVER | Coordination boundary for camera-equipped UAVs: a flight-request vocabulary and a heartbeat/link-loss failsafe watchdog. |
+| [HYDRA-UMC-BRIDGE-UAV](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-UAV) | 0.1.6 | Functional | library | python | cm5 | HYDRA-UMC-SERVER | Coordination boundary for camera-equipped UAVs: a flight-request vocabulary and a heartbeat/link-loss failsafe watchdog. |
 
 ### Orchestration & Swarm
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
 | [HYDRA-UMC-ORCHESTRATOR](https://github.com/JuanenRac/HYDRA-UMC-ORCHESTRATOR) | 0.1.9 | Functional | service | rust | cm5 | - | Mission state machine with persistence and an outbox, an HTTP client to JOB-DISPATCHER and its own JSON/HTTP server. |
-| [HYDRA-UMC-JOB-DISPATCHER](https://github.com/JuanenRac/HYDRA-UMC-JOB-DISPATCHER) | 0.2.3 | Functional | api | go | cm5 | HYDRA-UMC-ORCHESTRATOR | Priority job queue with tool-aware routing, dependencies and de-duplication, over an HTTP API; optional SQLite persistence. |
-| [HYDRA-UMC-NODE-HEALING](https://github.com/JuanenRac/HYDRA-UMC-NODE-HEALING) | 0.1.9 | Functional | service | go | cm5 | HYDRA-UMC-ORCHESTRATOR | Health watchdog (gRPC or HTTP) with guarded recovery and identity-mismatch detection. |
+| [HYDRA-UMC-JOB-DISPATCHER](https://github.com/JuanenRac/HYDRA-UMC-JOB-DISPATCHER) | 0.2.4 | Functional | api | go | cm5 | HYDRA-UMC-ORCHESTRATOR | Priority job queue with tool-aware routing, dependencies and de-duplication, over an HTTP API; optional SQLite persistence. |
+| [HYDRA-UMC-NODE-HEALING](https://github.com/JuanenRac/HYDRA-UMC-NODE-HEALING) | 0.2.0 | Functional | service | go | cm5 | HYDRA-UMC-ORCHESTRATOR | Health watchdog (gRPC or HTTP) with guarded recovery and identity-mismatch detection. |
 | [HYDRA-UMC-PATH-PLANNER-3D](https://github.com/JuanenRac/HYDRA-UMC-PATH-PLANNER-3D) | 0.1.1 | Functional | library | rust | cm5 | HYDRA-UMC-ORCHESTRATOR | RRT 3D path planner with obstacle and workspace collision validation. |
 | [HYDRA-UMC-SWARM-SYNC](https://github.com/JuanenRac/HYDRA-UMC-SWARM-SYNC) | 0.1.5 | Functional | service | rust | cm5 | HYDRA-UMC-ORCHESTRATOR | CRDT last-writer-wins state synchronisation, property-tested for convergence. |
 
@@ -126,17 +126,17 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
-| [HYDRA-UMC-CONNECTOR-HUB](https://github.com/JuanenRac/HYDRA-UMC-CONNECTOR-HUB) | 0.1.5 | Functional | tool | python | user-pc | - | Registry and validator of declarative adapter manifests for external machines. |
+| [HYDRA-UMC-CONNECTOR-HUB](https://github.com/JuanenRac/HYDRA-UMC-CONNECTOR-HUB) | 0.1.6 | Functional | tool | python | user-pc | - | Registry and validator of declarative adapter manifests for external machines. |
 | [HYDRA-UMC-OS](https://github.com/JuanenRac/HYDRA-UMC-OS) | 0.5.4 | Functional | service | python | cm5 | - | Product layer on Raspberry Pi OS for the CM5: read-only device agent, preflight, rollback and Wi-Fi provisioning; not a new distribution. |
-| [HYDRA-UMC-SDK](https://github.com/JuanenRac/HYDRA-UMC-SDK) | 0.3.7 | Established | library | python | user-pc | HYDRA-UMC-OS | Versioned JSON Schema and OpenAPI contracts, conformance fixtures, reference clients (Python, Go, TypeScript, Rust) and the shared CI checks. |
+| [HYDRA-UMC-SDK](https://github.com/JuanenRac/HYDRA-UMC-SDK) | 0.4.0 | Established | library | python | user-pc | HYDRA-UMC-OS | Versioned JSON Schema and OpenAPI contracts, conformance fixtures, reference clients (Python, Go, TypeScript, Rust) and the shared CI checks. |
 
 ### Vision AI Node
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
-| [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE) | 0.1.6 | Functional | service | python | cm5 | - | Integration hub of the Hailo-8 vision family with a per-stage readiness check. |
-| [HYDRA-UMC-DETECTION-HEF](https://github.com/JuanenRac/HYDRA-UMC-DETECTION-HEF) | 0.1.5 | Functional | service | python | cm5 | HYDRA-UMC-VISION-NODE | Registry of compiled detection models with schema, Hailo-architecture and checksum checks before loading. |
+| [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE) | 0.1.7 | Functional | service | python | cm5 | - | Integration hub of the Hailo-8 vision family with a per-stage readiness check. |
+| [HYDRA-UMC-DETECTION-HEF](https://github.com/JuanenRac/HYDRA-UMC-DETECTION-HEF) | 0.1.6 | Functional | service | python | cm5 | HYDRA-UMC-VISION-NODE | Registry of compiled detection models with schema, Hailo-architecture and checksum checks before loading. |
 | [HYDRA-UMC-SAFETY-ZONES](https://github.com/JuanenRac/HYDRA-UMC-SAFETY-ZONES) | 0.1.5 | Functional | service | python | cm5 | HYDRA-UMC-VISION-NODE | Zone-breach checking and E-STOP requesting over axis-aligned zones, with calibration-freshness enforcement. |
-| [HYDRA-UMC-VISION-STREAMER](https://github.com/JuanenRac/HYDRA-UMC-VISION-STREAMER) | 0.2.1 | Established | service | python | cm5 | HYDRA-UMC-VISION-NODE | GStreamer pipeline and MediaMTX configuration generator with a HailoRT boundary. |
-| [HYDRA-UMC-VISUAL-SERVOING-API](https://github.com/JuanenRac/HYDRA-UMC-VISUAL-SERVOING-API) | 0.2.0 | Functional | api | python | cm5 | HYDRA-UMC-VISION-NODE | Position-based visual-servoing correction law, gated on the state of the safety zones. |
+| [HYDRA-UMC-VISION-STREAMER](https://github.com/JuanenRac/HYDRA-UMC-VISION-STREAMER) | 0.2.2 | Established | service | python | cm5 | HYDRA-UMC-VISION-NODE | GStreamer pipeline and MediaMTX configuration generator with a HailoRT boundary. |
+| [HYDRA-UMC-VISUAL-SERVOING-API](https://github.com/JuanenRac/HYDRA-UMC-VISUAL-SERVOING-API) | 0.2.1 | Functional | api | python | cm5 | HYDRA-UMC-VISION-NODE | Position-based visual-servoing correction law, gated on the state of the safety zones. |
 <!-- catalog:end -->
