@@ -68,3 +68,5 @@ neben seinen drei Geschwistern (VLA-Engine, Voice-UI, Docs-QA) ein:
   Hunderte synthetischer Ziele liefert dieselbe echte Eigenschaft
   (stürzt nie ab, liefert nie einen fehlerhaft geformten Plan), ohne
   eine neue Abhängigkeit hinzuzufügen.
+
+**Ein Plan als Operation.** `POST /decompose` antwortet zusätzlich mit `operation`: der Vorschlag als gemeinsame Operation des SDK (`kind` `execute_plan`, `status` `received`, `target` und `priority` der Anfrage, die Schritte, das Ziel und der Fingerabdruck in `params`; derselbe Plan ist dieselbe `operation_id`). Das ist die Form, die der Orchestrator und der Job-Dispatcher als Mission oder Job übernehmen. Sie gibt nichts frei: `executable` bleibt `false` bis `POST /release`.

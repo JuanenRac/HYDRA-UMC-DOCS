@@ -67,3 +67,5 @@ hermanos (VLA-Engine, Voice-UI, Docs-QA):
   sobre cientos de objetivos sintéticos obtiene la misma propiedad
   real (nunca falla, nunca devuelve un plan mal formado) sin añadir
   una nueva dependencia.
+
+**Un plan como Operation.** `POST /decompose` responde además con `operation`: la propuesta expresada como la Operation común del SDK (`kind` `execute_plan`, `status` `received`, el `target` y la `priority` de la petición, los pasos, el objetivo y la huella en `params`; el mismo plan es el mismo `operation_id`). Es la forma que el orquestador y el despachador de trabajos toman como misión o como trabajo. No libera nada: `executable` sigue en `false` hasta `POST /release`.

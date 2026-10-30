@@ -69,3 +69,5 @@ frères (VLA-Engine, Voice-UI, Docs-QA) :
   `random.Random` sur des centaines d'objectifs synthétiques obtient
   la même propriété réelle (ne plante jamais, ne renvoie jamais de
   plan malformé) sans ajouter de nouvelle dépendance.
+
+**Un plan comme Operation.** `POST /decompose` répond aussi avec `operation` : la proposition exprimée comme l'Operation commune du SDK (`kind` `execute_plan`, `status` `received`, le `target` et la `priority` de la requête, les étapes, l'objectif et l'empreinte dans `params` ; le même plan donne le même `operation_id`). C'est la forme que l'orchestrateur et le répartiteur de tâches prennent comme mission ou comme tâche. Elle ne libère rien : `executable` reste `false` jusqu'à `POST /release`.

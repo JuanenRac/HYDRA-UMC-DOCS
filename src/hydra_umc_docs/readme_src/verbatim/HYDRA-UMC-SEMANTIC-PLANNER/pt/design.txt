@@ -62,3 +62,5 @@ serviço no `docker-compose.yml` a par dos seus três irmãos
   sobre centenas de objetivos sintéticos obtém a mesma propriedade real
   (nunca falha, nunca devolve um plano malformado) sem uma nova
   dependência.
+
+**Um plano como Operation.** `POST /decompose` responde também com `operation`: a proposta expressa como a Operation comum do SDK (`kind` `execute_plan`, `status` `received`, o `target` e a `priority` do pedido, os passos, o objetivo e a impressão digital em `params`; o mesmo plano é o mesmo `operation_id`). É a forma que o orquestrador e o despachante de trabalhos aceitam como missão ou como trabalho. Não liberta nada: `executable` continua `false` até `POST /release`.
