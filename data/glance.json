@@ -271,7 +271,7 @@
     "HYDRA-UMC-SAFETY-ZONES": {
       "hardware": "not_run",
       "tests": {
-        "count": 245,
+        "count": 248,
         "command": "python -m pytest -q tests"
       }
     },
@@ -369,7 +369,7 @@
     "HYDRA-UMC-VISUAL-SERVOING-API": {
       "hardware": "not_run",
       "tests": {
-        "count": 194,
+        "count": 208,
         "command": "python -m pytest -q tests"
       }
     },
