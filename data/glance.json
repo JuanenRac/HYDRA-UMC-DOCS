@@ -234,7 +234,7 @@
       }
     },
     "HYDRA-UMC-OS": {
-      "hardware": "not_run",
+      "hardware": "bench",
       "tests": {
         "count": 20,
         "command": "python -m unittest discover -s agent/tests"
@@ -290,14 +290,14 @@
       }
     },
     "HYDRA-UMC-SERVER": {
-      "hardware": "not_run",
+      "hardware": "bench",
       "tests": {
         "count": 414,
         "command": "npm run test:unit"
       }
     },
     "HYDRA-UMC-STUDIO": {
-      "hardware": "not_run",
+      "hardware": "bench",
       "tests": {
         "count": 664,
         "command": "npm test"
@@ -360,7 +360,7 @@
       }
     },
     "HYDRA-UMC-VISION-STREAMER": {
-      "hardware": "not_run",
+      "hardware": "bench",
       "tests": {
         "count": 146,
         "command": "python -m pytest -q tests"
