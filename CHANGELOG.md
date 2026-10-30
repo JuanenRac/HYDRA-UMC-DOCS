@@ -4,6 +4,11 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **`docs/CM5_TEST_BENCH.md`:** the bench document of the CM5, with one row per service (port, health path, unit) and three columns left empty on purpose (what the installer guarantees, what was tested on a real CM5, what was not), and how a bench run fills them.
+- **Own roadmaps in the READMEs of SYNTHETIC-DATA-GEN and VISUAL-SERVOING-API** (eight languages): the first one lists splits and fixed classes, masks, keypoints, PNG output and the TWIN integration; the second hand-eye calibration, image-based servoing, a rate limit and a watchdog. Both used the roadmap of other projects.
+- **The roadmap of GATEWAY-INDUSTRIAL says that Profinet and ISO-27001 are only ideas** (eight languages), not implemented, and that they would live in a separate project still to be defined.
+- **The DETECTION-HEF README points to the manual steps for compiling a HEF** (eight languages), and says the script that automates them waits for a Dataflow Compiler licence.
+- **The SUITE README explains how to check the installer** (eight languages): it is not signed with Authenticode; a SHA-256 checksum and an Ed25519 signature are published next to it.
 ## [0.0.5] - The readme sources describe the functions of the night batches, the decisions of the week and a corrected count of tests
 
 - **`docs/DESIGN_PROPOSALS.md`:** short designs, not implemented, for the larger features that would change a public contract or span several repositories (command lifecycle, signed and expiring commands, bridge health topic, server gateway to the bridges, orchestrated board updates, shadow mode, signed safety state, multi-stage missions, replicated mission registry, historical access for OPC-UA, shared session store, two-slot image, ecosystem map).
