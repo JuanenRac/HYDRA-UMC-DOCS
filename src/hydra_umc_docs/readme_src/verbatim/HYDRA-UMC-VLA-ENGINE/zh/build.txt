@@ -14,7 +14,7 @@ run.bat
 `build.sh`/`build.bat` 不会更改版本号（只有 `python tools/hydra_project_tool.py bump` 才会提升）。`run.sh`（裸调用）的预期输出：
 
 ```text
-HYDRA-UMC-VLA-ENGINE v0.1.8
+HYDRA-UMC-VLA-ENGINE v{version}
 Vision-Language-Action engine (Hailo-10) - translates camera frames and text instructions into robotic action sequences.
 ```
 
