@@ -3,7 +3,7 @@
 """What is specific to the README of HYDRA-UMC-BRIDGE-AMR."""
 from __future__ import annotations
 
-from ...readme_kit import P, arch, code, table, LIMITS, WHY
+from ...readme_kit import P, arch, table, LIMITS, WHY
 from .. import bridge_kit as B
 
 ICON = "🚚"

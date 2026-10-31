@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from hydra_umc_docs import glance, glance_jump, readme_kit as K, readme_universal as U
+from hydra_umc_docs import glance_jump, readme_kit as K, readme_universal as U
 from hydra_umc_docs.readme_src import bridge_kit as B
 
 SRC = Path(__file__).resolve().parents[1] / "src" / "hydra_umc_docs" / "readme_src"

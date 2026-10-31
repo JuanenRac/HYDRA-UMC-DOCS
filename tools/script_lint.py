@@ -86,7 +86,6 @@ def lint_sh(repo: Path, rel: str, text: str, raw: bytes, add):
             add("W", "pip-user", f"line {i}: pip --user: {s[:90]}")
         if re.search(r"^\s*(sudo\s+)?apt(-get)?\s+install\b(?!.*(-y|--yes|-qq))", s):
             add("W", "apt-prompt", f"line {i}: apt install without -y")
-    cands = lines[:8]
     if not any("dirname" in l or "BASH_SOURCE" in l or "SCRIPT_DIR" in l or "cd " in l for l in lines):
         if re.search(r"\b(python3?|node|npm|cargo|go|gradlew?|flutter|cmake)\b.*\b(src|tools|scripts)/", body):
             add("W", "no-cd", "uses repo-relative paths but never cd's to the script directory")
@@ -101,7 +100,7 @@ def lint_bat(repo: Path, rel: str, text: str, raw: bytes, add):
     code = [l for l in low if not l.startswith(("rem ", "::", "@rem")) and l]
     # parentheses balance on lines that are not echo/rem
     depth = 0
-    for i, l in enumerate(lines, 1):
+    for _i, l in enumerate(lines, 1):
         s = l.strip()
         if not s or s.lower().startswith(("rem ", "::", "@rem", "echo", "@echo")):
             continue

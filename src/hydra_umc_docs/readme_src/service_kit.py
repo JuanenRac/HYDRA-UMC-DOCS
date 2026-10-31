@@ -8,7 +8,6 @@ related projects) is read from `readme_src/verbatim/<REPO>/<language>/<part>.txt
 from __future__ import annotations
 
 from ..readme_kit import P, SUMMARY_DIAGRAM, LIMITS, code, pick
-from .. import readme_kit as K
 
 # ------------------------------------------------------------------ what each toolchain needs
 INSTALL = {

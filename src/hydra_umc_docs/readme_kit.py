@@ -15,7 +15,7 @@ VERBATIM = Path(__file__).resolve().parent / "readme_src" / "verbatim"
 
 def P(en, es, de, fr, it, ja, zh, pt):
     """One text in the eight languages (the order of the arguments is the order of LGS)."""
-    return dict(zip(LGS, (en, es, de, fr, it, ja, zh, pt)))
+    return dict(zip(LGS, (en, es, de, fr, it, ja, zh, pt), strict=False))
 
 
 def pick(value, lg):

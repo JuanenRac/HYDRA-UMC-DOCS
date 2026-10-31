@@ -111,7 +111,7 @@ def BODY(lg, ctx):
     comments = list(text["dev_comments"])
     comments.insert(4, STATUS_LIGHTS_COMMENT[lg])
     comments.insert(6, CLAIMS_COMMENT[lg])
-    quick = [(command, comment) for command, comment in zip(COMMANDS, comments)]
+    quick = [(command, comment) for command, comment in zip(COMMANDS, comments, strict=False)]
     return {
         "overview": _overview(lg),
         "role": str(text["role"]),

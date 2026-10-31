@@ -11,7 +11,6 @@ import re
 import xml.etree.ElementTree as ElementTree
 from pathlib import Path
 
-import pytest
 
 from hydra_umc_docs import brand, glance, readme_family, readme_text, readme_universal
 from hydra_umc_docs.descriptions import DESCRIPTIONS

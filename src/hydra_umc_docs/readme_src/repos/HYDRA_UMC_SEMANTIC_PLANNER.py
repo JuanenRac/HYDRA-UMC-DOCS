@@ -3,11 +3,13 @@
 """What is specific to the README of HYDRA-UMC-SEMANTIC-PLANNER."""
 from __future__ import annotations
 
+from typing import Any
+
 from .. import service_kit as S
 
 ICON = '🧭'
 COMMENT = 'Rule-based mission planner and semantic error recovery'
-BADGES = []
+BADGES: Any = []
 NO_UI = True
 
 SPEC = {
@@ -39,7 +41,7 @@ SPEC = {
 
 from ... import readme_kit as K
 
-EXTRAS = {}
+EXTRAS: Any = {}
 
 
 def EXTRA(lg):
@@ -76,5 +78,5 @@ ADDENDA = {'security': {'en': 'Approvals can be signed (off by default): `serve 
 _BODY_BASE = BODY
 
 
-def BODY(lg, ctx):
+def BODY(lg, ctx):  # type: ignore[no-redef]
     return _K.apply_addenda(_BODY_BASE(lg, ctx), ADDENDA, lg)

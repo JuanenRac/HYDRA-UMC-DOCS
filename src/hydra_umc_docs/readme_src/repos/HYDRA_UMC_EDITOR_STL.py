@@ -3,6 +3,8 @@
 """What is specific to the README of HYDRA-UMC-EDITOR-STL."""
 from __future__ import annotations
 
+from typing import Any
+
 from .. import service_kit as S
 
 ICON = '📦'
@@ -56,8 +58,8 @@ SPEC = {
 }
 
 
-DOCS_EXTRA = []
-APPEND = {}
+DOCS_EXTRA: Any = []
+APPEND: Any = {}
 
 
 from ... import readme_kit as K
@@ -122,5 +124,5 @@ ADDENDA = {'security': {'en': 'Sending a robot or machine model to a catalogue i
 _BODY_BASE = BODY
 
 
-def BODY(lg, ctx):
+def BODY(lg, ctx):  # type: ignore[no-redef]
     return _K.apply_addenda(_BODY_BASE(lg, ctx), ADDENDA, lg)

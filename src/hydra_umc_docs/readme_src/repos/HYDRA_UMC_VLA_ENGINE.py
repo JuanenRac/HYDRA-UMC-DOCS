@@ -3,6 +3,8 @@
 """What is specific to the README of HYDRA-UMC-VLA-ENGINE."""
 from __future__ import annotations
 
+from typing import Any
+
 from .. import service_kit as S
 
 ICON = '🤖'
@@ -40,7 +42,7 @@ SPEC = {
 
 from ... import readme_kit as K
 
-EXTRAS = {}
+EXTRAS: Any = {}
 
 
 def EXTRA(lg):
@@ -80,5 +82,5 @@ ADDENDA = {'security': {'en': 'Trajectory proposals can be signed (off by defaul
 _BODY_BASE = BODY
 
 
-def BODY(lg, ctx):
+def BODY(lg, ctx):  # type: ignore[no-redef]
     return _K.apply_addenda(_BODY_BASE(lg, ctx), ADDENDA, lg)

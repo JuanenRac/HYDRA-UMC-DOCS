@@ -20,8 +20,6 @@ from __future__ import annotations
 
 import importlib
 import importlib.util
-import json
-import re
 import sys
 from pathlib import Path
 
@@ -98,10 +96,10 @@ def load_source(name: str):
 def structure_tool(repo: Path):
     path = repo / "tools" / "make_structure.py"
     spec = importlib.util.spec_from_file_location("_hydra_make_structure_" + repo.name.replace("-", "_"), path)
-    module = importlib.util.module_from_spec(spec)
+    module = importlib.util.module_from_spec(spec)  # type: ignore[arg-type]
     sys.path.insert(0, str(path.parent))
     try:
-        spec.loader.exec_module(module)
+        spec.loader.exec_module(module)  # type: ignore[union-attr]
     finally:
         sys.path.remove(str(path.parent))
     return module

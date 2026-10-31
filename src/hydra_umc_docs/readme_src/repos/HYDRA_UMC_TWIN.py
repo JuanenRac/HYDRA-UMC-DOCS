@@ -77,5 +77,5 @@ ADDENDA = {'security': {'en': 'The `?workspace=` override of the HTTP API is bou
 _BODY_BASE = BODY
 
 
-def BODY(lg, ctx):
+def BODY(lg, ctx):  # type: ignore[no-redef]
     return _K.apply_addenda(_BODY_BASE(lg, ctx), ADDENDA, lg)

@@ -67,7 +67,7 @@ def book(stroke: str = CYAN, width: float = 4) -> str:
 def banner(name: str = "HYDRA-UMC-DOCS", tagline: str = "ARCHITECTURE, INTERFACES & SECURITY BASELINE") -> str:
     name, tagline = html.escape(name), html.escape(tagline)
     tag_xs = [105 + index * 150 for index in range(len(TAGS))]
-    tags = "".join(f'<text x="{x}" y="360">#{html.escape(tag)}</text>' for x, tag in zip(tag_xs, TAGS))
+    tags = "".join(f'<text x="{x}" y="360">#{html.escape(tag)}</text>' for x, tag in zip(tag_xs, TAGS, strict=False))
     return f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" role="img" aria-labelledby="title desc">
   <title id="title">{name}</title><desc id="desc">{name} | HYDRA-UMC ecosystem project banner</desc>
   {defs()}

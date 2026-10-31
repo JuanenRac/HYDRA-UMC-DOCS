@@ -3,7 +3,7 @@
 """What is specific to the README of HYDRA-UMC-DETECTION-HEF."""
 from __future__ import annotations
 
-from ...readme_kit import P, arch, code, h3_split, table, LIMITS, WHY
+from ...readme_kit import P, arch, h3_split, table, LIMITS, WHY
 from .. import bridge_kit as B
 
 ICON = "🎯"
@@ -83,5 +83,5 @@ ADDENDA = {'security': {'en': '`GET /stats` shows file names, not absolute paths
 _BODY_BASE = BODY
 
 
-def BODY(lg, ctx):
+def BODY(lg, ctx):  # type: ignore[no-redef]
     return _K.apply_addenda(_BODY_BASE(lg, ctx), ADDENDA, lg)

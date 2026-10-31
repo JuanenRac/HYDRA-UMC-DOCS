@@ -55,5 +55,5 @@ ADDENDA = {'features': {'en': 'A promoted canary also leaves its change as a pat
 _BODY_BASE = BODY
 
 
-def BODY(lg, ctx):
+def BODY(lg, ctx):  # type: ignore[no-redef]
     return _K.apply_addenda(_BODY_BASE(lg, ctx), ADDENDA, lg)

@@ -3,6 +3,8 @@
 """What is specific to the README of HYDRA-UMC-VISUAL-SERVOING-API."""
 from __future__ import annotations
 
+from typing import Any
+
 from .. import service_kit as S
 
 ICON = '🎯'
@@ -38,7 +40,7 @@ SPEC = {
 
 from ... import readme_kit as K
 
-EXTRAS = {}
+EXTRAS: Any = {}
 
 
 def EXTRA(lg):

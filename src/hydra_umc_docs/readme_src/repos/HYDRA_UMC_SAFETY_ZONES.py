@@ -79,5 +79,5 @@ ADDENDA = {'interfaces': {'en': '`serve --decision-log FILE` (or `SAFETY_ZONES_D
 _BODY_BASE = BODY
 
 
-def BODY(lg, ctx):
+def BODY(lg, ctx):  # type: ignore[no-redef]
     return _K.apply_addenda(_BODY_BASE(lg, ctx), ADDENDA, lg)

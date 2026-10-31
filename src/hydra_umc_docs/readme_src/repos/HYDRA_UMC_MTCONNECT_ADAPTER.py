@@ -50,5 +50,5 @@ ADDENDA = {'configuration': {'en': "The listen port is read from `HYDRA_UMC_MTCO
 _BODY_BASE = BODY
 
 
-def BODY(lg, ctx):
+def BODY(lg, ctx):  # type: ignore[no-redef]
     return _K.apply_addenda(_BODY_BASE(lg, ctx), ADDENDA, lg)
