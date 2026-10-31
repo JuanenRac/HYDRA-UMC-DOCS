@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Working anchors in the DSI and iOS control READMEs:** the "see Versioning below" links pointed at an anchor that does not exist; they now match the heading, and the DSI README gets the Versioning section it was linking to (eight languages).
 - **`tools/check_test_counts.py`:** counts the real tests of every repository next to this one (pytest and unittest suites are collected, Go, Rust, JavaScript, Dart and Kotlin ones are counted from the source and only reported) and compares them with `data/glance.json` and with the Tests row of each README; `--apply` writes the exact counts back. The stale counts of thirteen repositories were corrected and their READMEs regenerated; the honesty paragraph of BRIDGE-UAV and the test breakdown of HYDRA-UMC now carry the real numbers.
 - **`tools/i18n_cross_check.py`:** reads the language files of STUDIO, SUITE, ANDROID-CONTROL and WATCH into one shape, fails when a client lacks a key in any of the eight languages and lists the texts that are the same in English in two clients but read differently in another language (`--lang`, `--list`, `--json`), so the wording can be aligned when a client is touched.
 

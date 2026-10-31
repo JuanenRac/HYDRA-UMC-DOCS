@@ -8,7 +8,7 @@
 ./run_dev.sh         # Git Bash / WSL、または cmd/PowerShell 用の run_dev.bat —— デスクトップシミュレーションモード（flutter run）、ハードウェア不要
 ```
 
-3 つのビルドスクリプト（`build.sh`/`build.bat`/`build_linux.sh`）はいずれもアプリのバージョンを変更しません——下記の[バージョン管理](#-バージョン管理)参照。`run_dev.sh`/`run_dev.bat` は加算しません——このポリシーの下では、開発ループの `flutter run` は「実際のビルド」ではありません。
+3 つのビルドスクリプト（`build.sh`/`build.bat`/`build_linux.sh`）はいずれもアプリのバージョンを変更しません——下記の[バージョン管理](#バージョン管理)参照。`run_dev.sh`/`run_dev.bat` は加算しません——このポリシーの下では、開発ループの `flutter run` は「実際のビルド」ではありません。
 
 ### 手動ビルド
 

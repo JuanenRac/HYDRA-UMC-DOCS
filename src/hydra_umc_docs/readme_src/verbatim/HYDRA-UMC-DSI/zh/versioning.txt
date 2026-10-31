@@ -1,0 +1,3 @@
+### 版本管理
+
+本仓库遵循生态系统统一的策略：构建绝不会更改版本号。显式的 `bump` 命令（`python tools/hydra_project_tool.py bump`）会运行 `bump_manifest_version.py`，提升 `pubspec.yaml` 中的版本（`+` 之后的构建号是纯粹的单调计数器，每次 bump +1，不进位），并保持清单同步。它还会重新生成 `lib/app_version.dart`（生成的文件，不是手工编辑的），应用在运行时读取它，以在 **Settings** 界面显示自身版本。完整版本历史见 [CHANGELOG.md](CHANGELOG.md)。

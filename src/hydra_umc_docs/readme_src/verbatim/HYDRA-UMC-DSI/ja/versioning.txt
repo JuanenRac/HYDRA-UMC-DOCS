@@ -1,0 +1,3 @@
+### バージョン管理
+
+このリポジトリはエコシステム全体の方針に従います：ビルドはバージョンを一切変更しません。明示的な `bump` コマンド（`python tools/hydra_project_tool.py bump`）が `bump_manifest_version.py` を実行し、`pubspec.yaml` のバージョンを上げ（`+` の後のビルド番号は単純な単調カウンターで、bump のたびに +1、繰り上がりなし）、マニフェストを同期させます。また `lib/app_version.dart`（生成物であり、手作業で編集されるものではありません）も再生成され、アプリは実行時にこれを読み取って **Settings** 画面に自身のバージョンを表示します。バージョン履歴は [CHANGELOG.md](CHANGELOG.md) を参照してください。

@@ -1,0 +1,3 @@
+### Versionamento
+
+Este repositório segue uma política de todo o ecossistema: compilar nunca altera a versão. O comando `bump` explícito (`python tools/hydra_project_tool.py bump`) executa o `bump_manifest_version.py`, que sobe a versão do `pubspec.yaml` (o número de compilação depois do `+` é um contador monótono simples, +1 em cada bump, sem transporte) e mantém o manifesto sincronizado. Também regenera o `lib/app_version.dart` (gerado, não editado à mão), que a aplicação lê em execução para mostrar a sua própria versão no ecrã **Definições**. Consulte o [CHANGELOG.md](CHANGELOG.md) para o histórico de versões.

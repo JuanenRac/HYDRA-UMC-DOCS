@@ -42,9 +42,16 @@ SPEC = {
 }
 
 
+APPEND = {'build': 'versioning'}
+
+
 def DOCS(lg, ctx):
     return S.docs_items(lg, ctx)
 
 
 def BODY(lg, ctx):
-    return S.make_body(lg, ctx, SPEC)
+    body = S.make_body(lg, ctx, SPEC)
+    for key, src in APPEND.items():
+        if ctx.has(lg, src):
+            body[key] = body[key] + "\n\n" + ctx.v(lg, src)
+    return body

@@ -8,7 +8,7 @@ Requires the [Flutter SDK](https://docs.flutter.dev/get-started/install) (stable
 ./run_dev.sh         # Git Bash / WSL, or run_dev.bat for cmd/PowerShell - desktop simulation mode (flutter run), no hardware needed
 ```
 
-All 3 build scripts (`build.sh`/`build.bat`/`build_linux.sh`) leave the app's version alone - see [Versioning](#-versioning) below. `run_dev.sh`/`run_dev.bat` do not - a dev-loop `flutter run` is not a "real build" under that policy.
+All 3 build scripts (`build.sh`/`build.bat`/`build_linux.sh`) leave the app's version alone - see [Versioning](#versioning) below. `run_dev.sh`/`run_dev.bat` do not - a dev-loop `flutter run` is not a "real build" under that policy.
 
 ### Manual build
 

@@ -8,7 +8,7 @@ Richiede il [Flutter SDK](https://docs.flutter.dev/get-started/install) (canale 
 ./run_dev.sh         # Git Bash / WSL, oppure run_dev.bat per cmd/PowerShell - modalità simulazione desktop (flutter run), senza bisogno dell'hardware
 ```
 
-Tutti e 3 gli script di compilazione (`build.sh`/`build.bat`/`build_linux.sh`) non cambiano la versione dell'app - vedere [Versionamento](#-versionamento) più sotto. `run_dev.sh`/`run_dev.bat` non lo fanno - un `flutter run` da ciclo di sviluppo non è una "compilazione reale" secondo questa policy.
+Tutti e 3 gli script di compilazione (`build.sh`/`build.bat`/`build_linux.sh`) non cambiano la versione dell'app - vedere [Versionamento](#versionamento) più sotto. `run_dev.sh`/`run_dev.bat` non lo fanno - un `flutter run` da ciclo di sviluppo non è una "compilazione reale" secondo questa policy.
 
 ### Compilazione manuale
 

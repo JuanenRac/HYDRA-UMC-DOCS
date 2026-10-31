@@ -8,7 +8,7 @@
 ./run_dev.sh         # Git Bash / WSL，或使用 run_dev.bat 用于 cmd/PowerShell —— 桌面模拟模式（flutter run），无需硬件
 ```
 
-全部 3 个构建脚本（`build.sh`/`build.bat`/`build_linux.sh`）都不会更改应用的版本号——见下文[版本管理](#-版本管理)。`run_dev.sh`/`run_dev.bat` 不会——在该策略下,开发循环中的 `flutter run` 不算“真正的构建”。
+全部 3 个构建脚本（`build.sh`/`build.bat`/`build_linux.sh`）都不会更改应用的版本号——见下文[版本管理](#版本管理)。`run_dev.sh`/`run_dev.bat` 不会——在该策略下,开发循环中的 `flutter run` 不算“真正的构建”。
 
 ### 手动构建
 
