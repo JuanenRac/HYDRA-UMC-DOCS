@@ -46,7 +46,9 @@
 
 通过标准库自身的 `xml.etree.ElementTree` 进行纯 XML 处理——对于这样一种简单的格式，不需要 `lxml` 依赖。内存中的模型（`hydra_editor_urdf/models.py`）是一棵刻意保持简单、可变、自研的数据类树，而非对现有 Python URDF 库（如 `urdfpy` 或 `yourdfpy`）的包装：本应用需要以交互方式*编辑*这棵树并实时重新渲染每一次更改，这不是一个以只读解析为主的库所擅长的场景，完全拥有这个模型能让它保持小巧、可检查，且不受第三方依赖自身发布节奏的影响。字段名称和默认值紧密遵循真实的 [URDF XML 规范](http://wiki.ros.org/urdf/XML)，因此解析器/写入器这一对始终是一个薄而直观的 XML↔对象映射。
 
-**xacro 不会被展开。** [xacro](http://wiki.ros.org/xacro) 是一个拥有自己 ROS 包和依赖链的 Python/XML 宏预处理器，一个真实的 xacro 文件只有在它编写时所针对的那个 ROS 包环境内部才能被可靠地解析（宏参数、`$(find pkg)` 风格的引入等）——这是本应用无法诚实复现的。使用了 `<xacro:...>` 标签或声明了 xacro 命名空间的文件会得到一条清晰的错误信息，解释这一限制并指向 ROS 的 `xacro` 命令行工具进行预处理，而不是静默解析错误。
+**xacro 不会被展开。** [xacro](http://wiki.ros.org/xacro) 是一个拥有自己 ROS 包和依赖链的 Python/XML 宏预处理器，一个真实的 xacro 文件只有在它编写时所针对的那个 ROS 包环境内部才能被可靠地解析（宏参数、`$(find pkg)` 风格的引入等）——这是本应用无法诚实复现的。使用了 `<xacro:...>` 标签或声明了 xacro 命名空间的文件会得到一条清晰的错误信息，解释这一限制并指向 ROS 的 `xacro` 命令行工具进行预处理，而不是静默解析错误。 唯一的例外是可选项:在 `hydra_editor_urdf_config.json` 中将 `xacro_expand` 设为 true,且机器上已安装 `xacro` 工具时,xacro 文件由该工具展开(程序本身不附带任何内容)。
+
+**可选的检查与导出,默认全部关闭**(开关在 `hydra_editor_urdf_config.json` 中):`self_collision_check` 以警告形式列出在初始姿态或逐个关节活动时包围盒重叠的连杆对(`self_collision_steps`、`self_collision_tolerance_m`;包围盒包住真实形状,因此可能报告擦边情况,但不会漏掉重叠);`license_check` 对文件夹中没有 LICENSE、COPYING、NOTICE 或 ATTRIBUTION 文件的网格以及带条件的许可证发出警告,并可根据找到的内容生成 ATTRIBUTION 文本;导出窗口有一个 Y 轴向上复选框,可为 Three.js 场景写出模型(根连杆将世界旋转四分之一圈,`y_up_scale` 缩放长度)。未开启时,它们都不会改变可行性或写出的内容。
 
 导出（`urdf/writer.py`）会从头重新序列化当前的内存树，而非修补原始的源 XML 文本，因此每一次实时编辑——无论由哪个面板做出——都会通过同一条代码路径，恰好一次地反映在“导出 URDF”菜单操作和发送到 STUDIO 服务器的负载中。
 

@@ -9,6 +9,9 @@ chmod +x build.sh   # einmalig
 ./run.sh --cli replace studio robots-6-dof ar3 base_link.STL /pfad/neu.stl
 ./run.sh --cli remove studio robots-6-dof ar3 base_link.STL
 ./run.sh --cli add studio robots-6-dof ar3 /pfad/neu.stl
+./run.sh --cli lite studio robots-6-dof ar3 --ratio 0.2          # leichtere Kopien in .lite/ (Originale bleiben unberührt)
+./run.sh --cli diff studio robots-6-dof ar3 base_link.STL --svg diff.svg   # mit der in .trash/ gesicherten Version vergleichen
+./run.sh --cli sync-libraries --master studio --target suite   # nur der Plan; mit --apply wird geschrieben, nichts wird gelöscht
 ./run.sh --cli push studio robots-6-dof ar3 --host 192.168.1.100 --username admin
 ```
 

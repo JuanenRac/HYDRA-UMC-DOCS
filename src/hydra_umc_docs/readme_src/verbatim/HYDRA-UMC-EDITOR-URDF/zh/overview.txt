@@ -2,4 +2,4 @@
 
 使用 **Python** 和 **PySide6/Qt6** 构建，采用与本生态系统中另一款桌面工具 [HYDRA-UMC SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE) 中已经验证过的相同架构模式：类 Photoshop/Fusion-360 的可停靠工作区（`QDockWidget`）、一个手写的 OpenGL 3D 视口（`QOpenGLWidget` + GLSL 3.3 核心配置着色器，不使用 `glBegin`/`glEnd` 遗留路径），以及一个持有状态的中央控制器对象，每个 UI 面板都通过 Qt 信号监听它。在本生态系统的同类工具上复用这一模式——而非为其探索一套新的 UI/渲染技术栈——是一个刻意的选择，而非疏忽。
 
-**诚实说明，与本生态系统其余文档所采用的惯例一致：** 本应用不展开 [xacro](http://wiki.ros.org/xacro) 宏，也不加载 COLLADA（`.dae`）网格。两者都是明确命名的限制（一条清晰的错误信息，而非静默的解析错误或视口中缺失的连杆），而非半成品式的尝试——具体原因见下方“URDF 解析”和“网格加载”两节。
+**诚实说明，与本生态系统其余文档所采用的惯例一致：** 本应用不展开 [xacro](http://wiki.ros.org/xacro) 宏，也不加载 COLLADA（`.dae`）网格。两者都是明确命名的限制（一条清晰的错误信息，而非静默的解析错误或视口中缺失的连杆），而非半成品式的尝试——具体原因见下方“URDF 解析”和“网格加载”两节。 唯一的例外是可选项:在 `hydra_editor_urdf_config.json` 中将 `xacro_expand` 设为 true,且机器上已安装 `xacro` 工具时,xacro 文件由该工具展开(程序本身不附带任何内容)。
