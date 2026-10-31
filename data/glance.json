@@ -180,7 +180,7 @@
     "HYDRA-UMC-JOB-DISPATCHER": {
       "hardware": "not_run",
       "tests": {
-        "count": 177,
+        "count": 188,
         "command": "go test ./..."
       }
     },
