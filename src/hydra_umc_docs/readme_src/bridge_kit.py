@@ -128,6 +128,11 @@ def trouble_table(lg, rows):
     return table(lg, "trouble", [[r[0], r[1], r[2]] for r in rows])
 
 
+def global_stop_row(variable, *texts):
+    """The row of the configuration table for the switch that makes a bridge follow the global stop of the server; `texts` are the eight descriptions."""
+    return (f"`{variable}`", P("off", "desactivado", "aus", "désactivé", "disattivato", "オフ", "关闭", "desativado"), P(*texts))
+
+
 def mqtt_env_table(lg):
     return table(lg, "config", MQTT_ENV_ROWS)
 

@@ -26,14 +26,14 @@
     "HYDRA-UMC-BRIDGE-AMR": {
       "hardware": "simulated",
       "tests": {
-        "count": 122,
+        "count": 145,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-CNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 261,
+        "count": 283,
         "command": "python tools/build_test.py"
       }
     },
@@ -47,28 +47,28 @@
     "HYDRA-UMC-BRIDGE-LASER": {
       "hardware": "simulated",
       "tests": {
-        "count": 173,
+        "count": 196,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-OPENPNP": {
       "hardware": "simulated",
       "tests": {
-        "count": 215,
+        "count": 240,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-PRINTER3D": {
       "hardware": "simulated",
       "tests": {
-        "count": 132,
+        "count": 157,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-ROS2": {
       "hardware": "simulated",
       "tests": {
-        "count": 88,
+        "count": 112,
         "command": "python tools/build_test.py"
       }
     },
@@ -215,7 +215,7 @@
     "HYDRA-UMC-OPCUA-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 136,
+        "count": 148,
         "command": "npm test"
       }
     },

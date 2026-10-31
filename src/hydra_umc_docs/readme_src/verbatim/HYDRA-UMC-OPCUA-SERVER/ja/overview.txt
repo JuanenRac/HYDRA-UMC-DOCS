@@ -10,6 +10,7 @@ Ignition、Siemens TIA Portal、Rockwell FactoryTalk のような産業用
 * 🛠️ **動的な情報モデリング：** アクティブなロボットと工具に基づいて OPC-UA ツリーを自動生成します。
 * 🔄 **ロボット一覧と 2 つのフラグ：** ロボット一覧（`Name` と `Online` を持つ `Robot_<id>` オブジェクト）は読み取り専用です。`SwarmOnline` と `MaintenanceMode` も読み取り専用です（書き込みはシステムの他の部分に効果がないため拒否されます）。`SwarmOnline` は、一覧の取得が一度完了するまで `BadWaitingForInitialData` です。関節やエフェクターを制御するノードはありません。
 * 🧭 **型付きモデル、ロール、ライブ信号:** セルは `HydraCellType`、各ロボットは `Objects/Robots` フォルダー下の `HydraRobotType` です(名前空間 1 の NodeId は変わりません。モデルはファイル `nodeset/HydraUmc.NodeSet2.xml` で、テストがコードと同一に保ちます)。`Online` はオペレーター画面のスイッチにすぎません。`Live` はロボットが `HYDRA_UMC_OPCUA_LIVE_WINDOW_MS` 以内に HYDRA-UMC-SERVER へパッチを送ったかどうか、`LastUpdate` はその時刻を示し、`HYDRA_UMC_OPCUA_SOURCE=stream`(ポーリングの代わりに WebSocket)が必要で、それ以外は `BadWaitingForInitialData` です。セッションは OPC UA のロールを持ちます。匿名は `Anonymous`、閲覧者は `Observer`、管理者はさらに `ConfigureAdmin` で、書き込めるロールはありません。*(node-opcua のクライアントで試験済み、SCADA では未検証)*
+* 🫀 **稼働状況レポートに基づくオンライン（既定ではオフ）：** `HYDRA_UMC_OPCUA_LIVENESS=1`（ポーリングモード）では、`Online` は設定の `online` スイッチがオンであるだけでは真にならず、サーバーの `GET /api/robots/liveness` が `live` と言っている間だけ真になります。`stale`、`unknown`、載っていないロボット、読み取れないレポートはオンラインではありません。*（実装済み、シミュレートしたサーバーに対してテスト済み）*
 * 🔖 **バージョン管理された名前空間と安定した NodeId：** 実際の明示的な名前空間 URI と、明示的な文字列 NodeId——アドレス空間の更新によって、クライアントが依存するパスが密かに変わることはありません。*(実装済み)*
 * 🔐 **セッションごとの書き込み認可：** 匿名セッションと認証済みセッションを区別する、実際の動的なチェック——すべてのクライアントがデフォルトで書き込みアクセス権を得られるわけではありません。*(実装済み)*
 * 📡 **サブスクリプションサポート：** OPC-UA のパブリッシュ・サブスクライブ機構を用いた高効率なデータ更新。*（エンドツーエンドでテスト済み：実際のサブスクリプションがデータ変更通知を届ける）*

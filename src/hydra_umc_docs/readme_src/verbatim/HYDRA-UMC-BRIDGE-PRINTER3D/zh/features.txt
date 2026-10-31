@@ -8,3 +8,4 @@
 * 🔜 **原始 G-code 流式传输:** 刻意仍然推迟——发送任意底层命令(而非一个已命名、已切片的作业)需要经过测试的配置文件、身份验证以及本桥目前还不具备的物理安全评审。*(计划中)*
 * ✅ **重复的幂等键：** `PrinterMqttBridge` 接受 `IdempotencyStore`：重复的作业键会得到第一次给出的答复，而不是被重新评估，因此重复的 `cmd/start` 绝不会启动第二次打印。*（已实现，已在 `tests/test_idempotency.py` 中测试）*
 * ✅ **加固的 MQTT 循环:** 过大(超过 16 KiB)或无法读取的负载、深度嵌套的 JSON 以及任何意外故障,都会在结果主题上得到拒绝回复,绝不会终止循环;暂停、取消和新增的 `cmd/emergency_stop`(Klipper 的 M112)在独立通道上处理,因此缓慢的 Moonraker 绝不会拖延停止;幂等键按动词区分(`job:`/`start:`);`cmd/job` 的回复带有 `"mode": "gate-only"`,通过它发出的 ABORT 会说明没有停止任何东西;状态带有 `observed_at`,桥接在带遗嘱(Last Will)的 `availability` 主题上宣告自己;支持 Moonraker API 密钥(`MOONRAKER_API_KEY`,以 `X-Api-Key` 发送),并且仅对 Moonraker 认识的文件才发送启动。*(已实现,在 `tests/test_hardening.py` 中测试)*
+* ✅ **跟随全局停止（默认关闭）:** 设置 `HYDRA_UMC_PRINTER3D_GLOBAL_STOP=1` 后，桥接读取服务器在 `hydra/swarm/safety/estop` 上的保留通知；通知为 `SAFE_STOP` 或无法读取时，它会带原因拒绝：恢复、启动和任务（中止放行）。停止命令和只读请求照常工作，只有 `READY` 才能解除拒绝。*（已实现，已对真实代理测试；从未与真实服务器一起运行）*
