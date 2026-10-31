@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **`tools/i18n_cross_check.py`:** reads the language files of STUDIO, SUITE, ANDROID-CONTROL and WATCH into one shape, fails when a client lacks a key in any of the eight languages and lists the texts that are the same in English in two clients but read differently in another language (`--lang`, `--list`, `--json`), so the wording can be aligned when a client is touched.
+
 ## [0.0.6] - The service and contract READMEs from their sources, the CM5 test bench document, own roadmaps and the manual steps to compile a HEF
 
 - **README sources for the service and contract work:** a paragraph in the eight languages for the laser and CNC bridges (running as a service from one configuration file), the production reports (windows summed by the data lake and the cache of the aggregates), the twin (state schema and JSON Schema validation), the swarm sync (typed robot state), the physics replica (tests against two real arms), the semantic planner, the orchestrator and the job dispatcher (a plan as the common Operation) and the visual servoing API (the safety verdict by default in the unit); the count of contracts of the SDK is 13.
