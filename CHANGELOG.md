@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.0.7] - Generated files are written in one step, pages and READMEs brought up to the current state of the family and new checks of the test counts and of the languages
+
 - **Generated files are written in one step:** the catalogue, brand pages, READMEs and the reviewed-claims file are written to a temporary file and moved over the target, so a check or a test that reads them at the same moment as a regeneration never sees a half-written file.
 
 - **Updater README:** the design section of the version-train feature now says that the train file can be signed with an Ed25519 signature and that a valid one is required by default while trains are on, in the eight languages.
