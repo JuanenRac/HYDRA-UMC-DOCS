@@ -355,7 +355,7 @@
     "HYDRA-UMC-VISION-NODE": {
       "hardware": "not_run",
       "tests": {
-        "count": 151,
+        "count": 243,
         "command": "python -m pytest -q tests"
       }
     },
