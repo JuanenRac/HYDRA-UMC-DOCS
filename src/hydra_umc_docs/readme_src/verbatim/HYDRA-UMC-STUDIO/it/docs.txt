@@ -1,0 +1,5 @@
+- **[docs/MESH_PACKAGE.md](docs/MESH_PACKAGE.md)** — le mesh 3D come un unico pacchetto con checksum fissato: origini `local`, `auto` e `download`, e i comandi che le verificano e le scaricano.
+- **[docs/MACHINE_ASSETS.md](docs/MACHINE_ASSETS.md)** — modelli di macchina indipendenti: come si sceglie un modello e a chi appartiene.
+- **[docs/RACK_MODELS.md](docs/RACK_MODELS.md)** — rack di ingresso e uscita configurabili: configurazione e compatibilità.
+- **[docs/HEATED_BED_MODELS.md](docs/HEATED_BED_MODELS.md)** — modelli di piano riscaldato: scelta e dimensioni dei quattro preset.
+- **[docs/VACUUM_TABLE_MODELS.md](docs/VACUUM_TABLE_MODELS.md)** — modelli di tavolo a vuoto: come sceglierne uno per un robot.

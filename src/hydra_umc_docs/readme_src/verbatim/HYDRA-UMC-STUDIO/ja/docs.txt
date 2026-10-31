@@ -1,0 +1,5 @@
+- **[docs/MESH_PACKAGE.md](docs/MESH_PACKAGE.md)** — チェックサムを固定した 1 つのパッケージとしての 3D メッシュ。取得元 `local`、`auto`、`download` と、検証・取得のコマンド。
+- **[docs/MACHINE_ASSETS.md](docs/MACHINE_ASSETS.md)** — 独立した機械モデル：モデルの選び方と所有者。
+- **[docs/RACK_MODELS.md](docs/RACK_MODELS.md)** — 設定可能な入力・出力ラック：設定と互換性。
+- **[docs/HEATED_BED_MODELS.md](docs/HEATED_BED_MODELS.md)** — ヒートベッドのモデル：4 つのプリセットの選択と寸法。
+- **[docs/VACUUM_TABLE_MODELS.md](docs/VACUUM_TABLE_MODELS.md)** — 真空テーブルのモデル：ロボットに割り当てる方法。

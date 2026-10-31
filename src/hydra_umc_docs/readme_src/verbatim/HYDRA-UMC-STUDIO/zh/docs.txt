@@ -1,0 +1,5 @@
+- **[docs/MESH_PACKAGE.md](docs/MESH_PACKAGE.md)** — 以固定校验和的单一软件包提供的 3D 网格：来源 `local`、`auto` 和 `download`，以及检查和获取它们的命令。
+- **[docs/MACHINE_ASSETS.md](docs/MACHINE_ASSETS.md)** — 独立的机器模型：如何选择模型以及它归谁所有。
+- **[docs/RACK_MODELS.md](docs/RACK_MODELS.md)** — 可配置的输入和输出料架：配置与兼容性。
+- **[docs/HEATED_BED_MODELS.md](docs/HEATED_BED_MODELS.md)** — 热床模型：四个预设的选择和尺寸。
+- **[docs/VACUUM_TABLE_MODELS.md](docs/VACUUM_TABLE_MODELS.md)** — 真空台模型：如何为机器人选择。

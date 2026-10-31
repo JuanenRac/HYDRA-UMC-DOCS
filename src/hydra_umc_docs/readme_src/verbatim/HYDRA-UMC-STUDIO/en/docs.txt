@@ -1,0 +1,5 @@
+- **[docs/MESH_PACKAGE.md](docs/MESH_PACKAGE.md)** — the 3D meshes as one package with a pinned checksum: sources `local`, `auto` and `download`, and the commands that check and fetch them.
+- **[docs/MACHINE_ASSETS.md](docs/MACHINE_ASSETS.md)** — independent machine models: how a model is selected and who owns it.
+- **[docs/RACK_MODELS.md](docs/RACK_MODELS.md)** — configurable input and output racks: configuration and compatibility.
+- **[docs/HEATED_BED_MODELS.md](docs/HEATED_BED_MODELS.md)** — heated bed models: selection and dimensions of the four presets.
+- **[docs/VACUUM_TABLE_MODELS.md](docs/VACUUM_TABLE_MODELS.md)** — vacuum table models: how to select one for a robot.
