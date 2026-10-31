@@ -33,7 +33,7 @@
     "HYDRA-UMC-BRIDGE-CNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 283,
+        "count": 287,
         "command": "python tools/build_test.py"
       }
     },
@@ -47,14 +47,14 @@
     "HYDRA-UMC-BRIDGE-LASER": {
       "hardware": "simulated",
       "tests": {
-        "count": 196,
+        "count": 197,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-OPENPNP": {
       "hardware": "simulated",
       "tests": {
-        "count": 240,
+        "count": 241,
         "command": "python tools/build_test.py"
       }
     },
@@ -103,14 +103,14 @@
     "HYDRA-UMC-DATALAKE": {
       "hardware": "not_run",
       "tests": {
-        "count": 128,
+        "count": 134,
         "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-DETECTION-HEF": {
       "hardware": "not_run",
       "tests": {
-        "count": 128
+        "count": 150
       }
     },
     "HYDRA-UMC-DEV-SERVER": {
@@ -144,7 +144,7 @@
     "HYDRA-UMC-EDITOR-STL": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 237,
+        "count": 267,
         "command": "python -m pytest tests -q"
       }
     },
@@ -348,7 +348,7 @@
     "HYDRA-UMC-UPDATER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 181,
+        "count": 219,
         "command": "python -m pytest -q tests"
       }
     },

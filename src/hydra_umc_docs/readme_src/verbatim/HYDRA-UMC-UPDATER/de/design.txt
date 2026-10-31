@@ -120,3 +120,5 @@
   um "ist dieses Repo ungefähr aktuell?" zu beantworten, kein Ersatz für
   `build_firmware.sh`s eigene `firmware_manifest.json` für ein echtes
   Flashen.
+
+- **Reihenfolge eines Stapels und Rücknahme einer Übernahme:** Ein Projekt, dessen Manifest Repositorys in `depends_on` nennt, wird nach den genannten Projekten installiert oder aktualisiert, soweit sie im selben Stapel sind (zuerst das SDK, der Updater zuletzt; eine Abhängigkeit außerhalb des Stapels wird ignoriert, ein Zyklus kann kein Projekt verlieren). Nach einer Übernahme lässt sich die Gesundheitsprüfung wiederholen (`HYDRA_UMC_UPDATER_HEALTH_RETRIES`); mit `HYDRA_UMC_UPDATER_ROLLBACK_ON_UNHEALTHY=1` (standardmäßig aus) stellt eine weiter fehlschlagende Prüfung die vorherige Installation wieder her und meldet das Update als fehlgeschlagen.

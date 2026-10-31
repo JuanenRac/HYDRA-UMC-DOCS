@@ -303,3 +303,27 @@ BUILD_GENERIC = P(
     "发布无需编译：`build.sh` / `build.bat` 创建虚拟环境、以可编辑模式安装包并运行测试，`build-test` 只做检查。构建从不改变版本；只有 `python tools/hydra_project_tool.py bump` 会提升版本，并同时推进更新日志。包、清单和更新日志的版本必须一致，否则 `ci_validate.py` 会失败。",
     "Não há nada para compilar numa publicação: `build.sh` / `build.bat` criam o ambiente virtual, instalam o pacote em modo editável e executam os testes, e `build-test` apenas verifica. Compilar nunca muda a versão; só a sobe `python tools/hydra_project_tool.py bump`, que também avança o registo de alterações. A versão do pacote, do manifesto e do registo tem de coincidir, senão o `ci_validate.py` falha.",
 )
+
+# ------------------------------------------------------------------ rows of the tests of the bridges that follow the global stop
+GLOBAL_STOP_DESC = P(
+    "the global-stop guard and its refusals with the reason, and the same against a real broker on a free local port (the announcement at QoS 0, 1 and 2, a retained stop obeyed at connect, an unreadable one failing closed)",
+    "la guardia de la parada global y sus rechazos con el motivo, y lo mismo contra un broker real en un puerto local libre (el anuncio en QoS 0, 1 y 2, una parada retenida obedecida al conectar, una ilegible que falla cerrada)",
+    "die Wächterlogik des globalen Stopps und ihre Ablehnungen mit Grund, und dasselbe gegen einen echten Broker auf einem freien lokalen Port (die Ankündigung mit QoS 0, 1 und 2, ein gehaltener Stopp wird beim Verbinden befolgt, ein unlesbarer schlägt geschlossen fehl)",
+    "la garde de l'arrêt global et ses refus avec le motif, et la même chose contre un vrai broker sur un port local libre (l'annonce en QoS 0, 1 et 2, un arrêt retenu obéi à la connexion, un arrêt illisible qui échoue fermé)",
+    "la guardia dell'arresto globale e i suoi rifiuti con il motivo, e lo stesso contro un broker reale su una porta locale libera (l'annuncio in QoS 0, 1 e 2, un arresto trattenuto obbedito alla connessione, uno illeggibile che fallisce chiuso)",
+    "グローバル停止のガードと理由付きの拒否、および空いているローカルポートの実際のブローカーに対する同じ試験（QoS 0・1・2 での通知、接続時に保持された停止に従うこと、読めない通知は安全側に倒れること）",
+    "全局停止的守卫及其附带原因的拒绝，以及在空闲本地端口上对真实代理的同样测试（QoS 0、1、2 的通告，连接时遵从保留的停止，无法读取的通告按故障关闭处理）",
+    "a guarda da paragem global e as suas recusas com o motivo, e o mesmo contra um broker real numa porta local livre (o anúncio em QoS 0, 1 e 2, uma paragem retida obedecida ao ligar, uma ilegível que falha fechada)",
+)
+BROKER_DESC = P(
+    "the MQTT client against a real HYDRA-UMC-MQTT-BROKER on a free local port: an order through the client, the retained state and last will, and the way back after the broker went down and up; it skips itself when Node.js, `paho-mqtt` or the installed broker (`HYDRA_UMC_TEST_BROKER_DIR`, by default the folder next to this one) are missing",
+    "el cliente MQTT contra un HYDRA-UMC-MQTT-BROKER real en un puerto local libre: una orden a través del cliente, el estado retenido y la última voluntad, y la vuelta tras caer y volver el broker; se omite si faltan Node.js, `paho-mqtt` o el broker instalado (`HYDRA_UMC_TEST_BROKER_DIR`, por defecto la carpeta contigua)",
+    "der MQTT-Client gegen einen echten HYDRA-UMC-MQTT-BROKER auf einem freien lokalen Port: ein Befehl über den Client, der gehaltene Zustand und das Letzte Testament, und der Rückweg, nachdem der Broker aus- und wieder eingeschaltet wurde; er überspringt sich, wenn Node.js, `paho-mqtt` oder der installierte Broker (`HYDRA_UMC_TEST_BROKER_DIR`, standardmäßig der Nachbarordner) fehlen",
+    "le client MQTT contre un vrai HYDRA-UMC-MQTT-BROKER sur un port local libre : un ordre via le client, l'état retenu et le testament, et le retour après la chute et le retour du broker ; il se saute quand Node.js, `paho-mqtt` ou le broker installé (`HYDRA_UMC_TEST_BROKER_DIR`, par défaut le dossier voisin) manquent",
+    "il client MQTT contro un vero HYDRA-UMC-MQTT-BROKER su una porta locale libera: un ordine tramite il client, lo stato trattenuto e l'ultimo testamento, e il ritorno dopo che il broker è caduto e tornato; si salta se mancano Node.js, `paho-mqtt` o il broker installato (`HYDRA_UMC_TEST_BROKER_DIR`, per impostazione predefinita la cartella accanto)",
+    "空いているローカルポート上の実際の HYDRA-UMC-MQTT-BROKER に対する MQTT クライアントの試験：クライアント経由の指示、保持された状態と遺言、ブローカーが落ちて戻った後の復帰。Node.js、`paho-mqtt`、またはインストール済みのブローカー（`HYDRA_UMC_TEST_BROKER_DIR`、既定は隣のフォルダー）がなければ自動的にスキップされます",
+    "在空闲本地端口上对真实 HYDRA-UMC-MQTT-BROKER 的 MQTT 客户端测试：通过客户端下发的指令、保留状态与遗嘱，以及代理掉线再恢复后的回路；缺少 Node.js、`paho-mqtt` 或已安装的代理（`HYDRA_UMC_TEST_BROKER_DIR`，默认是相邻文件夹）时会自动跳过",
+    "o cliente MQTT contra um HYDRA-UMC-MQTT-BROKER real numa porta local livre: uma ordem através do cliente, o estado retido e a última vontade, e o regresso depois de o broker cair e voltar; é ignorado quando faltam o Node.js, o `paho-mqtt` ou o broker instalado (`HYDRA_UMC_TEST_BROKER_DIR`, por omissão a pasta ao lado)",
+)
+GLOBAL_STOP_ROW = ["`test_global_stop.py`, `test_global_stop_broker.py`", "-", GLOBAL_STOP_DESC]
+BROKER_ROW = ["`test_broker_integration.py`, `broker_harness.py`", "-", BROKER_DESC]

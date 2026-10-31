@@ -42,3 +42,9 @@ UI o un adaptador puedan desarrollarse antes de que exista hardware
 CM5/robot/MCU real. Los 15 contratos tienen al menos un accesorio de
 conformidad válido e inválido, verificados por la matriz de
 compatibilidad de arriba.
+
+### Fuente de rutas, contratos de mensajería y un transporte de puentes endurecible
+
+- **Una fuente para un grupo de rutas del servidor (piloto: las rutas de conexiones):** `contracts/sources/connections.routes.json` declara `GET /api/connections/clients` y `GET /api/connections/events` (acceso, códigos de estado, parámetros de consulta) sobre los esquemas cerrados `ConnectionClient` y `ConnectionEvent`, y `python tools/contract_source.py` genera a partir de ella `contracts/openapi/v1/server.connections.openapi.json`. `--check` falla si el documento generado está desactualizado, si una copia de los esquemas difiere o si las rutas o enumeraciones del servidor se desvían de la fuente. Véase [`docs/CONTRACT_SOURCE.md`](docs/CONTRACT_SOURCE.md).
+- **Contratos de mensajería:** `MqttPublish` lleva un `qos` (0, 1 o 2) y `ProductionEvent` describe un ciclo terminado (`source_id`, `at_utc`, `good`, `cycle_time_s`), que los informes de producción convierten en OEE.
+- **Un transporte de puentes que se puede endurecer, con todos los límites desactivados por defecto:** `MessageDispatcher(..., max_queue=N, max_payload_bytes=N)` acota las órdenes que esperan tras la que se ejecuta (se descarta y cuenta la más antigua) y rechaza una carga demasiado grande; el carril de parada nunca se acota y los verbos de parada están exentos del tope. `stats()` devuelve los contadores `dropped`, `oversized` y `queued`. `connect_with_retry` y `open_bridge_client` admiten una espera exponencial con jitter en la primera conexión, y `reconnect_min_delay_seconds` / `reconnect_max_delay_seconds` fijan el retardo de reconexión del cliente MQTT. Véase [`docs/PYTHON_CLIENT.md`](docs/PYTHON_CLIENT.md).

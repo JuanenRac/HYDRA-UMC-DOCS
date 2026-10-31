@@ -1,4 +1,4 @@
-> **Honesty check - what actually runs today:** the ten JSON Schema v1 contracts with a valid and an invalid fixture each, the Python validator, the first OpenAPI v1 slice of HYDRA-UMC-SERVER, the Go, TypeScript and Rust clients that enforce the same schemas, the bridge helpers and the compatibility matrix are real and tested on a computer ({tests} Python tests, plus the suites of the other three clients). Protobuf is not published yet, the job gate is a shared software function and not a certified safety function, and nothing here has run on real hardware.
+> **Honesty check - what actually runs today:** the sixteen JSON Schema v1 contracts with a valid and an invalid fixture each, the Python validator, the first OpenAPI v1 slice of HYDRA-UMC-SERVER, the Go, TypeScript and Rust clients that enforce the same schemas, the bridge helpers and the compatibility matrix are real and tested on a computer ({tests} Python tests, plus the suites of the other three clients). Protobuf is not published yet, the job gate is a shared software function and not a certified safety function, and nothing here has run on real hardware.
 
 ---
 

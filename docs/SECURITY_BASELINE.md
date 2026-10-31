@@ -27,6 +27,7 @@ The design is a trusted local network. The server listens on every interface (`0
 * **Rate limits** per address: the login (5 failed attempts per 15 minutes by default), the refresh, and a separate budget for the global stop.
 * **Production start policy.** With `NODE_ENV=production` the server refuses to start with an empty or example `JWT_SECRET`, one shorter than 32 characters or too repetitive, an example bootstrap password, one shorter than 12 characters or one that contains the user name; and it refuses to create the first administrator without both bootstrap values. CORS denies every cross-origin browser request until an allowlist is set.
 * **Cameras.** Live streams, photos and recordings demand a short-lived ticket (`POST /api/camera/ticket`) or a Bearer token by default.
+* **Who connects.** `GET /api/connections/clients` and `/events` list the clients the server has seen and their sign-ins, sign-outs and refused sign-ins in a closed contract with no password, token or secret; the address of a client is kept only behind its own switch. Flash progress messages go only to administrators.
 * **Reboot and shutdown** accept only a plain request from the device itself: a proxied request, another origin or a cross-site fetch gets `403`.
 * **Robot ownership.** A robot reserved by one account cannot be commanded by another, except for the stop commands, which are never blocked by a reservation.
 * **Transport.** HTTPS and WSS when `TLS_CERT_PATH` and `TLS_KEY_PATH` are set; a path that is set but unreadable stops the start instead of falling back to plain HTTP.
@@ -74,6 +75,18 @@ These exist and work, but a default installation does not have them. They are th
 | `MQTT_TLS_CERT`, `MQTT_TLS_KEY`, `MQTT_TLS_CA` | plain TCP | TLS and mutual TLS |
 | `HYDRA_UMC_UPDATER_REQUIRE_SIGNED=1` | off | Signed commits only |
 | `SWARM_SYNC_SHARED_SECRET` | off | Shared-secret authentication |
+| `HYDRA_UMC_HEALTH_OPEN=1` (`health.open`) | off | `GET /health` answers without a sign-in with a bare report; until then `404` |
+| `HYDRA_UMC_SAFETY_PUBLISH_STOP=1` (`safety.publishGlobalStop`) | off | A global stop is also announced on the MQTT bridge as a retained `SAFE_STOP` |
+| `HYDRA_UMC_<BRIDGE>_GLOBAL_STOP=1` | off | The AMR, CNC, LASER, OPENPNP, PRINTER3D and ROS2 bridges refuse what moves while that announcement says `SAFE_STOP` (or cannot be read) |
+| `HYDRA_UMC_CONNECTION_RECORD_ADDRESS=1` (`connections.recordAddress`) | off | The history of connections also keeps the address and user agent of each client (personal data), shown to administrators only |
+| `HYDRA_UMC_CAMERA_AUTH=open` (`camera.open`) | tickets required | Camera pictures without a ticket: lowers protection, off on purpose |
+| `HYDRA_UMC_WS_QUERY_TOKEN=allow` (`websocket.allowQueryToken`) | refused | A token in the WebSocket address (it stays in proxy logs): lowers protection |
+| `HYDRA_UMC_LOG_REDACTION=off` (`logging.redactSecrets`) | secrets blanked | Stops blanking secrets in the log: lowers protection |
+| `HYDRA_UMC_VOICE_CONFIRM_REQUIRE_SIGNATURE=1` (`voice.requireSignature`) | off | A confirmed spoken request needs a verified signature |
+| `HYDRA_UMC_OPCUA_LIVENESS=1` | off | OPC UA `Online` follows `GET /api/robots/liveness` instead of the `online` flag of the settings |
+| `journal.read`, `server.metrics` of the local technician | closed | Two optional tools: a bounded window of the journal of an allow-listed unit and one GET of an allow-listed metrics endpoint |
+| `HYDRA_UMC_UPDATER_ROLLBACK_ON_UNHEALTHY=1` | off | A promotion whose health check still fails puts the previous installation back |
+| `HYDRA_LOCAL_SCREEN` | `hdmi` | One local screen on the CM5: `hdmi`, `dsi` or `none` (the two kiosks never claim `tty1` together) |
 
 ## Not done yet
 

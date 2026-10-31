@@ -89,3 +89,7 @@ Copie STL indipendenti per JuanenPnP, JuanenCNC e JuanenLaser; LumenPnP mantiene
 [Modelli macchina indipendenti — STL](docs/MACHINE_ASSETS.md).
 
 Questi modelli originali JuanenPNP / HYDRA-UMC e i sorgenti SCAD sono sotto GPL-3.0; non sono il CAD della macchina Opulo.
+
+### Mesh da un unico pacchetto
+
+`meshes.pack.json` fissa lo SHA-256 di un pacchetto e di ogni mesh condivisa con HYDRA-UMC-STUDIO, e `python -m hydra_suite.mesh_pack` (`status`, `check`, `ensure`, `prepare`) porta le mesh dell'albero a quello stato. L'origine è `local` (predefinita: nulla cambia e nulla viene scaricato), `auto` (si usano le mesh locali quando ci sono tutte; si scaricano solo quelle mancanti) o `download` (ogni mesh è verificata dal suo hash), scelta in `mesh_pack.config.json` o con `HYDRA_UMC_MESH_SOURCE`. Un pacchetto che non corrisponde non installa nulla e sono accettati solo indirizzi `https`; `run.sh` e `run.bat` chiamano il passo silenzioso `prepare`. Messaggi negli otto idiomi. Vedi [`docs/MESH_PACKAGE.md`](docs/MESH_PACKAGE.md).

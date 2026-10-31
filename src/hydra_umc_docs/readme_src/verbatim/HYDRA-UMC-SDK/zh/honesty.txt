@@ -1,4 +1,4 @@
-> **诚实检查——今天真正可运行的部分：** 十个 JSON Schema v1 契约（各带一个有效和一个无效夹具）、Python 验证器、HYDRA-UMC-SERVER 的第一部分 OpenAPI v1、执行相同架构的 Go、TypeScript 和 Rust 客户端、桥接辅助代码和兼容性矩阵都是真实的，并已在计算机上测试（{tests} 个 Python 测试，外加其他三个客户端的测试集）。Protobuf 尚未发布，作业门是共用的软件功能而不是经过认证的安全功能，这里的内容从未在真实硬件上运行。
+> **诚实检查——今天真正可运行的部分：** 十六个 JSON Schema v1 契约（各带一个有效和一个无效夹具）、Python 验证器、HYDRA-UMC-SERVER 的第一部分 OpenAPI v1、执行相同架构的 Go、TypeScript 和 Rust 客户端、桥接辅助代码和兼容性矩阵都是真实的，并已在计算机上测试（{tests} 个 Python 测试，外加其他三个客户端的测试集）。Protobuf 尚未发布，作业门是共用的软件功能而不是经过认证的安全功能，这里的内容从未在真实硬件上运行。
 
 ---
 

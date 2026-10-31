@@ -88,3 +88,7 @@ Copias STL independientes para JuanenPnP, JuanenCNC y JuanenLaser; LumenPnP cons
 [Modelos independientes de máquinas — STL](docs/MACHINE_ASSETS.md).
 
 Estos diseños originales JuanenPNP / HYDRA-UMC y sus fuentes SCAD usan GPL-3.0; no son el CAD de la máquina de Opulo.
+
+### Mallas desde un único paquete
+
+`meshes.pack.json` fija el SHA-256 de un paquete y de cada malla compartida con HYDRA-UMC-STUDIO, y `python -m hydra_suite.mesh_pack` (`status`, `check`, `ensure`, `prepare`) deja las mallas del árbol en ese estado. El origen es `local` (por defecto: no cambia nada y no se descarga nada), `auto` (se usan las mallas locales cuando están todas; solo se descargan las que faltan) o `download` (cada malla se comprueba por su hash), elegido en `mesh_pack.config.json` o con `HYDRA_UMC_MESH_SOURCE`. Un paquete que no coincide no instala nada y solo se aceptan direcciones `https`; `run.sh` y `run.bat` llaman al paso silencioso `prepare`. Mensajes en los ocho idiomas. Véase [`docs/MESH_PACKAGE.md`](docs/MESH_PACKAGE.md).

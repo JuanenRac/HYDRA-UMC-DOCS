@@ -2,3 +2,5 @@ flowchart LR
     PRINTER["Moonraker / Klipper<br/>(/printer/info)"] --> BRIDGE["BRIDGE-PRINTER3D<br/>MoonrakerProbe.parse_info()"]
     BRIDGE -- "BridgeJob + 观测到的 MachineState" --> SDK["HYDRA-UMC-SDK<br/>evaluate_job()"]
     SDK -- GateDecision --> RESULT["MQTT: cmd/job/result"]
+    SDK -- "允许" --> JOBCTRL["MoonrakerJobControl<br/>启动/暂停/恢复/取消"]
+    JOBCTRL -- "POST /printer/print/*" --> PRINTER

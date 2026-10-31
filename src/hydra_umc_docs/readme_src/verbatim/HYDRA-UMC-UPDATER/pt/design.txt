@@ -102,3 +102,5 @@
   repositório - suficientemente bom para responder a «este repositório está
   mais ou menos atualizado», não um substituto do `firmware_manifest.json` do
   próprio `build_firmware.sh` para uma gravação real.
+
+- **Ordem de um lote e anulação de uma promoção:** um projeto cujo manifesto lista repositórios em `depends_on` é instalado ou atualizado depois dos que nomeia e que estão no mesmo lote (primeiro o SDK, o atualizador no fim; uma dependência fora do lote é ignorada e um ciclo não pode fazer perder um projeto). Após uma promoção, a verificação de saúde pode ser repetida (`HYDRA_UMC_UPDATER_HEALTH_RETRIES`) e, com `HYDRA_UMC_UPDATER_ROLLBACK_ON_UNHEALTHY=1` (desativado por omissão), uma verificação que continue a falhar repõe a instalação anterior e dá a atualização por falhada.

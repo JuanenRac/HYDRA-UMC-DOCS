@@ -118,3 +118,5 @@
   rappresentativo per repo - sufficiente per rispondere "questo repo è
   più o meno aggiornato?", non un sostituto del proprio
   `firmware_manifest.json` di `build_firmware.sh` per un flash reale.
+
+- **Ordine di un lotto e annullamento di una promozione:** un progetto il cui manifesto elenca repository in `depends_on` viene installato o aggiornato dopo quelli che nomina e che sono nello stesso lotto (prima l'SDK, l'aggiornatore per ultimo; una dipendenza fuori dal lotto è ignorata e un ciclo non può far perdere un progetto). Dopo una promozione il controllo di salute può essere ripetuto (`HYDRA_UMC_UPDATER_HEALTH_RETRIES`) e, con `HYDRA_UMC_UPDATER_ROLLBACK_ON_UNHEALTHY=1` (disattivo per impostazione predefinita), un controllo che continua a fallire rimette l'installazione precedente e dichiara l'aggiornamento fallito.

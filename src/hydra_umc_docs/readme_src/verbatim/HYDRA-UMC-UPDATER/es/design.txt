@@ -117,3 +117,5 @@
   responder "¿este repo está más o menos al día?", no un sustituto del
   propio `firmware_manifest.json` de `build_firmware.sh` para un flasheo
   real.
+
+- **Orden de un lote y deshacer una promoción:** un proyecto cuyo manifiesto enumera repositorios en `depends_on` se instala o actualiza después de los que nombra y que están en el mismo lote (primero el SDK, el actualizador al final; una dependencia fuera del lote se ignora y un ciclo no puede perder un proyecto). Tras una promoción la comprobación de salud se puede repetir (`HYDRA_UMC_UPDATER_HEALTH_RETRIES`) y, con `HYDRA_UMC_UPDATER_ROLLBACK_ON_UNHEALTHY=1` (desactivado por defecto), una comprobación que sigue fallando restaura la instalación anterior y da la actualización por fallida.

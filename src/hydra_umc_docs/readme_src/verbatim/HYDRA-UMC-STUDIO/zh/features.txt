@@ -120,3 +120,9 @@ HYDRA-UMC STUDIO 本身是一个纯客户端——除了当前会话在内存中
 同一套 `GET`/`POST /api/settings` 契约，加上一个发现端点（`GET /api/hydra-info`）和一个用于实时推送更新的 `WebSocket /ws`，也是外部客户端连接到同一个后端的方式——这正是 [HYDRA-UMC SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE) 能够在网络上发现一个正在运行的 HYDRA-UMC SERVER 实例、读取/修改其状态,并实时看到本应用自身浏览器标签页所做更改的原因（反之亦然）。完整契约见 [HYDRA-UMC-SERVER 自身的 `docs/REMOTE_API.md`](https://github.com/JuanenRac/HYDRA-UMC-SERVER/blob/main/docs/REMOTE_API.md)。
 
 `GET /api/system/metrics` 驱动概览仪表盘页脚：CPU 负载和内存使用始终是真实的（Node 自身的 `os` 模块）；在真实的 Raspberry Pi 上运行时,温度读取真实的 `vcgencmd measure_temp` 输出,否则回退为明确标记的模拟值（响应中的 `temp_is_real`）；Wi-Fi/以太网/蓝牙状态读取自 `/sys/class/net`/`/sys/class/bluetooth`（仅限 Linux,在任何其他主机上为 `null`/未知,而非猜测值）。
+
+### 谁在连接，以及 Server Admin 的访问选项
+
+- **Connected Apps 中的连接历史：** 在实时连接列表下方，用简单视图显示谁登录过服务器：服务器见过的客户端（类型、用户、版本、本地或外部、当前打开的会话、成功或被拒绝的登录），以及最近的登录、被拒绝的登录、登出和已结束的会话，数据来自 `GET /api/connections/clients` 和 `GET /api/connections/events`。服务器太旧而无法提供时，会明确说明。两个列表都不含密码或令牌；只有在告知服务器保存地址时才会显示地址。
+- **Server Admin 中的七个访问开关**（仅管理员）：`health.open`（无需登录的健康检查路由）、`safety.publishGlobalStop`（在 MQTT 桥上通告全局停止）、`connections.recordAddress`（在历史中保留每个客户端的地址）、`camera.open`（无需票据的摄像头画面）、`websocket.allowQueryToken`（WebSocket 地址中的令牌）、`logging.redactSecrets`（遮蔽日志中的机密）和 `voice.requireSignature`（对已确认的语音请求要求经过验证的签名）。全部以保守值开始，每个开关都显示其值的来源（默认、从界面保存，或由服务器环境固定并因此被锁定），只发送发生变化的部分，凡是降低保护的更改都会先询问，服务器不提供的选项不会显示。参见 HYDRA-UMC-SERVER 的 `docs/REMOTE_API.md`。
+- **网格来自单一软件包：** `meshes.pack.json` 固定软件包以及与 HYDRA-UMC-SUITE 共享的每个网格的 SHA-256，`npm run meshes -- status | check | ensure | prepare` 会使 `public/models/` 达到该状态。来源为 `local`（默认：不改变任何内容，也不下载任何内容）、`auto` 或 `download`，在 `mesh_pack.config.json` 中或用 `HYDRA_UMC_MESH_SOURCE` 选择；不匹配的软件包不会安装任何东西，且只接受 `https` 地址。参见 [`docs/MESH_PACKAGE.md`](docs/MESH_PACKAGE.md)。

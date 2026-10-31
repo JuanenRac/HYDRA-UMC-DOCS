@@ -73,7 +73,7 @@ GPL-3.0-or-later - see LICENSE
 * [安全基线](docs/SECURITY_BASELINE.md): 代码已强制执行的内容和仍然缺少的内容；以及[威胁模型](docs/THREAT_MODEL.md)。
 * [第一个垂直切片](docs/FIRST_VERTICAL_SLICE.md): 今天已存在的最小端到端路径。
 * [项目目录](docs/PROJECT_CATALOG.md): 家族中的每个仓库，依据其自身清单生成。
-* **工具：** `make_catalog.py` 生成目录，`make_brand.py` 生成横幅、图标和家族图，`make_readmes.py` 生成本仓库的八份 README，`publication_check.py` 在发布前查找任何私有内容，`check_all.sh` 运行家族中每个仓库自己的检查，并为每个仓库输出一行 PASS、FAIL 或 SKIP。`make_glance.py` 根据每个仓库的清单和 `data/glance.json` 生成其“速览”表（`--check` 比较，`--apply` 写入）；提升版本后，运行 `python tools/make_glance.py --apply --repo NAME` 即可刷新该仓库的表。`check_claims.py` 读取该系列每个仓库的英文 README,当某个句子含有风险词(E-STOP、联锁、实时、已签名、mTLS、FDCAN、YOLO、AI 驱动、自主、已认证等)而旁边没有状态标记(计划中、未实现、可选、默认关闭、模拟、已测试等),且不在人工对照代码读过并登记于 `data/claims_reviewed.json` 的行中时,检查失败。
+* **工具：** `make_catalog.py` 生成目录，`make_brand.py` 生成横幅、图标和家族图，`make_readmes.py` 生成本仓库的八份 README，`publication_check.py` 在发布前查找任何私有内容，`check_all.sh` 运行家族中每个仓库自己的检查，并为每个仓库输出一行 PASS、FAIL 或 SKIP。`make_glance.py` 根据每个仓库的清单和 `data/glance.json` 生成其“速览”表（`--check` 比较，`--apply` 写入）；提升版本后，运行 `python tools/make_glance.py --apply --repo NAME` 即可刷新该仓库的表。 `check_test_counts.py` 统计相邻各仓库的实际测试数，并与 `data/glance.json` 及各 README 的测试行比较（`--apply` 写回精确数字；Go、Rust、JavaScript、Dart 和 Kotlin 套件从源码统计，仅作报告）。`i18n_cross_check.py` 把 STUDIO、SUITE、ANDROID-CONTROL 和 WATCH 的语言文件读成统一形式，只要某个客户端在八种语言之一缺少键就会失败，并列出各客户端之间读法不同的文本（`--lang`、`--list`、`--json`）。`check_claims.py` 读取该系列每个仓库的英文 README,当某个句子含有风险词(E-STOP、联锁、实时、已签名、mTLS、FDCAN、YOLO、AI 驱动、自主、已认证等)而旁边没有状态标记(计划中、未实现、可选、默认关闭、模拟、已测试等),且不在人工对照代码读过并登记于 `data/claims_reviewed.json` 的行中时,检查失败。
 
 ## 🧩 在 HYDRA-UMC 中的角色
 

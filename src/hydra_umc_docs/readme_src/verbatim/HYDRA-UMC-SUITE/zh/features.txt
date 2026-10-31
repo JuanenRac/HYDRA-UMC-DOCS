@@ -53,3 +53,7 @@ JuanenPnP、JuanenCNC 和 JuanenLaser 使用独立的 STL 副本，LumenPnP 保�
 [独立的机器模型 — STL](docs/MACHINE_ASSETS.md).
 
 这些原创JuanenPNP / HYDRA-UMC模型及其SCAD源文件采用GPL-3.0；它们不是Opulo机器的CAD文件。
+
+### 网格来自单一软件包
+
+`meshes.pack.json` 固定软件包以及与 HYDRA-UMC-STUDIO 共享的每个网格的 SHA-256，`python -m hydra_suite.mesh_pack`（`status`、`check`、`ensure`、`prepare`）会使目录树中的网格达到该状态。来源为 `local`（默认：不改变任何内容，也不下载任何内容）、`auto`（本地网格齐全时使用本地网格，只获取缺少的）或 `download`（逐个按哈希校验每个网格），在 `mesh_pack.config.json` 中或用 `HYDRA_UMC_MESH_SOURCE` 选择。不匹配的软件包不会安装任何东西，且只接受 `https` 地址；`run.sh` 和 `run.bat` 会调用静默的 `prepare` 步骤。消息有八种语言。参见 [`docs/MESH_PACKAGE.md`](docs/MESH_PACKAGE.md)。

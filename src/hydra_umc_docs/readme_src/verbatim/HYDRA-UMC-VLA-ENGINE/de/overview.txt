@@ -19,3 +19,5 @@ Ziel ist, dass der Roboter Befehle wie „nimm das blaue Bauteil und lege es auf
   (neben Voice-UI, Semantic-Planner und Docs-QA) und teilt sich das
   HydraOS-Image und die Modellgewichte des Elternteils, statt eigene
   Kopien vorzuhalten.
+
+* 🧪 **Konsistente Vorhersagen, Schattenmodus, Konfidenzfilter und exakte Rotationen (alles standardmäßig aus, nichts bewegt etwas):** in `configs/vla-engine.json` verlangt `consistency.predictions` über 1, dass `POST /trajectory/integrate` N-1 `alternatives` bekommt und keine Trajektorie anbietet (HTTP 422), wenn ein Wert um mehr als `consistency.tolerance` von `actions` abweicht; `shadow.enabled` schaltet `POST /shadow/compare` ein, das den Unterschied zwischen den vom Modell vorgeschlagenen und den vom Bediener gegebenen Aktionen beantwortet (je Schritt, Mittel und Maximum); `confidence.minimum` über 0 verlangt einen `confidences`-Wert je Aktion und weist eine Trajektorie mit zweifelhafter Aktion ab. Die drei Rotationswerte einer Aktion sind ein Rotationsvektor, als Quaternionen zusammengesetzt, richtig bei großen Winkeln und nahe 90 Grad Nicken. Siehe `docs/CLI_REFERENCE.md`.

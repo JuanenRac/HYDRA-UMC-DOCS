@@ -95,3 +95,5 @@
   repo - good enough to answer "is this repo roughly up to date", not a
   replacement for `build_firmware.sh`'s own `firmware_manifest.json` for
   a real flash.
+
+- **Order of a batch and undoing a promotion:** a project whose manifest lists repositories in `depends_on` is installed or updated after the ones it names that are in the same batch (the SDK first, the updater last; a dependency outside the batch is ignored and a cycle cannot lose a project). After a promotion the health check can be repeated (`HYDRA_UMC_UPDATER_HEALTH_RETRIES`) and, with `HYDRA_UMC_UPDATER_ROLLBACK_ON_UNHEALTHY=1` (off by default), a check that still fails puts the previous installation back and reports the update as failed.

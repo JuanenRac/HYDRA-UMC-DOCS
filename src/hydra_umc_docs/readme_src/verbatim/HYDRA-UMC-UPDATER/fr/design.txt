@@ -116,3 +116,5 @@
   représentatif par dépôt - suffisant pour répondre "ce dépôt est-il à
   peu près à jour ?", pas un remplacement du propre
   `firmware_manifest.json` de `build_firmware.sh` pour un vrai flashage.
+
+- **Ordre d'un lot et annulation d'une promotion :** un projet dont le manifeste liste des dépôts dans `depends_on` est installé ou mis à jour après ceux qu'il nomme et qui sont dans le même lot (le SDK d'abord, l'outil de mise à jour en dernier ; une dépendance hors du lot est ignorée et un cycle ne peut pas faire perdre un projet). Après une promotion, le contrôle de santé peut être répété (`HYDRA_UMC_UPDATER_HEALTH_RETRIES`) et, avec `HYDRA_UMC_UPDATER_ROLLBACK_ON_UNHEALTHY=1` (désactivé par défaut), un contrôle qui échoue encore remet l'installation précédente et déclare la mise à jour en échec.

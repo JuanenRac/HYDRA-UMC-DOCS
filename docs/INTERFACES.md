@@ -27,7 +27,12 @@ Owner: **HYDRA-UMC-SDK** (`contracts/json-schema/v1/`, with a conformance fixtur
 | `ScenarioOutcome` | Scenario runners | OPS-AGENT, Node Healing | |
 | `Operation` | Server, Orchestrator, Dev Server | UIs, Job Dispatcher | A lifecycle with evidence-based success |
 | `Capability` | Targets and their descriptors | Orchestrator, Job Dispatcher | |
-| `ProjectManifest` | Every repository (`hydra-umc.project.json`, `urtc.project.json`) | Updater, the profile dashboard | A closed schema: a typo in a field name fails early |
+| `Pose` | Visual servoing, VLA engine | Server, Studio, Suite | Position and orientation as a unit quaternion |
+| `RobotState` | Swarm sync, orchestrator, dashboard | Server, Studio, Suite | |
+| `TwinState` | Digital twin, physics replica, HIL bridge | Server, Studio, Suite | Joint states, named poses and whether the state is `real` or `simulated`; checked by `validate-state` of the twin |
+| `ConnectionClient`, `ConnectionEvent` | Server (the clients it has seen and the history of sign-ins) | Studio, Suite, the apps | Closed schemas with no secrets; the address of a client appears only when the server was told to keep it |
+| `ProductionEvent` | Job Dispatcher (`-production-events`), bridges, robots | Production Reports, Data Lake | One finished cycle: `source_id`, `at_utc`, `good`, `cycle_time_s` |
+| `ProjectManifest` | Every repository (`hydra-umc.project.json`, `urtc.project.json`) | Updater, the profile dashboard | A closed schema: a typo in a field name fails early; `depends_on` orders a batch of the updater |
 
 Planned in the SDK and **without a schema yet**: `ToolDescriptor` and `TelemetrySample`. Protobuf is not published by the SDK.
 
@@ -35,7 +40,7 @@ The SDK also publishes a first OpenAPI v1 slice of the server (`contracts/openap
 
 ## 2. The HTTP and WebSocket API of the server
 
-Owner: **HYDRA-UMC-SERVER**. Written in `docs/REMOTE_API.md` (the prose, the single source for every client) and `docs/openapi.json` (an OpenAPI 3.1 inventory of the 51 routes: path, method, the access each one demands, the status codes and the names of the body fields; it does **not** describe field types or response bodies, and the server's test run fails when it is out of date). Default port 3000; the REST endpoints and the `/ws` WebSocket share it.
+Owner: **HYDRA-UMC-SERVER**. Written in `docs/REMOTE_API.md` (the prose, the single source for every client) and `docs/openapi.json` (an OpenAPI 3.1 inventory of the 74 routes: path, method, the access each one demands, the status codes and the names of the body fields; it does **not** describe field types or response bodies, and the server's test run fails when it is out of date). Default port 3000; the REST endpoints and the `/ws` WebSocket share it.
 
 | Area | Routes | Access |
 |---|---|---|
@@ -48,6 +53,9 @@ Owner: **HYDRA-UMC-SERVER**. Written in `docs/REMOTE_API.md` (the prose, the sin
 | Hardware | `POST /api/hardware/canota/flash`, `GET /api/hardware/canota/version` | flashing admin |
 | Voice and AI | `POST /api/voice/turn`, `/api/ai/:service/*`, `GET /api/adapters` | signed-in account |
 | Operations | `/api/ecosystem/status`, `/api/ecosystem/service/:unit/:action`, `/api/admin/*`, `/api/system/*` | mixed: see the file; `reboot` and `shutdown` accept only a plain request from the device itself |
+| Connections | `GET /api/connections/clients`, `GET /api/connections/events` | signed-in; an administrator sees every entry, any other account only its own |
+| Signal of life | `GET /api/robots/liveness` | signed-in; `live`, `stale` or `unknown` per robot, not the `online` flag of the settings |
+| Health | `GET /health` | public only when an administrator turned on `health.open`; otherwise `404` |
 | Observability | `GET /metrics` (Prometheus), `/api/system/metrics`, `/api/telemetry/*` | public unless `HYDRA_UMC_INFO_AUTH=required`; telemetry signed-in |
 
 The version of the transport is `remoteApiVersion` in the discovery answer, independent of the application version: a client checks it, not the version, before it assumes a feature.
@@ -66,6 +74,8 @@ Owner of the broker: **HYDRA-UMC-MQTT-BROKER**; owner of the topic catalogue: it
 | `hydra/bridges/openpnp/cmd/handoff` | to the bridge | a traceable hand-off whose result is always tagged `simulation-only` |
 | `hydra/bridges/printer3d/cmd/status`, `start`, `pause`, `resume`, `cancel` | to the bridge | Moonraker calls on an already uploaded file |
 | `hydra/bridges/ros2/cmd/safe_stop` | to the bridge | a `std_srvs/Trigger` call |
+
+The global stop of the server is announced, when `safety.publishGlobalStop` is on, as a retained `SafetyState` message on `<mqtt prefix>/safety/estop` (`SAFE_STOP`, later `READY`; the contract is `docs/GLOBAL_STOP.md` of the server). The bridges AMR, CNC, LASER, OPENPNP, PRINTER3D and ROS2 follow it only behind their own switch, off by default (`HYDRA_UMC_<BRIDGE>_GLOBAL_STOP=1`): while the last message says `SAFE_STOP`, says anything but `READY` or cannot be read, they refuse what moves and keep serving stops and read-only requests. `MqttPublish` of the SDK carries a `qos`, and the answers of the CNC bridge go out at QoS 1.
 
 `<name>` is `cnc`, `laser`, `openpnp`, `printer3d` or `ros2`. The catalogue covers these five; the AMR bridge speaks VDA 5050 topics to the fleet manager and the UAV bridge speaks MAVLink to the autopilot, each as its own README documents. `hydra/swarm/<robot>/...` appears in the broker README as the intended future shape and is **not** wired.
 
