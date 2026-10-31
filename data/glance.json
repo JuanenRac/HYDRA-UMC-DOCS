@@ -369,7 +369,7 @@
     "HYDRA-UMC-VISUAL-SERVOING-API": {
       "hardware": "not_run",
       "tests": {
-        "count": 240,
+        "count": 246,
         "command": "python -m pytest -q tests"
       }
     },
