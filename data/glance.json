@@ -306,7 +306,7 @@
     "HYDRA-UMC-SUITE": {
       "hardware": "not_run",
       "tests": {
-        "count": 45,
+        "count": 46,
         "command": "python tools/run_offline_verifiers.py"
       }
     },
