@@ -187,7 +187,7 @@
     "HYDRA-UMC-LOCAL-TECHNICIAN": {
       "hardware": "not_run",
       "tests": {
-        "count": 315,
+        "count": 335,
         "command": "python -m pytest -q tests"
       }
     },
@@ -348,7 +348,7 @@
     "HYDRA-UMC-UPDATER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 163,
+        "count": 181,
         "command": "python -m pytest -q tests"
       }
     },
