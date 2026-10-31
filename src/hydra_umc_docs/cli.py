@@ -10,7 +10,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from . import __version__, brand, catalog, claims, family, glance, glance_jump, publication, readme_universal, readmes, status
+from . import __version__, atomic, brand, catalog, claims, family, glance, glance_jump, publication, readme_universal, readmes, status
 
 REPO = Path(__file__).resolve().parents[2]
 REPO_NAME = "HYDRA-UMC-DOCS"
@@ -54,7 +54,7 @@ def make_catalog(argv: list[str] | None = None) -> int:
     current = path.read_text(encoding="utf-8").replace("\r\n", "\n")
     new = catalog.render(current, manifests)
     if new != current:
-        path.write_text(new, encoding="utf-8", newline="\n")
+        atomic.write_text(path, new)
     print(f"CATALOG=WRITTEN {len(manifests)} repositories" if new != current else f"CATALOG=PASS already current ({len(manifests)} repositories)")
     return 0
 
@@ -72,7 +72,7 @@ def make_brand(argv: list[str] | None = None) -> int:
         stale.append(relative)
         if not args.check:
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(content, encoding="utf-8", newline="\n")
+            atomic.write_text(target, content)
     if args.check and stale:
         print("BRAND=FAIL out of date: " + ", ".join(stale), file=sys.stderr)
         return 1
@@ -115,7 +115,7 @@ def make_readmes(argv: list[str] | None = None) -> int:
                 continue
             stale.append(f"{base.name}/{name}")
             if not args.check:
-                target.write_text(content, encoding="utf-8", newline="\n")
+                atomic.write_text(target, content)
     if args.check and stale:
         print("READMES=FAIL out of date: " + ", ".join(stale), file=sys.stderr)
         return 1

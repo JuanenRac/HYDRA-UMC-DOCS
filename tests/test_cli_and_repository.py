@@ -131,3 +131,37 @@ def test_scripts_never_close_the_window_on_their_own():
         assert "read -r" in text, script
     for script in ("build.bat", "build-test.bat", "run.bat"):
         assert "pause" in (REPO / script).read_text(encoding="utf-8"), script
+
+
+# --- whole-file writes ---------------------------------------------------------------------------------
+
+def test_a_file_is_replaced_in_one_step_and_a_reader_never_sees_half_of_it(tmp_path):
+    import threading
+
+    from hydra_umc_docs import atomic
+
+    target = tmp_path / "README.md"
+    old, new = "old\n" * 20000, "new\n" * 20000
+    atomic.write_text(target, old)
+    stop = threading.Event()
+    seen: list[str] = []
+
+    def read() -> None:
+        while not stop.is_set():
+            try:
+                seen.append(target.read_text(encoding="utf-8"))
+            except PermissionError:
+                pass  # the move is refused for a moment while the reader holds the file: that is the retry's job
+
+    reader = threading.Thread(target=read)
+    reader.start()
+    try:
+        for index in range(30):
+            atomic.write_text(target, new if index % 2 == 0 else old)
+    finally:
+        stop.set()
+        reader.join()
+    assert seen and all(text in (old, new) for text in seen)
+    assert [item.name for item in tmp_path.iterdir()] == ["README.md"], "no temporary file is left behind"
+    atomic.write_text(target, "a\nb\n", newline="\r\n")
+    assert target.read_bytes() == b"a\r\nb\r\n"

@@ -123,7 +123,7 @@
     "HYDRA-UMC-DOCS": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 172,
+        "count": 173,
         "command": "python -m pytest tests -q"
       }
     },

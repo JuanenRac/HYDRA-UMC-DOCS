@@ -18,7 +18,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-Markdown-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-172%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-173%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.6-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -39,7 +39,7 @@ GPL-3.0-or-later - see LICENSE
 |---|---|
 | Version | `0.0.6` |
 | Maturity | Scaffolding |
-| Tests | 172 (`python -m pytest tests -q`) |
+| Tests | 173 (`python -m pytest tests -q`) |
 | Stack | Markdown / Mermaid / Python / SVG |
 | Target | The PC of the person using it |
 | On real hardware | Not applicable: nothing here runs on hardware |
@@ -55,7 +55,7 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Software | 🟠 | Structure and first pieces only; most of the work is still to do |
-| Tests | 🟡 | 172 automated tests, run on every change |
+| Tests | 🟡 | 173 automated tests, run on every change |
 | Real hardware | 🟡 | Not applicable: nothing here runs on hardware |
 | Documentation | 🟡 | README in eight languages, checked against the manifest on every change |
 
@@ -113,7 +113,7 @@ python -m pytest tests -q                        # the unit tests of the tools
 
 ## 🧪 Testing
 
-172 automated tests run with `python -m pytest tests -q`. They need no hardware and nothing outside this machine.
+173 automated tests run with `python -m pytest tests -q`. They need no hardware and nothing outside this machine.
 
 The CI runs `HYDRA_UMC_CI=1 python tools/ci_validate.py`, which checks the manifest, the documents, the eight READMEs and the pictures.
 

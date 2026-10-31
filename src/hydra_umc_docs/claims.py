@@ -31,6 +31,8 @@ import json
 import re
 from pathlib import Path
 
+from . import atomic
+
 FAMILY_PREFIXES = ("HYDRA-UMC",)
 EXTRA_NAMES = ("ELECTRO-HOBBY-3D-UPDATER",)
 README = "README.md"
@@ -155,7 +157,7 @@ def load_reviewed(path: Path) -> dict[str, dict[str, str]]:
 
 def save_reviewed(path: Path, reviewed: dict[str, dict[str, str]]) -> None:
     body = {"reviewed": {repo: dict(sorted(reviewed[repo].items())) for repo in sorted(reviewed)}}
-    path.write_text(json.dumps(body, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    atomic.write_text(path, json.dumps(body, indent=1, ensure_ascii=False) + "\n")
 
 
 def is_family_name(name: str) -> bool:
