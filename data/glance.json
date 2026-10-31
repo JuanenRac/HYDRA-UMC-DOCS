@@ -103,7 +103,7 @@
     "HYDRA-UMC-DATALAKE": {
       "hardware": "not_run",
       "tests": {
-        "count": 134,
+        "count": 192,
         "command": "python -m pytest -q tests"
       }
     },
