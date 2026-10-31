@@ -201,7 +201,7 @@
     "HYDRA-UMC-MTCONNECT-ADAPTER": {
       "hardware": "not_run",
       "tests": {
-        "count": 136,
+        "count": 161,
         "command": "npm test"
       }
     },

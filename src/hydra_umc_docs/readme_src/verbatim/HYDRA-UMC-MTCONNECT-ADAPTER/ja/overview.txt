@@ -7,7 +7,7 @@
 実行状態、可用性、主軸温度を監視できるようにします。
 
 ### 主な機能：
-* 🏭 **標準化されたマシンデータ：** 1 台の HydraNode を MTConnect 準拠デバイスとして公開します。*（現在は正確に 1 台の HydraNode - `hydra_umc_1` - に固定されています。詳細は `docs/API.md` を参照。HTTP サーフェスと XML 形式がエンドツーエンドで仕様どおり正しいことを証明するものです。実運用では HYDRA-UMC-SERVER 自身のライブなロボット一覧からこれを生成します）*
+* 🏭 **標準化されたマシンデータ：** 1 台の HydraNode を MTConnect 準拠デバイスとして公開します。*（既定では 1 台の HydraNode（`hydra_umc_1`）、`HYDRA_UMC_MTCONNECT_DEVICE_PER_ROBOT=1` では HYDRA-UMC-SERVER のライブなロボット一覧のロボットごとに 1 つの Device — `docs/API.md` 参照）*
 * 📄 **XML データストリーム：** `GET /current` の実際にポーリングされる `<Events>`/`<Samples>` ブロックを標準の XML 形式で提供します。*(実装済み)*
 * 🔌 **実際のマシンソース：** `HydraServerMachineReader`（`src/hydraServerReader.ts`、`HYDRA_UMC_SERVER_URL`）は実際に稼働している HYDRA-UMC-SERVER 自身の `GET /api/settings` をポーリングし、実際のロボット1台の実際の状態（`AVAILABLE`/`ACTIVE`/`INTERRUPTED`/`STOPPED`/`READY`）を報告します - `FixtureMachineReader` フォールバックだけではありません。詳細は `docs/API.md` を参照。*(実装済み)*
 * 🌐 **HTTP インターフェース：** 簡単な RESTful クエリでアクセス可能で、統合が容易です。*(実装済み)*
@@ -19,3 +19,5 @@
 * 🧩 **コンディション・デバイス別ルート・HTTP ステータス:** CONDITION の DataItem は Normal、Warning、Fault、Unavailable として(メッセージとネイティブコード付きで)出力され、デバイスが持つ場合は `/probe` で宣言されます。デバイスは `ASSET_CHANGED` と `ASSET_REMOVED` を宣言します(アセットはないので UNAVAILABLE のままです)。`/HydraNode_1/probe`、`/current`、`/sample` はそのデバイスについて応答します。`HYDRA_UMC_MTCONNECT_HTTP_ERRORS=1` は MTConnectError に 200 の代わりに HTTP 400 または 404 を付けます(既定では無効)。すべて公式 XSD で検証済みです。 *(実装済み)*
 * 🔌 **cppagent 向け SHDR 出力:** `HYDRA_UMC_MTCONNECT_SHDR_PORT` を設定すると、アダプターは同じ観測値を SHDR 行(`時刻|dataItemId|値`、コンディションは `時刻|id|レベル|ネイティブコード|||メッセージ`)として TCP でも提供し、市販の MTConnect エージェントが読み取れます。クライアントはまず各 DataItem の最新値を受け取り、その後は変更のたびに受け取ります。送信できる行は `* PING` のみで、`* PONG` が返ります。読み取り専用です。`HYDRA_UMC_MTCONNECT_SHDR_HOST` で指定しない限り `127.0.0.1` で待ち受けます。模擬エージェントでテスト済みです。 *(実装済み、実際の cppagent では未確認)*
 * 🔌 **CNC ブリッジの SHDR ストリームを読む(任意):** `HYDRA_UMC_MTCONNECT_SHDR_SOURCE=host:port` を設定すると、エージェントは別のアダプターの SHDR 出力から機械の実行状態と可用性を取得します。接続が切れると、最後の値ではなくすべての DataItem を利用不可として示します。読み取り専用です。
+* 🤖 **ロボットごとに 1 つの Device（オプション）：** `HYDRA_UMC_MTCONNECT_DEVICE_PER_ROBOT=1` を設定すると、デバイスモデルが HYDRA-UMC-SERVER のライブなロボット一覧に従い、ロボットごとに Device `Robot_<id>` を独自の `execution` と `avail`、衝突しない id（`robot_<id>_execution`）で宣言します。現れたロボットは宣言され、いなくなったロボットは UNAVAILABLE になり、`/Robot_<id>/current` は 1 台分を返します。既定では無効で、単一の `HydraNode_1` は従来どおりです。*（実装済み、模擬した一覧でテスト済み）*
+* ⏪ **履歴とライブストリーム：** `GET /current?at=<sequence>` は以前のシーケンス時点のデバイスの状態を返し、`GET /sample?interval=<ms>` は接続を開いたままにして、間隔ごとに新しい観測を含む multipart のパートを送ります（空のパートがハートビート）。開いているストリーム数の上限（`MTCONNECT_MAX_STREAMS`）と最小間隔（`MTCONNECT_MIN_STREAM_INTERVAL_MS`）があります。*（実装済み）*
