@@ -1,1 +1,2 @@
 - **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — ogni invocazione di `family-status`/`family-sync`/`serve`, output reale catturato da un binario di release compilato, la tabella dei codici di uscita, e il contratto HTTP JSON `GET /family-status`/`GET /family-sync`/`GET /stats`.
+- **[docs/COLLISION_PREDICTION.md](docs/COLLISION_PREDICTION.md)** — la rotta di previsione delle collisioni: gli interruttori, la richiesta e la risposta, i codici di stato e i limiti.

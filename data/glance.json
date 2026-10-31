@@ -165,7 +165,7 @@
     "HYDRA-UMC-HIL-BRIDGE": {
       "hardware": "simulated",
       "tests": {
-        "count": 115,
+        "count": 139,
         "command": "cargo test"
       }
     },
@@ -257,7 +257,7 @@
     "HYDRA-UMC-PHYSICS-REPLICA": {
       "hardware": "not_run",
       "tests": {
-        "count": 86,
+        "count": 133,
         "command": "cargo test"
       }
     },
@@ -285,7 +285,7 @@
     "HYDRA-UMC-SEMANTIC-PLANNER": {
       "hardware": "not_run",
       "tests": {
-        "count": 119,
+        "count": 179,
         "command": "python -m pytest -q tests"
       }
     },
@@ -341,7 +341,7 @@
     "HYDRA-UMC-TWIN": {
       "hardware": "not_run",
       "tests": {
-        "count": 78,
+        "count": 119,
         "command": "cargo test"
       }
     },

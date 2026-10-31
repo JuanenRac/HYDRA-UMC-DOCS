@@ -1,1 +1,2 @@
 - **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — 每一个 `family-status`/`family-sync`/`serve` 调用、从真实构建的发布版二进制文件中获取的真实输出、退出码表，以及 `GET /family-status`/`GET /family-sync`/`GET /stats` HTTP JSON 契约。
+- **[docs/COLLISION_PREDICTION.md](docs/COLLISION_PREDICTION.md)** — 碰撞预测路由：开关、请求与响应、状态码和限制。
