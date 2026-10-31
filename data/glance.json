@@ -19,7 +19,7 @@
     "HYDRA-UMC-ANOMALY-DETECTOR": {
       "hardware": "not_run",
       "tests": {
-        "count": 160,
+        "count": 179,
         "command": "python -m pytest -q tests"
       }
     },
