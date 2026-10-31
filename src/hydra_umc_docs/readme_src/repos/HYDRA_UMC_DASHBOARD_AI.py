@@ -3,6 +3,8 @@
 """What is specific to the README of HYDRA-UMC-DASHBOARD-AI."""
 from __future__ import annotations
 
+from typing import Any
+
 from .. import service_kit as S
 
 ICON = '🧠'
@@ -72,7 +74,8 @@ def _same(text):
 
 
 # The remaining-useful-life card (off by default).
-EXTRAS["configuration"]["rows"].extend([
+_CONFIG_ROWS: Any = EXTRAS["configuration"]
+_CONFIG_ROWS["rows"].extend([
     [
         _same("`VITE_RUL_ENABLED`"),
         _same("`false`"),
@@ -117,7 +120,8 @@ EXTRAS["configuration"]["rows"].extend([
     ],
 ])
 
-EXTRAS["interfaces"]["rows"].append([
+_INTERFACE_ROWS: Any = EXTRAS["interfaces"]
+_INTERFACE_ROWS["rows"].append([
     _same("`/api/anomaly/rul`"),
     {
         "en": "only with the Remaining useful life card on: the page posts the newest anomaly scores and reads the days to the limit, with a range and an explicit state; the detector must run with `--rul`",
