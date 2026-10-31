@@ -151,7 +151,7 @@
     "HYDRA-UMC-EDITOR-URDF": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 399,
+        "count": 538,
         "command": "python -m pytest tests -q"
       }
     },

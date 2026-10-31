@@ -50,6 +50,8 @@
 
 **可选的检查与导出,默认全部关闭**(开关在 `hydra_editor_urdf_config.json` 中):`self_collision_check` 以警告形式列出在初始姿态或逐个关节活动时包围盒重叠的连杆对(`self_collision_steps`、`self_collision_tolerance_m`;包围盒包住真实形状,因此可能报告擦边情况,但不会漏掉重叠);`license_check` 对文件夹中没有 LICENSE、COPYING、NOTICE 或 ATTRIBUTION 文件的网格以及带条件的许可证发出警告,并可根据找到的内容生成 ATTRIBUTION 文本;导出窗口有一个 Y 轴向上复选框,可为 Three.js 场景写出模型(根连杆将世界旋转四分之一圈,`y_up_scale` 缩放长度)。未开启时,它们都不会改变可行性或写出的内容。
 
+**模型的物理检查(默认关闭)**(`hydra_editor_urdf_config.json` 中的 `physical_check`;详见 `docs/PHYSICAL_CHECK.md`):自由度界面会把真实物体不可能具备的情况列为警告 - 多于一个根、环路、未使用或无法到达的连杆、不大于 0 的质量、不是正定的惯性张量或主惯量矩违反三角不等式(Ixx + Iyy >= Izz 及其排列)、lower 大于 upper、effort 或 velocity 不大于 0、零轴或非单位轴、带限位的连续关节、缺失或缩放不当的网格,以及看起来像毫米、度或克的长度、角度或质量。每条警告都给出规则、元素、数值、限制和一条绝不会被自动应用的修正建议。同样的检查也可不开窗口运行:`python main.py --cli physical-check FILE.urdf [--json]`(退出码 0 无问题,1 有警告,2 出错)。已用生成的模型和模拟用例测试,未在真实机器人目录上测试。
+
 导出（`urdf/writer.py`）会从头重新序列化当前的内存树，而非修补原始的源 XML 文本，因此每一次实时编辑——无论由哪个面板做出——都会通过同一条代码路径，恰好一次地反映在“导出 URDF”菜单操作和发送到 STUDIO 服务器的负载中。
 
 模型没有对应字段的元素(`<transmission>`、`<gazebo>`、关节的 `<dynamics>`、`<safety_controller>` 和 `<calibration>`，以及 `<mimic>` 的倍率和偏移)在读取文件时会以文本形式保留。**导出**按钮会打开一个窗口，说明文件中有多少这样的元素，并带有一个开关，用来按源文件原样写回；开关默认关闭，每载入一个机器人就重新关闭。指向已删除关节或连杆的元素绝不会被写回。
