@@ -95,12 +95,14 @@
   },
   "HYDRA-UMC-DASHBOARD-AI": {
    "37ea8219d430": "There it reads through the relay of that server, (read-only) and , with the access token of the person who sig",
-   "bc75cd9f4b1c": "A hung service freezing the page | Every request has a 5 s time limit, a query asks for 5000 samples at most p"
+   "a73ca6ffd16b": "only with the Remaining useful life card on: the page posts the newest anomaly scores and reads the days to th",
+   "bc75cd9f4b1c": "A hung service freezing the page | Every request has a 5 s time limit, a query asks for 5000 samples at most p",
+   "cf05dace2cc4": ", , , , , | the anomaly URL, , , , , | the detector that answers , the series of anomaly scores read from the "
   },
   "HYDRA-UMC-DATALAKE": {
    "6a8b224088fc": "To bring up this project together with its three children (Telemetry-Collector, Anomaly-Detector, Production-R",
    "8f008e355f27": "🔍 Deterministic Queries: Raw results are ordered by timestamp and stable tie-breakers; bounded reads reject no",
-   "bccc09a524ca": ", | - | the routes over real HTTP, the token roles and every limit",
+   "bccc09a524ca": ", , | - | the routes over real HTTP, the token roles and every limit",
    "e0fe7b2e8060": "docs/API.md - every route, its role, its limits and its errors"
   },
   "HYDRA-UMC-DSI": {
@@ -132,7 +134,8 @@
    "902c960672f0": "— web control dashboard with real-time multi-robot 3D visualization; its own 3D viewport is embedded directly "
   },
   "HYDRA-UMC-JOB-DISPATCHER": {
-   "a10bddc29c34": "It ensures that high-priority tasks (e.g., \"Emergency Defect Fix\") bypass the normal production flow, and coor"
+   "a10bddc29c34": "It ensures that high-priority tasks (e.g., \"Emergency Defect Fix\") bypass the normal production flow, and coor",
+   "bab541741fc4": ", , , , | , , , , | largest request body in bytes (a larger one gets ) and the time limits of the HTTP server;"
   },
   "HYDRA-UMC-LOCAL-TECHNICIAN": {
    "a362ed7a5bcc": "Signed results."
@@ -141,7 +144,8 @@
    "395671b28729": "Production Build Bundles the broker into a single deployable file with esbuild:"
   },
   "HYDRA-UMC-MTCONNECT-ADAPTER": {
-   "f75dd0415c09": "Production Build Bundles the adapter into a single deployable file with esbuild:"
+   "f75dd0415c09": "Production Build Bundles the adapter into a single deployable file with esbuild:",
+   "fc62114db74a": "⏪ History and live stream: returns the state of the device as it stood at an earlier sequence, and keeps the c"
   },
   "HYDRA-UMC-OPCUA-SERVER": {
    "0a02b239d56b": "Production Build Bundles the server into a single deployable file with esbuild:"
@@ -166,12 +170,16 @@
    "fb126b77df76": "<!-- ============================================================================= - Safety zones and E-STOP r"
   },
   "HYDRA-UMC-SDK": {
-   "11e08209ad3e": "ten JSON Schema v1 contracts: capability, device descriptor, event envelope, health report, operation, project",
    "1ac4d0d4c921": "— the documentation and tooling hub of the ecosystem: architecture, interfaces, security baseline, capability ",
    "20ee4d7a4604": "— reproducible Raspberry Pi OS product layer for the CM5: read-only agent, validated config/profiles, WiFi fir",
    "2181f78316fe": "an authenticated API producer and consumer governed by this SDK's own contracts.",
    "6072d4fb855d": "Broker credentials in a configuration file, or an unverified broker | User and password come from the environm",
-   "614031a46b82": ", | - | the client certificate and key for a broker that demands mutual TLS; both are needed and they turn TLS"
+   "614031a46b82": ", | - | the client certificate and key for a broker that demands mutual TLS; both are needed and they turn TLS",
+   "77dca1b25dca": "Messaging contracts: carries a (0, 1 or 2) and describes one finished cycle ( , , , ), which the production re",
+   "92de6eaf65d0": "sixteen JSON Schema v1 contracts: capability, device descriptor, event envelope, health report, operation, pro"
+  },
+  "HYDRA-UMC-SEMANTIC-PLANNER": {
+   "a90af17558fa": "Jump to: Overview · Architecture · Security & Safety · Configuration · Quick start · Testing · Repository Stru"
   },
   "HYDRA-UMC-SERVER": {
    "00ef15941846": "Weak access options left on: voice text, recognizer confidence, MAVLink signing, Bluetooth, MQTT, TLS | Every ",
@@ -188,6 +196,7 @@
    "cbc59d583480": "TLS / HTTPS",
    "d028a0379a75": "The page reads the data lake ( , read-only: of , , , , and , anything else is refused) and the anomaly detecto",
    "d185bdc9bcde": "In production the server also refuses to start with an example /bootstrap password from a deployment template,",
+   "d40a90800ff7": "Signal of life: says whether the server had news of each robot of the roster ( , or , with the age of the last",
    "dc54efc9a372": "is the global stop: one call, open to every signed-in account, stops every robot and switches every valve and ",
    "dd2ccb9fef34": "JWT bearer-token authentication on every write; three account roles ( , , read-only ) gate settings/user-manag",
    "fe8b55250344": ", , , , | administration: the access switches, the connected apps, the server log, a restart and the safety li"
@@ -197,6 +206,7 @@
    "0d4a51c19b7e": "🏭 Comau - e.DO (BSD-3-Clause meshes, official eDO_description geometry/kinematics)",
    "15c303b8105d": "In production the first administrator comes from the deployment's bootstrap settings and the server refuses ex",
    "33ce905fa741": "Kinematic Brain Stage",
+   "4625101fecd9": "Connection history in Connected Apps: under the list of live connections, a simple view of who has signed in t",
    "4645cd24dc1d": "🏭 Universal Robots - UR3e, UR5e, UR10e, UR16e, UR20 - official geometry, joint limits, and link kinematics pul",
    "48e043e5be7b": "🏭 UFACTORY - xArm6, Lite 6 (BSD-3-Clause meshes, official xarm_ros2 geometry/kinematics)",
    "4d4604dbed06": "Manage multiple independent 6-DOF robots simultaneously, each with its own real 3D model, kinematics, and jog/",
@@ -204,11 +214,13 @@
    "93b30bca7718": "🏭 AgileX - PiPER (Apache-2.0 meshes, official agilex_piper_arm_description geometry/kinematics)",
    "b99214c8635a": "🏭 FANUC - M-710iC (BSD-3-Clause meshes, official fanuc_m710ic_description geometry/kinematics)",
    "c99c49ff5a7b": ", | the global stop and the safety limits the server enforces",
+   "cf3db112e50e": "Safety limits: arming of the jog, the reservation rule and the jog and bed-temperature ceilings per robot mode",
    "f81603262333": "An access option lowered by mistake (voice, MAVLink, Bluetooth, TLS...) | Server Admin shows where each value ",
    "fa01582b9b21": "Preview the production build locally with:"
   },
   "HYDRA-UMC-SUITE": {
    "23c0cfbe617b": "The Ecosystem > Server Admin screen also sets who may use the local AI relay, whether the host information ask",
+   "59c9f2c20044": "Safety limits: arming of the jog, the reservation rule and the jog and bed-temperature ceilings per robot mode",
    "661bc473eaa6": "Math: NumPy (4x4 homogeneous transforms for forward kinematics)",
    "897914c21198": "An access option lowered by mistake (voice, MAVLink, Bluetooth, TLS...) | The Server Admin panel shows where e"
   },
@@ -225,6 +237,7 @@
   "HYDRA-UMC-TWIN": {
    "4121d1ccdb08": "A report of risk written by the one who wants the robot to move | The report travels as a certificate signed w",
    "a90af17558fa": "Jump to: Overview · Architecture · Security & Safety · Configuration · Quick start · Testing · Repository Stru",
+   "c11063b51718": "the collision prediction route: the switches, the request and the answer, the status codes and the limits.",
    "dc0b43189a0b": "/ | none | Ed25519 key that turns on certificate signing"
   },
   "HYDRA-UMC-UPDATER": {
