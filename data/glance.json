@@ -96,7 +96,7 @@
     "HYDRA-UMC-DASHBOARD-AI": {
       "hardware": "not_run",
       "tests": {
-        "count": 189,
+        "count": 210,
         "command": "npm test"
       }
     },
@@ -278,7 +278,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_run",
       "tests": {
-        "count": 677,
+        "count": 681,
         "command": "python -m unittest discover -s clients/python/tests"
       }
     },
@@ -292,7 +292,7 @@
     "HYDRA-UMC-SERVER": {
       "hardware": "bench",
       "tests": {
-        "count": 414,
+        "count": 518,
         "command": "npm run test:unit"
       }
     },

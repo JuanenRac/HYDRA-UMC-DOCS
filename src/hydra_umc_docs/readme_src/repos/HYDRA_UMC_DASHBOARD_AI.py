@@ -80,14 +80,14 @@ _CONFIG_ROWS["rows"].extend([
         _same("`VITE_RUL_ENABLED`"),
         _same("`false`"),
         {
-            "en": "`true` (exactly that) adds the Remaining useful life card; with anything else there is no card and no request to the detector",
-            "es": "`true` (exactamente eso) añade la tarjeta de vida útil restante; con cualquier otro valor no hay tarjeta ni petición al detector",
-            "de": "`true` (genau so) fügt die Karte für die Restnutzungsdauer hinzu; bei jedem anderen Wert gibt es weder Karte noch Anfrage an den Detektor",
-            "fr": "`true` (exactement) ajoute la carte de durée de vie restante ; avec toute autre valeur il n'y a ni carte ni requête au détecteur",
-            "it": "`true` (esattamente) aggiunge la scheda della vita utile residua; con qualsiasi altro valore non c'è né scheda né richiesta al rilevatore",
-            "ja": "`true`（この文字列のみ）で残存耐用期間のカードを追加します。それ以外ではカードも検出器へのリクエストもありません",
-            "zh": "`true`（必须完全一致）会添加“剩余使用寿命”卡片；其他任何值都不会有卡片，也不会向检测器发请求",
-            "pt": "`true` (exatamente isso) acrescenta o cartão de vida útil restante; com qualquer outro valor não há cartão nem pedido ao detetor",
+            "en": "`true` (exactly that) allows the Remaining useful life card, which still appears only while the running server has the option open (`GET /api/rul/config`); with anything else there is no card and no request to the detector or the server",
+            "es": "`true` (exactamente eso) permite la tarjeta de vida útil restante, que además solo aparece mientras el servidor en ejecución tenga la opción abierta (`GET /api/rul/config`); con cualquier otro valor no hay tarjeta ni petición al detector ni al servidor",
+            "de": "`true` (genau so) erlaubt die Karte für die Restnutzungsdauer, die zudem nur erscheint, solange der laufende Server die Option geöffnet hat (`GET /api/rul/config`); bei jedem anderen Wert gibt es weder Karte noch Anfrage an den Detektor oder den Server",
+            "fr": "`true` (exactement) autorise la carte de durée de vie restante, qui n'apparaît en outre que si le serveur en cours d'exécution a l'option ouverte (`GET /api/rul/config`) ; avec toute autre valeur il n'y a ni carte ni requête au détecteur ou au serveur",
+            "it": "`true` (esattamente) consente la scheda della vita utile residua, che compare inoltre solo finché il server in esecuzione ha l'opzione aperta (`GET /api/rul/config`); con qualsiasi altro valore non c'è né scheda né richiesta al rilevatore o al server",
+            "ja": "`true`（この文字列のみ）で残存耐用期間のカードを許可します。カードは、稼働中のサーバーがこのオプションを開いている間だけ表示されます（`GET /api/rul/config`）。それ以外ではカードも、検出器やサーバーへのリクエストもありません",
+            "zh": "`true`（必须完全一致）允许“剩余使用寿命”卡片，且只有在运行中的服务器开启了该选项时才会显示（`GET /api/rul/config`）；其他任何值都不会有卡片，也不会向检测器或服务器发请求",
+            "pt": "`true` (exatamente isso) permite o cartão de vida útil restante, que além disso só aparece enquanto o servidor em execução tiver a opção aberta (`GET /api/rul/config`); com qualquer outro valor não há cartão nem pedido ao detetor nem ao servidor",
         },
     ],
     [
@@ -132,6 +132,19 @@ _INTERFACE_ROWS["rows"].append([
         "ja": "残存耐用期間のカードがオンのときのみ：ページは最新の異常スコアを送り、限界までの日数を範囲と明示的な状態つきで読みます。検出器は `--rul` で動かす必要があります",
         "zh": "仅在开启“剩余使用寿命”卡片时：页面发送最新的异常分数，读取到上限的天数，并附带范围和明确状态；检测器必须以 `--rul` 运行",
         "pt": "só com o cartão de vida útil restante ligado: a página envia as pontuações de anomalia mais recentes e lê os dias até ao limite, com um intervalo e um estado explícito; o detetor tem de correr com `--rul`",
+    },
+])
+_INTERFACE_ROWS["rows"].append([
+    _same("`/api/rul/config`"),
+    {
+        "en": "only with the build allowing the Remaining useful life card: read once when the page opens, with the session of STUDIO, to see whether the server has the option open and which limits it applies; any answer but a clear \"open\" (closed, no route, refused session, error, no answer) leaves the card out",
+        "es": "solo si la compilación permite la tarjeta de vida útil restante: se lee una vez al abrir la página, con la sesión de STUDIO, para saber si el servidor tiene la opción abierta y qué límites aplica; cualquier respuesta que no sea un \"abierto\" claro (cerrado, sin ruta, sesión rechazada, error, sin respuesta) deja la tarjeta fuera",
+        "de": "nur wenn der Build die Karte für die Restnutzungsdauer erlaubt: wird einmal beim Öffnen der Seite mit der Sitzung von STUDIO gelesen, um zu sehen, ob der Server die Option geöffnet hat und welche Grenzen er anwendet; jede Antwort außer einem klaren \"offen\" (geschlossen, keine Route, abgelehnte Sitzung, Fehler, keine Antwort) lässt die Karte weg",
+        "fr": "seulement si la compilation autorise la carte de durée de vie restante : lue une fois à l'ouverture de la page, avec la session de STUDIO, pour savoir si le serveur a l'option ouverte et quelles limites il applique ; toute réponse autre qu'un « ouvert » clair (fermé, pas de route, session refusée, erreur, pas de réponse) laisse la carte de côté",
+        "it": "solo se la compilazione consente la scheda della vita utile residua: letta una volta all'apertura della pagina, con la sessione di STUDIO, per sapere se il server ha l'opzione aperta e quali limiti applica; qualsiasi risposta diversa da un \"aperto\" chiaro (chiuso, nessuna rotta, sessione rifiutata, errore, nessuna risposta) lascia fuori la scheda",
+        "ja": "ビルドが残存耐用期間のカードを許可している場合のみ：ページを開くときに STUDIO のセッションで 1 回読み、サーバーがオプションを開いているか、どの上限を適用するかを確認します。明確な「開」以外の応答（閉、ルートなし、セッション拒否、エラー、応答なし）ではカードを表示しません",
+        "zh": "仅在构建允许“剩余使用寿命”卡片时：打开页面时用 STUDIO 的会话读取一次，以确认服务器是否开启该选项及其适用的上限；除明确的“开启”外的任何响应（关闭、无此路由、会话被拒、出错、无响应）都不会显示卡片",
+        "pt": "só se a compilação permitir o cartão de vida útil restante: lida uma vez ao abrir a página, com a sessão do STUDIO, para saber se o servidor tem a opção aberta e que limites aplica; qualquer resposta que não seja um \"aberto\" claro (fechado, sem rota, sessão recusada, erro, sem resposta) deixa o cartão de fora",
     },
 ])
 
