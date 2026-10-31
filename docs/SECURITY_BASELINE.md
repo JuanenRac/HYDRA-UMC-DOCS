@@ -83,6 +83,8 @@ These exist and work, but a default installation does not have them. They are th
 | `HYDRA_UMC_WS_QUERY_TOKEN=allow` (`websocket.allowQueryToken`) | refused | A token in the WebSocket address (it stays in proxy logs): lowers protection |
 | `HYDRA_UMC_LOG_REDACTION=off` (`logging.redactSecrets`) | secrets blanked | Stops blanking secrets in the log: lowers protection |
 | `HYDRA_UMC_VOICE_CONFIRM_REQUIRE_SIGNATURE=1` (`voice.requireSignature`) | off | A confirmed spoken request needs a verified signature |
+| `HYDRA_UMC_CAMERA_CREDENTIALS_VIA_ENV=off` (`camera.credentialsViaEnv`) | through the environment | The password of an IP camera goes on the command line of its process (visible in the process table) instead of its environment: lowers protection |
+| `HYDRA_UMC_NEW_INSTALL_TLS=off` (`install.newInstallTls`) | TLS on in a new installation | A new installation does not switch TLS on by itself (read only at its first start): lowers protection |
 | `HYDRA_UMC_OPCUA_LIVENESS=1` | off | OPC UA `Online` follows `GET /api/robots/liveness` instead of the `online` flag of the settings |
 | `journal.read`, `server.metrics` of the local technician | closed | Two optional tools: a bounded window of the journal of an allow-listed unit and one GET of an allow-listed metrics endpoint |
 | `HYDRA_UMC_UPDATER_ROLLBACK_ON_UNHEALTHY=1` | off | A promotion whose health check still fails puts the previous installation back |
