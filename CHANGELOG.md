@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Updater README:** the design section of the version-train feature now says that the train file can be signed with an Ed25519 signature and that a valid one is required by default while trains are on, in the eight languages.
+
 - **Pages and READMEs brought up to the current state of the family:** `docs/INTERFACES.md` lists the contracts of connections, production events, poses, robot and twin states, the routes for connections, signal of life and health, the 74 routes of the server and the announcement of the global stop that six bridges can follow; `docs/SECURITY_BASELINE.md` lists the access switches (health route, announcement of the global stop, address of clients, camera pictures, token in the WebSocket address, blanking of secrets, signature of a spoken confirmation) and the other settings that are off by default. The READMEs of STUDIO, SUITE, SERVER, SDK, ANDROID-CONTROL, DSI, OS, UPDATER, VLA-ENGINE, PHYSICS-REPLICA and the bridges gain the matching sections in the eight languages, the tests of the bridges list the global stop and real broker files, the flow diagram of BRIDGE-PRINTER3D is complete in every language, and the test counts of seven repositories were refreshed.
 
 - **Working anchors in the DSI and iOS control READMEs:** the "see Versioning below" links pointed at an anchor that does not exist; they now match the heading, and the DSI README gets the Versioning section it was linking to (eight languages).
