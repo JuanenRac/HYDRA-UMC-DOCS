@@ -71,7 +71,17 @@ def BODY(lg, ctx):
           "库：`AmrCoordinator`、`FrameTransform`、`Vda5050Publisher`、`Vda5050Target`、`Vda5050Observer`、`SimulatedAmr`、`open_mqtt_client()`。默认 MQTT 客户端 ID 为 `hydra-umc-bridge-amr`。", "A biblioteca: `AmrCoordinator`, `FrameTransform`, `Vda5050Publisher`, `Vda5050Target`, `Vda5050Observer`, `SimulatedAmr`, `open_mqtt_client()`. O ID de cliente MQTT predefinido é `hydra-umc-bridge-amr`.")[lg],
     ])
     out["configuration"] = "\n\n".join([
-        B.mqtt_env_table(lg),
+        B.table(lg, "config", B.MQTT_ENV_ROWS + [
+            ["`HYDRA_UMC_AMR_MAX_STATE_BYTES`", P("none (no cap)", "ninguno (sin tope)", "keiner (keine Obergrenze)", "aucun (pas de plafond)", "nessuno (nessun limite)", "なし（上限なし）", "无（不设上限）", "nenhum (sem limite)"),
+             P("The largest `state` or `connection` message, in bytes, that the observer parses; a larger one is ignored like any unreadable message",
+               "El mayor mensaje `state` o `connection`, en bytes, que analiza el observador; uno mayor se ignora como cualquier mensaje ilegible",
+               "Die größte `state`- oder `connection`-Nachricht in Bytes, die der Beobachter auswertet; eine größere wird wie jede unlesbare Nachricht ignoriert",
+               "Le plus grand message `state` ou `connection`, en octets, que l'observateur analyse ; un message plus grand est ignoré comme tout message illisible",
+               "Il messaggio `state` o `connection` più grande, in byte, che l'osservatore analizza; uno più grande viene ignorato come qualsiasi messaggio illeggibile",
+               "オブザーバーが解析する `state` または `connection` メッセージの最大サイズ（バイト）。これより大きいものは読めないメッセージと同様に無視されます",
+               "观察者解析的 `state` 或 `connection` 消息的最大字节数；更大的消息像任何无法读取的消息一样被忽略",
+               "A maior mensagem `state` ou `connection`, em bytes, que o observador analisa; uma maior é ignorada como qualquer mensagem ilegível")],
+        ]),
         P("There is no configuration file: the broker, `interface_name`, `major_version`, `manufacturer`, `serial_number` and the abort action (`cancelOrder`, `startPause` or both) are arguments of the constructors.", "No hay fichero de configuración: el broker, `interface_name`, `major_version`, `manufacturer`, `serial_number` y la acción de aborto (`cancelOrder`, `startPause` o ambas) son argumentos de los constructores.",
           "Es gibt keine Konfigurationsdatei: Broker, `interface_name`, `major_version`, `manufacturer`, `serial_number` und die Abbruchaktion (`cancelOrder`, `startPause` oder beide) sind Argumente der Konstruktoren.", "Il n'y a pas de fichier de configuration : le broker, `interface_name`, `major_version`, `manufacturer`, `serial_number` et l'action d'abandon (`cancelOrder`, `startPause` ou les deux) sont des arguments des constructeurs.",
           "Non c'è un file di configurazione: il broker, `interface_name`, `major_version`, `manufacturer`, `serial_number` e l'azione di interruzione (`cancelOrder`, `startPause` o entrambe) sono argomenti dei costruttori.", "設定ファイルはありません。ブローカー、`interface_name`、`major_version`、`manufacturer`、`serial_number`、中止動作（`cancelOrder`、`startPause`、または両方）はコンストラクターの引数です。",
