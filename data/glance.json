@@ -103,7 +103,7 @@
     "HYDRA-UMC-DATALAKE": {
       "hardware": "not_run",
       "tests": {
-        "count": 192,
+        "count": 205,
         "command": "python -m pytest -q tests"
       }
     },
@@ -215,7 +215,7 @@
     "HYDRA-UMC-OPCUA-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 148,
+        "count": 162,
         "command": "npm test"
       }
     },
@@ -355,7 +355,7 @@
     "HYDRA-UMC-VISION-NODE": {
       "hardware": "not_run",
       "tests": {
-        "count": 243,
+        "count": 262,
         "command": "python -m pytest -q tests"
       }
     },
