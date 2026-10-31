@@ -362,7 +362,7 @@
     "HYDRA-UMC-VISION-STREAMER": {
       "hardware": "bench",
       "tests": {
-        "count": 146,
+        "count": 163,
         "command": "python -m pytest -q tests"
       }
     },
