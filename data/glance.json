@@ -4,7 +4,7 @@
       "hardware": "not_run",
       "target": "board",
       "tests": {
-        "count": 154,
+        "count": 158,
         "command": "python -m unittest discover -s tests -p 'test_*.py'"
       }
     },
@@ -33,7 +33,7 @@
     "HYDRA-UMC-BRIDGE-CNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 238,
+        "count": 253,
         "command": "python tools/build_test.py"
       }
     },
@@ -47,7 +47,7 @@
     "HYDRA-UMC-BRIDGE-LASER": {
       "hardware": "simulated",
       "tests": {
-        "count": 149,
+        "count": 165,
         "command": "python tools/build_test.py"
       }
     },
@@ -82,14 +82,14 @@
     "HYDRA-UMC-COGNITIVE-NODE": {
       "hardware": "not_run",
       "tests": {
-        "count": 56,
+        "count": 61,
         "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-CONNECTOR-HUB": {
       "hardware": "not_run",
       "tests": {
-        "count": 188,
+        "count": 192,
         "command": "python -m pytest -q tests"
       }
     },
@@ -116,14 +116,14 @@
     "HYDRA-UMC-DEV-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 442,
+        "count": 448,
         "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-DOCS": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 153,
+        "count": 172,
         "command": "python -m pytest tests -q"
       }
     },
@@ -264,28 +264,28 @@
     "HYDRA-UMC-PRODUCTION-REPORTS": {
       "hardware": "not_run",
       "tests": {
-        "count": 133,
+        "count": 145,
         "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-SAFETY-ZONES": {
       "hardware": "not_run",
       "tests": {
-        "count": 248,
+        "count": 263,
         "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-SDK": {
       "hardware": "not_run",
       "tests": {
-        "count": 506,
+        "count": 617,
         "command": "python -m unittest discover -s clients/python/tests"
       }
     },
     "HYDRA-UMC-SEMANTIC-PLANNER": {
       "hardware": "not_run",
       "tests": {
-        "count": 102,
+        "count": 119,
         "command": "python -m pytest -q tests"
       }
     },
@@ -320,7 +320,7 @@
     "HYDRA-UMC-SYNTHETIC-DATA-GEN": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 82,
+        "count": 101,
         "command": "python -m pytest -q tests"
       }
     },
@@ -383,7 +383,7 @@
     "HYDRA-UMC-VOICE-UI": {
       "hardware": "not_run",
       "tests": {
-        "count": 239,
+        "count": 255,
         "command": "python -m pytest -q tests"
       }
     },

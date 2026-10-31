@@ -18,7 +18,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-Markdown-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-153%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-172%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.6-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -39,7 +39,7 @@ GPL-3.0-or-later - see LICENSE
 |---|---|
 | 版本 | `0.0.6` |
 | 成熟度 | 雏形 |
-| 测试 | 153 (`python -m pytest tests -q`) |
+| 测试 | 172 (`python -m pytest tests -q`) |
 | 技术栈 | Markdown / Mermaid / Python / SVG |
 | 目标 | 使用者的电脑 |
 | 真实硬件 | 不适用：这里的内容不在硬件上运行 |
@@ -55,7 +55,7 @@ GPL-3.0-or-later - see LICENSE
 | 领域 | 状态 | 在这里的含义 |
 |---|---|---|
 | 软件 | 🟠 | 目前只有结构和最初的部分，大部分工作尚未完成 |
-| 测试 | 🟡 | 153 项自动测试，每次变更都会运行 |
+| 测试 | 🟡 | 172 项自动测试，每次变更都会运行 |
 | 真实硬件 | 🟡 | 不适用：这里的内容不在硬件上运行 |
 | 文档 | 🟡 | 八种语言的 README，每次变更都会与清单核对 |
 
@@ -113,7 +113,7 @@ python -m pytest tests -q                        # 工具的单元测试
 
 ## 🧪 测试
 
-运行 `python -m pytest tests -q` 会执行 153 个自动测试。 不需要硬件，也不需要这台机器以外的任何东西。
+运行 `python -m pytest tests -q` 会执行 172 个自动测试。 不需要硬件，也不需要这台机器以外的任何东西。
 
 CI 运行 `HYDRA_UMC_CI=1 python tools/ci_validate.py`，检查清单、文档、八个 README 和图片。
 
