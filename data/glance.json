@@ -271,7 +271,7 @@
     "HYDRA-UMC-SAFETY-ZONES": {
       "hardware": "not_run",
       "tests": {
-        "count": 718,
+        "count": 802,
         "command": "python -m pytest -q tests"
       }
     },
