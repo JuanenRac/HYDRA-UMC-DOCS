@@ -327,3 +327,14 @@ BROKER_DESC = P(
 )
 GLOBAL_STOP_ROW = ["`test_global_stop.py`, `test_global_stop_broker.py`", "-", GLOBAL_STOP_DESC]
 BROKER_ROW = ["`test_broker_integration.py`, `broker_harness.py`", "-", BROKER_DESC]
+LIMITS_DESC = P(
+    "the limits of the MQTT transport (a bounded queue that drops the oldest waiting command, a payload cap that never applies to the stop verbs, backoff with jitter on the first connection) and the guard of the global stop taken from the shared SDK instead of a copy; the limits are off unless the settings switch them on",
+    "los límites del transporte MQTT (una cola acotada que descarta la orden en espera más antigua, un tope de carga que nunca se aplica a los verbos de parada, espera exponencial con variación aleatoria en la primera conexión) y la guardia de la parada global tomada del SDK compartido en lugar de una copia; los límites están apagados salvo que los ajustes los enciendan",
+    "die Grenzen des MQTT-Transports (eine begrenzte Warteschlange, die den ältesten wartenden Befehl verwirft, eine Nutzlastgrenze, die nie für die Stopp-Verben gilt, exponentielles Warten mit Zufallsstreuung beim ersten Verbindungsaufbau) und der Wächter des globalen Stopps aus dem gemeinsamen SDK statt einer Kopie; die Grenzen sind aus, solange die Einstellungen sie nicht einschalten",
+    "les limites du transport MQTT (une file bornée qui écarte l'ordre en attente le plus ancien, un plafond de charge qui ne s'applique jamais aux verbes d'arrêt, attente exponentielle avec gigue à la première connexion) et la garde de l'arrêt global prise du SDK partagé au lieu d'une copie ; les limites sont désactivées tant que les réglages ne les activent pas",
+    "i limiti del trasporto MQTT (una coda limitata che scarta il comando in attesa più vecchio, un tetto del carico che non si applica mai ai verbi di arresto, attesa esponenziale con variazione casuale alla prima connessione) e la guardia dell'arresto globale presa dall'SDK condiviso invece di una copia; i limiti sono spenti finché le impostazioni non li accendono",
+    "MQTT トランスポートの上限（最も古い待機コマンドを破棄する上限付きキュー、停止動詞には適用されないペイロード上限、初回接続での揺らぎ付き指数バックオフ）と、コピーの代わりに共有 SDK から取り込んだグローバル停止の番人。設定で有効にしない限り上限は無効です",
+    "MQTT 传输的限制（丢弃最旧等待指令的有界队列、从不作用于停止动词的负载上限、首次连接时带抖动的指数退避），以及取自共享 SDK 而非副本的全局停止守卫；除非设置开启，否则这些限制处于关闭状态",
+    "os limites do transporte MQTT (uma fila limitada que descarta a ordem em espera mais antiga, um limite de carga que nunca se aplica aos verbos de paragem, espera exponencial com variação aleatória na primeira ligação) e a guarda da paragem global tirada do SDK partilhado em vez de uma cópia; os limites estão desligados enquanto as definições não os ligarem",
+)
+LIMITS_ROW = ["`test_transport_limits.py`", "-", LIMITS_DESC]
