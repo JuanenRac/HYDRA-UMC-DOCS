@@ -22,7 +22,11 @@ SPEC = {
             "./run.sh",
             "demo: inventory scan, then config validate"
         ],
-        "./run.sh config validate configs/task-policy.example.json --kind task-policy"
+        "./run.sh config validate configs/task-policy.example.json --kind task-policy",
+        [
+            "python -m hydra_umc_dev_server.bench",
+            "the local bench: planner, safety zones, twin and dispatcher against each other with simulated services (--real starts the real ones that are built)"
+        ]
     ],
     "test_cmd": "python -m pytest -q tests",
     "alt": "HYDRA-UMC-DEV-SERVER architecture",

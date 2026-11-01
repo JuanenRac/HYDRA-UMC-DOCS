@@ -116,7 +116,7 @@
     "HYDRA-UMC-DEV-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 448,
+        "count": 467,
         "command": "python -m pytest -q tests"
       }
     },
