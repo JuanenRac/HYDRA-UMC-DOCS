@@ -32,6 +32,10 @@ Owner: **HYDRA-UMC-SDK** (`contracts/json-schema/v1/`, with a conformance fixtur
 | `TwinState` | Digital twin, physics replica, HIL bridge | Server, Studio, Suite | Joint states, named poses and whether the state is `real` or `simulated`; checked by `validate-state` of the twin |
 | `ConnectionClient`, `ConnectionEvent` | Server (the clients it has seen and the history of sign-ins) | Studio, Suite, the apps | Closed schemas with no secrets; the address of a client appears only when the server was told to keep it |
 | `ProductionEvent` | Job Dispatcher (`-production-events`), bridges, robots | Production Reports, Data Lake | One finished cycle: `source_id`, `at_utc`, `good`, `cycle_time_s` |
+| `CommandLifecycleEvent` | Server (the step a robot command reached) | Studio, Suite, the apps | `ACCEPTED`, `RUNNING`, `COMPLETED`, `FAILED`, `CANCELLED` keyed by the `operation_id` of the `Operation`; the SDK derives the state from an `Operation`, the server does not publish the events yet |
+| `VisualTargetRequest`, `VelocityCommand` | Callers of visual servoing; the visual servoing service | The visual servoing service; robot controllers | Poses in meters and radians; a velocity command carries `issued_at_ms`, `valid_for_ms` and `seq` and a consumer stops when it does not get a newer valid one |
+| `FrameMeta`, `DetectionFrame` | Vision node and streamer; detection services | Detection services; visual servoing, Studio, Suite | The convention of the boxes is in the data (`box_unit` `pixel` or `normalized`, origin at the top left corner, corners `x_min`, `y_min`, `x_max`, `y_max`); `model` is the compatibility record of the vision node |
+| `MaintenanceIncident` | Maintenance agent of a node | Development server, local technician, dashboard | camelCase, closed; `redactionLevel` `sanitized` or `raw` |
 | `ProjectManifest` | Every repository (`hydra-umc.project.json`, `urtc.project.json`) | Updater, the profile dashboard | A closed schema: a typo in a field name fails early; `depends_on` orders a batch of the updater |
 
 Planned in the SDK and **without a schema yet**: `ToolDescriptor` and `TelemetrySample`. Protobuf is not published by the SDK.

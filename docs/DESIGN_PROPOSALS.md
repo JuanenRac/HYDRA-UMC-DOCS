@@ -1,8 +1,10 @@
 # Design proposals
 
-Short designs for larger features that change a public contract or span several repositories. None of them is implemented; each one says what it would change, so that a decision can be taken before any code is written. A proposal that is accepted moves into the contract documents of the SDK and the repository that owns it.
+Short designs for larger features that change a public contract or span several repositories. Each one says what it would change, so that a decision can be taken before any code is written. A proposal that is accepted moves into the contract documents of the SDK and the repository that owns it.
 
 ## 1. Command lifecycle on the robot command route
+
+**Status.** The SDK carries the contract (`CommandLifecycleEvent`) and the derivation of the state from an `Operation`; the route of the server and the clients do not use the events yet.
 
 **Today.** `POST /api/robot/{id}/command` answers `success: true` as soon as the server has accepted the command; the client never learns whether the controller executed it.
 
@@ -12,6 +14,8 @@ Short designs for larger features that change a public contract or span several 
 
 ## 2. Expiring, signed commands on the job topic
 
+**Status.** The SDK signs and checks the commands behind the switch (`HYDRA_UMC_<NAME>_SIGNED_COMMANDS`, off by default) in the shared job intake, and the broker can refuse an unsigned, expired or retained command in front of the bridges (`MQTT_REQUIRE_COMMAND_ENVELOPE`, off by default). The bridges adopt it when they pin the SDK tag that carries it.
+
 **Today.** Anyone who may publish on a bridge command topic can make the bridge act, and an old message that is delivered late is executed as if it were new.
 
 **Proposal.** Every publish to a `cmd/job` topic carries `issued_at`, `expires_in_ms` and a `signature` (HMAC over the topic, the payload and the two fields, with a key per bridge). The bridge refuses a message that is expired, unsigned or from a clock too far away. The shared job intake of the SDK is the single place to enforce it.
@@ -19,6 +23,8 @@ Short designs for larger features that change a public contract or span several 
 **Contract impact.** A new required envelope on command topics, so it ships behind a switch that is off by default and a version of the bridge contract that announces it. The key lives in the existing secrets file of each bridge.
 
 ## 3. Bridge health on a retained topic
+
+**Status.** The SDK publishes it (`BridgeHealth`, `open_bridge_client(..., health=...)`, switch `HYDRA_UMC_<NAME>_BRIDGE_HEALTH`, off by default) and the topic catalog of the broker describes it. Because a connection has one Last Will, a bridge with the topic on no longer maintains `availability`. The bridges adopt it when they pin the SDK tag that carries it; the server and the dashboard do not read it yet.
 
 **Proposal.** Each bridge publishes `hydra/bridges/<name>/health` (retained, QoS 1) with the shape of the SDK `HealthReport`, and sets a last-will that publishes `FAULT` when it disappears. The server and the dashboard read one topic family instead of probing every bridge. It reuses the contract that exists; only the topic name is new.
 
