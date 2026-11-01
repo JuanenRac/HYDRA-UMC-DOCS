@@ -158,14 +158,14 @@
     "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
       "hardware": "not_run",
       "tests": {
-        "count": 146,
+        "count": 154,
         "command": "npm test"
       }
     },
     "HYDRA-UMC-HIL-BRIDGE": {
       "hardware": "simulated",
       "tests": {
-        "count": 144,
+        "count": 149,
         "command": "cargo test"
       }
     },
@@ -208,7 +208,7 @@
     "HYDRA-UMC-NODE-HEALING": {
       "hardware": "not_run",
       "tests": {
-        "count": 115,
+        "count": 122,
         "command": "go test ./..."
       }
     },
@@ -229,7 +229,7 @@
     "HYDRA-UMC-ORCHESTRATOR": {
       "hardware": "not_run",
       "tests": {
-        "count": 176,
+        "count": 197,
         "command": "cargo test"
       }
     },
@@ -264,14 +264,14 @@
     "HYDRA-UMC-PRODUCTION-REPORTS": {
       "hardware": "not_run",
       "tests": {
-        "count": 161,
+        "count": 165,
         "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-SAFETY-ZONES": {
       "hardware": "not_run",
       "tests": {
-        "count": 802,
+        "count": 819,
         "command": "python -m pytest -q tests"
       }
     },

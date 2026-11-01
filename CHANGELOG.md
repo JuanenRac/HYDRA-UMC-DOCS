@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The design proposals say what is built:** shadow mode (enforced in the bridge), the signed safety state (HMAC) and the replicated registry (push to swarm-sync) state what exists and what does not, and two proposals are added: the lease for the healer and the gate for writes to a controller. The READMEs of the projects touched by these features carry them in the eight languages, and the paragraphs that gave the digital twin a frame rate or the validation of the planned routes of the path planner (it has neither) are corrected.
 - **`tools/check_test_counts.py` counts Go, Rust, JavaScript, Dart and Kotlin suites exactly:** it runs the native listing of each runner (`go test -list`, `cargo test -- --list`, `vitest run --reporter=json`, `flutter test --reporter json`, the JUnit reports of Gradle, the summary of `node --test`), optionally through a build queue set in `HYDRA_UMC_BUILD_QUEUE`, and falls back to the source scan only when the toolchain or the dependencies are missing; `--no-native` skips the listings. A Rust test command was being taken for a Go one and is fixed. The counts of the repositories that disagreed were corrected in `data/glance.json` and in the READMEs.
 
 ## [0.0.7] - Generated files are written in one step, pages and READMEs brought up to the current state of the family and new checks of the test counts and of the languages

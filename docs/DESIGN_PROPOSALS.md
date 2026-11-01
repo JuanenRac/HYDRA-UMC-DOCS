@@ -42,9 +42,13 @@ Short designs for larger features that change a public contract or span several 
 
 **Proposal.** Run every real command on the twin a few milliseconds before the real one is sent, and block the command when the twin predicts a collision or a limit violation. The twin already checks trajectories; what is new is the place of the check (in the path of the real command) and the budget (the check must finish inside the time the command can wait, otherwise the command is refused, never sent unchecked).
 
+**Built so far.** `serve --collision-shadow-enforce` in the bridge asks the twin before a real command is routed, inside the wait budget of the shadow, and refuses the command on a predicted contact (`409`) or when the twin gives no answer in time (`503`). It is off by default; the shadow alone still only informs. Not tried with a real robot, and the prediction of the twin is as good as its model of the robot (kinematics and zones, no dynamics).
+
 ## 7. Signed safety state
 
 **Proposal.** The safety zones service signs the state it publishes (HMAC for a node that shares a secret, Ed25519 where the verifier must not be able to sign) and includes a counter, so the visual servoing service and the bridges can refuse a state that is old, replayed or unsigned. Fail-closed: an unsigned state is treated as `INHIBITED`.
+
+**Built so far.** HMAC-SHA256 only: `serve --state-key-file` makes the safety zones service sign every verdict (`sdkSafetyStateSignature`: the state, a counter that only goes up and the key id), and `signing.effective_state` is what a consumer calls: anything unsigned, forged, old or replayed is `INHIBITED`. Off by default. Not built: the Ed25519 variant, and the consumers (visual servoing, orchestrator, bridges) that verify; each one has to start verifying before the service signs.
 
 ## 8. Multi-stage missions
 
@@ -53,6 +57,8 @@ Short designs for larger features that change a public contract or span several 
 ## 9. Replicated mission registry
 
 **Proposal.** The orchestrator keeps its missions in a map that the swarm-sync service replicates between two nodes, so a node that fails does not lose the registry. Before a mission that was in progress is queued again, the new node asks the old robot to confirm that it stopped (fencing), using the attempt number of the job as the token that decides which side wins.
+
+**Built so far.** The orchestrator exports its registry as swarm-sync records (`GET /replica`), takes a registry over with the proof that the robot stopped (`POST /replica/takeover`, off by default) and, with `--swarm-sync-url`, pushes the records that changed to swarm-sync every few seconds. Not built: the second orchestrator that reads the map and decides to take over by itself, and the contract by which a robot confirms that it stopped.
 
 ## 10. Historical access for the OPC-UA server
 
@@ -69,3 +75,13 @@ Short designs for larger features that change a public contract or span several 
 ## 13. Ecosystem map in the studio
 
 **Proposal.** A panel that draws the services of `GET /api/ecosystem/status` with the port registry of the SDK: state, version, the contract each one speaks and an alert when a version is outside the compatibility window. Read-only, so it needs no new route.
+
+## 14. Lease for the healer
+
+**Proposal.** Two watchdogs on the same cell would both ask the orchestrator for the same recovery. The orchestrator keeps named leases (`healer-of-<cell>`): one holder at a time, a time limit, and a token that is higher than every token handed out before. A watchdog takes the lease, renews it every third of its time and shows it with each recovery request; the orchestrator refuses the recovery of anyone who does not hold it, and a holder that stops renewing is replaced by another with a higher token.
+
+**Contract impact.** `POST /leases/{name}/acquire|renew|release`, `GET /leases`, and the headers `X-Healer-Lease`, `X-Healer-Id` and `X-Healer-Token` on `POST /nodes/{node}/recover`; none of it is needed while no lease is held. Built in the orchestrator and in the watchdog (`--healer-cell`); the leases live in the memory of one orchestrator, so they do not survive its restart and are not replicated.
+
+## 15. Gate for writes to a controller
+
+**Proposal.** Nothing writes to a PLC through the industrial gateway until a write has passed a gate: off by default, a rule for every node (type, range or list of values), two steps (prepare, then commit with a one-use confirmation id that expires), the safety state of the cell read again at both steps, and a signed chain of every decision. The gate is built and has no executor that writes to a real PLC yet; the contract the first executor must keep is in the gateway's `docs/API.md`. The adapter for the URTC tool heads is meant to be a connector of the gateway, read only first.
