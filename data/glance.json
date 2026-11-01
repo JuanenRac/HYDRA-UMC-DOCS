@@ -165,7 +165,7 @@
     "HYDRA-UMC-HIL-BRIDGE": {
       "hardware": "simulated",
       "tests": {
-        "count": 139,
+        "count": 144,
         "command": "cargo test"
       }
     },
