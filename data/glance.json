@@ -215,7 +215,7 @@
     "HYDRA-UMC-OPCUA-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 182,
+        "count": 195,
         "command": "npm test"
       }
     },
@@ -348,7 +348,7 @@
     "HYDRA-UMC-UPDATER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 259,
+        "count": 318,
         "command": "python -m pytest -q tests"
       }
     },
