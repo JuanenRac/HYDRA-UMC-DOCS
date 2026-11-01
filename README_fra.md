@@ -18,7 +18,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-Markdown-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-173%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-175%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.7-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -39,7 +39,7 @@ GPL-3.0-or-later - see LICENSE
 |---|---|
 | Version | `0.0.7` |
 | Maturité | Ébauche |
-| Tests | 173 (`python -m pytest tests -q`) |
+| Tests | 175 (`python -m pytest tests -q`) |
 | Technologie | Markdown / Mermaid / Python / SVG |
 | Cible | Le PC de la personne qui l'utilise |
 | Sur matériel réel | Sans objet : rien ici ne s'exécute sur du matériel |
@@ -55,7 +55,7 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 | Domaine | État | Ce que cela veut dire ici |
 |---|---|---|
 | Logiciel | 🟠 | Seulement la structure et les premières pièces ; l'essentiel du travail reste à faire |
-| Tests | 🟡 | 173 tests automatiques, exécutés à chaque modification |
+| Tests | 🟡 | 175 tests automatiques, exécutés à chaque modification |
 | Matériel réel | 🟡 | Sans objet : rien ici ne s'exécute sur du matériel |
 | Documentation | 🟡 | README en huit langues, vérifié par rapport au manifeste à chaque modification |
 
@@ -73,7 +73,7 @@ L'image ci-dessous montre les familles de dépôts et les flux qu'affirment leur
 * [Socle de sécurité](docs/SECURITY_BASELINE.md): ce que le code impose et ce qui manque encore ; et le [modèle de menaces](docs/THREAT_MODEL.md).
 * [Première tranche verticale](docs/FIRST_VERTICAL_SLICE.md): le plus petit chemin de bout en bout qui existe aujourd'hui.
 * [Catalogue des projets](docs/PROJECT_CATALOG.md): chaque dépôt de la famille, écrit à partir de son propre manifeste.
-* **Outils :** `make_catalog.py` écrit le catalogue, `make_brand.py` la bannière, l'icône et la carte des familles, `make_readmes.py` les huit README de ce dépôt, `publication_check.py` cherche tout ce qui serait privé avant une publication, et `check_all.sh` lance les vérifications propres à chaque dépôt de la famille et affiche une ligne PASS, FAIL ou SKIP pour chacun. `make_glance.py` écrit le tableau En un coup d'œil de chaque dépôt à partir de son manifeste et de `data/glance.json` (`--check` compare, `--apply` écrit) ; après un changement de version, `python tools/make_glance.py --apply --repo NOM` met à jour le tableau de ce dépôt. `check_test_counts.py` compte les vrais tests de chaque dépôt voisin et les compare à `data/glance.json` et à la ligne Tests de chaque README (`--apply` réécrit les nombres exacts ; les suites Go, Rust, JavaScript, Dart et Kotlin sont comptées depuis le source et seulement signalées). `i18n_cross_check.py` lit les fichiers de langue de STUDIO, SUITE, ANDROID-CONTROL et WATCH sous une même forme, échoue quand un client n'a pas une clé dans l'une des huit langues et liste les textes qui se lisent différemment d'un client à l'autre (`--lang`, `--list`, `--json`). `check_claims.py` lit le README anglais de chaque dépôt de la famille et échoue lorsqu'une phrase contient un mot à risque (E-STOP, verrouillage, temps réel, signé, mTLS, FDCAN, YOLO, piloté par IA, autonome, certifié, ...) sans marqueur d'état à côté (prévu, non implémenté, optionnel, désactivé par défaut, simulé, testé, ...), sauf si une personne a lu cette ligne à côté du code et l'a inscrite dans `data/claims_reviewed.json`.
+* **Outils :** `make_catalog.py` écrit le catalogue, `make_brand.py` la bannière, l'icône et la carte des familles, `make_readmes.py` les huit README de ce dépôt, `publication_check.py` cherche tout ce qui serait privé avant une publication, et `check_all.sh` lance les vérifications propres à chaque dépôt de la famille et affiche une ligne PASS, FAIL ou SKIP pour chacun. `make_glance.py` écrit le tableau En un coup d'œil de chaque dépôt à partir de son manifeste et de `data/glance.json` (`--check` compare, `--apply` écrit) ; après un changement de version, `python tools/make_glance.py --apply --repo NOM` met à jour le tableau de ce dépôt. `check_test_counts.py` compte les vrais tests de chaque dépôt voisin et les compare à `data/glance.json` et à la ligne Tests de chaque README (`--apply` réécrit les nombres exacts ; les suites Go, Rust, JavaScript, Dart et Kotlin sont comptées avec le listage natif de leur propre exécuteur et, si sa chaîne d'outils manque, depuis le source et seulement signalées). `i18n_cross_check.py` lit les fichiers de langue de STUDIO, SUITE, ANDROID-CONTROL et WATCH sous une même forme, échoue quand un client n'a pas une clé dans l'une des huit langues et liste les textes qui se lisent différemment d'un client à l'autre (`--lang`, `--list`, `--json`). `check_claims.py` lit le README anglais de chaque dépôt de la famille et échoue lorsqu'une phrase contient un mot à risque (E-STOP, verrouillage, temps réel, signé, mTLS, FDCAN, YOLO, piloté par IA, autonome, certifié, ...) sans marqueur d'état à côté (prévu, non implémenté, optionnel, désactivé par défaut, simulé, testé, ...), sauf si une personne a lu cette ligne à côté du code et l'a inscrite dans `data/claims_reviewed.json`.
 
 ## 🧩 Rôle dans HYDRA-UMC
 
@@ -113,7 +113,7 @@ python -m pytest tests -q                        # les tests unitaires des outil
 
 ## 🧪 Tests
 
-173 tests automatiques s'exécutent avec `python -m pytest tests -q`. Ils n'ont besoin ni de matériel ni de rien en dehors de cette machine.
+175 tests automatiques s'exécutent avec `python -m pytest tests -q`. Ils n'ont besoin ni de matériel ni de rien en dehors de cette machine.
 
 La CI exécute `HYDRA_UMC_CI=1 python tools/ci_validate.py`, qui vérifie le manifeste, les documents, les huit README et les images.
 

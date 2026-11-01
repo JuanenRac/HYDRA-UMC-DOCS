@@ -18,7 +18,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-Markdown-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-173%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-175%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.7-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
 </p>
@@ -39,7 +39,7 @@ GPL-3.0-or-later - see LICENSE
 |---|---|
 | Versão | `0.0.7` |
 | Maturidade | Estrutura inicial |
-| Testes | 173 (`python -m pytest tests -q`) |
+| Testes | 175 (`python -m pytest tests -q`) |
 | Tecnologia | Markdown / Mermaid / Python / SVG |
 | Destino | O PC de quem o usa |
 | Em hardware real | Não aplicável: nada aqui corre em hardware |
@@ -55,7 +55,7 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 | Área | Estado | O que significa aqui |
 |---|---|---|
 | Software | 🟠 | Só estrutura e as primeiras peças; falta a maior parte do trabalho |
-| Testes | 🟡 | 173 testes automáticos, executados a cada alteração |
+| Testes | 🟡 | 175 testes automáticos, executados a cada alteração |
 | Hardware real | 🟡 | Não aplicável: nada aqui corre em hardware |
 | Documentação | 🟡 | README em oito idiomas, verificado contra o manifesto a cada alteração |
 
@@ -73,7 +73,7 @@ A imagem abaixo mostra as famílias de repositórios e os fluxos que os seus doc
 * [Base de segurança](docs/SECURITY_BASELINE.md): o que o código impõe e o que ainda falta; e o [modelo de ameaças](docs/THREAT_MODEL.md).
 * [Primeiro corte vertical](docs/FIRST_VERTICAL_SLICE.md): o caminho de ponta a ponta mais pequeno que existe hoje.
 * [Catálogo de projetos](docs/PROJECT_CATALOG.md): cada repositório da família, escrito a partir do seu próprio manifesto.
-* **Ferramentas:** `make_catalog.py` escreve o catálogo, `make_brand.py` o banner, o ícone e o mapa das famílias, `make_readmes.py` os oito README deste repositório, `publication_check.py` procura qualquer coisa privada antes de uma publicação e `check_all.sh` executa as verificações próprias de cada repositório da família e imprime uma linha PASS, FAIL ou SKIP por cada um. `make_glance.py` escreve a tabela Num relance de cada repositório a partir do seu manifesto e de `data/glance.json` (`--check` compara, `--apply` escreve); depois de subir uma versão, `python tools/make_glance.py --apply --repo NOME` atualiza a tabela desse repositório. `check_test_counts.py` conta os testes reais de cada repositório vizinho e compara-os com `data/glance.json` e com a linha Testes de cada README (`--apply` escreve de volta as contagens exatas; as suites de Go, Rust, JavaScript, Dart e Kotlin são contadas a partir do código e só comunicadas). `i18n_cross_check.py` lê os ficheiros de idioma do STUDIO, SUITE, ANDROID-CONTROL e WATCH numa forma única, falha quando um cliente não tem uma chave em algum dos oito idiomas e lista os textos que se leem de forma diferente entre clientes (`--lang`, `--list`, `--json`). `check_claims.py` lê o README em inglês de cada repositório da família e falha quando uma frase tem uma palavra de risco (E-STOP, interlock, tempo real, assinado, mTLS, FDCAN, YOLO, orientado por IA, autónomo, certificado, ...) sem uma marca de estado ao lado (previsto, não implementado, opcional, desativado por defeito, simulado, testado, ...), a menos que uma pessoa tenha lido essa linha junto ao código e a tenha registado em `data/claims_reviewed.json`.
+* **Ferramentas:** `make_catalog.py` escreve o catálogo, `make_brand.py` o banner, o ícone e o mapa das famílias, `make_readmes.py` os oito README deste repositório, `publication_check.py` procura qualquer coisa privada antes de uma publicação e `check_all.sh` executa as verificações próprias de cada repositório da família e imprime uma linha PASS, FAIL ou SKIP por cada um. `make_glance.py` escreve a tabela Num relance de cada repositório a partir do seu manifesto e de `data/glance.json` (`--check` compara, `--apply` escreve); depois de subir uma versão, `python tools/make_glance.py --apply --repo NOME` atualiza a tabela desse repositório. `check_test_counts.py` conta os testes reais de cada repositório vizinho e compara-os com `data/glance.json` e com a linha Testes de cada README (`--apply` escreve de volta as contagens exatas; as suites de Go, Rust, JavaScript, Dart e Kotlin são contadas com a listagem nativa do seu próprio executor e, se faltar a sua cadeia de ferramentas, a partir do código e só comunicadas). `i18n_cross_check.py` lê os ficheiros de idioma do STUDIO, SUITE, ANDROID-CONTROL e WATCH numa forma única, falha quando um cliente não tem uma chave em algum dos oito idiomas e lista os textos que se leem de forma diferente entre clientes (`--lang`, `--list`, `--json`). `check_claims.py` lê o README em inglês de cada repositório da família e falha quando uma frase tem uma palavra de risco (E-STOP, interlock, tempo real, assinado, mTLS, FDCAN, YOLO, orientado por IA, autónomo, certificado, ...) sem uma marca de estado ao lado (previsto, não implementado, opcional, desativado por defeito, simulado, testado, ...), a menos que uma pessoa tenha lido essa linha junto ao código e a tenha registado em `data/claims_reviewed.json`.
 
 ## 🧩 Papel no HYDRA-UMC
 
@@ -113,7 +113,7 @@ python -m pytest tests -q                        # os testes unitários das ferr
 
 ## 🧪 Testes
 
-173 testes automáticos correm com `python -m pytest tests -q`. Não precisam de hardware nem de nada fora desta máquina.
+175 testes automáticos correm com `python -m pytest tests -q`. Não precisam de hardware nem de nada fora desta máquina.
 
 A CI executa `HYDRA_UMC_CI=1 python tools/ci_validate.py`, que verifica o manifesto, os documentos, os oito README e as imagens.
 

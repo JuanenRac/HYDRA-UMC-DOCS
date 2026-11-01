@@ -46,3 +46,39 @@ def test_the_hub_data_lists_a_command_for_every_counted_repository():
     for name, entry in data["repos"].items():
         tests = entry.get("tests")
         assert tests is None or (isinstance(tests["count"], int) and tests["count"] > 0), name
+
+
+def test_cargo_commands_are_not_mistaken_for_go_and_native_listings_win_over_the_source_scan(tmp_path, monkeypatch):
+    tool = load_tool()
+    monkeypatch.setattr(tool, "WORKSPACE", tmp_path)
+    (tmp_path / "RUSTY").mkdir()
+    seen = []
+    monkeypatch.setattr(tool, "native_count", lambda repo, kind, command: seen.append(kind) or 7)
+    assert tool.measure_main("RUSTY", {"tests": {"command": "cargo test"}}) == (7, "exact")
+    assert tool.measure_main("RUSTY", {"tests": {"command": "go test ./..."}}) == (7, "exact")
+    assert seen == ["cargo", "go"]
+    monkeypatch.setattr(tool, "native_count", lambda repo, kind, command: None)
+    monkeypatch.setattr(tool, "count_static", lambda repo, kind: 3)
+    assert tool.measure_main("RUSTY", {"tests": {"command": "cargo test"}}) == (3, "approx")
+
+
+def test_native_listings_are_parsed(tmp_path, monkeypatch):
+    tool = load_tool()
+    (tmp_path / "node_modules" / "vitest").mkdir(parents=True)
+
+    def fake_run(repo, label, command, timeout=3600):
+        import re as _re
+
+        target = _re.search(r'--outputFile.json="([^"]+)"', command).group(1)
+        Path(target).write_text('{"numTotalTests": 2, "numFailedTests": 0, "numFailedTestSuites": 0}', encoding="utf-8")
+        return 0, "[cola] turn"
+
+    monkeypatch.setattr(tool, "run_native", fake_run)
+    assert tool.native_vitest(tmp_path) == 2
+    monkeypatch.setattr(tool, "shutil", type("S", (), {"which": staticmethod(lambda name: "x")}))
+    (tmp_path / "a_test.go").write_text("package a\n", encoding="utf-8")
+    monkeypatch.setattr(tool, "run_native", lambda repo, label, command, timeout=3600: (0, "TestA\nTestB\nok  \tpkg\t0.1s\nBenchmarkC\n"))
+    assert tool.native_go(tmp_path) == 2
+    (tmp_path / "Cargo.toml").write_text("[package]\n", encoding="utf-8")
+    monkeypatch.setattr(tool, "run_native", lambda repo, label, command, timeout=3600: (0, "a::b: test\nc: test\n\n2 tests, 0 benchmarks\n"))
+    assert tool.native_cargo(tmp_path) == 2

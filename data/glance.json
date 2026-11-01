@@ -11,7 +11,7 @@
     "HYDRA-UMC-ANDROID-CONTROL": {
       "hardware": "not_run",
       "tests": {
-        "count": 303,
+        "count": 356,
         "command": "./gradlew testDebugUnitTest"
       },
       "target": "android"
@@ -33,7 +33,7 @@
     "HYDRA-UMC-BRIDGE-CNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 287,
+        "count": 302,
         "command": "python tools/build_test.py"
       }
     },
@@ -47,28 +47,28 @@
     "HYDRA-UMC-BRIDGE-LASER": {
       "hardware": "simulated",
       "tests": {
-        "count": 197,
+        "count": 212,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-OPENPNP": {
       "hardware": "simulated",
       "tests": {
-        "count": 241,
+        "count": 248,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-PRINTER3D": {
       "hardware": "simulated",
       "tests": {
-        "count": 157,
+        "count": 164,
         "command": "python tools/build_test.py"
       }
     },
     "HYDRA-UMC-BRIDGE-ROS2": {
       "hardware": "simulated",
       "tests": {
-        "count": 112,
+        "count": 119,
         "command": "python tools/build_test.py"
       }
     },
@@ -96,7 +96,7 @@
     "HYDRA-UMC-DASHBOARD-AI": {
       "hardware": "not_run",
       "tests": {
-        "count": 210,
+        "count": 217,
         "command": "npm test"
       }
     },
@@ -123,7 +123,7 @@
     "HYDRA-UMC-DOCS": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 173,
+        "count": 175,
         "command": "python -m pytest tests -q"
       }
     },
@@ -180,7 +180,7 @@
     "HYDRA-UMC-JOB-DISPATCHER": {
       "hardware": "not_run",
       "tests": {
-        "count": 243,
+        "count": 248,
         "command": "go test ./..."
       }
     },
@@ -229,7 +229,7 @@
     "HYDRA-UMC-ORCHESTRATOR": {
       "hardware": "not_run",
       "tests": {
-        "count": 144,
+        "count": 176,
         "command": "cargo test"
       }
     },
@@ -250,7 +250,7 @@
     "HYDRA-UMC-PATH-PLANNER-3D": {
       "hardware": "not_run",
       "tests": {
-        "count": 66,
+        "count": 75,
         "command": "cargo test"
       }
     },
@@ -278,7 +278,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_run",
       "tests": {
-        "count": 681,
+        "count": 722,
         "command": "python -m unittest discover -s clients/python/tests"
       }
     },
@@ -292,14 +292,14 @@
     "HYDRA-UMC-SERVER": {
       "hardware": "bench",
       "tests": {
-        "count": 518,
+        "count": 587,
         "command": "npm run test:unit"
       }
     },
     "HYDRA-UMC-STUDIO": {
       "hardware": "bench",
       "tests": {
-        "count": 763,
+        "count": 782,
         "command": "npm test"
       }
     },
@@ -313,7 +313,7 @@
     "HYDRA-UMC-SWARM-SYNC": {
       "hardware": "not_run",
       "tests": {
-        "count": 105,
+        "count": 132,
         "command": "cargo test"
       }
     },
@@ -390,7 +390,7 @@
     "HYDRA-UMC-WATCH": {
       "hardware": "not_run",
       "tests": {
-        "count": 94,
+        "count": 113,
         "command": "./gradlew testDebugUnitTest"
       }
     },

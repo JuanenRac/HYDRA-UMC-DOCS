@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **`tools/check_test_counts.py` counts Go, Rust, JavaScript, Dart and Kotlin suites exactly:** it runs the native listing of each runner (`go test -list`, `cargo test -- --list`, `vitest run --reporter=json`, `flutter test --reporter json`, the JUnit reports of Gradle, the summary of `node --test`), optionally through a build queue set in `HYDRA_UMC_BUILD_QUEUE`, and falls back to the source scan only when the toolchain or the dependencies are missing; `--no-native` skips the listings. A Rust test command was being taken for a Go one and is fixed. The counts of the repositories that disagreed were corrected in `data/glance.json` and in the READMEs.
+
 ## [0.0.7] - Generated files are written in one step, pages and READMEs brought up to the current state of the family and new checks of the test counts and of the languages
 
 - **Generated files are written in one step:** the catalogue, brand pages, READMEs and the reviewed-claims file are written to a temporary file and moved over the target, so a check or a test that reads them at the same moment as a regeneration never sees a half-written file.
