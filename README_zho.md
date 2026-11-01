@@ -20,7 +20,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Tests-175%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.0.8-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
+  <img src="https://img.shields.io/badge/Maturity-functional-0F6CBD.svg" alt="Maturity">
 </p>
 
 ---
@@ -38,7 +38,7 @@ GPL-3.0-or-later - see LICENSE
 | | |
 |---|---|
 | 版本 | `0.0.8` |
-| 成熟度 | 雏形 |
+| 成熟度 | 可用 |
 | 测试 | 175 (`python -m pytest tests -q`) |
 | 技术栈 | Markdown / Mermaid / Python / SVG |
 | 目标 | 使用者的电脑 |
@@ -54,10 +54,10 @@ GPL-3.0-or-later - see LICENSE
 
 | 领域 | 状态 | 在这里的含义 |
 |---|---|---|
-| 软件 | 🟠 | 目前只有结构和最初的部分，大部分工作尚未完成 |
-| 测试 | 🟡 | 175 项自动测试，每次变更都会运行 |
-| 真实硬件 | 🟡 | 不适用：这里的内容不在硬件上运行 |
-| 文档 | 🟡 | 八种语言的 README，每次变更都会与清单核对 |
+| 软件 | 🟡 | 主要用途可用；上面的诚实性检查列出了仍然缺少的内容 |
+| 测试 | 🟢 | 175 项自动测试，每次变更都会运行 |
+| 真实硬件 | 🟢 | 不适用：这里的内容不在硬件上运行 |
+| 文档 | 🟢 | 八种语言的 README，每次变更都会与清单核对 |
 
 ## 🎯 概述
 

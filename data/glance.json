@@ -17,7 +17,7 @@
       "target": "android"
     },
     "HYDRA-UMC-ANOMALY-DETECTOR": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 179,
         "command": "python -m pytest -q tests"
@@ -87,21 +87,21 @@
       }
     },
     "HYDRA-UMC-CONNECTOR-HUB": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 192,
         "command": "python -m pytest -q tests"
       }
     },
     "HYDRA-UMC-DASHBOARD-AI": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 217,
         "command": "npm test"
       }
     },
     "HYDRA-UMC-DATALAKE": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 244,
         "command": "python -m pytest -q tests"
@@ -128,7 +128,7 @@
       }
     },
     "HYDRA-UMC-DOCS-QA": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 109,
         "command": "python -m pytest -q tests"
@@ -192,14 +192,14 @@
       }
     },
     "HYDRA-UMC-MQTT-BROKER": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 173,
         "command": "npm test"
       }
     },
     "HYDRA-UMC-MTCONNECT-ADAPTER": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 161,
         "command": "npm test"
@@ -213,14 +213,14 @@
       }
     },
     "HYDRA-UMC-OPCUA-SERVER": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 195,
         "command": "npm test"
       }
     },
     "HYDRA-UMC-OPS-AGENT": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 350,
         "command": "python -m pytest -q tests"
@@ -262,7 +262,7 @@
       }
     },
     "HYDRA-UMC-PRODUCTION-REPORTS": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 165,
         "command": "python -m pytest -q tests"
@@ -276,14 +276,14 @@
       }
     },
     "HYDRA-UMC-SDK": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 772,
         "command": "python -m unittest discover -s clients/python/tests"
       }
     },
     "HYDRA-UMC-SEMANTIC-PLANNER": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 179,
         "command": "python -m pytest -q tests"
@@ -325,7 +325,7 @@
       }
     },
     "HYDRA-UMC-TELEMETRY-COLLECTOR": {
-      "hardware": "not_run",
+      "hardware": "not_applicable",
       "tests": {
         "count": 138,
         "command": "go test ./..."
