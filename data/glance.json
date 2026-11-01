@@ -14,13 +14,30 @@
         "count": 356,
         "command": "./gradlew testDebugUnitTest"
       },
-      "target": "android"
+      "target": "android",
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "apk",
+        "updates": "apk",
+        "stop": "simulated",
+        "access": "languages"
+      }
     },
     "HYDRA-UMC-ANOMALY-DETECTOR": {
       "hardware": "not_applicable",
       "tests": {
         "count": 179,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains"
       }
     },
     "HYDRA-UMC-BRIDGE-AMR": {
@@ -28,6 +45,12 @@
       "tests": {
         "count": 145,
         "command": "python tools/build_test.py"
+      },
+      "rows": {
+        "integration": "contract",
+        "deployment": "release",
+        "stop": "simulated",
+        "protocol": "mock"
       }
     },
     "HYDRA-UMC-BRIDGE-CNC": {
@@ -35,6 +58,15 @@
       "tests": {
         "count": 302,
         "command": "python tools/build_test.py"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "operation": "logs",
+        "stop": "simulated",
+        "protocol": "mock"
       }
     },
     "HYDRA-UMC-BRIDGE-DROIDS": {
@@ -42,6 +74,12 @@
       "tests": {
         "count": 79,
         "command": "python tools/build_test.py"
+      },
+      "rows": {
+        "integration": "contract",
+        "deployment": "release",
+        "stop": "simulated",
+        "protocol": "mock"
       }
     },
     "HYDRA-UMC-BRIDGE-LASER": {
@@ -49,6 +87,15 @@
       "tests": {
         "count": 212,
         "command": "python tools/build_test.py"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "operation": "logs",
+        "stop": "simulated",
+        "protocol": "mock"
       }
     },
     "HYDRA-UMC-BRIDGE-OPENPNP": {
@@ -56,6 +103,15 @@
       "tests": {
         "count": 248,
         "command": "python tools/build_test.py"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "operation": "logs",
+        "stop": "simulated",
+        "protocol": "mock"
       }
     },
     "HYDRA-UMC-BRIDGE-PRINTER3D": {
@@ -63,6 +119,15 @@
       "tests": {
         "count": 164,
         "command": "python tools/build_test.py"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "operation": "logs",
+        "stop": "simulated",
+        "protocol": "mock"
       }
     },
     "HYDRA-UMC-BRIDGE-ROS2": {
@@ -70,6 +135,15 @@
       "tests": {
         "count": 119,
         "command": "python tools/build_test.py"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "operation": "logs",
+        "stop": "simulated",
+        "protocol": "mock"
       }
     },
     "HYDRA-UMC-BRIDGE-UAV": {
@@ -77,6 +151,12 @@
       "tests": {
         "count": 154,
         "command": "python tools/build_test.py"
+      },
+      "rows": {
+        "integration": "contract",
+        "deployment": "release",
+        "stop": "simulated",
+        "protocol": "mock"
       }
     },
     "HYDRA-UMC-COGNITIVE-NODE": {
@@ -84,6 +164,14 @@
       "tests": {
         "count": 61,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains"
       }
     },
     "HYDRA-UMC-CONNECTOR-HUB": {
@@ -91,6 +179,9 @@
       "tests": {
         "count": 192,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "deployment": "release"
       }
     },
     "HYDRA-UMC-DASHBOARD-AI": {
@@ -98,6 +189,14 @@
       "tests": {
         "count": 217,
         "command": "npm test"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "updates": "trains",
+        "access": "languages"
       }
     },
     "HYDRA-UMC-DATALAKE": {
@@ -105,12 +204,29 @@
       "tests": {
         "count": 244,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains",
+        "storage": "host_tested"
       }
     },
     "HYDRA-UMC-DETECTION-HEF": {
       "hardware": "not_run",
       "tests": {
         "count": 150
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains"
       }
     },
     "HYDRA-UMC-DEV-SERVER": {
@@ -118,6 +234,13 @@
       "tests": {
         "count": 467,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "operation": "metrics"
       }
     },
     "HYDRA-UMC-DOCS": {
@@ -125,6 +248,9 @@
       "tests": {
         "count": 175,
         "command": "python -m pytest tests -q"
+      },
+      "rows": {
+        "deployment": "release"
       }
     },
     "HYDRA-UMC-DOCS-QA": {
@@ -132,6 +258,14 @@
       "tests": {
         "count": 109,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains"
       }
     },
     "HYDRA-UMC-DSI": {
@@ -139,6 +273,14 @@
       "tests": {
         "count": 231,
         "command": "flutter test"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "stop": "simulated",
+        "access": "languages"
       }
     },
     "HYDRA-UMC-EDITOR-STL": {
@@ -146,6 +288,10 @@
       "tests": {
         "count": 267,
         "command": "python -m pytest tests -q"
+      },
+      "rows": {
+        "deployment": "release",
+        "access": "languages"
       }
     },
     "HYDRA-UMC-EDITOR-URDF": {
@@ -153,6 +299,10 @@
       "tests": {
         "count": 569,
         "command": "python -m pytest tests -q"
+      },
+      "rows": {
+        "deployment": "release",
+        "access": "languages"
       }
     },
     "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
@@ -160,6 +310,15 @@
       "tests": {
         "count": 154,
         "command": "npm test"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "operation": "metrics",
+        "stop": "simulated",
+        "protocol": "mock"
       }
     },
     "HYDRA-UMC-HIL-BRIDGE": {
@@ -167,6 +326,14 @@
       "tests": {
         "count": 149,
         "command": "cargo test"
+      },
+      "rows": {
+        "integration": "bench",
+        "security": "partial",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains",
+        "stop": "simulated"
       }
     },
     "HYDRA-UMC-IOS-CONTROL": {
@@ -175,6 +342,14 @@
       "tests": {
         "count": 322,
         "command": "flutter test"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "stop": "simulated",
+        "access": "languages"
       }
     },
     "HYDRA-UMC-JOB-DISPATCHER": {
@@ -182,6 +357,15 @@
       "tests": {
         "count": 248,
         "command": "go test ./..."
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains",
+        "stop": "simulated"
       }
     },
     "HYDRA-UMC-LOCAL-TECHNICIAN": {
@@ -189,6 +373,13 @@
       "tests": {
         "count": 335,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "installer",
+        "operation": "logs"
       }
     },
     "HYDRA-UMC-MQTT-BROKER": {
@@ -196,6 +387,13 @@
       "tests": {
         "count": 173,
         "command": "npm test"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "operation": "metrics"
       }
     },
     "HYDRA-UMC-MTCONNECT-ADAPTER": {
@@ -203,6 +401,14 @@
       "tests": {
         "count": 161,
         "command": "npm test"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "operation": "logs",
+        "protocol": "mock"
       }
     },
     "HYDRA-UMC-NODE-HEALING": {
@@ -210,6 +416,13 @@
       "tests": {
         "count": 122,
         "command": "go test ./..."
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "installer",
+        "operation": "metrics"
       }
     },
     "HYDRA-UMC-OPCUA-SERVER": {
@@ -217,6 +430,14 @@
       "tests": {
         "count": 195,
         "command": "npm test"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "operation": "metrics",
+        "protocol": "mock"
       }
     },
     "HYDRA-UMC-OPS-AGENT": {
@@ -224,6 +445,14 @@
       "tests": {
         "count": 350,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "logs",
+        "updates": "trains"
       }
     },
     "HYDRA-UMC-ORCHESTRATOR": {
@@ -231,6 +460,15 @@
       "tests": {
         "count": 197,
         "command": "cargo test"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains",
+        "stop": "simulated"
       }
     },
     "HYDRA-UMC-OS": {
@@ -238,6 +476,12 @@
       "tests": {
         "count": 20,
         "command": "python -m unittest discover -s agent/tests"
+      },
+      "rows": {
+        "integration": "contract",
+        "security": "partial",
+        "deployment": "release",
+        "operation": "logs"
       }
     },
     "HYDRA-UMC-OS-REBUILDER": {
@@ -245,6 +489,9 @@
       "tests": {
         "count": 194,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "deployment": "release"
       }
     },
     "HYDRA-UMC-PATH-PLANNER-3D": {
@@ -252,6 +499,11 @@
       "tests": {
         "count": 75,
         "command": "cargo test"
+      },
+      "rows": {
+        "integration": "contract",
+        "deployment": "release",
+        "planning": "simulated"
       }
     },
     "HYDRA-UMC-PHYSICS-REPLICA": {
@@ -259,6 +511,10 @@
       "tests": {
         "count": 133,
         "command": "cargo test"
+      },
+      "rows": {
+        "integration": "contract",
+        "deployment": "release"
       }
     },
     "HYDRA-UMC-PRODUCTION-REPORTS": {
@@ -266,6 +522,14 @@
       "tests": {
         "count": 165,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains"
       }
     },
     "HYDRA-UMC-SAFETY-ZONES": {
@@ -273,6 +537,15 @@
       "tests": {
         "count": 826,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains",
+        "stop": "simulated"
       }
     },
     "HYDRA-UMC-SDK": {
@@ -280,6 +553,10 @@
       "tests": {
         "count": 772,
         "command": "python -m unittest discover -s clients/python/tests"
+      },
+      "rows": {
+        "contracts": "verified",
+        "deployment": "release"
       }
     },
     "HYDRA-UMC-SEMANTIC-PLANNER": {
@@ -287,6 +564,15 @@
       "tests": {
         "count": 179,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains",
+        "planning": "simulated"
       }
     },
     "HYDRA-UMC-SERVER": {
@@ -294,6 +580,15 @@
       "tests": {
         "count": 587,
         "command": "npm run test:unit"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains",
+        "stop": "simulated"
       }
     },
     "HYDRA-UMC-STUDIO": {
@@ -301,6 +596,14 @@
       "tests": {
         "count": 818,
         "command": "npm test"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "stop": "simulated",
+        "access": "languages"
       }
     },
     "HYDRA-UMC-SUITE": {
@@ -308,6 +611,14 @@
       "tests": {
         "count": 53,
         "command": "python tools/run_offline_verifiers.py"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "release",
+        "stop": "simulated",
+        "access": "languages"
       }
     },
     "HYDRA-UMC-SWARM-SYNC": {
@@ -315,6 +626,14 @@
       "tests": {
         "count": 132,
         "command": "cargo test"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "partial",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains"
       }
     },
     "HYDRA-UMC-SYNTHETIC-DATA-GEN": {
@@ -322,6 +641,9 @@
       "tests": {
         "count": 101,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "deployment": "release"
       }
     },
     "HYDRA-UMC-TELEMETRY-COLLECTOR": {
@@ -329,6 +651,14 @@
       "tests": {
         "count": 138,
         "command": "go test ./..."
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains"
       }
     },
     "HYDRA-UMC-TOOL-CLI": {
@@ -336,6 +666,10 @@
       "tests": {
         "count": 249,
         "command": "go test ./..."
+      },
+      "rows": {
+        "integration": "contract",
+        "deployment": "release"
       }
     },
     "HYDRA-UMC-TWIN": {
@@ -343,6 +677,15 @@
       "tests": {
         "count": 141,
         "command": "cargo test"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains",
+        "stop": "simulated"
       }
     },
     "HYDRA-UMC-UPDATER": {
@@ -350,6 +693,10 @@
       "tests": {
         "count": 318,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "security": "host_tested",
+        "deployment": "release"
       }
     },
     "HYDRA-UMC-VISION-NODE": {
@@ -357,6 +704,14 @@
       "tests": {
         "count": 281,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains"
       }
     },
     "HYDRA-UMC-VISION-STREAMER": {
@@ -364,6 +719,13 @@
       "tests": {
         "count": 163,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "installer",
+        "operation": "logs"
       }
     },
     "HYDRA-UMC-VISUAL-SERVOING-API": {
@@ -371,6 +733,15 @@
       "tests": {
         "count": 261,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains",
+        "stop": "simulated"
       }
     },
     "HYDRA-UMC-VLA-ENGINE": {
@@ -378,6 +749,15 @@
       "tests": {
         "count": 221,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains",
+        "stop": "simulated"
       }
     },
     "HYDRA-UMC-VOICE-UI": {
@@ -385,6 +765,15 @@
       "tests": {
         "count": 337,
         "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "bench",
+        "security": "host_tested",
+        "deployment": "cm5_service",
+        "operation": "metrics",
+        "updates": "trains",
+        "voice": "synthetic"
       }
     },
     "HYDRA-UMC-WATCH": {
@@ -392,6 +781,15 @@
       "tests": {
         "count": 113,
         "command": "./gradlew testDebugUnitTest"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "deployment": "apk",
+        "updates": "apk",
+        "stop": "simulated",
+        "access": "languages"
       }
     },
     "ELECTRO-HOBBY-3D-UPDATER": {

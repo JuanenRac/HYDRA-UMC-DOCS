@@ -26,6 +26,8 @@ import json
 import re
 from pathlib import Path
 
+from . import status_rows
+
 # language code -> README file suffix
 LANGUAGE_FILES: dict[str, str] = {
     "en": "README.md",
@@ -237,6 +239,13 @@ def load_data(path: Path) -> dict[str, dict]:
             raise GlanceError(f"{name}: 'hardware' must be one of {', '.join(HARDWARE_KEYS)}")
         if entry.get("target") not in (None, *TARGET_KEYS):
             raise GlanceError(f"{name}: 'target' must be null or one of {', '.join(TARGET_KEYS)}")
+        rows = entry.get("rows")
+        if rows is not None:
+            if not isinstance(rows, dict):
+                raise GlanceError(f"{name}: 'rows' must be an object")
+            for key, state in rows.items():
+                if key not in status_rows.STATES or state not in status_rows.STATES[key]:
+                    raise GlanceError(f"{name}: rows.{key}={state!r} is not a known line and state of the status table")
         tests = entry.get("tests")
         if tests is not None and not (isinstance(tests, dict) and isinstance(tests.get("count"), int) and tests["count"] > 0):
             raise GlanceError(f"{name}: 'tests' must be null or an object with a positive integer 'count'")

@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import re
 
-from . import glance
+from . import glance, status_rows
 
 LIGHTS = {"green": "🟢", "yellow": "🟡", "orange": "🟠", "red": "🔴"}
 
@@ -107,6 +107,30 @@ ANY_H2 = re.compile(r"^## ")
 FENCE = re.compile(r"^\s*(```|~~~)")
 
 
+EVIDENCE_CEILING = {"none": "orange", "host-test": "orange", "simulator": "orange", "bench": "yellow", "field": "green"}
+LEVELS = ("red", "orange", "yellow", "green")
+
+
+def _cap(level: str, ceiling: str) -> str:
+    return level if LEVELS.index(level) <= LEVELS.index(ceiling) else ceiling
+
+
+def extra_rows(code: str, manifest: dict, entry: dict) -> list[tuple[str, str, str]]:
+    """The extra lines a repository chose in data/glance.json ("rows"), in the fixed order of status_rows.ORDER."""
+    chosen = entry.get("rows") or {}
+    made = []
+    for key in status_rows.ORDER:
+        state = chosen.get(key)
+        if not state:
+            continue
+        level, notes = status_rows.STATES[key][state]
+        if key == "integration" and manifest.get("hardware_bound") is not False:
+            # the same ceiling tools/status_lights.py checks: an integration line is limited by the evidence of the manifest
+            level = _cap(level, EVIDENCE_CEILING.get(str(manifest.get("evidence", "none")), "orange"))
+        made.append((status_rows.LABELS[key][code], level, notes[code]))
+    return made
+
+
 def rows(code: str, manifest: dict, entry: dict) -> list[tuple[str, str, str]]:
     """(area, light, note) for the common areas of one repository in one language."""
     ui, notes = UI[code], NOTES[code]
@@ -118,6 +142,7 @@ def rows(code: str, manifest: dict, entry: dict) -> list[tuple[str, str, str]]:
         (ui["hardware"], HARDWARE_LIGHT[entry["hardware"]], glance.HARDWARE[code][entry["hardware"]]),
         (ui["docs"], "green", notes["docs"]),
     ]
+    made[3:3] = extra_rows(code, manifest, entry)
     if maturity in LOW_MATURITY:
         # the same ceiling tools/status_lights.py checks: a repository that is still scaffolding has no green row
         made = [(area, "yellow" if level == "green" else level, note) for area, level, note in made]
