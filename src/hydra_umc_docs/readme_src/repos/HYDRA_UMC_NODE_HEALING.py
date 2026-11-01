@@ -12,7 +12,7 @@ NO_UI = True
 
 SPEC = {
     "stack": "go",
-    "req": "1.25",
+    "req": "1.26",
     "quick": [
         [
             "./build.sh",
