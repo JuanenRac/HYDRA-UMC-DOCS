@@ -12,3 +12,5 @@
   [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE) 下 4 个同级服务之一运行（与 VLA-Engine、Voice-UI 和 Semantic-Planner 并列），共享父项目的 HydraOS 镜像和模型权重，而非各自保留独立副本。
 * 📦 **显式的版本提升：** `pyproject.toml` 中的版本只由显式的 `bump` 命令提升（`python tools/hydra_project_tool.py bump`，它会运行 `bump_version.py`）- 构建绝不会更改它。
 * ✂️ **摘录式回答(可选):** `query --extractive` 和 `GET /query?...&extractive=1` 对每个段落返回包含问题中词语最多的那句话(是段落的一部分，绝不是生成的文字)，而不是段落开头的若干字符。
+* 🔢 **错误代码目录：** `catalog` 以只读方式读取控制器引导程序的状态码和失败码以及 URTC 的工具配置，并将其写成文档，每个代码或工具一节；`GET /error?code=0x05`（或按名称）精确回答，附带出处 `来源#章节@sha256`，代码未被记录时如实说明。每个控制器代码的含义都写在目录中，绝不凭空编造。
+* 📦 **按版本的语料：** `bundle --release X` 一次性构建索引，并写成带有每份文档哈希的文件，可选签名（使用密钥文件的 HMAC-SHA256）；`serve --bundle` 加载它，内容或签名不匹配时拒绝（未签名的仅在显式使用 `--allow-unsigned-bundle` 时接受）。`GET /stats` 显示版本。在 CI 中构建以及随镜像交付仍待接入。

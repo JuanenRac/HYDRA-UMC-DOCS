@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **README of VOICE-UI and DOCS-QA:** the feature lists (eight languages) describe the optional wake word, speaker identification, questions about error codes, audit log and alerts read aloud of the voice service, and the error-code catalog and the corpus bundle per release of the documentation assistant; the test counts of both are the real ones.
+
 - **README of SYNTHETIC-DATA-GEN:** the configuration section (eight languages) describes the classes of a registered model, the outlines of a catalogue of parts and the servoing and safety datasets, all optional, and the test count follows the suite.
 
 - **README of SEMANTIC-PLANNER:** the configuration section (eight languages) describes the symbolic planning behind the decomposition of a goal and the bounded memory of recovery outcomes, both off by default, and the test count follows the suite.

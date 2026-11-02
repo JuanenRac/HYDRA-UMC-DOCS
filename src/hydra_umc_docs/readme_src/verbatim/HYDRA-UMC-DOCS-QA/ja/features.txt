@@ -12,3 +12,5 @@
   [HYDRA-UMC-COGNITIVE-NODE](https://github.com/JuanenRac/HYDRA-UMC-COGNITIVE-NODE) の下で 4 つの兄弟サービスの 1 つとして動作します（VLA-Engine、Voice-UI、Semantic-Planner と並んで）。独自のコピーを保持するのではなく、親プロジェクトの HydraOS イメージとモデルの重みを共有します。
 * 📦 **明示的なバージョン引き上げ：** `pyproject.toml` のバージョンを上げるのは明示的な `bump` コマンド（`python tools/hydra_project_tool.py bump`、内部で `bump_version.py` を実行）だけです - ビルドがバージョンを変更することはありません。
 * ✂️ **抜粋型の回答(任意):** `query --extractive` と `GET /query?...&extractive=1` は、各箇所について、先頭の文字ではなく、質問の語を最も多く含む文(その箇所の一部であり、生成された文章ではありません)を返します。
+* 🔢 **エラーコードのカタログ：** `catalog` はコントローラーのブートローダーのステータスコードと失敗コード、および URTC のツールプロファイルを（読み取り専用で）読み、コードまたはツールごとに 1 セクションの文書として書き出します。`GET /error?code=0x05`（または名前）は出典 `source#section@sha256` 付きで正確に答え、文書化されていないコードではその旨を答えます。各コントローラーコードの意味はカタログに書かれており、推測で作られることはありません。
+* 📦 **リリースごとのコーパス：** `bundle --release X` はインデックスを一度作り、各文書のハッシュ付きのファイルとして書き出します。任意で署名できます（鍵ファイルによる HMAC-SHA256）。`serve --bundle` はそれを読み込み、内容または署名が一致しなければ拒否します（署名なしは明示的な `--allow-unsigned-bundle` の場合のみ）。`GET /stats` にリリースが表示されます。CI での作成とイメージでの配布は、これから接続します。

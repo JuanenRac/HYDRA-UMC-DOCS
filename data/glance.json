@@ -256,7 +256,7 @@
     "HYDRA-UMC-DOCS-QA": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 109,
+        "count": 127,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -763,7 +763,7 @@
     "HYDRA-UMC-VOICE-UI": {
       "hardware": "not_run",
       "tests": {
-        "count": 337,
+        "count": 397,
         "command": "python -m pytest -q tests"
       },
       "rows": {
