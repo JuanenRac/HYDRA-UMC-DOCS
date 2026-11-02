@@ -246,7 +246,7 @@
     "HYDRA-UMC-DOCS": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 175,
+        "count": 183,
         "command": "python -m pytest tests -q"
       },
       "rows": {
@@ -578,7 +578,7 @@
     "HYDRA-UMC-SERVER": {
       "hardware": "bench",
       "tests": {
-        "count": 601,
+        "count": 621,
         "command": "npm run test:unit"
       },
       "rows": {

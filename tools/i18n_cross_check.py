@@ -6,7 +6,7 @@
 # =============================================================================
 """Compare the language files of the HYDRA-UMC clients that sit next to this repository.
 
-Every client keeps its own format (STUDIO: JSON, SUITE: .lng, ANDROID-CONTROL and WATCH: strings.xml), so this tool reads
+Every client keeps its own format (STUDIO: JSON, SUITE: .lng, ANDROID-CONTROL and WATCH: strings.xml, IOS-CONTROL and DSI: .arb), so this tool reads
 them all into the same shape and reports two things:
 
 * keys that are missing or extra in any of the eight languages of one client (a failure, exit code 1);
@@ -73,6 +73,20 @@ def read_android(root: Path, repo: str) -> dict[str, dict[str, str]]:
     return out
 
 
+def read_arb(root: Path, repo: str) -> dict[str, dict[str, str]]:
+    """The `.arb` files of a Flutter client (HYDRA-UMC-IOS-CONTROL, HYDRA-UMC-DSI): the keys that start with `@` are descriptions."""
+    out: dict[str, dict[str, str]] = {}
+    for lang in LANGS:
+        path = root / repo / "lib" / "l10n" / f"app_{lang}.arb"
+        entries: dict[str, str] = {}
+        if path.exists():
+            for key, value in json.loads(path.read_text(encoding="utf-8")).items():
+                if not key.startswith("@") and isinstance(value, str):
+                    entries[key] = value
+        out[lang] = entries
+    return out
+
+
 def readers(root: Path) -> dict[str, dict[str, dict[str, str]]]:
     """The language data of every client repository found under `root`."""
     found: dict[str, dict[str, dict[str, str]]] = {}
@@ -84,6 +98,10 @@ def readers(root: Path) -> dict[str, dict[str, dict[str, str]]]:
         found["android"] = read_android(root, "HYDRA-UMC-ANDROID-CONTROL")
     if (root / "HYDRA-UMC-WATCH").is_dir():
         found["watch"] = read_android(root, "HYDRA-UMC-WATCH")
+    if (root / "HYDRA-UMC-IOS-CONTROL").is_dir():
+        found["ios"] = read_arb(root, "HYDRA-UMC-IOS-CONTROL")
+    if (root / "HYDRA-UMC-DSI").is_dir():
+        found["dsi"] = read_arb(root, "HYDRA-UMC-DSI")
     return found
 
 

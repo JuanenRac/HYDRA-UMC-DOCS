@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Compare and align the wording of the clients:** `tools/i18n_cross_check.py` now reads the language files of IOS-CONTROL and DSI too, and the new `tools/i18n_align.py` lists the texts of a client that read differently from STUDIO although the English is the same (only plain texts that STUDIO reads one way) and, with `--apply`, writes the words of STUDIO into the client for the English texts named, in a small batch.
+
 - **More lines in the Project status table:** a repository can now carry lines for its interface and protocols, its integration with the rest of the ecosystem, its security, its deployment, its operation, its updates, its stop path, its languages and accessibility, and a few lines that belong to one kind of repository (equipment protocol, contracts and clients, data and storage, voice, planning). Each line is chosen in `data/glance.json` (`rows`) from a fixed list of states, each with one light and one sentence in the eight languages that says what is true and what has not been shown; an integration line never goes above the evidence of the manifest and a security line is green only when there is nothing to protect.
 
 ## [0.0.8] - Ed25519 for the signed safety state, the design proposals say what is built and the test counter counts Go, Rust, JavaScript, Dart and Kotlin suites exactly
