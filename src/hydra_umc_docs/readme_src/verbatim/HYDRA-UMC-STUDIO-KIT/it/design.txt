@@ -1,0 +1,10 @@
+### ARCHITETTURA E SCELTE DI PROGETTO
+
+* **Perché un pacchetto e non un'altra copia.** La sessione, l'indirizzo del server, la cronologia delle connessioni e le preferenze locali sono state scritte in HYDRA-UMC-STUDIO e servono identiche a ogni altro client web; una correzione fatta in una copia non veniva mai fatta nelle altre.
+* **Perché senza framework.** Ogni store ha `get` e `subscribe`, la forma che `useSyncExternalStore` si aspetta: React lo collega in una riga e un altro framework (o nessuno) lo usa così com'è. Una regola di lint fa fallire la compilazione davanti a un import di React.
+* **Perché un POST non viene mai ripetuto da solo.** Una chiamata fallita per un motivo temporaneo può essere arrivata o no al server; si ripete solo una chiamata che l'applicazione dichiara idempotente. L'attesa raddoppia fino a un limite senza casualità, così un test può verificarla.
+* **Perché il token va solo all'origine configurata.** Una pagina che chiama un indirizzo digitato da una persona non deve consegnargli il token di accesso; inviarlo altrove è un interruttore, spento di default, e un messaggio di errore non contiene mai il token né la stringa di query.
+* **Perché la forma `?token=` di un indirizzo di avvio è un interruttore.** Una stringa di query arriva nei log del server, mentre il frammento (`#token=`) non lascia mai il browser. La forma più vecchia viene ancora letta quando l'applicazione lo chiede.
+* **Perché un archivio che fallisce non è un errore.** Una finestra privata o i dati del sito bloccati fanno lanciare un'eccezione a ogni lettura e scrittura; il kit torna ai valori predefiniti e tiene la scelta per quella visita.
+
+Per il quadro completo, vedi [`docs/API.md`](docs/API.md) per il riferimento dell'API e [`docs/MIGRATION.md`](docs/MIGRATION.md) per i passi che un client web segue per usare il kit.

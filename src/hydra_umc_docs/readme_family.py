@@ -28,6 +28,7 @@ FAMILY_REPOS: tuple[tuple[str, tuple[str, ...]], ...] = (
         (
             "HYDRA-UMC-DASHBOARD-AI",
             "HYDRA-UMC-MESHES",
+            "HYDRA-UMC-STUDIO-KIT",
             "HYDRA-UMC-TOOL-CLI",
             "HYDRA-UMC-WATCH",
         ),

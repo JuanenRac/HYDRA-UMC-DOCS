@@ -1,0 +1,4 @@
+* **阶段 1:** HYDRA-UMC-STUDIO 逐个文件接入该工具包（见 `docs/MIGRATION.md`）。
+* **阶段 2:** ARMOR 和 URTC 系列的 Web Studio 使用各自的存储键和文本来采用它。
+* **阶段 3:** 为 React Hook 提供单独的可选绑定，只使用 `get` / `subscribe` 约定。
+* **阶段 4:** 在真实浏览器中针对真实服务器运行 HTTP 客户端和会话。

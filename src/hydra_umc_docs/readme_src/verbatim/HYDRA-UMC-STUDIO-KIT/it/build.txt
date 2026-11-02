@@ -1,0 +1,13 @@
+Il pacchetto si compila in `dist/` con il compilatore TypeScript; non c'è un bundler né nulla da eseguire.
+
+```bash
+# Windows
+build.bat
+
+# Linux / macOS
+./build.sh
+
+npm run typecheck && npm run lint && npm test
+```
+
+`build.sh` / `build.bat` installano le dipendenze, eseguono i test e compilano; non cambiano mai la versione (solo `python tools/hydra_project_tool.py bump` la alza). `npm run typecheck`, `npm run lint` e `npm test` sono i tre controlli della CI. Un client web installa il pacchetto da un tag di rilascio, mai da un ramo (vedi `docs/MIGRATION.md`).

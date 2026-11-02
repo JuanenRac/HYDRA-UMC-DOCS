@@ -1,0 +1,11 @@
+**HYDRA-UMC-STUDIO-KIT** is a small TypeScript package with no framework and no runtime dependencies. It holds the code that every HYDRA-UMC web client needs and that would otherwise be copied from one client to the next: where the sign-in tokens live, how a call to the server is made, how the connection history of the server is read, how the local choices of a person are remembered and how a guided tour keeps track of what was already shown.
+
+### Key Features:
+* 🔑 **Session:** access and refresh tokens in the session storage by default, in the local storage only when the person ticks "keep me signed in"; a token that arrives in the address is read from the fragment, kept for that view only and removed from the address. The `?token=` form is a switch, off by default.
+* 🌐 **HTTP client:** a timeout on every attempt, bounded retries with a doubling wait for calls that are safe to repeat (never a POST on its own), `Retry-After`, one token refresh on a 401, and a typed `HttpError` (network, timeout, aborted, http, parse) whose text never holds the token. The token goes only to the configured origin.
+* 🕘 **History:** parsers for the client list and the sign-in history of the server (an older server answers "unsupported" instead of breaking) and a bounded list of the recent choices of the person.
+* ⚙️ **Preferences:** local choices with one validator per field; whatever is in the storage becomes a valid value or the default, and a storage that fails never breaks a screen.
+* 🧭 **Tours:** the state of a guided tour and which ones were seen; a tour never starts by itself unless the application asks, and it is offered again when its version is raised.
+* 🌍 **Eight languages:** the errors, the tour buttons and the names of the sign-in events in en, es, de, fr, it, ja, zh and pt (European Portuguese).
+
+The kit draws nothing: a React client binds any of its stores with `useSyncExternalStore(store.subscribe, store.get)`. HYDRA-UMC-STUDIO is the first client meant to use it and does not consume it yet; `docs/MIGRATION.md` lists what it replaces and how each step is checked.

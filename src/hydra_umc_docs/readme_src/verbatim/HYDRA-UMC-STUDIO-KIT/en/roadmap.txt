@@ -1,0 +1,4 @@
+* **Phase 1:** HYDRA-UMC-STUDIO consumes the kit, one file at a time (see `docs/MIGRATION.md`).
+* **Phase 2:** The web studios of the ARMOR and URTC families adopt it with their own storage keys and texts.
+* **Phase 3:** A separate, optional binding for React hooks that only uses the `get` / `subscribe` contract.
+* **Phase 4:** Run the HTTP client and the session in a real browser against a real server.

@@ -1,0 +1,13 @@
+パッケージは TypeScript コンパイラーで `dist/` にコンパイルされます。バンドラーはなく、実行するものもありません。
+
+```bash
+# Windows
+build.bat
+
+# Linux / macOS
+./build.sh
+
+npm run typecheck && npm run lint && npm test
+```
+
+`build.sh` / `build.bat` は依存関係をインストールし、テストを実行してコンパイルします。バージョンは変更しません（上げるのは `python tools/hydra_project_tool.py bump` だけです）。CI が実行する検査は `npm run typecheck`、`npm run lint`、`npm test` の 3 つです。Web クライアントはブランチではなく、リリースタグからパッケージをインストールします（`docs/MIGRATION.md` を参照）。

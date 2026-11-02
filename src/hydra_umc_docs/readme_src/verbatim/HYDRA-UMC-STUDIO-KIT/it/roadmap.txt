@@ -1,0 +1,4 @@
+* **Fase 1:** HYDRA-UMC-STUDIO consuma il kit, un file alla volta (vedi `docs/MIGRATION.md`).
+* **Fase 2:** Gli studio web delle famiglie ARMOR e URTC lo adottano con le proprie chiavi di archiviazione e i propri testi.
+* **Fase 3:** Un collegamento separato e facoltativo per gli hook di React che usi solo il contratto `get` / `subscribe`.
+* **Fase 4:** Eseguire il client HTTP e la sessione in un browser reale contro un server reale.

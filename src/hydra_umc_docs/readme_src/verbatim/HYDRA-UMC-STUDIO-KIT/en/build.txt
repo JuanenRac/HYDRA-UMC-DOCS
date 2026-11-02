@@ -1,0 +1,13 @@
+The package compiles to `dist/` with the TypeScript compiler; there is no bundler and nothing to run.
+
+```bash
+# Windows
+build.bat
+
+# Linux / macOS
+./build.sh
+
+npm run typecheck && npm run lint && npm test
+```
+
+`build.sh` / `build.bat` install the dependencies, run the tests and compile; they never change the version (only `python tools/hydra_project_tool.py bump` raises it). `npm run typecheck`, `npm run lint` and `npm test` are the three checks the CI runs. A web client installs the package from a release tag, never from a branch (see `docs/MIGRATION.md`).

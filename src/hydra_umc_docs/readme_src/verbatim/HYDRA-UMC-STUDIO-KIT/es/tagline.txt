@@ -1,0 +1,1 @@
+🧰 El código que repiten los clientes web de HYDRA-UMC, escrito una sola vez: sesión, HTTP, historial, preferencias y recorridos

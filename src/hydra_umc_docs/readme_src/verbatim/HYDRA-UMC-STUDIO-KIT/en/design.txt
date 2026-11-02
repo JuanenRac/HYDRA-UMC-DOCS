@@ -1,0 +1,10 @@
+### ARCHITECTURE & DESIGN DECISIONS
+
+* **Why a package and not another copy.** The session, the address of the server, the connection history and the local preferences were written in HYDRA-UMC-STUDIO and are needed unchanged by every other web client; a fix made in one copy was never made in the others.
+* **Why no framework.** Every store has `get` and `subscribe`, the shape `useSyncExternalStore` expects, so React binds it in one line and another framework (or none) uses it as it is. A lint rule fails the build on an import of React.
+* **Why a POST is never repeated on its own.** A call that failed for a temporary reason may or may not have reached the server; only a call the application declares idempotent is repeated. The wait doubles up to a limit with no random jitter, so a test can assert it.
+* **Why the token goes only to the configured origin.** A page that calls an address typed by a person must not hand it the sign-in token; sending it elsewhere is a switch, off by default, and an error message never contains the token or the query string.
+* **Why the `?token=` form of a launch address is a switch.** A query string reaches server logs, while the fragment (`#token=`) never leaves the browser. The older form is still read when the application asks for it.
+* **Why a storage that fails is not an error.** A private window or blocked site data makes every read and write throw; the kit falls back to the defaults and keeps the choice for that visit.
+
+For the full picture, see [`docs/API.md`](docs/API.md) for the API reference and [`docs/MIGRATION.md`](docs/MIGRATION.md) for the steps a web client follows to consume the kit.

@@ -57,6 +57,7 @@ DESCRIPTIONS: dict[str, str] = {
     "HYDRA-UMC-SEMANTIC-PLANNER": "Rule-based task decomposition and semantic recovery over MCU error codes.",
     "HYDRA-UMC-SERVER": "Headless Node.js/TypeScript backend: REST and WebSocket API, authentication, mDNS discovery and the global stop.",
     "HYDRA-UMC-STUDIO": "Web control dashboard (React) with 3D multi-robot visualisation, a client of HYDRA-UMC-SERVER.",
+    "HYDRA-UMC-STUDIO-KIT": "TypeScript package with no framework that the web clients share: sign-in session, HTTP client with timeouts and typed errors, connection history, preferences and tours.",
     "HYDRA-UMC-SUITE": "Desktop (PySide6) command centre for several servers at once.",
     "HYDRA-UMC-SWARM-SYNC": "CRDT last-writer-wins state synchronisation, property-tested for convergence.",
     "HYDRA-UMC-SYNTHETIC-DATA-GEN": "Procedural 2D scene generator with YOLO and COCO annotation export.",

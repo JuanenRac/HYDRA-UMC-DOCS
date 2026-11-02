@@ -1,0 +1,10 @@
+### ARQUITECTURA Y DECISIONES DE DISEÑO
+
+* **Por qué un paquete y no otra copia.** La sesión, la dirección del servidor, el historial de conexiones y las preferencias locales se escribieron en HYDRA-UMC-STUDIO y los necesita igual cualquier otro cliente web; una corrección hecha en una copia nunca se hacía en las demás.
+* **Por qué sin framework.** Cada almacén tiene `get` y `subscribe`, la forma que espera `useSyncExternalStore`, así que React lo enlaza en una línea y otro framework (o ninguno) lo usa tal cual. Una regla de lint hace fallar la compilación ante una importación de React.
+* **Por qué un POST nunca se repite por sí solo.** Una llamada que falló por un motivo temporal puede haber llegado o no al servidor; solo se repite la que la aplicación declara idempotente. La espera se duplica hasta un límite y sin azar, así que una prueba puede comprobarla.
+* **Por qué el token solo va al origen configurado.** Una página que llama a una dirección escrita por una persona no debe entregarle el token de sesión; enviarlo a otro sitio es un interruptor, apagado por defecto, y un mensaje de error nunca contiene el token ni la cadena de consulta.
+* **Por qué la forma `?token=` de una dirección de arranque es un interruptor.** Una cadena de consulta llega a los registros del servidor, mientras que el fragmento (`#token=`) nunca sale del navegador. La forma antigua se sigue leyendo cuando la aplicación lo pide.
+* **Por qué un almacenamiento que falla no es un error.** Una ventana privada o los datos del sitio bloqueados hacen que toda lectura y escritura lance una excepción; el kit vuelve a los valores por defecto y guarda la elección durante esa visita.
+
+Para el panorama completo, consulta [`docs/API.md`](docs/API.md) para la referencia de la API y [`docs/MIGRATION.md`](docs/MIGRATION.md) para los pasos que sigue un cliente web para consumir el kit.

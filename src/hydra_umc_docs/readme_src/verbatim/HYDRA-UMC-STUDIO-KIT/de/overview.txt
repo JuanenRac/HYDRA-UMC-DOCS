@@ -1,0 +1,11 @@
+**HYDRA-UMC-STUDIO-KIT** ist ein kleines TypeScript-Paket ohne Framework und ohne Laufzeitabhängigkeiten. Es enthält den Code, den jeder HYDRA-UMC-Webclient braucht und der sonst von einem Client zum nächsten kopiert würde: wo die Anmelde-Tokens liegen, wie ein Aufruf an den Server gemacht wird, wie der Verbindungsverlauf des Servers gelesen wird, wie die lokalen Entscheidungen einer Person gemerkt werden und wie ein geführter Rundgang festhält, was schon gezeigt wurde.
+
+### Hauptmerkmale:
+* 🔑 **Sitzung:** Zugriffs- und Erneuerungs-Token liegen standardmäßig im Session-Speicher und nur im lokalen Speicher, wenn die Person „angemeldet bleiben“ ankreuzt; ein Token in der Adresse wird aus dem Fragment gelesen, nur für diese Ansicht behalten und aus der Adresse entfernt. Die Form mit `?token=` ist ein Schalter, standardmäßig aus.
+* 🌐 **HTTP-Client:** ein Zeitlimit je Versuch, begrenzte Wiederholungen mit wachsender Wartezeit für gefahrlos wiederholbare Aufrufe (nie ein POST von selbst), `Retry-After`, eine Token-Erneuerung bei 401 und ein typisierter `HttpError` (Netz, Zeitlimit, abgebrochen, HTTP, Lesefehler), dessen Text nie das Token enthält. Das Token geht nur an den konfigurierten Ursprung.
+* 🕘 **Verlauf:** Parser für die Clientliste und den Anmeldeverlauf des Servers (ein älterer Server antwortet „nicht unterstützt“, statt zu scheitern) und eine begrenzte Liste der letzten Auswahl der Person.
+* ⚙️ **Einstellungen:** lokale Entscheidungen mit einem Validator je Feld; was im Speicher steht, wird zu einem gültigen Wert oder zum Standard, und ein Speicher, der ausfällt, bricht nie eine Ansicht.
+* 🧭 **Rundgänge:** der Zustand eines geführten Rundgangs und welche gesehen wurden; ein Rundgang startet nie von selbst, außer die Anwendung verlangt es, und wird erneut angeboten, wenn seine Version steigt.
+* 🌍 **Acht Sprachen:** die Fehler, die Tasten des Rundgangs und die Namen der Anmeldeereignisse in en, es, de, fr, it, ja, zh und pt (europäisches Portugiesisch).
+
+Das Kit zeichnet nichts: Ein React-Client bindet jeden seiner Speicher mit `useSyncExternalStore(store.subscribe, store.get)`. HYDRA-UMC-STUDIO ist der erste Client, der es nutzen soll, und nutzt es noch nicht; `docs/MIGRATION.md` listet, was es ersetzt und wie jeder Schritt geprüft wird.

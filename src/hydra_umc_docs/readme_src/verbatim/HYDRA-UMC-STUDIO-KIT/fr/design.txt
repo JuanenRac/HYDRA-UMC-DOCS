@@ -1,0 +1,10 @@
+### ARCHITECTURE ET CHOIX DE CONCEPTION
+
+* **Pourquoi un paquet et non une copie de plus.** La session, l'adresse du serveur, l'historique des connexions et les préférences locales ont été écrits dans HYDRA-UMC-STUDIO et servent à l'identique à tout autre client web ; une correction faite dans une copie n'a jamais été reportée dans les autres.
+* **Pourquoi sans framework.** Chaque store a `get` et `subscribe`, la forme qu'attend `useSyncExternalStore` : React le lie en une ligne et un autre framework (ou aucun) l'utilise tel quel. Une règle de lint fait échouer la compilation sur un import de React.
+* **Pourquoi un POST n'est jamais répété de lui-même.** Un appel qui a échoué pour une raison temporaire a pu atteindre le serveur ou non ; seul un appel que l'application déclare idempotent est répété. L'attente double jusqu'à une limite sans hasard, pour qu'un test puisse la vérifier.
+* **Pourquoi le jeton ne va qu'à l'origine configurée.** Une page qui appelle une adresse saisie par une personne ne doit pas lui remettre le jeton de connexion ; l'envoyer ailleurs est un interrupteur, désactivé par défaut, et un message d'erreur ne contient jamais le jeton ni la chaîne de requête.
+* **Pourquoi la forme `?token=` d'une adresse de lancement est un interrupteur.** Une chaîne de requête arrive dans les journaux du serveur, alors que le fragment (`#token=`) ne quitte jamais le navigateur. L'ancienne forme est encore lue quand l'application le demande.
+* **Pourquoi un stockage défaillant n'est pas une erreur.** Une fenêtre privée ou des données de site bloquées font lever une exception à chaque lecture et écriture ; le kit retombe sur les valeurs par défaut et garde le choix pour cette visite.
+
+Pour la vue d'ensemble, voir [`docs/API.md`](docs/API.md) pour la référence de l'API et [`docs/MIGRATION.md`](docs/MIGRATION.md) pour les étapes que suit un client web pour consommer le kit.

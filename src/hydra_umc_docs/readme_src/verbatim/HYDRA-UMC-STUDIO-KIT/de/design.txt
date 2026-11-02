@@ -1,0 +1,10 @@
+### ARCHITEKTUR UND ENTWURFSENTSCHEIDUNGEN
+
+* **Warum ein Paket und nicht noch eine Kopie.** Sitzung, Serveradresse, Verbindungsverlauf und lokale Einstellungen wurden in HYDRA-UMC-STUDIO geschrieben und werden von jedem anderen Webclient unverändert gebraucht; eine Korrektur in einer Kopie wurde in den anderen nie nachgeholt.
+* **Warum kein Framework.** Jeder Speicher hat `get` und `subscribe`, die Form, die `useSyncExternalStore` erwartet; React bindet ihn in einer Zeile, ein anderes Framework (oder keines) nutzt ihn unverändert. Eine Lint-Regel lässt den Build bei einem React-Import scheitern.
+* **Warum ein POST nie von selbst wiederholt wird.** Ein Aufruf, der aus vorübergehendem Grund scheiterte, kann den Server erreicht haben oder nicht; nur ein Aufruf, den die Anwendung als idempotent erklärt, wird wiederholt. Die Wartezeit verdoppelt sich bis zu einer Grenze ohne Zufall, damit ein Test sie prüfen kann.
+* **Warum das Token nur an den konfigurierten Ursprung geht.** Eine Seite, die eine von einer Person eingegebene Adresse aufruft, darf ihr nicht das Anmelde-Token geben; es anderswohin zu senden ist ein Schalter, standardmäßig aus, und eine Fehlermeldung enthält nie das Token oder die Abfragezeichenfolge.
+* **Warum die Form `?token=` einer Startadresse ein Schalter ist.** Eine Abfragezeichenfolge landet in Server-Protokollen, das Fragment (`#token=`) verlässt den Browser nie. Die ältere Form wird weiter gelesen, wenn die Anwendung es verlangt.
+* **Warum ein ausfallender Speicher kein Fehler ist.** Ein privates Fenster oder gesperrte Websitedaten lassen jedes Lesen und Schreiben eine Ausnahme werfen; das Kit fällt auf die Standardwerte zurück und behält die Wahl für diesen Besuch.
+
+Das Gesamtbild: [`docs/API.md`](docs/API.md) für die API-Referenz und [`docs/MIGRATION.md`](docs/MIGRATION.md) für die Schritte, mit denen ein Webclient das Kit übernimmt.

@@ -1,0 +1,11 @@
+O **HYDRA-UMC-STUDIO-KIT** é um pequeno pacote TypeScript sem framework e sem dependências de execução. Reúne o código de que todo o cliente web HYDRA-UMC precisa e que, de outro modo, seria copiado de um cliente para o seguinte: onde vivem os tokens de início de sessão, como se faz uma chamada ao servidor, como se lê o histórico de ligações do servidor, como se guardam as escolhas locais de uma pessoa e como uma visita guiada sabe o que já foi mostrado.
+
+### Funcionalidades principais:
+* 🔑 **Sessão:** os tokens de acesso e de renovação vão por defeito para o armazenamento de sessão e para o local apenas quando a pessoa assinala «manter a sessão iniciada»; um token que chega no endereço é lido do fragmento, guardado só para essa vista e retirado do endereço. A forma `?token=` é um interruptor, desligado por defeito.
+* 🌐 **Cliente HTTP:** um tempo limite em cada tentativa, repetições limitadas com espera crescente para as chamadas seguras de repetir (nunca um POST por si só), `Retry-After`, uma renovação do token perante um 401 e um `HttpError` tipado (rede, tempo limite, cancelada, http, leitura) cujo texto nunca contém o token. O token só vai para a origem configurada.
+* 🕘 **Histórico:** leitores da lista de clientes e do histórico de inícios de sessão do servidor (um servidor mais antigo responde «não suportado» em vez de falhar) e uma lista limitada das escolhas recentes da pessoa.
+* ⚙️ **Preferências:** escolhas locais com um validador por campo; o que estiver no armazenamento passa a ser um valor válido ou o valor por defeito, e um armazenamento que falha nunca estraga um ecrã.
+* 🧭 **Visitas:** o estado de uma visita guiada e quais já foram vistas; uma visita nunca começa sozinha a não ser que a aplicação o peça, e volta a ser oferecida quando a sua versão sobe.
+* 🌍 **Oito idiomas:** os erros, os botões da visita e os nomes dos eventos de início de sessão em en, es, de, fr, it, ja, zh e pt (português de Portugal).
+
+O kit não desenha nada: um cliente React liga qualquer um dos seus stores com `useSyncExternalStore(store.subscribe, store.get)`. O HYDRA-UMC-STUDIO é o primeiro cliente pensado para o usar e ainda não o consome; `docs/MIGRATION.md` lista o que substitui e como cada passo se verifica.

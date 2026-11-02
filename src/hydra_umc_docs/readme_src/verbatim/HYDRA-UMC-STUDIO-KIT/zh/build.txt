@@ -1,0 +1,13 @@
+该包用 TypeScript 编译器编译到 `dist/`；没有打包器，也没有需要运行的内容。
+
+```bash
+# Windows
+build.bat
+
+# Linux / macOS
+./build.sh
+
+npm run typecheck && npm run lint && npm test
+```
+
+`build.sh` / `build.bat` 会安装依赖、运行测试并编译；它们从不改变版本（只有 `python tools/hydra_project_tool.py bump` 才会提高版本）。`npm run typecheck`、`npm run lint` 和 `npm test` 是 CI 运行的三项检查。Web 客户端从发布标签安装该包，绝不从分支安装（见 `docs/MIGRATION.md`）。
