@@ -18,7 +18,7 @@ Dieses Projekt ist Teil des HYDRA-UMC-Robotik-Ökosystems desselben Autors (Juan
 - **[HYDRA-UMC-BRIDGE-UAV](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-UAV)** — Koordinationsschranke für kameraausgestattete UAVs, mit einem MAVLink-Befehlssender (nur gegen einen Emulator getestet).
 
 **Direkt verwandt**
-- **[HYDRA-UMC-WATCH](https://github.com/JuanenRac/HYDRA-UMC-WATCH)** — WearOS-Begleit-App mit haptischen Alarmmustern und einem Sprach-Relay zum gekoppelten Telefon (noch nicht auf einer physischen Uhr ausgeführt); die Handgelenk-Begleiterin von HYDRA-UMC-ANDROID-CONTROL (nur WearOS - diese iOS-App hat noch kein Apple-Watch-Gegenstück).
+- **[HYDRA-UMC-WATCH](https://github.com/JuanenRac/HYDRA-UMC-WATCH)** — WearOS-Begleit-App mit haptischen Alarmmustern und einem Sprach-Relay zum gekoppelten Telefon (noch nicht auf einer physischen Uhr ausgeführt); die Handgelenk-Begleiterin von HYDRA-UMC-ANDROID-CONTROL (nur WearOS; die Apple-Watch-App dieser iOS-App ist geschrieben, aber noch nicht gebaut).
 - **[HYDRA-UMC-HIL-BRIDGE](https://github.com/JuanenRac/HYDRA-UMC-HIL-BRIDGE)** — Hardware-in-the-Loop-Router mit einer Software-Kollisionsverriegelung zwischen Simulation und echter Hardware (ohne echte Hardware getestet); die Bridge, die dieser App die Fernsteuerung des digitalen Zwillings, hardware-in-the-loop, ermöglicht.
 
 **Ebenfalls Teil des Ökosystems**

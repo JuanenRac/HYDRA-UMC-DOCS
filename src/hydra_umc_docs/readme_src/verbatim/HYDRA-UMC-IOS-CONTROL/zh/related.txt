@@ -18,7 +18,7 @@
 - **[HYDRA-UMC-BRIDGE-UAV](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-UAV)** —— 面向搭载摄像头的无人机的协调边界,带有 MAVLink 指令发送器(仅针对模拟器测试)。
 
 **直接相关**
-- **[HYDRA-UMC-WATCH](https://github.com/JuanenRac/HYDRA-UMC-WATCH)** —— 带有触觉提醒模式与配对手机语音中继的 WearOS 伴侣应用(尚未在实体手表上运行);HYDRA-UMC-ANDROID-CONTROL 的腕上伴侣(仅限 WearOS;本 iOS 应用目前还没有对应的 Apple Watch 版本)。
+- **[HYDRA-UMC-WATCH](https://github.com/JuanenRac/HYDRA-UMC-WATCH)** —— 带有触觉提醒模式与配对手机语音中继的 WearOS 伴侣应用(尚未在实体手表上运行);HYDRA-UMC-ANDROID-CONTROL 的腕上伴侣(仅限 WearOS;本 iOS 应用的 Apple Watch 版本已编写,但尚未构建)。
 - **[HYDRA-UMC-HIL-BRIDGE](https://github.com/JuanenRac/HYDRA-UMC-HIL-BRIDGE)** —— 在仿真与真实硬件之间带有软件碰撞联锁的硬件在环路由器(未在真实硬件上测试);让本应用能够以硬件在环方式远程控制数字孪生的桥接。
 
 **生态系统中的其他项目**
