@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **README of SEMANTIC-PLANNER:** the configuration section (eight languages) describes the symbolic planning behind the decomposition of a goal and the bounded memory of recovery outcomes, both off by default, and the test count follows the suite.
+
 - **READMEs of PRODUCTION-REPORTS and SEMANTIC-PLANNER:** the configuration sections of the two READMEs (eight languages) describe the scheduled daily and weekly reports and the availability by explicit state, and the safety gate before a release and the voice-intent route; the test counts of both repositories are updated.
 
 ## [0.0.9] - More lines in the Project status table, a tool to align the wording of the clients and READMEs that say what now exists
