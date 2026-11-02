@@ -1,1 +1,2 @@
 - **[docs/BRIDGE_TOPICS.md](docs/BRIDGE_TOPICS.md)** — le catalogue réel et partagé des topics `hydra/bridges/<name>/...` que chaque pont machine externe (CNC/Laser/OpenPnP/Printer3D/ROS2) utilise réellement contre ce broker.
+- **[docs/SWARM_AND_DISCOVERY.md](docs/SWARM_AND_DISCOVERY.md)** — les topics `hydra/swarm/...` du serveur sous une ACL proposée, l'annonce mDNS et la découverte des ponts par Home Assistant.

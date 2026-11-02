@@ -1,14 +1,6 @@
 ### MQTT トピック構造
 
-**正直な注記：** 上記の `hydra/swarm/...` というトピック形は、
-HYDRA-UMC-SERVER 自身の状態が MQTT に接続された場合の*目標*の形を
-示しているだけです——その配線はまだ行われていません
-（`src/server.ts` 自身のヘッダーコメントにその旨が書かれています：
-"lands once that wiring is defined"）。そのため、現在
-`hydra/swarm/...` に何かを publish するものはありません。今日実際に
-配線され本物であるトピックは、5 つの外部マシンブリッジ自身の
-`hydra/bridges/<name>/...` 名前空間（`docs/BRIDGE_TOPICS.md` を参照）
-と、HYDRA-UMC-BRIDGE-AMR 自身の VDA 5050 トピック形です。
+**注:** 上記の `hydra/swarm/...` トピックは HYDRA-UMC-SERVER の MQTT ブリッジ（既定ではオフ。その `docs/MQTT_BRIDGE.md` を参照）が公開し、このブローカーはそれを運び、ACL を適用する（`docs/SWARM_AND_DISCOVERY.md` に、実際のブローカーに対して検証を走らせる ACL がある）。今日ほかに実在し配線されているトピックは、5 つの外部マシンブリッジの `hydra/bridges/<name>/...` 名前空間（`docs/BRIDGE_TOPICS.md` を参照）と HYDRA-UMC-BRIDGE-AMR 独自の VDA 5050 トピック形状である。
 
 ### アーキテクチャと設計上の決定
 

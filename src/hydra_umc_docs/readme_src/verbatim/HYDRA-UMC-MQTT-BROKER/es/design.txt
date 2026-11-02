@@ -1,14 +1,6 @@
 ### ESTRUCTURA DE TÓPICOS MQTT
 
-**Nota de honestidad:** el esquema de tema `hydra/swarm/...` de arriba
-ilustra la forma *prevista* una vez que el estado propio de
-HYDRA-UMC-SERVER se conecte a MQTT - esa conexión aún no está hecha
-(`src/server.ts` lo dice en su propio comentario de cabecera: "lands once
-that wiring is defined"), así que hoy nada publica en `hydra/swarm/...`.
-Los temas que sí son reales y están conectados hoy son el espacio de
-nombres `hydra/bridges/<name>/...` de los 5 puentes de máquina externos
-(ver `docs/BRIDGE_TOPICS.md`) y el propio esquema de temas VDA 5050 de
-HYDRA-UMC-BRIDGE-AMR.
+**Nota:** los topics `hydra/swarm/...` de arriba los publica el puente MQTT de HYDRA-UMC-SERVER (desactivado por defecto; ver su `docs/MQTT_BRIDGE.md`), y este broker los transporta y les aplica la ACL (`docs/SWARM_AND_DISCOVERY.md` tiene la ACL con la que las comprobaciones se ejecutan contra un broker real). Los otros topics reales y cableados hoy son el espacio de nombres `hydra/bridges/<name>/...` de los 5 puentes de máquina externos (ver `docs/BRIDGE_TOPICS.md`) y la forma de topic VDA 5050 propia de HYDRA-UMC-BRIDGE-AMR.
 
 ### ARQUITECTURA Y DECISIONES DE DISEÑO
 

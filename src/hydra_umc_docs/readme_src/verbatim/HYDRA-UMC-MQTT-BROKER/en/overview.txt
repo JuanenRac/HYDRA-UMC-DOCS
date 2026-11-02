@@ -4,8 +4,8 @@ It implements the MQTT 3.1.1 standard (via Aedes, verified live - see Architectu
 
 ### Key Features:
 * 🔌 **External Machine Bridges:** `HYDRA-UMC-BRIDGE-CNC`/`-LASER`/`-OPENPNP`/`-PRINTER3D`/`-ROS2` each reach this broker over their own `hydra/bridges/<name>/...` topics - see `docs/BRIDGE_TOPICS.md`. *(implemented)*
-* 📡 **Pub/Sub Telemetry:** Sub-millisecond distribution of joint angles, tool states, and system health. *(planned - robot state is not on the broker yet; today only the machine bridges' `hydra/bridges/<name>/...` topics are)*
-* 🛠️ **Discovery Support:** mDNS and Home Assistant auto-discovery for easy setup. *(planned - not implemented yet; `src/server.ts` is a plain TCP listener today, no discovery service of any kind)*
+* 📡 **Pub/Sub Telemetry:** Sub-millisecond distribution of joint angles, tool states, and system health. *(implemented as the MQTT bridge of HYDRA-UMC-SERVER, off by default: the robots' state is on `hydra/swarm/...`; this broker carries it and enforces the ACL)*
+* 🛠️ **Discovery Support:** mDNS and Home Assistant auto-discovery for easy setup. *(implemented, opt-in and off by default: mDNS announcement with `MQTT_MDNS=1` and Home Assistant configs of the bridges with `MQTT_HOME_ASSISTANT=1`; see `docs/SWARM_AND_DISCOVERY.md`)*
 * 🔐 **Topic Security:** Real, verifiable per-client-ID-prefix ACL for reading and writing specific robot topics - a wildcard SUBSCRIBE can never grant broader access than its rule. *(implemented)*
 * 🪪 **Client Authentication:** Optional real MQTT username/password CONNECT authentication (`MQTT_AUTH_JSON`) gives the ACL a verified session identity - each credential's own required `clientIdPrefix` is enforced too, so a valid but lower-privilege credential cannot simply choose a different, more privileged client ID to inherit its ACL permissions. *(implemented; pair it with ACL)*
 * 📏 **Payload Size Limit:** A real, opt-in cap on PUBLISH payload size, configurable via `MAX_PAYLOAD_BYTES`. *(implemented)*

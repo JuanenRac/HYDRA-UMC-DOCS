@@ -36,9 +36,10 @@ Owner: **HYDRA-UMC-SDK** (`contracts/json-schema/v1/`, with a conformance fixtur
 | `VisualTargetRequest`, `VelocityCommand` | Callers of visual servoing; the visual servoing service | The visual servoing service; robot controllers | Poses in meters and radians; a velocity command carries `issued_at_ms`, `valid_for_ms` and `seq` and a consumer stops when it does not get a newer valid one |
 | `FrameMeta`, `DetectionFrame` | Vision node and streamer; detection services | Detection services; visual servoing, Studio, Suite | The convention of the boxes is in the data (`box_unit` `pixel` or `normalized`, origin at the top left corner, corners `x_min`, `y_min`, `x_max`, `y_max`); `model` is the compatibility record of the vision node |
 | `MaintenanceIncident` | Maintenance agent of a node | Development server, local technician, dashboard | camelCase, closed; `redactionLevel` `sanitized` or `raw` |
+| `ToolDescriptor`, `ToolState` | URTC tool table; URTC adapter or gateway | Server, Smart Rack, Studio, telemetry collector | A catalogue entry of a tool head (profile, kind, limits, watchdog) and one reading of a connected head (firmware, CAN error counters, temperatures, faults); closed; the SDK also reads the contracts of A.R.M.O.R. in these words (`docs/ARMOR_ALIGNMENT.md` of the SDK) |
 | `ProjectManifest` | Every repository (`hydra-umc.project.json`, `urtc.project.json`) | Updater, the profile dashboard | A closed schema: a typo in a field name fails early; `depends_on` orders a batch of the updater |
 
-Planned in the SDK and **without a schema yet**: `ToolDescriptor` and `TelemetrySample`. Protobuf is not published by the SDK.
+Planned in the SDK and **without a schema yet**: `TelemetrySample`. Protobuf is not published by the SDK.
 
 The SDK also publishes a first OpenAPI v1 slice of the server (`contracts/openapi/v1/server.openapi.json`: discovery, sign-in, settings and command routes, a subset of the server's own file) and reference clients in Python, Go, TypeScript and Rust that enforce the schemas.
 

@@ -7,8 +7,8 @@ Assistant）能够订阅机器人遥测数据并发布指令。
 
 ### 关键特性：
 * 🔌 **外部机器桥接:** `HYDRA-UMC-BRIDGE-CNC`/`-LASER`/`-OPENPNP`/`-PRINTER3D`/`-ROS2` 各自通过自己的 `hydra/bridges/<name>/...` 主题连接到本代理——参见 `docs/BRIDGE_TOPICS.md`。*(已实现)*
-* 📡 **发布/订阅遥测：** 关节角度、工具状态和系统健康状况的亚毫秒级分发。（计划中：机器人状态尚未经过代理；目前只有机床桥接器的 `hydra/bridges/<name>/...` 主题）
-* 🛠️ **发现支持：** mDNS 和 Home Assistant 自动发现，便于设置。*（计划中——尚未实现；`src/server.ts` 目前只是一个纯 TCP 监听器，没有任何发现服务）*
+* 📡 **发布/订阅遥测：** 关节角度、工具状态和系统健康状况的亚毫秒级分发。*(已作为 HYDRA-UMC-SERVER 的 MQTT 桥实现，默认关闭：机器人状态在 `hydra/swarm/...` 上；此 broker 负责传递并执行 ACL)*
+* 🛠️ **发现支持：** mDNS 和 Home Assistant 自动发现，便于设置。**(已实现，需手动开启且默认关闭：用 `MQTT_MDNS=1` 开启 mDNS 通告，用 `MQTT_HOME_ASSISTANT=1` 开启各桥的 Home Assistant 配置；见 `docs/SWARM_AND_DISCOVERY.md`)*
 * 🔐 **主题安全：** 真实、可验证的按客户端 ID 前缀划分的 ACL，用于读写特定的机器人主题——带通配符的 SUBSCRIBE 永远无法获得比其规则更宽的访问权限。*(已实现)*
 * 🪪 **客户端认证：** 可选的真实 MQTT CONNECT 用户名/密码认证（`MQTT_AUTH_JSON`）为 ACL 提供经过验证的会话身份——同时也会强制执行每个凭据自身要求的 `clientIdPrefix`,这样一个有效但权限较低的凭据就不能简单地选择另一个权限更高的客户端 ID 来继承其 ACL 权限。*(已实现；应与 ACL 配合使用)*
 * 📏 **载荷大小限制：** 对 PUBLISH 载荷大小的真实、可选的上限，可通过 `MAX_PAYLOAD_BYTES` 配置。*(已实现)*

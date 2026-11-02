@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The READMEs of the SDK and the MQTT broker say what now exists:** the SDK counts twenty-six contracts (the tool descriptor and the tool state are published) and the broker no longer says that the state of the robots is not on it or that discovery is only planned: the swarm topics of the server, the mDNS announcement and the Home Assistant discovery of the bridges are described, in the eight languages, with what is checked and what is not. The interfaces page lists the two new contracts.
+
 - **Compare and align the wording of the clients:** `tools/i18n_cross_check.py` now reads the language files of IOS-CONTROL and DSI too, and the new `tools/i18n_align.py` lists the texts of a client that read differently from STUDIO although the English is the same (only plain texts that STUDIO reads one way) and, with `--apply`, writes the words of STUDIO into the client for the English texts named, in a small batch.
 
 - **More lines in the Project status table:** a repository can now carry lines for its interface and protocols, its integration with the rest of the ecosystem, its security, its deployment, its operation, its updates, its stop path, its languages and accessibility, and a few lines that belong to one kind of repository (equipment protocol, contracts and clients, data and storage, voice, planning). Each line is chosen in `data/glance.json` (`rows`) from a fixed list of states, each with one light and one sentence in the eight languages that says what is true and what has not been shown; an integration line never goes above the evidence of the manifest and a security line is green only when there is nothing to protect.

@@ -1,14 +1,6 @@
 ### STRUCTURE DES SUJETS MQTT
 
-**Note d'honnêteté :** la forme de topic `hydra/swarm/...` ci-dessus
-illustre la forme *visée* une fois que l'état propre de
-HYDRA-UMC-SERVER sera relié à MQTT - ce câblage n'est pas encore fait
-(le propre commentaire d'en-tête de `src/server.ts` : "lands once that
-wiring is defined"), donc rien ne publie sur `hydra/swarm/...`
-aujourd'hui. Les topics réels et câblés aujourd'hui sont l'espace de
-noms `hydra/bridges/<name>/...` des 5 ponts machine externes (voir
-`docs/BRIDGE_TOPICS.md`) et la propre forme de topics VDA 5050 de
-HYDRA-UMC-BRIDGE-AMR.
+**Note :** les topics `hydra/swarm/...` ci-dessus sont publiés par le pont MQTT de HYDRA-UMC-SERVER (désactivé par défaut ; voir son `docs/MQTT_BRIDGE.md`), et ce broker les transporte et leur applique l'ACL (`docs/SWARM_AND_DISCOVERY.md` donne l'ACL avec laquelle les vérifications tournent contre un vrai broker). Les autres topics réels et câblés aujourd'hui sont l'espace de noms `hydra/bridges/<name>/...` des 5 ponts de machines externes (voir `docs/BRIDGE_TOPICS.md`) et la forme de topic VDA 5050 propre à HYDRA-UMC-BRIDGE-AMR.
 
 ### ARCHITECTURE & DÉCISIONS DE CONCEPTION
 

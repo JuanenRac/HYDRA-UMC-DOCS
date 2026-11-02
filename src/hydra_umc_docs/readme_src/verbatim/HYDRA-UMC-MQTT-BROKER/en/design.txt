@@ -1,13 +1,6 @@
 ### MQTT TOPIC STRUCTURE
 
-**Honesty note:** the `hydra/swarm/...` topic shape above illustrates the
-*intended* target shape once HYDRA-UMC-SERVER's own state is bridged onto
-MQTT - that bridging is not wired yet (`src/server.ts`'s own header
-comment: "lands once that wiring is defined"), so nothing publishes to
-`hydra/swarm/...` today. The topics that are real and wired today are the
-5 external machine bridges' `hydra/bridges/<name>/...` namespace (see
-`docs/BRIDGE_TOPICS.md`) and HYDRA-UMC-BRIDGE-AMR's own VDA 5050 topic
-shape.
+**Note:** the `hydra/swarm/...` topics above are published by the MQTT bridge of HYDRA-UMC-SERVER (off by default; see its `docs/MQTT_BRIDGE.md`), and this broker carries them and enforces the ACL on them (`docs/SWARM_AND_DISCOVERY.md` has the ACL that the checks run against a real broker). The other topics that are real and wired today are the 5 external machine bridges' `hydra/bridges/<name>/...` namespace (see `docs/BRIDGE_TOPICS.md`) and HYDRA-UMC-BRIDGE-AMR's own VDA 5050 topic shape.
 
 ### ARCHITECTURE & DESIGN DECISIONS
 
