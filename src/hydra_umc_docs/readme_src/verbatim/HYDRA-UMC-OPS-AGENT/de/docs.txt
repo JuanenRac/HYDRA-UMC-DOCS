@@ -2,3 +2,4 @@
 - **[docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md)** — die echte JSON-Form von `MaintenanceIncident`/`NodeSnapshot`.
 - **[docs/DIAGNOSIS.md](docs/DIAGNOSIS.md)** — der echte Vertrag, die Anbieter, die Zugangsdaten und die Sicherheitsgrenze von Lieferung 2.
 - **[docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md)** — der echte Vertrag, die vollständige stage/apply/verify/promote-Sequenz, und ein echter Betreiber-Ablauf für die Lieferungen 3-5.
+- **[docs/OPTIONAL_FEATURES.md](docs/OPTIONAL_FEATURES.md)** — jede optionale Funktion (authentifizierter Kanal, Knoten-Watchdog-Brücke, Broker-Benachrichtigungen, Mehrknoten-Canary, Modellvorschlag, Metriken), ihr Schalter und ihre Grenzen.

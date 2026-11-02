@@ -2,3 +2,4 @@
 - **[docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md)** — `MaintenanceIncident`/`NodeSnapshot` の本物の JSON 形。
 - **[docs/DIAGNOSIS.md](docs/DIAGNOSIS.md)** — 納品 2 自身の本物の契約、プロバイダー、認証情報、安全境界。
 - **[docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md)** — 納品 3-5 自身の本物の契約、ステージング/適用/検証/昇格の完全な流れ、そして本物のオペレーターフローの例。
+- **[docs/OPTIONAL_FEATURES.md](docs/OPTIONAL_FEATURES.md)** — すべての任意機能(認証済みチャネル、ノード監視ブリッジ、ブローカー通知、複数ノードカナリア、モデルが作る提案、メトリクス)とそのスイッチおよび上限。

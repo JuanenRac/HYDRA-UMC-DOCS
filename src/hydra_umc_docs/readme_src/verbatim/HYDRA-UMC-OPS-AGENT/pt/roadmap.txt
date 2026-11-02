@@ -1,18 +1,6 @@
-As Entregas 1-5 (esta versão) trazem **evidências**, **diagnóstico**,
-**alteração aprovada por uma pessoa**, **implementação canário** e
-**verificação** - o ciclo de vida real já nomeado no próprio manifesto e no
-CHANGELOG deste projeto. O que falta:
+As Entregas 1-5 trazem **provas**, **diagnóstico**, **alteração aprovada por uma pessoa**, **implementação canário** e **verificação**, e a configuração pode acrescentar, cada uma desativada até ser ativada: um canal autenticado entre periferia e controlo, uma ponte a partir do vigilante de nós, notificações para o broker, um canário em vários nós, uma proposta redigida por um modelo local (sempre pendente, nunca aplicada) e métricas para o Prometheus. O que falta:
 
-- **Entrega 6 - Integração de voz/notificação - genuinamente BLOQUEADA, não
-  apenas adiada.** O plano era fazer chegar um incidente crítico, ou uma
-  implementação canário concluída, através do HYDRA-UMC-VOICE-UI. A
-  investigação real do código do próprio VOICE-UI (`gateway.py`) concluiu que é
-  uma passagem LIMITADA DE ENTRADA de transcrição para intenção (um Watch
-  envia texto e recebe uma resposta), sem nenhuma superfície real de
-  notificação de saída/push hoje. Construir uma aqui significaria inventar um
-  ponto de integração que o próprio VOICE-UI não tem - o padrão de não
-  fabricação deste projeto não o permite. Volte a considerar isto quando o
-  VOICE-UI (ou um sucessor) ganhar uma capacidade real de «anúncio de
-  assistente de entrada».
-- Um transporte real entre os papéis de periferia e de plano de controlo (hoje,
-  mover um ficheiro de instantâneo entre eles é um passo manual).
+- Nada disto correu numa frota real: o canal, o canário multinó, o broker e o servidor de modelo são testados aqui com nós simulados, um broker simulado e um servidor de modelo simulado.
+- O vigilante de nós escreve as suas transições como texto no seu diário; um evento `transition` estruturado aí substituiria a leitura desse texto.
+- O transporte é compatível ao nível do protocolo com o do servidor de desenvolvimento, mas cada repositório guarda a sua própria cópia até o SDK partilhar um contrato.
+- Um rascunho do modelo é verificado contra o checkout (`git apply --check`) e a política; executá-lo numa sandbox do servidor de desenvolvimento e exigir um resultado antes/depois reproduzido precisa de contratos de outros repositórios.

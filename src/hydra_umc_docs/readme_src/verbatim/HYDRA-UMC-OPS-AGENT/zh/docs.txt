@@ -2,3 +2,4 @@
 - **[docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md)** — `MaintenanceIncident`/`NodeSnapshot` 的真实 JSON 结构。
 - **[docs/DIAGNOSIS.md](docs/DIAGNOSIS.md)** — 交付 2 自身真实的契约、提供方、凭据与安全边界。
 - **[docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md)** — 交付 3-5 自身真实的契约、完整的 stage/apply/verify/promote 流程，以及一个真实的操作员流程示例。
+- **[docs/OPTIONAL_FEATURES.md](docs/OPTIONAL_FEATURES.md)** — 每项可选功能（经认证的通道、节点看门狗桥接、代理通知、多节点金丝雀、模型起草的提案、指标）、其开关与限制。

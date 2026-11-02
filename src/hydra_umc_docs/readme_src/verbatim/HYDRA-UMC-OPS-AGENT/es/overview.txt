@@ -8,7 +8,7 @@ las seis etapas de ese ciclo de vida: **la evidencia**, **el
 diagnóstico**, **el cambio aprobado por una persona**, **el despliegue
 canario** y **la verificación**.
 
-Dos roles, un solo paquete, todavía sin transporte de red entre ellos:
+Dos roles, un solo paquete, unidos por un canal autenticado cuando la configuración lo activa (si no, por un archivo de snapshot guardado):
 
 1. **Rol edge** (`edge collect`) - se ejecuta directamente en la máquina
    observada (una célula CM5 real, o la propia estación de trabajo de

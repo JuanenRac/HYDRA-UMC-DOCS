@@ -7,7 +7,7 @@ ecosystem. This project now ships five of the six stages of that
 lifecycle: **evidence**, **diagnosis**, **human-approved change**,
 **canary deploy**, and **verification**.
 
-Two roles, one package, no network transport between them yet:
+Two roles, one package, joined by an authenticated channel when the configuration turns it on (a saved snapshot file otherwise):
 
 1. **Edge role** (`edge collect`) - runs directly on the machine being
    observed (a real CM5 cell controller, or a developer's own

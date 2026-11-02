@@ -8,7 +8,7 @@ désormais cinq des six étapes de ce cycle de vie : **la preuve**, **le
 diagnostic**, **le changement approuvé par une personne**, **le
 déploiement canari** et **la vérification**.
 
-Deux rôles, un seul paquet, encore aucun transport réseau entre eux :
+Deux rôles, un seul paquet, reliés par un canal authentifié quand la configuration l'active (sinon par un fichier d'instantané enregistré) :
 
 1. **Rôle edge** (`edge collect`) - s'exécute directement sur la
    machine observée (une vraie cellule CM5, ou la propre station de

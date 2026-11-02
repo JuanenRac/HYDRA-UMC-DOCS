@@ -1,18 +1,6 @@
-Le Consegne 1-5 (questa versione) spediscono **evidenza**, **diagnosi**,
-**cambiamento approvato da una persona**, **distribuzione canary** e
-**verifica** - il vero ciclo di vita già nominato nel proprio manifesto
-e CHANGELOG di questo progetto. Cosa resta:
+Le Consegne 1-5 forniscono **prove**, **diagnosi**, **modifica approvata da una persona**, **rilascio canary** e **verifica**, e la configurazione può aggiungere, ciascuna disattivata finché non la si attiva: un canale autenticato tra edge e controllo, un ponte dal watchdog dei nodi, notifiche al broker, un canary su più nodi, una proposta redatta da un modello locale (sempre in attesa, mai applicata) e metriche per Prometheus. Cosa resta:
 
-- **Consegna 6 - Integrazione voce/notifiche - davvero BLOCCATA, non
-  semplicemente rimandata.** Il piano era mostrare un incidente critico,
-  o un canary completato, tramite HYDRA-UMC-VOICE-UI. L'indagine reale
-  del suo proprio codice (`gateway.py`) ha trovato che è un gateway
-  limitato, in INGRESSO, da trascrizione a intento (un Watch invia
-  testo, riceve una risposta), senza alcuna vera superficie di notifica
-  in uscita oggi. Costruirne una qui avrebbe significato inventare un
-  punto di integrazione che VOICE-UI stesso non ha - il proprio standard
-  anti-fabbricazione di questo progetto non lo permette. Da rivisitare
-  quando VOICE-UI (o un successore) svilupperà una vera capacità
-  propria di "annuncio in ingresso dell'assistente".
-- Un vero trasporto tra i ruoli edge e control-plane (oggi, spostare un
-  file di snapshot tra i due è un passaggio manuale).
+- Niente di questo è stato eseguito su una flotta reale: canale, canary multinodo, broker e server del modello sono provati qui con nodi simulati, un broker simulato e un server del modello simulato.
+- Il watchdog dei nodi scrive le sue transizioni come testo nel suo journal; un evento `transition` strutturato lì sostituirebbe la lettura di quel testo.
+- Il trasporto è compatibile a livello di protocollo con quello del server di sviluppo, ma ogni repository tiene la propria copia finché l'SDK non condivide un contratto.
+- Una bozza del modello è verificata contro il checkout (`git apply --check`) e la policy; eseguirla in una sandbox del server di sviluppo e pretendere un risultato prima/dopo riprodotto richiede contratti di altri repository.

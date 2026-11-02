@@ -1,20 +1,6 @@
-Die Lieferungen 1-5 (diese Version) liefern **Beweis**, **Diagnose**,
-**von einer Person genehmigte Änderung**, **Canary-Deployment** und
-**Verifizierung** - den echten Lebenszyklus, der bereits im eigenen
-Manifest und CHANGELOG dieses Projekts benannt ist. Was bleibt:
+Die Lieferungen 1-5 liefern **Beweis**, **Diagnose**, **von einer Person genehmigte Änderung**, **Canary-Deployment** und **Verifizierung**, und die Konfiguration kann hinzufügen, jeweils aus, bis sie eingeschaltet wird: einen authentifizierten Kanal zwischen Edge und Control, eine Brücke vom Knoten-Watchdog, Benachrichtigungen an den Broker, ein Canary über mehrere Knoten, einen von einem lokalen Modell entworfenen Vorschlag (immer ausstehend, nie angewendet) und Metriken für Prometheus. Was bleibt:
 
-- **Lieferung 6 - Sprach-/Benachrichtigungsintegration - wirklich
-  BLOCKIERT, nicht nur aufgeschoben.** Der Plan war, einen kritischen
-  Vorfall oder ein abgeschlossenes Canary über HYDRA-UMC-VOICE-UI
-  sichtbar zu machen. Die echte Untersuchung des eigenen Codes
-  (`gateway.py`) ergab, dass es sich um ein begrenztes, EINGEHENDES
-  Gateway von Transkript zu Intent handelt (eine Watch sendet Text,
-  erhält eine Antwort), ohne eine echte Oberfläche für ausgehende
-  Benachrichtigungen heute. Eine hier zu bauen hätte bedeutet, einen
-  Integrationspunkt zu erfinden, den VOICE-UI selbst nicht hat - der
-  eigene Anti-Fabrikations-Standard dieses Projekts erlaubt das nicht.
-  Erneut aufgreifen, sobald VOICE-UI (oder ein Nachfolger) eine echte
-  eigene Fähigkeit zur "eingehenden Assistenten-Ankündigung" entwickelt.
-- Ein echter Transport zwischen den Edge- und Control-Plane-Rollen
-  (heute ist das Verschieben einer Snapshot-Datei zwischen beiden ein
-  manueller Schritt).
+- Nichts davon lief auf einer echten Flotte: Kanal, Mehrknoten-Canary, Broker und Modellserver werden hier gegen simulierte Knoten, einen simulierten Broker und einen simulierten Modellserver getestet.
+- Der Knoten-Watchdog schreibt seine Übergänge als Text in sein Journal; ein strukturiertes `transition`-Ereignis dort würde das Lesen dieses Textes ersetzen.
+- Der Transport ist auf Protokollebene mit dem des Entwicklungsservers kompatibel, aber jedes Repository behält seine eigene Kopie, bis das SDK einen Vertrag teilt.
+- Ein Modellentwurf wird gegen den Checkout (`git apply --check`) und die Richtlinie geprüft; ihn in einer Sandbox des Entwicklungsservers auszuführen und ein reproduziertes Vorher/Nachher-Ergebnis zu verlangen, braucht Verträge anderer Repositories.

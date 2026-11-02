@@ -63,13 +63,7 @@
   `compare_runs()` de HYDRA-UMC-SDK - el commit del checkout debe haberse
   movido de verdad, no basta con que el archivo parezca arreglado en
   disco. Ver [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md).
-- **La Entrega 6 está bloqueada, no simplemente omitida.** El propio
-  contrato real de HYDRA-UMC-VOICE-UI (`gateway.py`) es una puerta de
-  entrada acotada, de ENTRADA, de transcripción a intención, sin ninguna
-  superficie real de notificación de salida hoy - inventar una aquí
-  habría significado fabricar una integración que no existe, algo que
-  el propio estándar de no fabricar de este proyecto no permite. Ver la
-  sección HOJA DE RUTA más abajo.
+- **Las notificaciones pasan por el broker, no por un servicio de voz.** Los eventos de incidencia se publican en el broker MQTT del ecosistema (desactivado por defecto), en el idioma de la configuración; `HYDRA-UMC-VOICE-UI` no tiene superficie de salida y no se inventó ninguna.
 - **Solo librería estándar para el núcleo.** `edge collect`/`control
   show`/`control propose`/`control approve`/`control reject`/`control
   verify` no necesitan ninguna dependencia - `urllib.request` para la

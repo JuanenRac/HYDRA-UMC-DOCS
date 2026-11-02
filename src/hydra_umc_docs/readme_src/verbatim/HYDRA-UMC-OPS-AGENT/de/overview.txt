@@ -8,7 +8,7 @@ fünf der sechs Stufen dieses Lebenszyklus: **den Beweis**, **die
 Diagnose**, **die von einer Person genehmigte Änderung**, **das
 Canary-Deployment** und **die Verifizierung**.
 
-Zwei Rollen, ein Paket, noch kein Netzwerktransport zwischen ihnen:
+Zwei Rollen, ein Paket, verbunden durch einen authentifizierten Kanal, wenn die Konfiguration ihn einschaltet (sonst durch eine gespeicherte Snapshot-Datei):
 
 1. **Edge-Rolle** (`edge collect`) - läuft direkt auf der beobachteten
    Maschine (einer echten CM5-Zelle oder der eigenen Workstation eines

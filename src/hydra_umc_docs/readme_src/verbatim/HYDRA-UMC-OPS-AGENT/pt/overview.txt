@@ -7,7 +7,7 @@ ecossistema. Este projeto traz agora cinco das seis etapas desse ciclo de vida:
 **evidências**, **diagnóstico**, **alteração aprovada por uma pessoa**,
 **implementação canário** e **verificação**.
 
-Dois papéis, um só pacote, ainda sem transporte de rede entre eles:
+Dois papéis, um só pacote, ligados por um canal autenticado quando a configuração o ativa (caso contrário, por um ficheiro de instantâneo guardado):
 
 1. **Papel de periferia (edge)** (`edge collect`) - corre diretamente na
    máquina observada (um controlador de célula CM5 real, ou a própria estação

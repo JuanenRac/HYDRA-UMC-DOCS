@@ -1,19 +1,6 @@
-Les Livraisons 1-5 (cette version) expédient **preuve**, **diagnostic**,
-**changement approuvé par une personne**, **déploiement canari** et
-**vérification** - le vrai cycle de vie déjà nommé dans le propre
-manifeste et CHANGELOG de ce projet. Ce qu'il reste :
+Les Livraisons 1-5 apportent **preuves**, **diagnostic**, **changement approuvé par une personne**, **déploiement canari** et **vérification**, et la configuration peut ajouter, chacune désactivée tant qu'elle n'est pas activée : un canal authentifié entre edge et contrôle, un pont depuis le chien de garde des nœuds, des notifications vers le broker, un canari sur plusieurs nœuds, une proposition rédigée par un modèle local (toujours en attente, jamais appliquée) et des métriques pour Prometheus. Ce qui reste :
 
-- **Livraison 6 - Intégration voix/notifications - vraiment BLOQUÉE,
-  pas simplement reportée.** Le plan était de faire remonter un incident
-  critique, ou un canari terminé, via HYDRA-UMC-VOICE-UI. L'étude réelle
-  de son propre code (`gateway.py`) a révélé que c'est une passerelle
-  bornée, ENTRANTE, de transcription vers intention (un Watch envoie du
-  texte, reçoit une réponse), sans aucune vraie surface de notification
-  sortante aujourd'hui. En construire une ici aurait signifié inventer
-  un point d'intégration que VOICE-UI lui-même n'a pas - le propre
-  standard anti-fabrication de ce projet ne le permet pas. À revisiter
-  une fois que VOICE-UI (ou un successeur) aura développé une vraie
-  capacité propre d'« annonce entrante de l'assistant ».
-- Un vrai transport entre les rôles edge et control-plane (aujourd'hui,
-  déplacer un fichier de snapshot entre les deux est une étape
-  manuelle).
+- Rien de tout cela n'a tourné sur une vraie flotte : le canal, le canari multinœud, le broker et le serveur de modèle sont testés ici avec des nœuds simulés, un broker simulé et un serveur de modèle simulé.
+- Le chien de garde des nœuds écrit ses transitions en texte dans son journal ; un événement `transition` structuré remplacerait la lecture de ce texte.
+- Le transport est compatible au niveau du protocole avec celui du serveur de développement, mais chaque dépôt garde sa propre copie tant que le SDK ne partage pas un contrat.
+- Un brouillon du modèle est vérifié contre le checkout (`git apply --check`) et la politique ; l'exécuter dans un bac à sable du serveur de développement et exiger un résultat avant/après reproduit demande des contrats d'autres dépôts.

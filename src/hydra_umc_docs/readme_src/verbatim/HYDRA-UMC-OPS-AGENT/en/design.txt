@@ -55,12 +55,7 @@
   `compare_runs()` "apparent success" control - the checkout's
   own commit must have genuinely moved, not just have the file look
   fixed on disk. See [docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md).
-- **Delivery 6 is blocked, not skipped.** HYDRA-UMC-VOICE-UI's own real
-  contract (`gateway.py`) is a bounded, inbound transcript-to-intent
-  gateway with no real outbound-notification surface today - inventing
-  one here would have meant fabricating an integration that doesn't
-  exist, which this project's own standard does not allow. See the
-  ROADMAP section below.
+- **Notifications go through the broker, not through a voice service.** Incident events are published to the MQTT broker of the ecosystem (off by default), in the language set in the configuration; `HYDRA-UMC-VOICE-UI` has no outbound surface and none was invented for it.
 - **stdlib only for the core.** `edge collect`/`control show`/`control
   propose`/`control approve`/`control reject`/`control verify` need no
   dependency at all - `urllib.request` for the HTTP check,

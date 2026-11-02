@@ -2,3 +2,4 @@
 - **[docs/INCIDENT_CONTRACT.md](docs/INCIDENT_CONTRACT.md)** — la vera forma JSON di `MaintenanceIncident`/`NodeSnapshot`.
 - **[docs/DIAGNOSIS.md](docs/DIAGNOSIS.md)** — il contratto reale, i provider, le credenziali e il confine di sicurezza propri della Consegna 2.
 - **[docs/CHANGE_LIFECYCLE.md](docs/CHANGE_LIFECYCLE.md)** — il contratto reale, la sequenza completa stage/apply/verify/promote, e un vero flusso operativo per le Consegne 3-5.
+- **[docs/OPTIONAL_FEATURES.md](docs/OPTIONAL_FEATURES.md)** — ogni funzione opzionale (canale autenticato, ponte del watchdog dei nodi, notifiche al broker, canary multinodo, proposta redatta da un modello, metriche), il suo interruttore e i suoi limiti.

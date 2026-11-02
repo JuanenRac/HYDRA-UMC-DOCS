@@ -8,7 +8,7 @@ spedisce ormai cinque delle sei fasi di quel ciclo di vita:
 **l'evidenza**, **la diagnosi**, **il cambiamento approvato da una
 persona**, **la distribuzione canary** e **la verifica**.
 
-Due ruoli, un solo pacchetto, ancora nessun trasporto di rete tra loro:
+Due ruoli, un solo pacchetto, collegati da un canale autenticato quando la configurazione lo attiva (altrimenti da un file di snapshot salvato):
 
 1. **Ruolo edge** (`edge collect`) - viene eseguito direttamente sulla
    macchina osservata (una vera cella CM5, o la propria workstation di

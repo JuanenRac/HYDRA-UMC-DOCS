@@ -1,17 +1,6 @@
-Deliveries 1-5 (this version) ship **evidence**, **diagnosis**,
-**human-approved change**, **canary deploy** and **verification** - the
-real lifecycle already named in this project's own manifest and
-CHANGELOG. What remains:
+Deliveries 1-5 ship **evidence**, **diagnosis**, **human-approved change**, **canary deploy** and **verification**, and the configuration can add, each off until it is switched on: an authenticated edge-to-control channel, a bridge from the node watchdog, notifications to the broker, a canary across several nodes, a proposal drafted by a local model (always pending, never applied) and metrics for Prometheus. What remains:
 
-- **Delivery 6 - Voice/notification integration - genuinely BLOCKED,
-  not merely deferred.** The plan was to surface a critical incident, or
-  a completed canary, through HYDRA-UMC-VOICE-UI. Real investigation of
-  VOICE-UI's own code (`gateway.py`) found it is a bounded, INBOUND
-  transcript-to-intent gateway (a Watch sends text, gets a reply) with
-  no real outbound-notification/push surface today. Building one here
-  would mean inventing an integration point VOICE-UI itself does not
-  have - this project's own no-fabrication standard does not allow
-  that. Revisit this once VOICE-UI (or a successor) grows a real
-  "inbound assistant announcement" capability of its own.
-- A real transport between the edge and control-plane roles (today,
-  moving a snapshot file between them is a manual step).
+- None of this has run on a real fleet: the channel, the multi-node canary, the broker and the model server are tested here against simulated nodes, a simulated broker and a simulated model server.
+- The node watchdog writes its transitions as text in its journal; a structured `transition` event there would replace reading that text.
+- The transport is wire-compatible with the one of the development server, but each repository keeps its own copy until the SDK shares one contract.
+- A model draft is checked against the checkout (`git apply --check`) and the policy; running it in a development-server sandbox and requiring a reproduced before/after result needs contracts of other repositories.
