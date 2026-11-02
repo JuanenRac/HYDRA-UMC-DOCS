@@ -4,7 +4,7 @@ It calculates the **OEE (Overall Equipment Effectiveness)** of the entire swarm,
 
 ### Key Features:
 * 📈 **OEE Calculation (implemented):** Availability x Performance x Quality, computed live from DATALAKE telemetry on every request via `GET /reports/oee`.
-* 📤 **On-Demand CSV/JSON Reports (implemented):** `GET /reports/{oee,availability}` returns JSON; `GET /reports/{oee,availability}/export` returns byte-for-byte reproducible CSV. There is no PDF export, no scheduled daily/weekly/monthly generation, and no email/delivery mechanism - see ROADMAP below.
+* 📤 **On-Demand CSV/JSON Reports (implemented):** `GET /reports/{oee,availability}` returns JSON; `GET /reports/{oee,availability}/export` returns byte-for-byte reproducible CSV. Daily and weekly reports can also be written to disk by a systemd timer (off until enabled in a configuration file), with a manifest of sha256 sums; there is no PDF export, no monthly generation and no email/delivery mechanism - see ROADMAP below.
 * 🛠️ **Bottleneck Analysis (planned):** identifying which robots or tools are causing delays in the mission queue needs the real `production_event` data source below - not implemented yet.
 * 🌡️ **Quality Traceability (planned):** linking a final product to its specific assembly logs (thermal, visual, mechanical) is future work, once more than one project writes production data into DATALAKE.
 * 🕐 **Shift/Day Boundaries:** `shift.py` gives every report a single, real source of truth for where a shift or calendar day starts/ends - including a real night shift crossing midnight. *(implemented)*

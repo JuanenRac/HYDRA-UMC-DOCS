@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **READMEs of PRODUCTION-REPORTS and SEMANTIC-PLANNER:** the configuration sections of the two READMEs (eight languages) describe the scheduled daily and weekly reports and the availability by explicit state, and the safety gate before a release and the voice-intent route; the test counts of both repositories are updated.
+
 ## [0.0.9] - More lines in the Project status table, a tool to align the wording of the clients and READMEs that say what now exists
 
 - **The READMEs of the SDK and the MQTT broker say what now exists:** the SDK counts twenty-six contracts (the tool descriptor and the tool state are published) and the broker no longer says that the state of the robots is not on it or that discovery is only planned: the swarm topics of the server, the mDNS announcement and the Home Assistant discovery of the bridges are described, in the eight languages, with what is checked and what is not. The interfaces page lists the two new contracts.

@@ -6,7 +6,7 @@
 
 ### 关键特性：
 * 📈 **OEE 计算（已实现）：** 可用性 x 性能 x 质量，在每次通过 `GET /reports/oee` 请求时基于 DATALAKE 遥测数据实时计算。
-* 📤 **按需 CSV/JSON 报告（已实现）：** `GET /reports/{oee,availability}` 返回 JSON；`GET /reports/{oee,availability}/export` 返回逐字节可复现的 CSV。目前没有任何 PDF 导出、没有每日/每周/每月的调度生成，也没有邮件/投递机制——见下面的路线图。
+* 📤 **按需 CSV/JSON 报告（已实现）：** `GET /reports/{oee,availability}` 返回 JSON；`GET /reports/{oee,availability}/export` 返回逐字节可复现的 CSV。每日和每周报告也可以由 systemd 定时器写入磁盘（在配置文件中启用之前保持关闭），并附带 sha256 清单；目前没有任何 PDF 导出、没有每月生成，也没有邮件/投递机制——见下面的路线图。
 * 🛠️ **瓶颈分析（计划中）：** 识别哪些机器人或工具正在造成任务队列延迟，需要下面提到的真实 `production_event` 数据源——尚未实现。
 * 🌡️ **质量可追溯性（计划中）：** 将最终产品与其特定的装配日志（热、视觉、机械）关联起来是未来的工作，要等到有不止一个项目向 DATALAKE 写入生产数据之后。
 * 🕐 **班次/日边界：** `shift.py` 为每份报告提供了唯一的真实基准，用于确定班次或自然日的起止时间——包括真实的跨越午夜的夜班。*（已实现）*
