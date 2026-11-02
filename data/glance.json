@@ -639,7 +639,7 @@
     "HYDRA-UMC-SYNTHETIC-DATA-GEN": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 136,
+        "count": 156,
         "command": "python -m pytest -q tests"
       },
       "rows": {

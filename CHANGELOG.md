@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **README of SYNTHETIC-DATA-GEN:** the configuration section (eight languages) describes the classes of a registered model, the outlines of a catalogue of parts and the servoing and safety datasets, all optional, and the test count follows the suite.
+
 - **README of SEMANTIC-PLANNER:** the configuration section (eight languages) describes the symbolic planning behind the decomposition of a goal and the bounded memory of recovery outcomes, both off by default, and the test count follows the suite.
 
 - **READMEs of PRODUCTION-REPORTS and SEMANTIC-PLANNER:** the configuration sections of the two READMEs (eight languages) describe the scheduled daily and weekly reports and the availability by explicit state, and the safety gate before a release and the voice-intent route; the test counts of both repositories are updated.
