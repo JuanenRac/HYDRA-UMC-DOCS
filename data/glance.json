@@ -578,7 +578,7 @@
     "HYDRA-UMC-SERVER": {
       "hardware": "bench",
       "tests": {
-        "count": 621,
+        "count": 622,
         "command": "npm run test:unit"
       },
       "rows": {
