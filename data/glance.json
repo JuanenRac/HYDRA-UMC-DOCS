@@ -162,7 +162,7 @@
     "HYDRA-UMC-COGNITIVE-NODE": {
       "hardware": "not_run",
       "tests": {
-        "count": 72,
+        "count": 197,
         "command": "python -m pytest -q tests"
       },
       "rows": {
