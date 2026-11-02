@@ -85,6 +85,11 @@ run "HYDRA-UMC-DOCS" "$HERE" "$PYTHON" tools/ci_validate.py
 run "docs: readmes" "$HERE" "$PYTHON" tools/make_readmes.py --check
 run "docs: brand" "$HERE" "$PYTHON" tools/make_brand.py --check
 if [[ "$checked" -gt 0 ]]; then
+  run "docs: screenshots" "$HERE" "$PYTHON" tools/screenshots_check.py --all
+else
+  report "docs: screenshots" SKIP "no sibling repositories to read the screenshots of"
+fi
+if [[ "$checked" -gt 0 ]]; then
   run "docs: catalogue structure" "$HERE" "$PYTHON" tools/make_catalog.py --check-structure --require-siblings
 else
   report "docs: catalogue structure" SKIP "no sibling repositories to read the manifests of"

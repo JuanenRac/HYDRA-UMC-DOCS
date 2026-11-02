@@ -129,8 +129,8 @@ def render(repo: Path, lg: str, entry: dict) -> str:
     manifest = glance.load_manifest(repo)
     ctx = Context(repo, entry, manifest)
     body = source.BODY(lg, ctx)
-    if repo.name in SHOTS_SRC.SHOTS:
-        body["screenshots"] = SHOTS_SRC.section(lg, repo.name)
+    if SHOTS_SRC.has(repo):
+        body["screenshots"] = SHOTS_SRC.section(lg, repo)
     structure_extra = body.pop("structure", "")
     bodies = {key: text.strip() for key, text in body.items() if text and text.strip()}
     present = [s for s, _ in SECTIONS if s in ALWAYS or s in bodies]
