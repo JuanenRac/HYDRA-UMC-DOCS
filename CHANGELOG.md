@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.0.9] - More lines in the Project status table, a tool to align the wording of the clients and READMEs that say what now exists
+
 - **The READMEs of the SDK and the MQTT broker say what now exists:** the SDK counts twenty-six contracts (the tool descriptor and the tool state are published) and the broker no longer says that the state of the robots is not on it or that discovery is only planned: the swarm topics of the server, the mDNS announcement and the Home Assistant discovery of the bridges are described, in the eight languages, with what is checked and what is not. The interfaces page lists the two new contracts.
 
 - **Compare and align the wording of the clients:** `tools/i18n_cross_check.py` now reads the language files of IOS-CONTROL and DSI too, and the new `tools/i18n_align.py` lists the texts of a client that read differently from STUDIO although the English is the same (only plain texts that STUDIO reads one way) and, with `--apply`, writes the words of STUDIO into the client for the English texts named, in a small batch.
