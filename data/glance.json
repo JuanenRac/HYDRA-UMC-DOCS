@@ -355,7 +355,7 @@
     "HYDRA-UMC-JOB-DISPATCHER": {
       "hardware": "not_run",
       "tests": {
-        "count": 248,
+        "count": 285,
         "command": "go test ./..."
       },
       "rows": {
@@ -458,7 +458,7 @@
     "HYDRA-UMC-ORCHESTRATOR": {
       "hardware": "not_run",
       "tests": {
-        "count": 197,
+        "count": 234,
         "command": "cargo test"
       },
       "rows": {
@@ -624,7 +624,7 @@
     "HYDRA-UMC-SWARM-SYNC": {
       "hardware": "not_run",
       "tests": {
-        "count": 132,
+        "count": 149,
         "command": "cargo test"
       },
       "rows": {
