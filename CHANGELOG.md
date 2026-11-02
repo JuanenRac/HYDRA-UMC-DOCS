@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.0] - README sources for the voice, documentation question, physics, twin and planner projects and a typed source for the production reports
+
 - **README of VOICE-UI and DOCS-QA:** the feature lists (eight languages) describe the optional wake word, speaker identification, questions about error codes, audit log and alerts read aloud of the voice service, and the error-code catalog and the corpus bundle per release of the documentation assistant; the test counts of both are the real ones.
 
 - **README of SYNTHETIC-DATA-GEN:** the configuration section (eight languages) describes the classes of a registered model, the outlines of a catalogue of parts and the servoing and safety datasets, all optional, and the test count follows the suite.
