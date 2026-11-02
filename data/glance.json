@@ -85,7 +85,7 @@
     "HYDRA-UMC-BRIDGE-LASER": {
       "hardware": "simulated",
       "tests": {
-        "count": 212,
+        "count": 222,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -101,7 +101,7 @@
     "HYDRA-UMC-BRIDGE-OPENPNP": {
       "hardware": "simulated",
       "tests": {
-        "count": 248,
+        "count": 255,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -149,7 +149,7 @@
     "HYDRA-UMC-BRIDGE-UAV": {
       "hardware": "simulated",
       "tests": {
-        "count": 154,
+        "count": 165,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -286,7 +286,7 @@
     "HYDRA-UMC-EDITOR-STL": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 267,
+        "count": 288,
         "command": "python -m pytest tests -q"
       },
       "rows": {
@@ -297,7 +297,7 @@
     "HYDRA-UMC-EDITOR-URDF": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 569,
+        "count": 606,
         "command": "python -m pytest tests -q"
       },
       "rows": {
@@ -578,7 +578,7 @@
     "HYDRA-UMC-SERVER": {
       "hardware": "bench",
       "tests": {
-        "count": 587,
+        "count": 601,
         "command": "npm run test:unit"
       },
       "rows": {
@@ -594,7 +594,7 @@
     "HYDRA-UMC-STUDIO": {
       "hardware": "bench",
       "tests": {
-        "count": 818,
+        "count": 828,
         "command": "npm test"
       },
       "rows": {
