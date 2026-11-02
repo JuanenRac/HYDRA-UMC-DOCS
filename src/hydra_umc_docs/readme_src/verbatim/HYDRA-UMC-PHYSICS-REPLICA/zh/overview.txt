@@ -1,4 +1,4 @@
-**HYDRA-UMC-PHYSICS-REPLICA** 是数字孪生的运动学模块：它读取 URDF 运动学树（串联臂以及夹爪这类分叉结构），计算每个关节的位姿（正向运动学），并对照关节限位检查关节位置。它不模拟动力学：没有刚体、接触或摩擦模型，也没有 MuJoCo 或 PhysX，这些属于路线图。
+**HYDRA-UMC-PHYSICS-REPLICA** 是数字孪生的运动学模块：它读取 URDF 运动学树（串联臂以及夹爪这类分叉结构），计算每个关节的位姿（正向运动学），并对照关节限位检查关节位置。它不模拟接触或摩擦，也没有自己的物理引擎：它根据 `<inertial>` 块计算一个运动所需的关节力矩（逆动力学，RNEA），MuJoCo 只是默认关闭的 Cargo 特性之后的可选桥接。
 
 单位遵循 URDF（米和弧度）。`fk` 输出每个关节的位置；加上 `--json` 则输出位置和单位四元数形式的旋转。
 
@@ -15,5 +15,9 @@
 * 🧮 **雅可比矩阵与逆运动学（真实，纯运动学）：** `jacobian --urdf PATH --target JOINT --joints "..."` 输出关节坐标系在世界坐标系中的 6 x N 几何雅可比矩阵（文本或 `--json`；通过 `<mimic>` 跟随另一个关节的关节，会把自己的部分加到其主关节的列上），`ik --urdf PATH --target JOINT --goal X,Y,Z` 用阻尼最小二乘法求解位置，步长受限，位置保持在关节限位之内（`--tolerance`、`--damping`、`--max-step` 和 `--max-iterations` 都有默认值）。雅可比矩阵用正运动学的有限差分检验；够不到的目标是错误，而不是位姿。用公开的 Denavit-Hartenberg 参数构建的 UR5e 和 Franka Emika Panda 用于检验正运动学。参见 `docs/CLI_REFERENCE.md`。
 
 * 🚧 **基于正向运动学的碰撞预测（已实现，纯运动学，按构造偏大估计）：** `predict-collision --urdf PATH --zones PATH --config PATH --trajectory PATH` 判断一小段关节状态列表是否会使机器人进入 HYDRA-UMC-SAFETY-ZONES 区域文件中的某个区域，或碰到自身。连杆是各关节坐标系之间的线段，半径由你声明（没有默认值），被切成小段并替换为包含它们的球；关节会被插值并采样，并给出采样间运动的上界，区域绝不会被缩小。退出码 `0` 表示无接触，`1` 表示预测到接触，`2` 表示输入错误。两个固定种子的性质测试检查：在真正位于连杆内部的点周围的区域，绝不会被报告为无接触。尚未在真实机器人上试验。参见 `docs/COLLISION_PREDICTION.md`。
+
+* 🌐 **HTTP 服务（`serve --urdf`，不指定则不启动）：** `POST /fk`、`/ik`、`/check-trajectory`、`/inverse-dynamics` 和 `GET|POST /capsules` 针对启动时给定的 URDF 作答。默认仅回环地址，监听其他地址需要令牌；请求的大小和单次请求的计算量都有上限；请求中携带的 URDF 除非配置允许否则会被拒绝；限值和容差都放在配置文件中。`/check-trajectory` 在把采样轨迹发往硬件桥之前，按位置、速度、加速度（来自配置）、力/力矩和自碰撞进行检查，并在某项检查无法运行时说明（`complete`）。应答中的固定语句提供八种语言。未在真实机器人上试过。参见 `docs/SERVICE_API.md`。
+
+* 🧲 **胶囊体自碰撞、逆动力学与 MuJoCo（已实现，在关键处宁可高估）：** `capsules`、`self-collision`、`inverse-dynamics`、`mjcf` 和 `check-trajectory`。`<collision>` 中的每个球、圆柱和长方体都被一个包住它的胶囊体取代（网格需要声明半径）；递归牛顿-欧拉算法根据 `<inertial>` 块和重力给出力矩，并与闭式公式、能量平衡以及 MuJoCo 自带的逆动力学对照；`mjcf` 把 URDF 写成 MuJoCo 的模型格式。可选桥接（`--features mujoco`）默认关闭。未在真实机器人上试过。参见 `docs/DYNAMICS_AND_COLLISION.md`。
 
 **共用的基准 URDF 集。** `tests/golden/` 中是与 HYDRA-UMC-EDITOR-URDF、HYDRA-UMC-EDITOR-STL 检查的相同的小型机器人和各关节坐标系的预期位置，由只用简单数学的基准算出；`tests/golden_urdf.rs` 对每个用例运行 `fk`，因此三者读取 `origin`、`rpy`、`axis` 和关节类型的方式一致。这些文件是副本，由 HYDRA-UMC-EDITOR-URDF 的 `tools/golden_sync.py` 保持一致。
