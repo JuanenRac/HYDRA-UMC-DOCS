@@ -1,0 +1,7 @@
+Esta versión incluye las cinco piezas anteriores. Lo que aún no está:
+
+- **Aislamiento de una ejecución.** Una receta se ejecuta con los permisos del usuario que ejecuta el nodo, con una lista de programas permitidos, un entorno mínimo y límites de tiempo y de salida; todavía no hay un sandbox (contenedor, namespaces) alrededor. Una persona debe leer la receta antes de aprobarla.
+- **Una aprobación más fuerte.** Una aprobación es un registro en la base de datos local hecho en un terminal; no está firmada con una clave de quien aprueba.
+- **El panel al otro lado.** El documento de estado es un contrato y un fichero; `HYDRA-UMC-DASHBOARD-AI` y `HYDRA-UMC-STUDIO` todavía no lo muestran, y cómo llega el fichero hasta ellos (un túnel autenticado) lo deciden ellos.
+- **Un bucle de trabajo.** Los casos, las recetas y los checkouts se usan con comandos; nada toma un caso de la cola y lo trabaja solo, a propósito.
+- **Una ejecución en un host de desarrollo real.** El nodo se ha probado en un ordenador con repositorios git locales únicamente.

@@ -1,0 +1,11 @@
+HYDRA-UMC-DEVELOPER-NODE is the developer node of the ecosystem: the place where a failure that a node has reported is studied. It reads the evidence bundle of `HYDRA-UMC-LOCAL-TECHNICIAN` (read only), gets the exact source of the revision involved from a cache of git worktrees, reproduces the failure with a fixed recipe and can run the shared CI over a workspace.
+
+Four rules hold everywhere. Every part is **closed** until the configuration file opens it. Nothing runs without **a person approving the exact thing that will run**. Nothing **leaves the machine**. Every tuned value lives in the **configuration file**, never in the code.
+
+This version ships five independent pieces:
+
+1. **Evidence intake** (`evidence.py`) - checks a bundle or a signed `incident-transport/1` message (signature, receiver, age, nonce, shape, checksum, no secrets) and stores it as a case that waits for a person.
+2. **Executable repro cases** (`repro.py`, `approvals.py`) - a recipe of argument lists, allowed commands only, an approval bound to its digest; each run is a `ScenarioOutcome` of the SDK and the SDK gives the verdict of a before and after pair.
+3. **Checkout cache by revision** (`checkouts.py`) - a bare mirror and one git worktree per commit, a pinned commit verified, a limit in GB kept by removing the least recently used worktrees.
+4. **Status document** (`panel.py`) - queue, journal and health for a dashboard or a studio, in eight languages, as a file.
+5. **`ecosystem-ci` plugin** (`plugin_ci.py`) - the shared CI validator of each repository of a workspace, with one consolidated report.

@@ -1,0 +1,5 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — las piezas, el flujo de un incidente y dónde se detiene el nodo.
+- **[docs/CONFIGURATION.md](docs/CONFIGURATION.md)** — cada interruptor y cada valor ajustable del fichero de configuración.
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — cada comando, los códigos de salida y la forma de una receta.
+- **[docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md)** — las reglas que cumple el nodo y lo que no cubre.
+- **[docs/PANEL_CONTRACT.md](docs/PANEL_CONTRACT.md)** — el documento de estado para paneles y estudios.

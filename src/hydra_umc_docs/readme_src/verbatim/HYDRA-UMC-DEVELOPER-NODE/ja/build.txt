@@ -1,0 +1,15 @@
+```bash
+chmod +x build.sh   # 初回のみ
+./build.sh          # .venv を作成し、pip install -e ".[dev]"、コンパイル確認とテストを実行
+./run.sh            # 付属の設定を確認（すべてのスイッチは閉）
+./run.sh --config configs/developer-node.json evidence verify bundle.json
+./run.sh --version
+```
+
+Windows では `build.bat` の後に `run.bat` を使います。`test.sh` / `test.bat` はバージョンを変えずにテストと確認を実行します。修正前後のペアの判定には SDK が必要です：`pip install -e ".[dev,sdk]"`。
+
+**トラブルシューティング**
+
+- `拒否しました: ... is closed`：その部分はオフです。設定ファイルで開き（`"enabled": true`、本物の真偽値）、[docs/CONFIGURATION.md](docs/CONFIGURATION.md) を読んでください。
+- `no valid approval for this exact recipe`：`repro approve` でレシピをもう一度承認してください。承認には期限があり、1 回だけ使えます。
+- `an approval needs a person at a terminal`：スクリプトやパイプではなく、端末で承認してください。

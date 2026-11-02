@@ -1,0 +1,7 @@
+This version ships the five pieces above. What is not here yet:
+
+- **Isolation of a run.** A recipe runs with the rights of the user who runs the node, with an allow-list of programs, a minimal environment and time and output limits; there is no sandbox (container, namespaces) around it yet. A person must read a recipe before approving it.
+- **A stronger approval.** An approval is a record in the local database made at a terminal; it is not signed with a key of the approver.
+- **The panel on the other side.** The status document is a contract and a file; `HYDRA-UMC-DASHBOARD-AI` and `HYDRA-UMC-STUDIO` do not show it yet, and how the file reaches them (an authenticated tunnel) is theirs to decide.
+- **A worker loop.** Cases, recipes and checkouts are used by commands; nothing takes a case from the queue and works it by itself, on purpose.
+- **A run on a real development host.** The node has been tested on a computer with local git repositories only.

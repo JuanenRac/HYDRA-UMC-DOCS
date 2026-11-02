@@ -1,0 +1,15 @@
+```bash
+chmod +x build.sh   # 仅需一次
+./build.sh          # 创建 .venv，pip install -e ".[dev]"，检查编译并运行测试
+./run.sh            # 检查随附的配置（所有开关均关闭）
+./run.sh --config configs/developer-node.json evidence verify bundle.json
+./run.sh --version
+```
+
+在 Windows 上：先 `build.bat`，再 `run.bat`。`test.sh` / `test.bat` 运行测试和检查，不改变版本。修复前后一对结果的结论需要 SDK：`pip install -e ".[dev,sdk]"`。
+
+**故障排查**
+
+- `已拒绝：... is closed`：该部分处于关闭状态。请在配置文件中打开它（`"enabled": true`，必须是真正的布尔值），并阅读 [docs/CONFIGURATION.md](docs/CONFIGURATION.md)。
+- `no valid approval for this exact recipe`：用 `repro approve` 重新批准该配方；批准会过期，且只能使用一次。
+- `an approval needs a person at a terminal`：请在终端中进行批准，而不是通过脚本或管道。

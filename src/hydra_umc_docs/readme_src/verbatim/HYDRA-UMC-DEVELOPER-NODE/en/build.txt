@@ -1,0 +1,15 @@
+```bash
+chmod +x build.sh   # one-time
+./build.sh          # creates .venv, pip install -e ".[dev]", compile-checks + tests
+./run.sh            # checks the shipped configuration (every switch closed)
+./run.sh --config configs/developer-node.json evidence verify bundle.json
+./run.sh --version
+```
+
+On Windows: `build.bat`, then `run.bat`. `test.sh` / `test.bat` run the tests and the checks without changing the version. The verdict of a before and after pair needs the SDK: `pip install -e ".[dev,sdk]"`.
+
+**Troubleshooting**
+
+- `Refused: ... is closed`: the part is off. Open it in the configuration file (`"enabled": true`, a real boolean) and read [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
+- `no valid approval for this exact recipe`: approve the recipe again with `repro approve`; an approval expires and works once.
+- `an approval needs a person at a terminal`: run the approval in a terminal, not from a script or a pipe.

@@ -1,0 +1,11 @@
+HYDRA-UMC-DEVELOPER-NODE es el nodo de desarrollo del ecosistema: el lugar donde se estudia un fallo que ha comunicado un nodo. Lee el paquete de pruebas de `HYDRA-UMC-LOCAL-TECHNICIAN` (solo lectura), obtiene el código exacto de la revisión implicada desde una caché de worktrees de git, reproduce el fallo con una receta fija y puede ejecutar el CI compartido sobre un espacio de trabajo.
+
+Cuatro reglas valen en todas partes. Cada parte está **cerrada** hasta que el fichero de configuración la abre. Nada se ejecuta sin que **una persona apruebe exactamente lo que se va a ejecutar**. Nada **sale de la máquina**. Todo valor ajustable vive en el **fichero de configuración**, nunca en el código.
+
+Esta versión incluye cinco piezas independientes:
+
+1. **Ingesta de pruebas** (`evidence.py`) - comprueba un paquete o un mensaje firmado `incident-transport/1` (firma, destinatario, edad, nonce, forma, suma de comprobación, sin secretos) y lo guarda como un caso que espera a una persona.
+2. **Casos de reproducción ejecutables** (`repro.py`, `approvals.py`) - una receta de listas de argumentos, solo comandos permitidos y una aprobación ligada a su huella; cada ejecución es un `ScenarioOutcome` del SDK y el SDK da el veredicto de un par antes y después.
+3. **Caché de checkouts por revisión** (`checkouts.py`) - un espejo bare y un worktree de git por commit, el commit fijado verificado, un límite en GB mantenido al eliminar los worktrees menos usados.
+4. **Documento de estado** (`panel.py`) - cola, diario y salud para un panel o un estudio, en ocho idiomas, como un fichero.
+5. **Plugin `ecosystem-ci`** (`plugin_ci.py`) - el validador de CI compartido de cada repositorio de un espacio de trabajo, con un informe consolidado.

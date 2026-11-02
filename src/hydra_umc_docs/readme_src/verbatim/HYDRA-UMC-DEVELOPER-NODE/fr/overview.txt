@@ -1,0 +1,11 @@
+HYDRA-UMC-DEVELOPER-NODE est le nœud de développement de l'écosystème : l'endroit où l'on étudie une panne signalée par un nœud. Il lit le paquet de preuves de `HYDRA-UMC-LOCAL-TECHNICIAN` (en lecture seule), obtient le code exact de la révision concernée depuis un cache de worktrees git, reproduit la panne avec une recette fixe et peut lancer la CI partagée sur un espace de travail.
+
+Quatre règles valent partout. Chaque partie est **fermée** tant que le fichier de configuration ne l'ouvre pas. Rien ne s'exécute sans **qu'une personne approuve exactement ce qui va s'exécuter**. Rien ne **quitte la machine**. Toute valeur ajustable vit dans le **fichier de configuration**, jamais dans le code.
+
+Cette version fournit cinq éléments indépendants :
+
+1. **Ingestion des preuves** (`evidence.py`) - vérifie un paquet ou un message signé `incident-transport/1` (signature, destinataire, âge, nonce, forme, somme de contrôle, aucun secret) et l'enregistre comme un cas qui attend une personne.
+2. **Cas de reproduction exécutables** (`repro.py`, `approvals.py`) - une recette de listes d'arguments, seulement des commandes autorisées et une approbation liée à son empreinte ; chaque exécution est un `ScenarioOutcome` du SDK et le SDK donne le verdict d'une paire avant et après.
+3. **Cache de checkouts par révision** (`checkouts.py`) - un miroir bare et un worktree git par commit, le commit épinglé est vérifié, une limite en Go est tenue en supprimant les worktrees les moins récemment utilisés.
+4. **Document d'état** (`panel.py`) - file, journal et santé pour un tableau de bord ou un studio, en huit langues, sous forme de fichier.
+5. **Plugin `ecosystem-ci`** (`plugin_ci.py`) - le validateur de CI partagé de chaque dépôt d'un espace de travail, avec un rapport consolidé.

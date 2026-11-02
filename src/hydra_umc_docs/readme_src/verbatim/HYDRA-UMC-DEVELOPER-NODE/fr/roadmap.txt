@@ -1,0 +1,7 @@
+Cette version fournit les cinq éléments ci-dessus. Ce qui manque encore :
+
+- **L'isolation d'une exécution.** Une recette s'exécute avec les droits de l'utilisateur qui lance le nœud, avec une liste de programmes autorisés, un environnement minimal et des limites de temps et de sortie ; il n'y a pas encore de bac à sable (conteneur, espaces de noms). Une personne doit lire une recette avant de l'approuver.
+- **Une approbation plus forte.** Une approbation est un enregistrement de la base locale fait dans un terminal ; elle n'est pas signée avec une clé de l'approbateur.
+- **Le tableau de bord de l'autre côté.** Le document d'état est un contrat et un fichier ; `HYDRA-UMC-DASHBOARD-AI` et `HYDRA-UMC-STUDIO` ne l'affichent pas encore, et la façon dont le fichier leur parvient (un tunnel authentifié) leur appartient.
+- **Une boucle de travail.** Les cas, les recettes et les checkouts s'utilisent par commandes ; rien ne prend un cas dans la file pour le traiter seul, volontairement.
+- **Une exécution sur un vrai hôte de développement.** Le nœud n'a été testé que sur un ordinateur avec des dépôts git locaux.

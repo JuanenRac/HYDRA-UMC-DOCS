@@ -30,6 +30,7 @@ DESCRIPTIONS: dict[str, str] = {
     "HYDRA-UMC-DATALAKE": "SQLite time-series store with an HTTP ingest and query API.",
     "HYDRA-UMC-DETECTION-HEF": "Registry of compiled detection models with schema, Hailo-architecture and checksum checks before loading.",
     "HYDRA-UMC-DEV-SERVER": "Reproducible development host: policy-gated configuration and manifest inventory; no task has deploy permission.",
+    "HYDRA-UMC-DEVELOPER-NODE": "Developer node: reads evidence bundles, caches checkouts by revision and runs repro cases and the shared CI; closed by default, approved by a person.",
     "HYDRA-UMC-DOCS": "This repository: architecture, interfaces, security baseline, capability matrix and cross-repository tooling.",
     "HYDRA-UMC-DOCS-QA": "Stdlib-only TF-IDF search over the ecosystem's own Markdown documents, with citations; lexical, not semantic.",
     "HYDRA-UMC-DSI": "Flutter touch interface for the onboard 7 inch DSI display of the CM5.",

@@ -74,6 +74,7 @@ FAMILY_REPOS: tuple[tuple[str, tuple[str, ...]], ...] = (
         "Ecosystem Operations",
         (
             "HYDRA-UMC-DEV-SERVER",
+            "HYDRA-UMC-DEVELOPER-NODE",
             "HYDRA-UMC-DOCS",
             "HYDRA-UMC-LOCAL-TECHNICIAN",
             "HYDRA-UMC-OPS-AGENT",

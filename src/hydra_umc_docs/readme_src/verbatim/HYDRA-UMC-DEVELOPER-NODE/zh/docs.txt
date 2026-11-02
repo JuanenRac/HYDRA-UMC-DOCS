@@ -1,0 +1,5 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — 各部分、一次事件的流程，以及节点止步之处。
+- **[docs/CONFIGURATION.md](docs/CONFIGURATION.md)** — 配置文件的每个开关和每个可调的值。
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — 每个命令、退出码和配方的格式。
+- **[docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md)** — 节点遵守的规则以及未覆盖的内容。
+- **[docs/PANEL_CONTRACT.md](docs/PANEL_CONTRACT.md)** — 面向仪表板和工作室的状态文档。

@@ -1,0 +1,5 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — les éléments, le déroulement d'un incident et où s'arrête le nœud.
+- **[docs/CONFIGURATION.md](docs/CONFIGURATION.md)** — chaque interrupteur et chaque valeur ajustable du fichier de configuration.
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — chaque commande, les codes de sortie et la forme d'une recette.
+- **[docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md)** — les règles que le nœud respecte et ce qui n'est pas couvert.
+- **[docs/PANEL_CONTRACT.md](docs/PANEL_CONTRACT.md)** — le document d'état pour tableaux de bord et studios.

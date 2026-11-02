@@ -243,6 +243,19 @@
         "operation": "metrics"
       }
     },
+    "HYDRA-UMC-DEVELOPER-NODE": {
+      "hardware": "not_applicable",
+      "tests": {
+        "count": 70,
+        "command": "python -m pytest -q tests"
+      },
+      "rows": {
+        "interface": "documented_tested",
+        "integration": "contract",
+        "security": "host_tested",
+        "operation": "logs"
+      }
+    },
     "HYDRA-UMC-DOCS": {
       "hardware": "not_applicable",
       "tests": {

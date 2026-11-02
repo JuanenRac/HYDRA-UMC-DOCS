@@ -1,0 +1,15 @@
+```bash
+chmod +x build.sh   # una sola vez
+./build.sh          # crea .venv, pip install -e ".[dev]", comprueba la compilación y ejecuta las pruebas
+./run.sh            # comprueba la configuración incluida (todos los interruptores cerrados)
+./run.sh --config configs/developer-node.json evidence verify bundle.json
+./run.sh --version
+```
+
+En Windows: `build.bat`, y luego `run.bat`. `test.sh` / `test.bat` ejecutan las pruebas y las comprobaciones sin cambiar la versión. El veredicto de un par antes y después necesita el SDK: `pip install -e ".[dev,sdk]"`.
+
+**Solución de problemas**
+
+- `Rechazado: ... is closed`: la parte está apagada. Ábrela en el fichero de configuración (`"enabled": true`, un booleano real) y lee [docs/CONFIGURATION.md](docs/CONFIGURATION.md).
+- `no valid approval for this exact recipe`: aprueba de nuevo la receta con `repro approve`; una aprobación caduca y sirve una sola vez.
+- `an approval needs a person at a terminal`: haz la aprobación en un terminal, no desde un script ni una tubería.

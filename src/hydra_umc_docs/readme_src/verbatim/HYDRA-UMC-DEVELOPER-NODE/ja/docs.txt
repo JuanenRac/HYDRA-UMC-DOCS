@@ -1,0 +1,5 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — 構成部品、インシデントの流れ、ノードが止まる場所。
+- **[docs/CONFIGURATION.md](docs/CONFIGURATION.md)** — 設定ファイルのすべてのスイッチと調整値。
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — すべてのコマンド、終了コード、レシピの形式。
+- **[docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md)** — ノードが守る規則と、対象外のこと。
+- **[docs/PANEL_CONTRACT.md](docs/PANEL_CONTRACT.md)** — ダッシュボードとスタジオ向けの状態文書。

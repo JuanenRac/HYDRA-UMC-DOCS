@@ -1,0 +1,7 @@
+Esta versão inclui as cinco peças acima. O que ainda não existe:
+
+- **Isolamento de uma execução.** Uma receita corre com os direitos do utilizador que executa o nó, com uma lista de programas permitidos, um ambiente mínimo e limites de tempo e de saída; ainda não há uma sandbox (contentor, espaços de nomes). Uma pessoa deve ler a receita antes de a aprovar.
+- **Uma aprovação mais forte.** Uma aprovação é um registo na base de dados local feito num terminal; não está assinada com uma chave de quem aprova.
+- **O painel do outro lado.** O documento de estado é um contrato e um ficheiro; o `HYDRA-UMC-DASHBOARD-AI` e o `HYDRA-UMC-STUDIO` ainda não o mostram, e a forma como o ficheiro lhes chega (um túnel autenticado) é decisão deles.
+- **Um ciclo de trabalho.** Os casos, as receitas e os checkouts usam-se com comandos; nada tira um caso da fila e o trabalha sozinho, de propósito.
+- **Uma execução num anfitrião de desenvolvimento real.** O nó só foi testado num computador com repositórios git locais.

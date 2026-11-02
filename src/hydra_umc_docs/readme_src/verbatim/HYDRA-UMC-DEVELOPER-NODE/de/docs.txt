@@ -1,0 +1,5 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — die Teile, der Ablauf eines Vorfalls und wo der Knoten aufhört.
+- **[docs/CONFIGURATION.md](docs/CONFIGURATION.md)** — jeder Schalter und jeder einstellbare Wert der Konfigurationsdatei.
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — jeder Befehl, die Exit-Codes und die Form eines Rezepts.
+- **[docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md)** — die Regeln, die der Knoten einhält, und was nicht abgedeckt ist.
+- **[docs/PANEL_CONTRACT.md](docs/PANEL_CONTRACT.md)** — das Statusdokument für Dashboards und Studios.

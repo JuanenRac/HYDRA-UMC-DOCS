@@ -1,0 +1,5 @@
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — the parts, the flow of one incident and where the node stops.
+- **[docs/CONFIGURATION.md](docs/CONFIGURATION.md)** — every switch and every tuned value of the configuration file.
+- **[docs/CLI_REFERENCE.md](docs/CLI_REFERENCE.md)** — every command, the exit codes and the shape of a recipe.
+- **[docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md)** — the rules the node keeps and what is not covered.
+- **[docs/PANEL_CONTRACT.md](docs/PANEL_CONTRACT.md)** — the status document for dashboards and studios.

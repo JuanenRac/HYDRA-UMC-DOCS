@@ -1,0 +1,7 @@
+Questa versione include le cinque parti sopra. Cosa non c'è ancora:
+
+- **Isolamento di un'esecuzione.** Una ricetta viene eseguita con i diritti dell'utente che esegue il nodo, con un elenco di programmi ammessi, un ambiente minimo e limiti di tempo e di output; non c'è ancora una sandbox (container, namespace). Una persona deve leggere una ricetta prima di approvarla.
+- **Un'approvazione più forte.** Un'approvazione è un record nel database locale fatto in un terminale; non è firmata con una chiave di chi approva.
+- **Il pannello dall'altra parte.** Il documento di stato è un contratto e un file; `HYDRA-UMC-DASHBOARD-AI` e `HYDRA-UMC-STUDIO` non lo mostrano ancora, e come il file arriva a loro (un tunnel autenticato) lo decidono loro.
+- **Un ciclo di lavoro.** Casi, ricette e checkout si usano con i comandi; nulla prende un caso dalla coda e lo lavora da solo, di proposito.
+- **Un'esecuzione su un vero host di sviluppo.** Il nodo è stato provato solo su un computer con repository git locali.

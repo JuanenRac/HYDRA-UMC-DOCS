@@ -1,0 +1,7 @@
+Diese Version liefert die fünf oben genannten Teile. Was noch fehlt:
+
+- **Isolierung eines Laufs.** Ein Rezept läuft mit den Rechten des Benutzers, der den Knoten betreibt, mit einer Liste erlaubter Programme, einer minimalen Umgebung sowie Zeit- und Ausgabegrenzen; eine Sandbox (Container, Namespaces) gibt es noch nicht. Ein Mensch muss ein Rezept lesen, bevor er es freigibt.
+- **Eine stärkere Freigabe.** Eine Freigabe ist ein an einem Terminal erstellter Eintrag in der lokalen Datenbank; sie ist nicht mit einem Schlüssel des Freigebenden signiert.
+- **Das Dashboard auf der anderen Seite.** Das Statusdokument ist ein Vertrag und eine Datei; `HYDRA-UMC-DASHBOARD-AI` und `HYDRA-UMC-STUDIO` zeigen es noch nicht, und wie die Datei zu ihnen gelangt (ein authentifizierter Tunnel), entscheiden sie selbst.
+- **Eine Arbeitsschleife.** Fälle, Rezepte und Checkouts werden über Befehle genutzt; nichts nimmt von selbst einen Fall aus der Warteschlange und bearbeitet ihn, mit Absicht.
+- **Ein Lauf auf einem echten Entwicklungshost.** Der Knoten wurde nur auf einem Rechner mit lokalen Git-Repositories getestet.
