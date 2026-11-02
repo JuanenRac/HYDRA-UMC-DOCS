@@ -177,7 +177,7 @@
     "HYDRA-UMC-CONNECTOR-HUB": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 192,
+        "count": 214,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -308,7 +308,7 @@
     "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
       "hardware": "not_run",
       "tests": {
-        "count": 154,
+        "count": 177,
         "command": "npm test"
       },
       "rows": {
@@ -324,7 +324,7 @@
     "HYDRA-UMC-HIL-BRIDGE": {
       "hardware": "simulated",
       "tests": {
-        "count": 149,
+        "count": 172,
         "command": "cargo test"
       },
       "rows": {
@@ -399,7 +399,7 @@
     "HYDRA-UMC-MTCONNECT-ADAPTER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 169,
+        "count": 180,
         "command": "npm test"
       },
       "rows": {
@@ -428,7 +428,7 @@
     "HYDRA-UMC-OPCUA-SERVER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 195,
+        "count": 219,
         "command": "npm test"
       },
       "rows": {
