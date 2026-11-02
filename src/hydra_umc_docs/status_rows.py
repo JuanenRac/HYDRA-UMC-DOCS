@@ -23,7 +23,7 @@ LANGS = ("en", "es", "de", "fr", "it", "ja", "zh", "pt")
 
 
 def _l(en, es, de, fr, it, ja, zh, pt):
-    return dict(zip(LANGS, (en, es, de, fr, it, ja, zh, pt)))
+    return dict(zip(LANGS, (en, es, de, fr, it, ja, zh, pt), strict=True))
 
 
 LABELS = {
