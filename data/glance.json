@@ -427,7 +427,7 @@
     "HYDRA-UMC-NODE-HEALING": {
       "hardware": "not_run",
       "tests": {
-        "count": 168,
+        "count": 172,
         "command": "go test ./..."
       },
       "rows": {
