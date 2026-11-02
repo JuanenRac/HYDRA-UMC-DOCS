@@ -14,3 +14,4 @@
 * ✅ **作业经由共享的受理环节:** 对格式错误的作业和重复的 `idempotency_key` 的检查，由 SDK 的 `JobIntake` 完成，而不是此桥接自己的代码(键不再带 `job:` 前缀)。
 * ✅ **以 QoS 1 发布的响应:** 对命令的响应以 QoS 1 发布(共享调度器会保留桥接给响应指定的 QoS)，因此在不稳定的链路上结果不会丢失。
 * ✅ **跟随全局停止（默认关闭）:** 设置 `HYDRA_UMC_LASER_GLOBAL_STOP=1` 后，桥接读取服务器在 `hydra/swarm/safety/estop` 上的保留通知；通知为 `SAFE_STOP` 或无法读取时，它会带原因拒绝：任务（中止放行）。停止命令和只读请求照常工作，只有 `READY` 才能解除拒绝。*（已实现，已对真实代理测试；从未与真实服务器一起运行）*
+* ✅ **辅助保护的读取器（默认关闭）：** 设置 `[auxiliary_readers] enabled = true` 后，服务文件中的 `[[auxiliary]]` 条目可以从 1-Wire 温度传感器（`source = "w1"`、`device = "28-..."`、`max_celsius`；CRC 必须为 YES，上电值 85 °C 视为无读数）、用 libgpiod 读取的 GPIO 输入（`source = "gpio"`、`chip`、`line`、`active_low`、`bias`）或空转演练用的固定值（`source = "simulated"`）取值。开关关闭时，除文件之外的来源会被拒绝，读取失败的读取器视为未满足。*（已实现，在 `tests/test_auxiliary_inputs.py` 中用文件和假的 libgpiod 测试；从未在真实传感器或线路上试过）*

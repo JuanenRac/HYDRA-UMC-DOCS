@@ -54,3 +54,5 @@ HYDRA-UMC-EDITOR-STL は、HYDRA-UMC-STUDIO と HYDRA-UMC-SUITE が配布する
 エコシステムの内部作業慣習がすでに従っている「破壊せず、脇に移す」
 という規律を、単なる内部的な習慣としてではなく、実在の製品機能として
 ここに適用したものです。
+
+**保存済みの設定で有効にするまでオフの追加機能。** `push_lite`（`stl` または `glb`、`lite_ratio` と併用）を設定すると、送信時に完全なメッシュの隣に各パーツの軽量コピー（`<名前>.lite.stl` または `.lite.glb`。頂点を共有するだけの単純な GLB で、圧縮ライブラリは使いません）も送ります。`open_in_urdf_editor` は「URDF エディターで開く」ボタンを表示し、モデルを URDF（パーツは初期姿勢、メッシュはコピー、モデルのフォルダーは変更なし）として作業フォルダーに書き出し、HYDRA-UMC-EDITOR-URDF をそれで起動します。`--cli open-in-urdf-editor ... --launch` でも同じです。`diff_overlay` はごみ箱ウィンドウに「比較」ボタンを追加し、そこに保管されたバージョンを 3D ビューの現在のパーツに半透明で重ねます。`--cli sync-libraries --check` は 2 つのライブラリがずれていると終了コード 1 で終わります。配置を書き出すときの回転は、HYDRA-UMC-EDITOR-URDF や HYDRA-UMC-PHYSICS-REPLICA と同じ基準 URDF セットで検査されます。いずれも実際の画面では確認しておらず、画面なしで読み込んでテストしただけです。

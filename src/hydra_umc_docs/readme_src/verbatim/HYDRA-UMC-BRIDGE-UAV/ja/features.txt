@@ -9,3 +9,4 @@
 * ✅ **非破壊的なビルド/テスト:** `build-test.bat`/`.sh` はソースをコンパイルし、バージョンやCHANGELOGを変更せずに決定論的なユニットテストを実行する。*(実装済み、下記「ビルドと実行」を参照)*
 * 🔜 **DJI OSDKトランスポートアダプター**(非MAVLinkプラットフォーム向け)—— そのSDKが選定・テストされた後にのみ導入される。*(計画中)*
 * ✅ **観測した機器の状態:** `UavCoordinator.dispatch()` はオートパイロットが報告した状態を受け取り、共有ゲートはジョブに書かれた `machine_state`（ブローカー上の誰でも発行できるメッセージ）の代わりにそれを使います。報告がない場合は従来どおり申告値を使います。*（実装済み、`tests/test_observed_state.py` でテスト済み）*
+* ✅ **`run` のリンク監視（既定ではオフ）と任意のシミュレーター確認:** `run --link-monitor`（または `HYDRA_UMC_BRIDGE_UAV_LINK_MONITOR=1`。`--link-timeout` または `HYDRA_UMC_BRIDGE_UAV_LINK_TIMEOUT_SECONDS`、既定 5 秒）は、`LinkedSink` を通して 1 本の `MavlinkLink` スレッドでリンクを読むため、`COMMAND_ACK` の待機とハートビートの監視が互いのメッセージを奪わなくなり、各ステータス行にリンクの状態（`OK` または `LOST`、無音の長さ、要求するフェイルセーフ）が付きます。`.github/workflows/sitl.yml`（手動実行のみ）は PX4 SITL コンテナーを起動して `tools/sitl_smoke.py` を実行し、シミュレーターのハートビートが聞こえ、ブリッジ自身も送信していれば合格です。*(実装済み、偽のリンクでテスト済み。シミュレーターのジョブは一度も実行していません)*

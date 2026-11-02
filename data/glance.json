@@ -399,7 +399,7 @@
     "HYDRA-UMC-MTCONNECT-ADAPTER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 161,
+        "count": 169,
         "command": "npm test"
       },
       "rows": {
@@ -509,7 +509,7 @@
     "HYDRA-UMC-PHYSICS-REPLICA": {
       "hardware": "not_run",
       "tests": {
-        "count": 133,
+        "count": 141,
         "command": "cargo test"
       },
       "rows": {

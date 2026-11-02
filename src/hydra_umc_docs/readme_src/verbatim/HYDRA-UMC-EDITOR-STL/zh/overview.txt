@@ -46,3 +46,5 @@ HYDRA-UMC-SUITE 所提供的每个机器人/机器模型的真实 STL 部件。�
 模型自己的 `.trash/` 子文件夹中——这与本生态系统内部工作惯例早已遵循的
 "绝不销毁，先移到一边"纪律相同，只是在这里作为一项真实的产品功能实现，
 而不仅仅是一个内部习惯。
+
+**在保存的设置开启之前保持关闭的附加功能。** 设置 `push_lite`（`stl` 或 `glb`，配合 `lite_ratio`）后，发送时会在完整网格旁一并发送每个零件的轻量副本（`<名称>.lite.stl` 或 `.lite.glb`，只共享顶点的简单 GLB，不使用压缩库）；`open_in_urdf_editor` 会显示“在 URDF 编辑器中打开”按钮，把模型写成 URDF（零件处于初始姿态，网格被复制，模型文件夹不变）放进工作文件夹，并用它启动 HYDRA-UMC-EDITOR-URDF，也可用 `--cli open-in-urdf-editor ... --launch`；`diff_overlay` 会在回收站窗口加一个“比较”按钮，把那里保存的版本以半透明叠在 3D 视图中的当前零件上。两个库出现偏差时，`--cli sync-libraries --check` 以 1 退出。写出摆放时用的旋转，会用与 HYDRA-UMC-EDITOR-URDF 和 HYDRA-UMC-PHYSICS-REPLICA 相同的基准 URDF 集来检查。以上都没有在真实屏幕上看过，只在无显示的情况下加载并测试过。
