@@ -1,0 +1,15 @@
+{
+  "tool_id": 0,
+  "system_error": false,
+  "can_error": false,
+  "booting": false,
+  "thermal_fault": 0,
+  "reset_cause": 8,
+  "hardware_id": 50580481,
+  "major": 0,
+  "minor": 3,
+  "patch": 0,
+  "bootloader": false,
+  "bootloader_version": [0, 3, 9],
+  "accepts_patch_in_end_update": false
+}

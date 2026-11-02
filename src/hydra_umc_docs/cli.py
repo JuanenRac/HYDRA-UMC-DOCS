@@ -7,16 +7,21 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
+import threading
 from pathlib import Path
 
-from . import __version__, atomic, brand, catalog, claims, family, glance, glance_jump, publication, readme_universal, readmes, status
+from . import __version__, atomic, brand, catalog, claims, fake_urtc, family, glance, glance_jump, ledger, publication, readme_universal, readmes, status, urtc_tools
 
 REPO = Path(__file__).resolve().parents[2]
 REPO_NAME = "HYDRA-UMC-DOCS"
 CATALOG_FILE = REPO / "docs" / "PROJECT_CATALOG.md"
 GLANCE_FILE = REPO / "data" / "glance.json"
 CLAIMS_FILE = REPO / "data" / "claims_reviewed.json"
+TOOLS_FILE = REPO / "data" / "urtc_tools.json"
+LEDGER_FILE = REPO / "data" / "maturity_ledger.json"
+FAKE_URTC_FILE = REPO / "data" / "fake_urtc.json"
 OWN_NAME = "HYDRA-UMC-DOCS"
 
 
@@ -243,14 +248,111 @@ def publication_check(argv: list[str] | None = None) -> int:
     return 1 if blocked else 0
 
 
+def make_urtc_tools(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="make_urtc_tools.py", description="Write data/urtc_tools.json, the common catalogue of the URTC tool heads, from the sources of URTC next to this repository.")
+    parser.add_argument("--check", action="store_true", help="fail when the data file no longer matches the URTC sources")
+    parser.add_argument("--require-siblings", action="store_true", help="fail instead of skipping when URTC is not next to this repository")
+    parser.add_argument("--workspace", help="the folder that holds the repositories (default: the parent of this repository)")
+    parser.add_argument("--data", default=str(TOOLS_FILE), help=argparse.SUPPRESS)
+    args = parser.parse_args(argv)
+    urtc_root = _workspace(args) / urtc_tools.URTC
+    if not (urtc_root / urtc_tools.HEADER).is_file():
+        message = f"URTC was not found in {urtc_root.parent}"
+        print(f"URTC_TOOLS={'FAIL' if args.require_siblings else 'SKIP'} {message}", file=sys.stderr if args.require_siblings else sys.stdout)
+        return 1 if args.require_siblings else 0
+    path = Path(args.data)
+    if args.check:
+        ok, message = urtc_tools.check(path, urtc_root)
+        print(f"URTC_TOOLS={'PASS' if ok else 'FAIL'} {message}", file=None if ok else sys.stderr)
+        return 0 if ok else 1
+    try:
+        text = urtc_tools.render(urtc_tools.build(urtc_root))
+    except urtc_tools.ToolCatalogError as exc:
+        print(f"URTC_TOOLS=FAIL {exc}", file=sys.stderr)
+        return 1
+    current = path.read_text(encoding="utf-8").replace("\r\n", "\n") if path.exists() else ""
+    if text != current:
+        atomic.write_text(path, text)
+    print("URTC_TOOLS=WRITTEN" if text != current else "URTC_TOOLS=PASS already current")
+    return 0
+
+
+def make_ledger(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="make_ledger.py", description="Write data/maturity_ledger.json: what the maturity of every repository of the family rests on.")
+    parser.add_argument("--check", action="store_true", help="fail when the ledger is out of date")
+    parser.add_argument("--require-siblings", action="store_true", help="fail instead of skipping when no sibling repository is found")
+    parser.add_argument("--workspace", help="the folder that holds the repositories (default: the parent of this repository)")
+    parser.add_argument("--data", default=str(LEDGER_FILE), help=argparse.SUPPRESS)
+    args = parser.parse_args(argv)
+    workspace = _workspace(args)
+    manifests = family.load_manifests(workspace)
+    if len(manifests) < 2:
+        message = f"no repository of the family was found in {workspace}"
+        print(f"LEDGER={'FAIL' if args.require_siblings else 'SKIP'} {message}", file=sys.stderr if args.require_siblings else sys.stdout)
+        return 1 if args.require_siblings else 0
+    try:
+        glance_data = json.loads(GLANCE_FILE.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        glance_data = {}
+    built = ledger.build(manifests, glance_data)
+    path = Path(args.data)
+    if args.check:
+        ok, message = ledger.check(path, built)
+        print(f"LEDGER={'PASS' if ok else 'FAIL'} {message}", file=None if ok else sys.stderr)
+        return 0 if ok else 1
+    text = ledger.render(built)
+    current = path.read_text(encoding="utf-8").replace("\r\n", "\n") if path.exists() else ""
+    if text != current:
+        atomic.write_text(path, text)
+    print(f"LEDGER=WRITTEN {len(manifests)} repositories" if text != current else f"LEDGER=PASS already current ({len(manifests)} repositories)")
+    return 0
+
+
+def run_fake_urtc(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        prog="fake_urtc.py",
+        description="A URTC tool head that answers the read-only queries (0x110 and 0x7F8) on a SocketCAN interface. Linux only; nothing here writes to a real head.",
+    )
+    parser.add_argument("--interface", default="vcan0", help="the SocketCAN interface to answer on (default: vcan0)")
+    parser.add_argument("--config", default=str(FAKE_URTC_FILE), help="the settings of the simulated head (default: data/fake_urtc.json)")
+    parser.add_argument("--tool", type=int, help="the tool the head reports, instead of the one in the configuration")
+    parser.add_argument("--duration", type=float, default=0.0, help="stop after this many seconds (default: run until interrupted)")
+    parser.add_argument("--print-setup", action="store_true", help="print the commands that create the virtual interface and exit; they are never run")
+    args = parser.parse_args(argv)
+    if args.print_setup:
+        print("\n".join(fake_urtc.setup_commands(args.interface)))
+        return 0
+    try:
+        config = fake_urtc.load_config(Path(args.config))
+        if args.tool is not None:
+            config = fake_urtc.with_tool(config, args.tool)
+        bus = fake_urtc.SocketCanBus(args.interface)
+    except (ValueError, fake_urtc.BusUnavailable) as exc:
+        print(f"FAKE_URTC=FAIL {exc}", file=sys.stderr)
+        return 1
+    stop = threading.Event()
+    if args.duration > 0:
+        threading.Timer(args.duration, stop.set).start()
+    print(f"FAKE_URTC=RUNNING answering as tool {config.tool_id} on {args.interface}")
+    sent = 0
+    try:
+        sent = fake_urtc.FakeUrtc(config).serve(bus, stop)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        bus.close()
+    print(f"FAKE_URTC=STOPPED {sent} frame(s) sent")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     """`run.sh` / `run.bat`: without arguments, say what this is; with one, run that tool."""
-    commands = {"catalog": make_catalog, "brand": make_brand, "readmes": make_readmes, "glance": make_glance, "claims": check_claims, "publication": publication_check}
+    commands = {"catalog": make_catalog, "brand": make_brand, "readmes": make_readmes, "glance": make_glance, "claims": check_claims, "publication": publication_check, "urtc-tools": make_urtc_tools, "ledger": make_ledger, "fake-urtc": run_fake_urtc}
     arguments = list(sys.argv[1:] if argv is None else argv)
     if not arguments or arguments[0] in {"-h", "--help", "help"}:
         print(f"HYDRA-UMC-DOCS v{__version__}")
         print("Documentation and cross-repository tooling hub of the HYDRA-UMC ecosystem.")
-        print("usage: run.sh <catalog|brand|readmes|glance|claims|publication> [options]")
+        print("usage: run.sh <catalog|brand|readmes|glance|claims|publication|urtc-tools|ledger|fake-urtc> [options]")
         return 0
     if arguments[0] not in commands:
         print(f"unknown command {arguments[0]!r}; expected one of: {', '.join(commands)}", file=sys.stderr)
