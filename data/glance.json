@@ -28,7 +28,7 @@
     "HYDRA-UMC-ANOMALY-DETECTOR": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 179,
+        "count": 215,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -162,7 +162,7 @@
     "HYDRA-UMC-COGNITIVE-NODE": {
       "hardware": "not_run",
       "tests": {
-        "count": 61,
+        "count": 72,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -218,7 +218,7 @@
     "HYDRA-UMC-DETECTION-HEF": {
       "hardware": "not_run",
       "tests": {
-        "count": 150
+        "count": 196
       },
       "rows": {
         "interface": "documented_tested",
@@ -551,7 +551,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 797,
+        "count": 809,
         "command": "python -m unittest discover -s clients/python/tests"
       },
       "rows": {
@@ -639,7 +639,7 @@
     "HYDRA-UMC-SYNTHETIC-DATA-GEN": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 101,
+        "count": 136,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -731,7 +731,7 @@
     "HYDRA-UMC-VISUAL-SERVOING-API": {
       "hardware": "not_run",
       "tests": {
-        "count": 261,
+        "count": 329,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -747,7 +747,7 @@
     "HYDRA-UMC-VLA-ENGINE": {
       "hardware": "not_run",
       "tests": {
-        "count": 221,
+        "count": 269,
         "command": "python -m pytest -q tests"
       },
       "rows": {

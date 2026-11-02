@@ -3,6 +3,7 @@
 * 🎙️ **Voice Command Processing:** Real-time STT/TTS for human-robot interaction. *(planned)*
 * 🛡️ **Privacy First:** 100% offline processing of all cognitive tasks. *(true by design once the above exist - nothing here calls out to a network today)*
 * 🧩 **Integration Hub (v0):** Owns the shared HydraOS image and quantized model
+* 🔑 **Optional bearer token and a limit on simultaneous requests:** `serve --token-file` makes every route but the health path `GET /stats` need the token (off by default; binding an address that is not loopback without one is reported), and `--max-threads` bounds the requests handled at the same time, a further one getting `503` at once. The code is the canonical `http_common.py` of the SDK, shared with the other Python services.
   weights consumed by its four children, and wires them together as
   sibling services in a single `docker-compose.yml`. Real `family-status`
   check reads each real child's own manifest to report presence/version/

@@ -3,6 +3,7 @@
 * 🎙️ **Sprachbefehlsverarbeitung:** Echtzeit-STT/TTS für die Mensch-Roboter-Interaktion. *(geplant)*
 * 🛡️ **Datenschutz zuerst:** 100% Offline-Verarbeitung aller kognitiven Aufgaben. *(schon jetzt so konzipiert, sobald das Obige existiert - hier ruft heute nichts ein Netzwerk auf)*
 * 🧩 **Integrations-Hub (v0):** Besitzt das gemeinsam genutzte HydraOS-Image
+* 🔑 **Optionales Bearer-Token und eine Grenze für gleichzeitige Anfragen:** `serve --token-file` verlangt das Token für jede Route außer dem Gesundheitspfad `GET /stats` (standardmäßig aus; eine nicht-Loopback-Adresse ohne Token wird gemeldet), und `--max-threads` begrenzt die gleichzeitig bearbeiteten Anfragen, eine weitere erhält sofort `503`. Der Code ist die kanonische `http_common.py` des SDK, geteilt mit den anderen Python-Diensten.
   und die quantisierten Modellgewichte, die von seinen 4 Kindern genutzt
   werden, und verbindet sie als Schwesterdienste in einer einzigen
   `docker-compose.yml`. Die echte `family-status`-Prüfung liest das echte

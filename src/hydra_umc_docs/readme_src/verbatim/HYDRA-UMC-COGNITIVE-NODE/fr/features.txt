@@ -3,6 +3,7 @@
 * 🎙️ **Traitement des commandes vocales :** STT/TTS en temps réel pour l'interaction homme-robot. *(prévu)*
 * 🛡️ **Priorité à la confidentialité :** Traitement 100 % hors ligne de toutes les tâches cognitives. *(vrai par conception une fois ce qui précède en place - rien ici n'appelle un réseau aujourd'hui)*
 * 🧩 **Hub d'intégration (v0) :** Détient l'image HydraOS partagée et les poids
+* 🔑 **Jeton bearer optionnel et limite de requêtes simultanées :** `serve --token-file` exige le jeton pour toute route sauf le chemin de santé `GET /stats` (désactivé par défaut ; lier une adresse non loopback sans jeton est signalé), et `--max-threads` borne les requêtes traitées en même temps, une de plus recevant aussitôt `503`. Le code est le `http_common.py` canonique du SDK, partagé avec les autres services Python.
   de modèles quantifiés consommés par ses 4 enfants, et les relie entre
   eux comme des services frères dans un seul `docker-compose.yml`. Le
   vrai contrôle `family-status` lit le manifeste réel de chaque enfant
