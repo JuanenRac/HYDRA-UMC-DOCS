@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.1] - The Screenshots section of the READMEs read from a manifest, a simulated URTC tool head for the CAN bus, the common catalogue of the URTC tools and a ledger of the maturity of every repository
+
 - **The Screenshots section of the READMEs is read from `docs/screenshots.json`:** a repository that has the file gets the section after Architecture in the eight languages, a picture and its caption each (the alt text and the caption are written once per language in the file). The generator refuses a file with a language missing, a picture that does not exist or is not a PNG, one heavier than 400 KB or more than eight pictures, and `tools/screenshots_check.py` (`--repo` or `--all`, also run by `tools/check_all.sh`) reports the same and that the file tree mentions the screenshots. New `tests/test_shots.py`.
 
 - **A simulated URTC tool head for the CAN bus (`tools/fake_urtc.py`):** it answers the query of the active tool (0x110) and the query of the version (0x7F8) with the frames the cross-implementation vectors of URTC fix, on a SocketCAN interface or on an in-memory bus, with the state of the head in `data/fake_urtc.json` (unknown keys and values out of range are refused). Every other frame is ignored. Tested against the vectors and a simulated socket; it was not run on a real Linux SocketCAN interface (`--print-setup` shows the commands that create `vcan0`).
