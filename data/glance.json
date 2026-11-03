@@ -479,7 +479,7 @@
         "integration": "bench",
         "security": "host_tested",
         "deployment": "cm5_service",
-        "operation": "metrics",
+        "operation": "metrics_optin",
         "updates": "trains",
         "stop": "simulated"
       }
@@ -659,7 +659,7 @@
         "integration": "bench",
         "security": "partial",
         "deployment": "cm5_service",
-        "operation": "metrics",
+        "operation": "metrics_optin",
         "updates": "trains"
       }
     },
@@ -744,7 +744,7 @@
     "HYDRA-UMC-VISION-STREAMER": {
       "hardware": "bench",
       "tests": {
-        "count": 244,
+        "count": 262,
         "command": "python -m pytest -q tests"
       },
       "rows": {

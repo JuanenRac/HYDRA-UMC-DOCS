@@ -180,6 +180,15 @@ STATES: dict[str, dict[str, tuple[str, dict[str, str]]]] = {
             "Prometheus テキスト形式の /metrics と健全性の概要を公開しますが、監視ダッシュボードにはまだ接続していません",
             "以 Prometheus 文本格式提供 /metrics 和健康摘要；尚未接入监控面板",
             "Expõe /metrics no formato de texto do Prometheus com um resumo de saúde; ainda não está ligado a um painel de monitorização")),
+        "metrics_optin": ("yellow", _l(
+            "Offers /metrics in the Prometheus text format with a health summary once the configuration file enables it (off by default); it is not wired to a monitoring dashboard yet",
+            "Ofrece /metrics en el formato de texto de Prometheus con un resumen de salud cuando el fichero de configuración lo activa (apagado por defecto); todavía no está conectado a un panel de supervisión",
+            "Bietet /metrics im Prometheus-Textformat mit einer Gesundheitsübersicht, sobald die Konfigurationsdatei es aktiviert (standardmäßig aus); noch nicht an ein Überwachungs-Dashboard angeschlossen",
+            "Offre /metrics au format texte de Prometheus avec un résumé de santé dès que le fichier de configuration l'active (désactivé par défaut) ; pas encore relié à un tableau de supervision",
+            "Offre /metrics nel formato testo di Prometheus con un riepilogo dello stato quando il file di configurazione lo attiva (spento per impostazione predefinita); non è ancora collegato a un pannello di monitoraggio",
+            "設定ファイルで有効にすると、Prometheus テキスト形式の /metrics と健全性の概要を提供します（既定では無効）。監視ダッシュボードにはまだ接続していません",
+            "在配置文件启用后以 Prometheus 文本格式提供 /metrics 和健康摘要（默认关闭）；尚未接入监控面板",
+            "Oferece /metrics no formato de texto do Prometheus com um resumo de saúde quando o ficheiro de configuração o ativa (desligado por predefinição); ainda não está ligado a um painel de monitorização")),
         "logs": ("orange", _l(
             "It writes logs; it has no metrics or health endpoint yet",
             "Escribe registros; todavía no tiene punto de métricas ni de salud",
