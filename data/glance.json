@@ -623,7 +623,7 @@
       "hardware": "not_applicable",
       "target": "browser",
       "tests": {
-        "count": 86,
+        "count": 87,
         "command": "npm test"
       },
       "rows": {
