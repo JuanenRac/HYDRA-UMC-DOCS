@@ -72,7 +72,7 @@
     "HYDRA-UMC-BRIDGE-DROIDS": {
       "hardware": "simulated",
       "tests": {
-        "count": 79,
+        "count": 118,
         "command": "python tools/build_test.py"
       },
       "rows": {
