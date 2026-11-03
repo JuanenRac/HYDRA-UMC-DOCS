@@ -43,6 +43,7 @@
    "87e72ccd6be2": "— iOS/iPadOS control app (Flutter) with real-time WebSocket sync; this app's direct iOS/iPadOS counterpart, sa",
    "902c960672f0": "— web control dashboard with real-time multi-robot 3D visualization; its own 3D viewport is embedded directly ",
    "9209ec6774ac": "System Health Monitor ( ) - Real-time metrics for the connected Compute Module 5, including Hostname, Formatte",
+   "925ac782fe00": "It also answers, read only, the security status of the server that the watch asks for (the options on a value ",
    "ac8544ccabd6": "Screens of the app: login (server address, password, fingerprint or face), dashboard (a 3D carousel of the rob",
    "bbf77ca60c53": "Real-time Octal Vision ( , ) - Native MJPEG Streamer.",
    "e41e9c4cd1de": "Industrial Telemetry Terminal ( ) - A dedicated real-time log viewer with a terminal-style interface.",
@@ -105,6 +106,12 @@
    "bccc09a524ca": ", , | - | the routes over real HTTP, the token roles and every limit",
    "e0fe7b2e8060": "docs/API.md - every route, its role, its limits and its errors"
   },
+  "HYDRA-UMC-DETECTION-HEF": {
+   "ad89a5d9ace5": "📨 Detections in the SDK contract: turns the decoded detections into the message (corner boxes in pixels or nor"
+  },
+  "HYDRA-UMC-DEVELOPER-NODE": {
+   "d27e80334834": "Checkout cache by revision ( ) - a bare mirror and one git worktree per commit, a pinned commit verified, a li"
+  },
   "HYDRA-UMC-DSI": {
    "34b43b6beb3f": "Atomic command sync ( 's own ) - every write (play/pause/stop/jog/valve/pump/speed/vision) uses the real endpo",
    "ab32386fc0e3": "— iOS/iPadOS control app (Flutter) with real-time WebSocket sync; speaks the exact same contract as this panel"
@@ -151,14 +158,15 @@
    "0a02b239d56b": "Production Build Bundles the server into a single deployable file with esbuild:"
   },
   "HYDRA-UMC-OPS-AGENT": {
-   "384fa1954593": "Delivery 2's own real contract, providers, credentials and safety boundary."
+   "384fa1954593": "Delivery 2's own real contract, providers, credentials and safety boundary.",
+   "642f48b31596": "Two roles, one package, joined by an authenticated channel when the configuration turns it on (a saved snapsho"
   },
   "HYDRA-UMC-OS": {
    "d9cdfe793512": "— the real headless backend (REST/WebSocket) every control client actually talks to; the authenticated service"
   },
   "HYDRA-UMC-PHYSICS-REPLICA": {
-   "094a60cb9b61": "Stack | Rust / roxmltree / URDF forward kinematics",
-   "289cb4abdebe": "📐 URDF Forward Kinematics & Joint-Limit Validation"
+   "289cb4abdebe": "📐 URDF Forward Kinematics & Joint-Limit Validation",
+   "7c8640f654b7": "Stack | Rust / roxmltree / URDF forward kinematics / Inverse dynamics (RNEA) / Capsule self-collision"
   },
   "HYDRA-UMC-PRODUCTION-REPORTS": {
    "d0d4d740d2e3": "It processes raw data from the Datalake to generate automated, high-level reports on production efficiency, qu",
@@ -173,10 +181,10 @@
    "1ac4d0d4c921": "— the documentation and tooling hub of the ecosystem: architecture, interfaces, security baseline, capability ",
    "20ee4d7a4604": "— reproducible Raspberry Pi OS product layer for the CM5: read-only agent, validated config/profiles, WiFi fir",
    "2181f78316fe": "an authenticated API producer and consumer governed by this SDK's own contracts.",
+   "576bada5534a": "twenty-six JSON Schema v1 contracts: capability, device descriptor, event envelope, health report, operation, ",
    "6072d4fb855d": "Broker credentials in a configuration file, or an unverified broker | User and password come from the environm",
    "614031a46b82": ", | - | the client certificate and key for a broker that demands mutual TLS; both are needed and they turn TLS",
-   "77dca1b25dca": "Messaging contracts: carries a (0, 1 or 2) and describes one finished cycle ( , , , ), which the production re",
-   "92de6eaf65d0": "sixteen JSON Schema v1 contracts: capability, device descriptor, event envelope, health report, operation, pro"
+   "77dca1b25dca": "Messaging contracts: carries a (0, 1 or 2) and describes one finished cycle ( , , , ), which the production re"
   },
   "HYDRA-UMC-SEMANTIC-PLANNER": {
    "a90af17558fa": "Jump to: Overview · Architecture · Security & Safety · Configuration · Quick start · Testing · Repository Stru"
@@ -188,10 +196,14 @@
    "2ec1d884e3ac": "Every route, the WebSocket message contract, authentication, and the per-client remote-access model are docume",
    "436aef625d16": "You own a domain pointing at this server - use Let's Encrypt (e.g. via Certbot) for a real, browser-trusted ce",
    "5ba1506ccd7d": "Prometheus text: uptime, WebSocket clients, write latency, commands by type, authentication failures, host fig",
+   "67fa74046fa8": "A signed-in client reads whether it is open, with its two limits, from (the card of the AI dashboard appears o",
    "6c9adaf43d5e": "See \"TLS / HTTPS\" below.",
    "89114e34525d": ", , , , , | reservations, arming the jog, who holds what, the global stop and the safety limits",
    "8d02210051e9": "Camera pictures open to anyone on the network | Live streams, photos and recordings need a signed ticket that ",
+   "8eec7bc46180": "Security",
    "8fa4acaae0fc": "the Bluetooth LE service: (the default), (phones read the state) or (and send commands, each with the access t",
+   "b0d25cc4c3e2": "( ) - , the remaining-useful-life estimate behind the card of the AI dashboard, is open to operators as well a",
+   "bab1347e04a5": "Security: every protection switch of the server with its conservative default and where its value comes from, ",
    "bc0b19bbbf96": "exposes process uptime, connected WebSocket clients, write latency, atomic robot commands by type, authenticat",
    "cbc59d583480": "TLS / HTTPS",
    "d028a0379a75": "The page reads the data lake ( , read-only: of , , , , and , anything else is refused) and the anomaly detecto",
@@ -216,19 +228,23 @@
    "c99c49ff5a7b": ", | the global stop and the safety limits the server enforces",
    "cf3db112e50e": "Safety limits: arming of the jog, the reservation rule and the jog and bed-temperature ceilings per robot mode",
    "f81603262333": "An access option lowered by mistake (voice, MAVLink, Bluetooth, TLS...) | Server Admin shows where each value ",
-   "fa01582b9b21": "Preview the production build locally with:"
+   "fa01582b9b21": "Preview the production build locally with:",
+   "ffb361f293e0": "Safety limits"
   },
   "HYDRA-UMC-SUITE": {
+   "0e643317da09": "(hydra_suite_config.json) | path of the public key file and the switch (on by default) of the Ed25519 check of",
    "23c0cfbe617b": "The Ecosystem > Server Admin screen also sets who may use the local AI relay, whether the host information ask",
    "59c9f2c20044": "Safety limits: arming of the jog, the reservation rule and the jog and bed-temperature ceilings per robot mode",
    "661bc473eaa6": "Math: NumPy (4x4 homogeneous transforms for forward kinematics)",
-   "897914c21198": "An access option lowered by mistake (voice, MAVLink, Bluetooth, TLS...) | The Server Admin panel shows where e"
+   "897914c21198": "An access option lowered by mistake (voice, MAVLink, Bluetooth, TLS...) | The Server Admin panel shows where e",
+   "ffb361f293e0": "Safety limits"
   },
   "HYDRA-UMC-SYNTHETIC-DATA-GEN": {
    "1a01b3374cb8": "Format Format YOLO %2F COCO FF6F00.svg",
    "2874329958dc": "Renders training datasets (with automatic YOLO/COCO annotation) through 's own engine, for and to train agains",
    "52518243e90e": "Stack | Python / procedural scene generation / YOLO/COCO annotation export",
    "6495e31cf2b5": "The manifest now records the class list ( ) and its hash ( , the sha256 of ) so whoever registers a model trai",
+   "a3b8e9396578": "🗂️ Ultralytics layout: writes , , and a that names the folders, the structure a YOLO trainer expects; the scen",
    "cd2e7c39e4d1": "Writes real BMP images to , real YOLO labels to + , and/or a real in COCO format, depending on ."
   },
   "HYDRA-UMC-TELEMETRY-COLLECTOR": {
@@ -237,8 +253,10 @@
   "HYDRA-UMC-TWIN": {
    "4121d1ccdb08": "A report of risk written by the one who wants the robot to move | The report travels as a certificate signed w",
    "a90af17558fa": "Jump to: Overview · Architecture · Security & Safety · Configuration · Quick start · Testing · Repository Stru",
+   "b76c0aa76742": "off | switch on (needs , the signing key and the token)",
    "c11063b51718": "the collision prediction route: the switches, the request and the answer, the status codes and the limits.",
-   "dc0b43189a0b": "/ | none | Ed25519 key that turns on certificate signing"
+   "dc0b43189a0b": "/ | none | Ed25519 key that turns on certificate signing",
+   "fdd547e41c01": "none | the configuration of the routes below: URDF, freshness, limits, drift thresholds, log, data lake"
   },
   "HYDRA-UMC-UPDATER": {
    "3317caf20481": ", , or requires a valid signature on the cloned commit"
@@ -251,11 +269,15 @@
    "a0c76cde8c92": "Real example - request a safety-gated correction (accepted, inhibited, and rejected):",
    "cccf8f01efab": "🔁 Servoing sessions (the loop with memory): opens a session with a nominal period, a gain, a filter on the mea"
   },
+  "HYDRA-UMC-VLA-ENGINE": {
+   "c9d227e36a65": "🧵 Shared HTTP helpers and a limit on simultaneous requests: the body of a request, the answers and the server "
+  },
   "HYDRA-UMC-VOICE-UI": {
    "3a2c4dc0d6c4": "— web control dashboard with real-time multi-robot 3D visualization; another voice-control surface for the eco"
   },
   "HYDRA-UMC-WATCH": {
-   "4b37d23f778f": "The official Wear OS channel enforces the same package name and signing certificate on Watch and phone, then c"
+   "4b37d23f778f": "The official Wear OS channel enforces the same package name and signing certificate on Watch and phone, then c",
+   "8bd79972daaf": "A Server security button asks the paired phone for it."
   }
  }
 }
