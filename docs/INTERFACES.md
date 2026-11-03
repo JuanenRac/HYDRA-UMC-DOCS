@@ -115,7 +115,7 @@ Owner: **HYDRA-UMC-ORCHESTRATOR**, `proto/hydra_common.proto`: `HealthService.Ch
 
 | Interface | Owner | Written in |
 |---|---|---|
-| CAN-OTA between the H745, the G474 boards and the URTC head | HYDRA-UMC | `docs/CANBUS_STM32H745.TXT`, `docs/CANBUS_STM32G474.TXT`: classic frames, at most 8 bytes, about 1 Mbit/s |
+| CAN-OTA between the H745, the G474 boards and the URTC head | HYDRA-UMC | `docs/CANBUS_STM32H745.md`, `docs/CANBUS_STM32G474.md`: classic frames, at most 8 bytes, about 1 Mbit/s |
 | SPI-OTA and the 128-byte telemetry frame between the CM5 and the H745 | HYDRA-UMC | `README.md` section 10, `src/cm5_host/ipc_driver`, `src/cm5_host/spi_bridge` |
 | The relay (`RELAY_SEND` / `RELAY_RECV`) to the tool head | HYDRA-UMC | `docs/architecture.md` sections 1 and 5 |
 | `firmware_manifest.json` with the CRC32 of each image | HYDRA-UMC (written by `build_firmware.sh`) | the build scripts; read by STUDIO and SUITE to download firmware |
