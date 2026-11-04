@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The READMEs of the SDK count twenty-nine contracts:** the snapshot, the change proposal and the canary result of the maintenance agent are listed in the table of the repository and in the honesty line, in the eight languages, and the test count of the SDK is 856.
+
 ## [0.1.1] - The Screenshots section of the READMEs read from a manifest, a simulated URTC tool head for the CAN bus, the common catalogue of the URTC tools and a ledger of the maturity of every repository
 
 - **The Screenshots section of the READMEs is read from `docs/screenshots.json`:** a repository that has the file gets the section after Architecture in the eight languages, a picture and its caption each (the alt text and the caption are written once per language in the file). The generator refuses a file with a language missing, a picture that does not exist or is not a PNG, one heavier than 400 KB or more than eight pictures, and `tools/screenshots_check.py` (`--repo` or `--all`, also run by `tools/check_all.sh`) reports the same and that the file tree mentions the screenshots. New `tests/test_shots.py`.
