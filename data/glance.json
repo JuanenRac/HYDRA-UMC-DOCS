@@ -43,7 +43,7 @@
     "HYDRA-UMC-BRIDGE-AMR": {
       "hardware": "simulated",
       "tests": {
-        "count": 157,
+        "count": 186,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -72,7 +72,7 @@
     "HYDRA-UMC-BRIDGE-DROIDS": {
       "hardware": "simulated",
       "tests": {
-        "count": 132,
+        "count": 142,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -101,7 +101,7 @@
     "HYDRA-UMC-BRIDGE-OPENPNP": {
       "hardware": "simulated",
       "tests": {
-        "count": 255,
+        "count": 263,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -149,7 +149,7 @@
     "HYDRA-UMC-BRIDGE-UAV": {
       "hardware": "simulated",
       "tests": {
-        "count": 195,
+        "count": 201,
         "command": "python tools/build_test.py"
       },
       "rows": {
