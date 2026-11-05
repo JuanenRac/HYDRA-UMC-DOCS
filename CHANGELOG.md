@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The verify script count of SUITE is 62:** the glance data and the READMEs of that repository follow its real count.
+
 - **The README of the HIL bridge names the pass verdict of the twin:** a new feature line (`require_twin_pass`, off by default) in the eight languages.
 
 - **The READMEs of STUDIO and SUITE name the common model library folder:** the section on the mesh package says that `HYDRA_UMC_LIBRARY_DIR` points both apps and the STL editor at one folder, in the eight languages.
