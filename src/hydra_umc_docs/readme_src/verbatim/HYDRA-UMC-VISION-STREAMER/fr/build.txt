@@ -51,7 +51,7 @@ Exemple réel - capture+diffuse réellement une caméra en MJPEG par HTTP (le se
 # Périphérique USB/V4L2
 ./run.sh stream serve --device 0 --port 8100
 
-# Vraie caméra IP par RTSP (vérifié sur du matériel réel - voir CHANGELOG.md)
+# Vraie caméra IP par RTSP (testé avec simulateur ; la vérification sur matériel réel est en attente)
 CAMERA_URL="rtsp://admin:secret@192.168.0.211:554/11" ./run.sh stream serve --device-env CAMERA_URL --port 8100 --width 1920 --height 1080 --fps 15
 ```
 

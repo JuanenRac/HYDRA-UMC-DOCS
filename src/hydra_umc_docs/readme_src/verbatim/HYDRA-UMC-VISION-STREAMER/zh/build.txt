@@ -54,7 +54,7 @@
 # USB/V4L2 设备
 ./run.sh stream serve --device 0 --port 8100
 
-# 真实的 RTSP IP 摄像头（已对真实硬件验证——见 CHANGELOG.md）
+# 真实的 RTSP IP 摄像头（已用模拟器测试；真实硬件验证待办）
 CAMERA_URL="rtsp://admin:secret@192.168.0.211:554/11" ./run.sh stream serve --device-env CAMERA_URL --port 8100 --width 1920 --height 1080 --fps 15
 ```
 

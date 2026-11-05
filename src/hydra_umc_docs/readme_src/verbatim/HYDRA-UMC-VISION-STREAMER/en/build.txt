@@ -51,7 +51,7 @@ Real example - actually capture+serve a camera as MJPEG over HTTP (the one subco
 # USB/V4L2 device
 ./run.sh stream serve --device 0 --port 8100
 
-# Real RTSP IP camera (verified against real hardware - see CHANGELOG.md)
+# Real RTSP IP camera (simulator-tested; verification against real hardware is pending)
 CAMERA_URL="rtsp://admin:secret@192.168.0.211:554/11" ./run.sh stream serve --device-env CAMERA_URL --port 8100 --width 1920 --height 1080 --fps 15
 ```
 

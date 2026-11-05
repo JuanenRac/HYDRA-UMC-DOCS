@@ -51,7 +51,7 @@ Esempio reale - cattura+serve davvero una telecamera come MJPEG via HTTP (l'unic
 # Dispositivo USB/V4L2
 ./run.sh stream serve --device 0 --port 8100
 
-# Vera telecamera IP via RTSP (verificato contro hardware reale - vedi CHANGELOG.md)
+# Vera telecamera IP via RTSP (provato con simulatore; la verifica su hardware reale è in sospeso)
 CAMERA_URL="rtsp://admin:secret@192.168.0.211:554/11" ./run.sh stream serve --device-env CAMERA_URL --port 8100 --width 1920 --height 1080 --fps 15
 ```
 

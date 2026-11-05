@@ -55,7 +55,7 @@
 # USB/V4L2 デバイス
 ./run.sh stream serve --device 0 --port 8100
 
-# 実際の RTSP IP カメラ（実機に対して検証済み——CHANGELOG.md を参照）
+# 実際の RTSP IP カメラ（シミュレータでテスト済み。実機での検証は保留中）
 CAMERA_URL="rtsp://admin:secret@192.168.0.211:554/11" ./run.sh stream serve --device-env CAMERA_URL --port 8100 --width 1920 --height 1080 --fps 15
 ```
 
