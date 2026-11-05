@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.2] - The verify script count of SUITE is 62: the glance data and the READMEs of that repository follow its real count. (and 11 more changes)
+
 - **The verify script count of SUITE is 62:** the glance data and the READMEs of that repository follow its real count.
 
 - **The README of the HIL bridge names the pass verdict of the twin:** a new feature line (`require_twin_pass`, off by default) in the eight languages.
