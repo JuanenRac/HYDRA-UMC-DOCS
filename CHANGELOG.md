@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The test count of the local technician is 370:** the glance data and the READMEs of that repository follow its real count.
+
 - **The test count of the development server is 513:** the glance data and the READMEs of that repository follow its real count.
 
 - **The test count of the operations agent is 454:** the glance data and the READMEs of that repository follow its real count.

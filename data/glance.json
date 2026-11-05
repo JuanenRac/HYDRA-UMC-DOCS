@@ -384,7 +384,7 @@
     "HYDRA-UMC-LOCAL-TECHNICIAN": {
       "hardware": "not_run",
       "tests": {
-        "count": 367,
+        "count": 370,
         "command": "python -m pytest -q tests"
       },
       "rows": {
