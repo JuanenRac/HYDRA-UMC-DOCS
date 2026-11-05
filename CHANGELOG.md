@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The README of the HIL bridge names the pass verdict of the twin:** a new feature line (`require_twin_pass`, off by default) in the eight languages.
+
 - **The READMEs of STUDIO and SUITE name the common model library folder:** the section on the mesh package says that `HYDRA_UMC_LIBRARY_DIR` points both apps and the STL editor at one folder, in the eight languages.
 
 - **The build test of the repository compiles only on CI or when allowed:** for the stacks that compile (`rust`, `go`, `android`, `flutter`, `firmware-c`), `tools/build_test.py` prints `BUILD_TEST=SKIPPED` with exit status 2 on a plain PC, never a pass; `ALLOW_LOCAL_BUILD=1` allows it and a CI runner always may. The `python` and `node` stacks are not locked.
