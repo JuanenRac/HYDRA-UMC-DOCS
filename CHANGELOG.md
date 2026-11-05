@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The build test of the repository compiles only on CI or when allowed:** for the stacks that compile (`rust`, `go`, `android`, `flutter`, `firmware-c`), `tools/build_test.py` prints `BUILD_TEST=SKIPPED` with exit status 2 on a plain PC, never a pass; `ALLOW_LOCAL_BUILD=1` allows it and a CI runner always may. The `python` and `node` stacks are not locked.
+
 - **The test counter does not compile on a plain PC:** `go test -list` and `cargo test -- --list` (which build the tests) run only on a CI runner or with `ALLOW_LOCAL_BUILD=1` (`tools/local_build.py`); otherwise the static count is used.
 
 - **The test count of the updater is 475:** the glance data and the READMEs of that repository follow its real count.
