@@ -53,6 +53,7 @@
    "a024622a6823": "🔍 Signature Analysis: FFT (Fast Fourier Transform) of motor current samples to detect mechanical imbalance."
   },
   "HYDRA-UMC-BRIDGE-AMR": {
+   "22c09333a6dc": "the plant graph and its multi-node orders, the state report for the data lake and OPC UA, the zone interlock",
    "8f11f1484e2f": "is the bidirectional, high-level coordination boundary between HYDRA-UMC and an AGV/AMR (autonomous mobile rob"
   },
   "HYDRA-UMC-BRIDGE-CNC": {
@@ -181,10 +182,10 @@
    "1ac4d0d4c921": "— the documentation and tooling hub of the ecosystem: architecture, interfaces, security baseline, capability ",
    "20ee4d7a4604": "— reproducible Raspberry Pi OS product layer for the CM5: read-only agent, validated config/profiles, WiFi fir",
    "2181f78316fe": "an authenticated API producer and consumer governed by this SDK's own contracts.",
-   "576bada5534a": "twenty-six JSON Schema v1 contracts: capability, device descriptor, event envelope, health report, operation, ",
    "6072d4fb855d": "Broker credentials in a configuration file, or an unverified broker | User and password come from the environm",
    "614031a46b82": ", | - | the client certificate and key for a broker that demands mutual TLS; both are needed and they turn TLS",
-   "77dca1b25dca": "Messaging contracts: carries a (0, 1 or 2) and describes one finished cycle ( , , , ), which the production re"
+   "77dca1b25dca": "Messaging contracts: carries a (0, 1 or 2) and describes one finished cycle ( , , , ), which the production re",
+   "aa015dae2b28": "twenty-nine JSON Schema v1 contracts: capability, device descriptor, event envelope, health report, operation,"
   },
   "HYDRA-UMC-SEMANTIC-PLANNER": {
    "a90af17558fa": "Jump to: Overview · Architecture · Security & Safety · Configuration · Quick start · Testing · Repository Stru"
@@ -193,6 +194,7 @@
    "00ef15941846": "Weak access options left on: voice text, recognizer confidence, MAVLink signing, Bluetooth, MQTT, TLS | Every ",
    "026edee922d7": "Then start the production server with:",
    "0f8f5e39b57b": "Only failed logins count towards the login limit above.",
+   "2b426d5a77be": "( ) - switches the request limits per address off (sign-in, renewals, API, code and service routes, global sto",
    "2ec1d884e3ac": "Every route, the WebSocket message contract, authentication, and the per-client remote-access model are docume",
    "436aef625d16": "You own a domain pointing at this server - use Let's Encrypt (e.g. via Certbot) for a real, browser-trusted ce",
    "5ba1506ccd7d": "Prometheus text: uptime, WebSocket clients, write latency, commands by type, authentication failures, host fig",
@@ -218,6 +220,7 @@
    "0d4a51c19b7e": "🏭 Comau - e.DO (BSD-3-Clause meshes, official eDO_description geometry/kinematics)",
    "15c303b8105d": "In production the first administrator comes from the deployment's bootstrap settings and the server refuses ex",
    "33ce905fa741": "Kinematic Brain Stage",
+   "35c7fc6c2609": "Request limits per address in Server Admin (administrators only): a switch ( , on by default) and eight whole ",
    "4625101fecd9": "Connection history in Connected Apps: under the list of live connections, a simple view of who has signed in t",
    "4645cd24dc1d": "🏭 Universal Robots - UR3e, UR5e, UR10e, UR16e, UR20 - official geometry, joint limits, and link kinematics pul",
    "48e043e5be7b": "🏭 UFACTORY - xArm6, Lite 6 (BSD-3-Clause meshes, official xarm_ros2 geometry/kinematics)",
