@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The test count of the operations agent is 454:** the glance data and the READMEs of that repository follow its real count.
+
 - **The test count of the semantic planner is 283:** the glance data and the READMEs of that repository follow its real count.
 
 - **The README of the watch app says the watch never stops anything by itself:** the wireless E-STOP button is no longer announced in the sources of the eight languages; the watch only confirms and warns of a physical E-STOP.
