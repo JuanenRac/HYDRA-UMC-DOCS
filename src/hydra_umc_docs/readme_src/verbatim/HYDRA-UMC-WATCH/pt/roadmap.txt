@@ -2,4 +2,4 @@
 
 **Fronteira de integração:** a aplicação Android emparelhada mantém o JWT cifrado do Servidor; o Servidor mantém o token do Voice UI. A Data Layer exige o mesmo nome de pacote e o mesmo certificado de assinatura nos dois APKs. A voz nunca pode acionar diretamente um robô; uma resposta relacionada com movimento tem de exigir confirmação, enquanto o E-STOP físico continua independente.
 
-**Ainda por fazer:** validação do emparelhamento, do transporte de rádio, do microfone/altifalante e do estado de ponta a ponta num dispositivo Wear OS real; o E-STOP sem fios e a telemetria em direto do CM5 continuam a ser trabalho separado, dependente de hardware.
+**Ainda por fazer:** validação do emparelhamento, do transporte de rádio, do microfone/altifalante e do estado de ponta a ponta num dispositivo Wear OS real; a telemetria em direto do CM5 continua a ser trabalho separado, dependente de hardware.

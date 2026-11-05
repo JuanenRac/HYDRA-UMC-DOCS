@@ -2,7 +2,7 @@
 flowchart LR
     SERVER["HYDRA-UMC-SERVER"] --> WS["Sincronizzazione WebSocket"]
     WS --> WATCH["HYDRA-UMC-WATCH"]
-    WATCH -- Comando E-STOP --> SERVER
+    SERVER -- E-STOP fisico premuto --> WATCH
     SERVER -- Avviso Critico --> WATCH
     WATCH -- Feedback Aptico --> OPERATOR["Operatore di Impianto"]
 ```

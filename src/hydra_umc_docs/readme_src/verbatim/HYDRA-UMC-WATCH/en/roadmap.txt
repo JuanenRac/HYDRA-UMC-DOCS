@@ -2,4 +2,4 @@
 
 **Integration boundary:** the paired Android app retains the encrypted Server JWT; Server retains the Voice UI token. Data Layer requires the same package name and signing certificate on both APKs. Voice can never actuate a robot directly; a movement-related reply must require confirmation, while the physical E-STOP stays independent.
 
-**Still ahead:** validation of pairing, radio transport, microphone/speaker and end-to-end status on a real Wear OS device; wireless E-STOP and live CM5 telemetry remain separate hardware-gated work.
+**Still ahead:** validation of pairing, radio transport, microphone/speaker and end-to-end status on a real Wear OS device; live CM5 telemetry remains separate hardware-gated work.

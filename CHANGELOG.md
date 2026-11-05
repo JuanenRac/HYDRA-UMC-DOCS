@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The README of the watch app says the watch never stops anything by itself:** the wireless E-STOP button is no longer announced in the sources of the eight languages; the watch only confirms and warns of a physical E-STOP.
+
 - **The READMEs of the SDK count twenty-nine contracts:** the snapshot, the change proposal and the canary result of the maintenance agent are listed in the table of the repository and in the honesty line, in the eight languages, and the test count of the SDK is 856.
 
 ## [0.1.1] - The Screenshots section of the READMEs read from a manifest, a simulated URTC tool head for the CAN bus, the common catalogue of the URTC tools and a ledger of the maturity of every repository
