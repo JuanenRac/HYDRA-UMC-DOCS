@@ -718,7 +718,7 @@
     "HYDRA-UMC-UPDATER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 464,
+        "count": 475,
         "command": "python -m pytest -q tests"
       },
       "rows": {
