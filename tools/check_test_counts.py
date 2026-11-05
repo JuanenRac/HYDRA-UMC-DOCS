@@ -41,6 +41,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from local_build import local_build_refusal  # noqa: E402  (the lock on builds that compile on this PC)
 WORKSPACE = ROOT.parent
 GLANCE = ROOT / "data" / "glance.json"
 USE_NATIVE = True
@@ -155,8 +157,8 @@ def run_native(repo: Path, label: str, command: str, timeout: int = 3600) -> tup
 
 
 def native_go(repo: Path) -> int | None:
-    if not shutil.which("go") or not any(repo.rglob("*_test.go")):
-        return None
+    if not shutil.which("go") or not any(repo.rglob("*_test.go")) or local_build_refusal() is not None:
+        return None   # `go test -list` compiles the tests: not on a plain PC (the static count is used)
     ran = run_native(repo, repo.name, "go test -list . ./...")
     if not ran or ran[0] != 0:
         return None
@@ -164,8 +166,8 @@ def native_go(repo: Path) -> int | None:
 
 
 def native_cargo(repo: Path) -> int | None:
-    if not shutil.which("cargo") or not (repo / "Cargo.toml").is_file():
-        return None
+    if not shutil.which("cargo") or not (repo / "Cargo.toml").is_file() or local_build_refusal() is not None:
+        return None   # `cargo test -- --list` compiles the tests: not on a plain PC (the static count is used)
     ran = run_native(repo, repo.name, "cargo test --quiet -- --list")
     if not ran or ran[0] != 0:
         return None

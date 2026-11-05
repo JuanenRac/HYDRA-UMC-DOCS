@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The test counter does not compile on a plain PC:** `go test -list` and `cargo test -- --list` (which build the tests) run only on a CI runner or with `ALLOW_LOCAL_BUILD=1` (`tools/local_build.py`); otherwise the static count is used.
+
 - **The test count of the updater is 475:** the glance data and the READMEs of that repository follow its real count.
 
 - **The test count of the local technician is 370:** the glance data and the READMEs of that repository follow its real count.
