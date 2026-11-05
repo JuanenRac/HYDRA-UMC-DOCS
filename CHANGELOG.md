@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The test count of the development server is 508:** the glance data and the READMEs of that repository follow its real count.
+
 - **The test count of the operations agent is 454:** the glance data and the READMEs of that repository follow its real count.
 
 - **The test count of the semantic planner is 283:** the glance data and the READMEs of that repository follow its real count.
