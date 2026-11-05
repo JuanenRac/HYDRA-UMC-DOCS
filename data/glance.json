@@ -575,7 +575,7 @@
     "HYDRA-UMC-SEMANTIC-PLANNER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 283,
+        "count": 294,
         "command": "python -m pytest -q tests"
       },
       "rows": {
