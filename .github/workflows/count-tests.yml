@@ -1,0 +1,50 @@
+# =============================================================================
+# HYDRA-UMC-DOCS - count the real tests of the whole family (manual)
+# Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
+# GPL-3.0-or-later - see LICENSE
+# =============================================================================
+# `check_test_counts.py` lists the tests of the Go and Rust suites with the native listing of their runner, which compiles them and is
+# therefore not run on a plain PC. This workflow fetches every repository next to this one, runs the check there and prints what it
+# measured, so that data/glance.json can be updated with the numbers of the toolchains. Manual only; it writes nothing.
+name: HYDRA-UMC count the tests of the family
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  count:
+    name: Count the tests of every repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repository
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+          path: HYDRA-UMC-DOCS
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+
+      - name: Fetch the other repositories next to it
+        working-directory: HYDRA-UMC-DOCS
+        run: |
+          python - <<'PY' > ../family.txt
+          import sys
+          sys.path.insert(0, "src")
+          from hydra_umc_docs.readme_family import all_names
+          print("\n".join(sorted((all_names() | {"ELECTRO-HOBBY-3D-UPDATER"}) - {"HYDRA-UMC-DOCS"})))
+          PY
+          cd ..
+          while read -r repository; do
+            git clone --quiet --depth 1 "https://github.com/JuanenRac/${repository}.git" "${repository}" || echo "::warning::could not fetch ${repository}"
+          done < family.txt
+
+      - name: Count the tests
+        working-directory: HYDRA-UMC-DOCS
+        continue-on-error: true
+        run: python tools/check_test_counts.py
