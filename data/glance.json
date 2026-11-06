@@ -548,7 +548,7 @@
     "HYDRA-UMC-SAFETY-ZONES": {
       "hardware": "not_run",
       "tests": {
-        "count": 968,
+        "count": 980,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -575,7 +575,7 @@
     "HYDRA-UMC-SEMANTIC-PLANNER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 308,
+        "count": 315,
         "command": "python -m pytest -q tests"
       },
       "rows": {
