@@ -607,7 +607,7 @@
     "HYDRA-UMC-STUDIO": {
       "hardware": "bench",
       "tests": {
-        "count": 1192,
+        "count": 1205,
         "command": "npm test"
       },
       "rows": {
