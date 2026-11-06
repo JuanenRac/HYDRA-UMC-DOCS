@@ -185,7 +185,7 @@
    "6072d4fb855d": "Broker credentials in a configuration file, or an unverified broker | User and password come from the environm",
    "614031a46b82": ", | - | the client certificate and key for a broker that demands mutual TLS; both are needed and they turn TLS",
    "77dca1b25dca": "Messaging contracts: carries a (0, 1 or 2) and describes one finished cycle ( , , , ), which the production re",
-   "aa015dae2b28": "twenty-nine JSON Schema v1 contracts: capability, device descriptor, event envelope, health report, operation,"
+   "8df476416a27": "thirty-one JSON Schema v1 contracts: capability, device descriptor, event envelope, health report, operation, "
   },
   "HYDRA-UMC-SEMANTIC-PLANNER": {
    "a90af17558fa": "Jump to: Overview · Architecture · Security & Safety · Configuration · Quick start · Testing · Repository Stru"

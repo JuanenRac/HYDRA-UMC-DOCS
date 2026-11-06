@@ -246,7 +246,7 @@
     "HYDRA-UMC-DEVELOPER-NODE": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 94,
+        "count": 95,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -456,7 +456,7 @@
     "HYDRA-UMC-OPS-AGENT": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 468,
+        "count": 478,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -564,7 +564,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 870,
+        "count": 891,
         "command": "python -m unittest discover -s clients/python/tests"
       },
       "rows": {
@@ -718,7 +718,7 @@
     "HYDRA-UMC-UPDATER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 475,
+        "count": 485,
         "command": "python -m pytest -q tests"
       },
       "rows": {
