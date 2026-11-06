@@ -702,7 +702,7 @@
     "HYDRA-UMC-TWIN": {
       "hardware": "not_run",
       "tests": {
-        "count": 173,
+        "count": 223,
         "command": "cargo test"
       },
       "rows": {

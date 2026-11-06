@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The README of the twin names the WebSocket, the input for the state of a vehicle and the HTTPS send to the data lake:** two new switches in the table of options (`--uav-input`, `--ws`), the sending to the data lake described as plain HTTP on a loopback address or HTTPS with the certificate named in the configuration, and the test count of the repository, in the eight languages.
+
 ## [0.1.2] - The verify script count of SUITE is 62: the glance data and the READMEs of that repository follow its real count. (and 11 more changes)
 
 - **The verify script count of SUITE is 62:** the glance data and the READMEs of that repository follow its real count.
