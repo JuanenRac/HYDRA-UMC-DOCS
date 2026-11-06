@@ -1,0 +1,8 @@
+{
+  "_comment": "Findings of tools/sync_manifests.py that a repository accepts for now: {\"REPOSITORY\": [\"CODE\", ...]}. An entry is removed as soon as the repository agrees with its manifest.",
+  "HYDRA-UMC-BRIDGE-PRINTER3D": ["SIMULATOR_NO_CI_JOB"],
+  "HYDRA-UMC-BRIDGE-ROS2": ["SIMULATOR_NO_CI_JOB"],
+  "HYDRA-UMC-HIL-BRIDGE": ["SIMULATOR_NO_CI_JOB"],
+  "HYDRA-UMC-MESHES": ["EVIDENCE_NO_TESTS"],
+  "HYDRA-UMC-SUITE": ["NATIVE_VERSION"]
+}

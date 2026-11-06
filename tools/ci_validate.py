@@ -382,6 +382,16 @@ def _status_lights_ci(root: Path) -> list[str]:
     return status_lights.run_in_ci(root)
 
 
+def _manifest_facts_ci(root: Path) -> list[str]:
+    """The manifest agrees with what can be computed about the repository (shipped version, changelog, tests, simulation); see tools/sync_manifests.py."""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import sync_manifests
+    except ImportError:
+        return []
+    return sync_manifests.run_in_ci(root)
+
+
 def main() -> int:
     try:
         manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
@@ -470,6 +480,8 @@ def main() -> int:
         fail(_universal_problem)
     for _lights_problem in _status_lights_ci(ROOT):
         fail(_lights_problem)
+    for _facts_problem in _manifest_facts_ci(ROOT):
+        fail(_facts_problem)
     for glance_problem in check_glance(ROOT):
         fail(glance_problem)
     for release_problem in check_ecosystem_release(ROOT):
