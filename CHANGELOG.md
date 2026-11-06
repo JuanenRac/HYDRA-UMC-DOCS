@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.3] - The test counts of the orchestrator, of the HIL bridge and of the UAV bridge follow their real numbers: the glance data and the badge, table and build notes of their READMEs, in the eight languages. (and 1 more changes)
+
 - **The test counts of the orchestrator, of the HIL bridge and of the UAV bridge follow their real numbers:** the glance data and the badge, table and build notes of their READMEs, in the eight languages.
 
 - **The README of the twin names the WebSocket, the input for the state of a vehicle and the HTTPS send to the data lake:** two new switches in the table of options (`--uav-input`, `--ws`), the sending to the data lake described as plain HTTP on a loopback address or HTTPS with the certificate named in the configuration, and the test count of the repository, in the eight languages.
