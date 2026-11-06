@@ -296,7 +296,7 @@ def apply_changes(results: list[dict], workspace: Path) -> list[str]:
     done = []
     for item in results:
         manifest, facts = item.get("manifest"), item.get("facts")
-        if not manifest:
+        if not manifest or not facts:
             continue
         repo_dir = workspace / item["name"]
         path = repo_dir / MANIFEST
@@ -334,8 +334,8 @@ def run_in_ci(root: Path) -> list[str]:
         return []
     MANIFEST = names[0]
     item = inspect(Repo(root, "WORKTREE"), None)
-    skip = waivers(root)
-    skip = set(skip.get(root.name, [])) | set(skip.get("*", []))
+    listed = waivers(root)
+    skip = set(listed.get(root.name, [])) | set(listed.get("*", []))
     return [f"manifest facts: {code}: {text}" for level, code, text in item["findings"] if level == HARD and code not in skip]
 
 
