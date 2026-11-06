@@ -456,7 +456,7 @@
     "HYDRA-UMC-OPS-AGENT": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 464,
+        "count": 468,
         "command": "python -m pytest -q tests"
       },
       "rows": {
