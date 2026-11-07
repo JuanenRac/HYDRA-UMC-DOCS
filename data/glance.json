@@ -85,7 +85,7 @@
     "HYDRA-UMC-BRIDGE-LASER": {
       "hardware": "simulated",
       "tests": {
-        "count": 222,
+        "count": 236,
         "command": "python tools/build_test.py"
       },
       "rows": {
