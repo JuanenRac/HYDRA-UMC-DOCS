@@ -177,7 +177,7 @@
     "HYDRA-UMC-CONNECTOR-HUB": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 264,
+        "count": 304,
         "command": "python -m pytest -q tests"
       },
       "rows": {
