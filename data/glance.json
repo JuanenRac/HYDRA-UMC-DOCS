@@ -321,7 +321,7 @@
     "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
       "hardware": "not_run",
       "tests": {
-        "count": 187,
+        "count": 294,
         "command": "npm test"
       },
       "rows": {
