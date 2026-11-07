@@ -744,7 +744,7 @@
     "HYDRA-UMC-VISION-STREAMER": {
       "hardware": "bench",
       "tests": {
-        "count": 274,
+        "count": 284,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -758,7 +758,7 @@
     "HYDRA-UMC-VISUAL-SERVOING-API": {
       "hardware": "not_run",
       "tests": {
-        "count": 339,
+        "count": 348,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -774,7 +774,7 @@
     "HYDRA-UMC-VLA-ENGINE": {
       "hardware": "not_run",
       "tests": {
-        "count": 292,
+        "count": 299,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -790,7 +790,7 @@
     "HYDRA-UMC-VOICE-UI": {
       "hardware": "simulated",
       "tests": {
-        "count": 427,
+        "count": 434,
         "command": "python -m pytest -q tests"
       },
       "rows": {
