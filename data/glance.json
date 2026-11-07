@@ -149,7 +149,7 @@
     "HYDRA-UMC-BRIDGE-UAV": {
       "hardware": "simulated",
       "tests": {
-        "count": 212,
+        "count": 256,
         "command": "python tools/build_test.py"
       },
       "rows": {
