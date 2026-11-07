@@ -471,7 +471,7 @@
     "HYDRA-UMC-ORCHESTRATOR": {
       "hardware": "not_run",
       "tests": {
-        "count": 269,
+        "count": 278,
         "command": "cargo test"
       },
       "rows": {
@@ -729,7 +729,7 @@
     "HYDRA-UMC-VISION-NODE": {
       "hardware": "simulated",
       "tests": {
-        "count": 393,
+        "count": 399,
         "command": "python -m pytest -q tests"
       },
       "rows": {
