@@ -218,7 +218,7 @@
     "HYDRA-UMC-DETECTION-HEF": {
       "hardware": "not_run",
       "tests": {
-        "count": 209
+        "count": 225
       },
       "rows": {
         "interface": "documented_tested",
@@ -412,7 +412,7 @@
     "HYDRA-UMC-MTCONNECT-ADAPTER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 184,
+        "count": 189,
         "command": "npm test"
       },
       "rows": {
