@@ -4,7 +4,7 @@
       "hardware": "not_run",
       "target": "board",
       "tests": {
-        "count": 423,
+        "count": 472,
         "command": "python -m unittest discover -s tests -p 'test_*.py'"
       }
     },
@@ -702,7 +702,7 @@
     "HYDRA-UMC-TWIN": {
       "hardware": "not_run",
       "tests": {
-        "count": 223,
+        "count": 235,
         "command": "cargo test"
       },
       "rows": {
@@ -744,7 +744,7 @@
     "HYDRA-UMC-VISION-STREAMER": {
       "hardware": "bench",
       "tests": {
-        "count": 284,
+        "count": 298,
         "command": "python -m pytest -q tests"
       },
       "rows": {
