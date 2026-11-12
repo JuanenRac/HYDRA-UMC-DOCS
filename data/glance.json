@@ -28,7 +28,7 @@
     "HYDRA-UMC-ANOMALY-DETECTOR": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 366,
+        "count": 388,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -729,7 +729,7 @@
     "HYDRA-UMC-VISION-NODE": {
       "hardware": "simulated",
       "tests": {
-        "count": 459,
+        "count": 488,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -744,7 +744,7 @@
     "HYDRA-UMC-VISION-STREAMER": {
       "hardware": "bench",
       "tests": {
-        "count": 302,
+        "count": 326,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -758,7 +758,7 @@
     "HYDRA-UMC-VISUAL-SERVOING-API": {
       "hardware": "not_run",
       "tests": {
-        "count": 408,
+        "count": 428,
         "command": "python -m pytest -q tests"
       },
       "rows": {
