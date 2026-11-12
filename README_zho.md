@@ -68,6 +68,8 @@ GPL-3.0-or-later - see LICENSE
 
 下图显示各仓库家族，以及它们的文档所陈述的数据流。
 
+> **平台：** HYDRA-UMC 的目标计算平台是装在底板上的 NVIDIA Jetson Orin NX 16 GB，搭配 STM32H757 实时控制器；Raspberry Pi Compute Module 5 保留为试验台，为它做转接卡是以后的选项。该平台仍然只是设计：没有制造或测试过任何电路板。
+
 * [架构](docs/ARCHITECTURE.md): 分层、数据流、端口和信任边界。
 * [接口](docs/INTERFACES.md): 每份契约归谁所有，以及记录在哪里。
 * [能力矩阵](docs/CAPABILITY_MATRIX.md): 哪些在软件中已证实、哪些需要硬件，逐个项目说明。

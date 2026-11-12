@@ -1,1 +1,1 @@
-🤖 A plataforma definitiva de microfábrica de dois núcleos e controlador multirrobô (V1.0 - dois aceleradores de IA PCIe Hailo-8 + Hailo-10 e dois hubs USB 3.0)
+🤖 A plataforma definitiva de microfábrica de dois núcleos e controlador multirrobô (V1.0 - anfitrião NVIDIA Jetson Orin NX de 16 GB com acelerador de IA Hailo-8 e hubs USB 3.0 para câmaras)

@@ -33,7 +33,7 @@ TEXT: dict[str, dict[str, object]] = {
             "and the firmware repository states that no populated board exists yet."
         ),
         "h_overview": "Overview",
-        "overview_intro": "The picture below shows the families of repositories and the flows that their documents state.",
+        "overview_intro": "The picture below shows the families of repositories and the flows that their documents state.\n\n> **Platform:** the target compute platform of HYDRA-UMC is an NVIDIA Jetson Orin NX 16 GB on a baseboard together with an STM32H757 real-time controller; the Raspberry Pi Compute Module 5 stays as the pilot bench, and an adapter for it is an option for later. This platform is still a design: no board has been built or tested.",
         "overview": [
             ("Architecture", "docs/ARCHITECTURE.md", "layers, data flows, ports and trust boundaries."),
             ("Interfaces", "docs/INTERFACES.md", "who owns each contract and where it is documented."),
@@ -92,7 +92,7 @@ TEXT: dict[str, dict[str, object]] = {
             "y el repositorio del firmware indica que todavía no existe ninguna placa montada."
         ),
         "h_overview": "Descripción general",
-        "overview_intro": "La imagen siguiente muestra las familias de repositorios y los flujos que afirman sus documentos.",
+        "overview_intro": "La imagen siguiente muestra las familias de repositorios y los flujos que afirman sus documentos.\n\n> **Plataforma:** la plataforma de cómputo objetivo de HYDRA-UMC es una NVIDIA Jetson Orin NX de 16 GB en una placa base junto con un controlador de tiempo real STM32H757; la Raspberry Pi Compute Module 5 queda como banco piloto y un adaptador para ella es una opción para más adelante. Esta plataforma sigue siendo un diseño: no se ha construido ni probado ninguna placa.",
         "overview": [
             ("Arquitectura", "docs/ARCHITECTURE.md", "capas, flujos de datos, puertos y fronteras de confianza."),
             ("Interfaces", "docs/INTERFACES.md", "quién es dueño de cada contrato y dónde está documentado."),
@@ -151,7 +151,7 @@ TEXT: dict[str, dict[str, object]] = {
             "et le dépôt du firmware indique qu'aucune carte assemblée n'existe encore."
         ),
         "h_overview": "Vue d'ensemble",
-        "overview_intro": "L'image ci-dessous montre les familles de dépôts et les flux qu'affirment leurs documents.",
+        "overview_intro": "L'image ci-dessous montre les familles de dépôts et les flux qu'affirment leurs documents.\n\n> **Plateforme :** la plateforme de calcul visée par HYDRA-UMC est un NVIDIA Jetson Orin NX 16 Go sur une carte de base avec un contrôleur temps réel STM32H757 ; le Raspberry Pi Compute Module 5 reste le banc pilote et un adaptateur pour lui est une option pour plus tard. Cette plateforme reste une conception : aucune carte n'a été construite ni testée.",
         "overview": [
             ("Architecture", "docs/ARCHITECTURE.md", "couches, flux de données, ports et frontières de confiance."),
             ("Interfaces", "docs/INTERFACES.md", "qui possède chaque contrat et où il est documenté."),
@@ -210,7 +210,7 @@ TEXT: dict[str, dict[str, object]] = {
             "e il repository del firmware dichiara che non esiste ancora alcuna scheda assemblata."
         ),
         "h_overview": "Panoramica",
-        "overview_intro": "L'immagine qui sotto mostra le famiglie di repository e i flussi che i loro documenti affermano.",
+        "overview_intro": "L'immagine qui sotto mostra le famiglie di repository e i flussi che i loro documenti affermano.\n\n> **Piattaforma:** la piattaforma di calcolo di destinazione di HYDRA-UMC è un NVIDIA Jetson Orin NX da 16 GB su una scheda base insieme a un controllore real-time STM32H757; il Raspberry Pi Compute Module 5 resta il banco pilota e un adattatore per esso è un'opzione per più avanti. Questa piattaforma è ancora un progetto: nessuna scheda è stata costruita né provata.",
         "overview": [
             ("Architettura", "docs/ARCHITECTURE.md", "livelli, flussi di dati, porte e confini di fiducia."),
             ("Interfacce", "docs/INTERFACES.md", "chi possiede ogni contratto e dove è documentato."),
@@ -269,7 +269,7 @@ TEXT: dict[str, dict[str, object]] = {
             "und das Firmware-Repository gibt an, dass noch keine bestückte Platine existiert."
         ),
         "h_overview": "Überblick",
-        "overview_intro": "Das Bild unten zeigt die Familien von Repositories und die Datenflüsse, die ihre Dokumente behaupten.",
+        "overview_intro": "Das Bild unten zeigt die Familien von Repositories und die Datenflüsse, die ihre Dokumente behaupten.\n\n> **Plattform:** Die Ziel-Rechenplattform von HYDRA-UMC ist ein NVIDIA Jetson Orin NX 16 GB auf einer Basisplatine zusammen mit einem Echtzeitcontroller STM32H757; das Raspberry Pi Compute Module 5 bleibt der Pilot-Prüfstand, und ein Adapter dafür ist eine Option für später. Diese Plattform ist noch ein Entwurf: Es wurde keine Platine gebaut oder getestet.",
         "overview": [
             ("Architektur", "docs/ARCHITECTURE.md", "Schichten, Datenflüsse, Ports und Vertrauensgrenzen."),
             ("Schnittstellen", "docs/INTERFACES.md", "wem jeder Vertrag gehört und wo er dokumentiert ist."),
@@ -328,7 +328,7 @@ TEXT: dict[str, dict[str, object]] = {
             "固件仓库也说明目前尚不存在已焊装的电路板。"
         ),
         "h_overview": "简介",
-        "overview_intro": "下图显示各仓库家族，以及它们的文档所陈述的数据流。",
+        "overview_intro": "下图显示各仓库家族，以及它们的文档所陈述的数据流。\n\n> **平台：** HYDRA-UMC 的目标计算平台是装在底板上的 NVIDIA Jetson Orin NX 16 GB，搭配 STM32H757 实时控制器；Raspberry Pi Compute Module 5 保留为试验台，为它做转接卡是以后的选项。该平台仍然只是设计：没有制造或测试过任何电路板。",
         "overview": [
             ("架构", "docs/ARCHITECTURE.md", "分层、数据流、端口和信任边界。"),
             ("接口", "docs/INTERFACES.md", "每份契约归谁所有，以及记录在哪里。"),
@@ -387,7 +387,7 @@ TEXT: dict[str, dict[str, object]] = {
             "ファームウェアのリポジトリは、実装済みの基板がまだ存在しないと述べています。"
         ),
         "h_overview": "概要",
-        "overview_intro": "下の図は、リポジトリのファミリーと、各ドキュメントが述べるデータの流れを示します。",
+        "overview_intro": "下の図は、リポジトリのファミリーと、各ドキュメントが述べるデータの流れを示します。\n\n> **プラットフォーム：** HYDRA-UMC が目標とする計算プラットフォームは、ベースボード上の NVIDIA Jetson Orin NX 16 GB と STM32H757 リアルタイムコントローラーの組み合わせです。Raspberry Pi Compute Module 5 は試験用ベンチとして残し、そのためのアダプタは後の選択肢です。このプラットフォームはまだ設計であり、基板は製作も試験もされていません。",
         "overview": [
             ("アーキテクチャ", "docs/ARCHITECTURE.md", "レイヤー、データの流れ、ポート、信頼境界。"),
             ("インターフェース", "docs/INTERFACES.md", "各契約の所有者と、その文書の場所。"),
@@ -446,7 +446,7 @@ TEXT: dict[str, dict[str, object]] = {
             "e o repositório do firmware indica que ainda não existe nenhuma placa montada."
         ),
         "h_overview": "Visão geral",
-        "overview_intro": "A imagem abaixo mostra as famílias de repositórios e os fluxos que os seus documentos afirmam.",
+        "overview_intro": "A imagem abaixo mostra as famílias de repositórios e os fluxos que os seus documentos afirmam.\n\n> **Plataforma:** a plataforma de computação objetivo do HYDRA-UMC é uma NVIDIA Jetson Orin NX de 16 GB numa placa base, juntamente com um controlador de tempo real STM32H757; a Raspberry Pi Compute Module 5 continua como banco piloto e um adaptador para ela é uma opção para mais tarde. Esta plataforma ainda é um desenho: nenhuma placa foi construída nem testada.",
         "overview": [
             ("Arquitetura", "docs/ARCHITECTURE.md", "camadas, fluxos de dados, portas e fronteiras de confiança."),
             ("Interfaces", "docs/INTERFACES.md", "quem é dono de cada contrato e onde está documentado."),

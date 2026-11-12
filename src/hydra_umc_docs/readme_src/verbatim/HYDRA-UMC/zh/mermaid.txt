@@ -1,16 +1,13 @@
 ```mermaid
 flowchart TB
-    CM5["<b>Compute Module 5（主机 / 大脑）</b><br/>Broadcom BCM2712 四核 Cortex-A76 @ 2.4 GHz<br/>VideoCore VII GPU（OpenGL ES 3.1 / Vulkan 1.2）<br/>RP1 双 USB 3.0 主控制器（2x 5 Gbps）<br/>搭载 PREEMPT_RT 补丁集的 Linux 系统<br/>基于 MIPI-DSI 的高帧率触控界面（Qt6 / Flutter）<br/>轨迹规划、G-code 解析与视觉 AI"]
+    JETSON["<b>NVIDIA Jetson Orin NX 16 GB（主机 / 大脑）</b><br/>模块装在底板的 SO-DIMM 插座中<br/>Linux（JetPack / Debian）<br/>高帧率触摸界面（Qt6 / Flutter）<br/>轨迹规划、G 代码解析与视觉 AI<br/>生态系统的服务器与各项服务"]
 
-    CM5 -- "PCIe Gen 3.0 x1（最高 8 Gbps）" --> PCIESW["<b>PCIe Gen3 交换芯片</b><br/>1 转 2 通道扇出"]
-    PCIESW -- "PCIe x1" --> HAILO8["<b>Hailo-8 M.2 AI 加速器</b><br/>26 TOPS — 高速视觉处理"]
-    PCIESW -- "PCIe x1" --> HAILO10["<b>Hailo-10 M.2 AI 加速器</b><br/>40 TOPS — 认知推理 / 本地生成式 AI"]
-    CM5 -- "USB3 通道 1" --> HUB1["GL3523 集线器 #1"]
-    CM5 -- "USB3 通道 2" --> HUB2["GL3523 集线器 #2"]
-    HUB1 --> CAM14["4 路 USB3 摄像头接口<br/>（摄像头 1-4）"]
-    HUB2 --> CAM58["4 路 USB3 摄像头接口<br/>（摄像头 5-8）"]
+    JETSON -- "PCIe x4（Key-M 插槽）" --> HAILO8["<b>Hailo-8 M.2 AI 加速器</b><br/>26 TOPS - 高速视觉"]
+    JETSON -- "PCIe（Key-M 插槽）" --> NVME["<b>NVMe M.2 固态硬盘</b><br/>存储"]
+    JETSON -- "PCIe + USB 2.0（Key-E 插槽）" --> WIFI["<b>Wi-Fi / 蓝牙 M.2 模块</b>"]
+    JETSON -- "经集线器的 USB 3.0" --> HUBS["<b>USB 3.0 集线器</b><br/>8 个 USB3 摄像头端口<br/>（摄像头 1-8）"]
 
-    CM5 -- "高速 SPI 总线 + DMA + 中断引脚" --> MCU
+    JETSON -- "SPI 链路（STM32H757 为主设备）" --> MCU
 
     subgraph MCU["STM32H757XIH6 实时协处理器（TFBGA240）"]
         direction LR

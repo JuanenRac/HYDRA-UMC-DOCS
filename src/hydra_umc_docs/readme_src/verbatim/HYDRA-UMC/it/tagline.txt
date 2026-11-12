@@ -1,1 +1,1 @@
-🤖 La Piattaforma Definitiva di Micro-Fabbrica a Doppio Nucleo e Controller Multi-Robot (V1.0 - Doppio Acceleratore IA PCIe Hailo-8 + Hailo-10 e Doppio Hub USB 3.0)
+🤖 La Piattaforma Definitiva di Micro-Fabbrica a Doppio Nucleo e Controller Multi-Robot (V1.0 - Host NVIDIA Jetson Orin NX 16 GB con Acceleratore IA Hailo-8 e Hub USB 3.0 per Telecamere)

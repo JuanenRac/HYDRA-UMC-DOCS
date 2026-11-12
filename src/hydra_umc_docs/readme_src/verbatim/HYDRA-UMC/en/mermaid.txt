@@ -1,16 +1,13 @@
 ```mermaid
 flowchart TB
-    CM5["<b>Compute Module 5 (Host / Cerebro)</b><br/>Broadcom BCM2712 Quad Cortex-A76 @ 2.4 GHz<br/>VideoCore VII GPU (OpenGL ES 3.1 / Vulkan 1.2)<br/>RP1 Dual USB 3.0 Host Controllers (2x 5 Gbps)<br/>Linux OS with PREEMPT_RT patchset<br/>High-FPS touch UI (Qt6 / Flutter) via MIPI-DSI<br/>Trajectory planning, G-code parsing &amp; Vision AI"]
+    JETSON["<b>NVIDIA Jetson Orin NX 16 GB (Host / Brain)</b><br/>Module in its SO-DIMM socket on the baseboard<br/>Linux (JetPack / Debian)<br/>High-FPS touch UI (Qt6 / Flutter)<br/>Trajectory planning, G-code parsing &amp; Vision AI<br/>Server and services of the ecosystem"]
 
-    CM5 -- "PCIe Gen 3.0 x1 (up to 8 Gbps)" --> PCIESW["<b>PCIe Gen3 Switch</b><br/>1-to-2 lane fan-out"]
-    PCIESW -- "PCIe x1" --> HAILO8["<b>Hailo-8 M.2 AI Accelerator</b><br/>26 TOPS - high-speed vision"]
-    PCIESW -- "PCIe x1" --> HAILO10["<b>Hailo-10 M.2 AI Accelerator</b><br/>40 TOPS - cognitive reasoning / local GenAI"]
-    CM5 -- "USB3 Channel 1" --> HUB1["GL3523 Hub #1"]
-    CM5 -- "USB3 Channel 2" --> HUB2["GL3523 Hub #2"]
-    HUB1 --> CAM14["4x USB3 camera ports<br/>(Cam 1-4)"]
-    HUB2 --> CAM58["4x USB3 camera ports<br/>(Cam 5-8)"]
+    JETSON -- "PCIe x4 (Key-M slot)" --> HAILO8["<b>Hailo-8 M.2 AI Accelerator</b><br/>26 TOPS - high-speed vision"]
+    JETSON -- "PCIe (Key-M slot)" --> NVME["<b>NVMe M.2 SSD</b><br/>Storage"]
+    JETSON -- "PCIe + USB 2.0 (Key-E slot)" --> WIFI["<b>Wi-Fi / Bluetooth M.2 module</b>"]
+    JETSON -- "USB 3.0 through hubs" --> HUBS["<b>USB 3.0 hubs</b><br/>8x USB3 camera ports<br/>(Cam 1-8)"]
 
-    CM5 -- "High-Speed SPI bus + DMA + IRQ pin" --> MCU
+    JETSON -- "SPI link (the STM32H757 is the master)" --> MCU
 
     subgraph MCU["STM32H757XIH6 Real-Time Co-Processor (TFBGA240)"]
         direction LR

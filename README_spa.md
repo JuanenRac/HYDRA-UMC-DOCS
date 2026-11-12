@@ -68,6 +68,8 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 
 La imagen siguiente muestra las familias de repositorios y los flujos que afirman sus documentos.
 
+> **Plataforma:** la plataforma de cómputo objetivo de HYDRA-UMC es una NVIDIA Jetson Orin NX de 16 GB en una placa base junto con un controlador de tiempo real STM32H757; la Raspberry Pi Compute Module 5 queda como banco piloto y un adaptador para ella es una opción para más adelante. Esta plataforma sigue siendo un diseño: no se ha construido ni probado ninguna placa.
+
 * [Arquitectura](docs/ARCHITECTURE.md): capas, flujos de datos, puertos y fronteras de confianza.
 * [Interfaces](docs/INTERFACES.md): quién es dueño de cada contrato y dónde está documentado.
 * [Matriz de capacidades](docs/CAPABILITY_MATRIX.md): qué está probado en software y qué necesita hardware, proyecto a proyecto.

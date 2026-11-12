@@ -68,6 +68,8 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 
 L'image ci-dessous montre les familles de dépôts et les flux qu'affirment leurs documents.
 
+> **Plateforme :** la plateforme de calcul visée par HYDRA-UMC est un NVIDIA Jetson Orin NX 16 Go sur une carte de base avec un contrôleur temps réel STM32H757 ; le Raspberry Pi Compute Module 5 reste le banc pilote et un adaptateur pour lui est une option pour plus tard. Cette plateforme reste une conception : aucune carte n'a été construite ni testée.
+
 * [Architecture](docs/ARCHITECTURE.md): couches, flux de données, ports et frontières de confiance.
 * [Interfaces](docs/INTERFACES.md): qui possède chaque contrat et où il est documenté.
 * [Matrice des capacités](docs/CAPABILITY_MATRIX.md): ce qui est prouvé en logiciel et ce qui exige du matériel, projet par projet.

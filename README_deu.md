@@ -68,6 +68,8 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 
 Das Bild unten zeigt die Familien von Repositories und die Datenflüsse, die ihre Dokumente behaupten.
 
+> **Plattform:** Die Ziel-Rechenplattform von HYDRA-UMC ist ein NVIDIA Jetson Orin NX 16 GB auf einer Basisplatine zusammen mit einem Echtzeitcontroller STM32H757; das Raspberry Pi Compute Module 5 bleibt der Pilot-Prüfstand, und ein Adapter dafür ist eine Option für später. Diese Plattform ist noch ein Entwurf: Es wurde keine Platine gebaut oder getestet.
+
 * [Architektur](docs/ARCHITECTURE.md): Schichten, Datenflüsse, Ports und Vertrauensgrenzen.
 * [Schnittstellen](docs/INTERFACES.md): wem jeder Vertrag gehört und wo er dokumentiert ist.
 * [Fähigkeitenmatrix](docs/CAPABILITY_MATRIX.md): was in Software belegt ist und was Hardware braucht, Projekt für Projekt.

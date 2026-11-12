@@ -1,16 +1,13 @@
 ```mermaid
 flowchart TB
-    CM5["<b>Compute Module 5（ホスト / 頭脳）</b><br/>Broadcom BCM2712 クアッドコア Cortex-A76 @ 2.4 GHz<br/>VideoCore VII GPU（OpenGL ES 3.1 / Vulkan 1.2）<br/>RP1 デュアル USB 3.0 ホストコントローラー（2x 5 Gbps）<br/>PREEMPT_RT パッチセット適用 Linux OS<br/>MIPI-DSI 経由の高フレームレートタッチ UI（Qt6 / Flutter）<br/>軌道計画、G-code 解析、Vision AI"]
+    JETSON["<b>NVIDIA Jetson Orin NX 16 GB（ホスト / 頭脳）</b><br/>ベースボードの SO-DIMM ソケットに装着するモジュール<br/>Linux（JetPack / Debian）<br/>高フレームレートのタッチ UI（Qt6 / Flutter）<br/>軌道計画、G コード解析、ビジョン AI<br/>エコシステムのサーバーとサービス"]
 
-    CM5 -- "PCIe Gen 3.0 x1（最大 8 Gbps）" --> PCIESW["<b>PCIe Gen3 スイッチ</b><br/>1 対 2 レーンファンアウト"]
-    PCIESW -- "PCIe x1" --> HAILO8["<b>Hailo-8 M.2 AI アクセラレータ</b><br/>26 TOPS — 高速視覚処理"]
-    PCIESW -- "PCIe x1" --> HAILO10["<b>Hailo-10 M.2 AI アクセラレータ</b><br/>40 TOPS — 認知推論 / ローカル生成 AI"]
-    CM5 -- "USB3 チャンネル 1" --> HUB1["GL3523 ハブ #1"]
-    CM5 -- "USB3 チャンネル 2" --> HUB2["GL3523 ハブ #2"]
-    HUB1 --> CAM14["4 系統 USB3 カメラポート<br/>（カメラ 1-4）"]
-    HUB2 --> CAM58["4 系統 USB3 カメラポート<br/>（カメラ 5-8）"]
+    JETSON -- "PCIe x4（Key-M スロット）" --> HAILO8["<b>Hailo-8 M.2 AI アクセラレータ</b><br/>26 TOPS - 高速ビジョン"]
+    JETSON -- "PCIe（Key-M スロット）" --> NVME["<b>NVMe M.2 SSD</b><br/>ストレージ"]
+    JETSON -- "PCIe + USB 2.0（Key-E スロット）" --> WIFI["<b>Wi-Fi / Bluetooth M.2 モジュール</b>"]
+    JETSON -- "ハブ経由の USB 3.0" --> HUBS["<b>USB 3.0 ハブ</b><br/>USB3 カメラポート 8 個<br/>（カメラ 1-8）"]
 
-    CM5 -- "高速 SPI バス + DMA + IRQ ピン" --> MCU
+    JETSON -- "SPI リンク（STM32H757 がマスター）" --> MCU
 
     subgraph MCU["STM32H757XIH6 リアルタイムコプロセッサ（TFBGA240）"]
         direction LR

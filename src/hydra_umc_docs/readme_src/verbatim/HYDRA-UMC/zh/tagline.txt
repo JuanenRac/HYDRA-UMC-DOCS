@@ -1,1 +1,1 @@
-🤖 终极双核微工厂与多机器人控制器平台（V1.0 — 双 PCIe Hailo-8 + Hailo-10 AI 加速器 与 双 USB 3.0 集线器）
+🤖 终极双核微工厂与多机器人控制器平台（V1.0 — NVIDIA Jetson Orin NX 16 GB 主机、Hailo-8 AI 加速器 与 USB 3.0 摄像头集线器）
