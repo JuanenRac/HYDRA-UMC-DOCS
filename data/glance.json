@@ -398,7 +398,7 @@
     "HYDRA-UMC-MQTT-BROKER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 192,
+        "count": 260,
         "command": "npm test"
       },
       "rows": {
