@@ -16,6 +16,7 @@ flowchart TB
     end
     MEM["1 MB SRAM / 2 MB flash interna de doble banco<br/>Interfaz I2C4 dedicada a la F-RAM externa (FM24CL64B)"]
     MCU --- MEM
+    MCU -- "Pantalla MIPI-DSI" --> DSIDISP["Pantalla táctil DSI<br/>interfaz completa ejecutada por el H757 (diseño)"]
 
     MCU -- "Bus FDCAN1 - STACK A" --> ROBOTS["Placas Robot Controller Board A1...A8<br/>(hasta 8 módulos esclavos)"]
 ```

@@ -112,16 +112,31 @@ class Context:
         self.repo, self.name, self.manifest, self.entry = repo, repo.name, manifest, entry
         self.tests = entry["tests"]["count"]
         self.version, self.maturity = manifest["version"], manifest["maturity"]
+        # counted from the files, never typed: the Python test modules of the repository
+        self.test_modules = len(list((repo / "tests").rglob("test_*.py"))) if (repo / "tests").is_dir() else 0
 
     def tree(self, lg: str) -> str:
         tool = structure_tool(self.repo)
         return tool.render_tree(tool.load_spec(self.repo / "docs" / "structure.json"), lg)
 
     def v(self, lg: str, key: str) -> str:
-        return K.verbatim(self.name, lg, key, tests=self.tests, version=self.version)
+        return K.verbatim(self.name, lg, key, tests=self.tests, version=self.version, test_modules=self.test_modules)
 
     def has(self, lg: str, key: str) -> bool:
         return K.has_verbatim(self.name, lg, key)
+
+
+# Said once for every repository whose text speaks of the CM5 and does not yet speak of the target platform.
+PLATFORM_NOTE = {
+    "en": "> **Platform:** where this README says CM5, it means the pilot bench that runs today; the target platform of HYDRA-UMC is an NVIDIA Jetson Orin NX 16 GB, a design that has not been built or tested.",
+    "es": "> **Plataforma:** donde este README dice CM5, se refiere al banco piloto que funciona hoy; la plataforma objetivo de HYDRA-UMC es una NVIDIA Jetson Orin NX de 16 GB, un diseño que no se ha construido ni probado.",
+    "de": "> **Plattform:** Wo dieses README CM5 sagt, ist der Pilotprüfstand gemeint, der heute läuft; die Zielplattform von HYDRA-UMC ist ein NVIDIA Jetson Orin NX 16 GB, ein Entwurf, der weder gebaut noch getestet wurde.",
+    "fr": "> **Plateforme :** là où ce README dit CM5, il s'agit du banc pilote qui fonctionne aujourd'hui ; la plateforme visée par HYDRA-UMC est un NVIDIA Jetson Orin NX 16 Go, une conception ni construite ni testée.",
+    "it": "> **Piattaforma:** dove questo README dice CM5, intende il banco pilota che funziona oggi; la piattaforma di destinazione di HYDRA-UMC è un NVIDIA Jetson Orin NX da 16 GB, un progetto non costruito né provato.",
+    "ja": "> **プラットフォーム：** この README の「CM5」は、現在動作している試験用ベンチを指します。HYDRA-UMC の目標プラットフォームは NVIDIA Jetson Orin NX 16 GB ですが、これは製作も試験もされていない設計です。",
+    "zh": "> **平台：** 本 README 中的 CM5 指的是目前正在运行的试验台；HYDRA-UMC 的目标平台是 NVIDIA Jetson Orin NX 16 GB，这是尚未制造或测试的设计。",
+    "pt": "> **Plataforma:** onde este README diz CM5, refere-se ao banco piloto que funciona hoje; a plataforma objetivo do HYDRA-UMC é uma NVIDIA Jetson Orin NX de 16 GB, um desenho que não foi construído nem testado.",
+}
 
 
 def render(repo: Path, lg: str, entry: dict) -> str:
@@ -133,6 +148,8 @@ def render(repo: Path, lg: str, entry: dict) -> str:
         body["screenshots"] = SHOTS_SRC.section(lg, repo)
     structure_extra = body.pop("structure", "")
     bodies = {key: text.strip() for key, text in body.items() if text and text.strip()}
+    if "role" in bodies and "Jetson" not in bodies["role"] and any("CM5" in text for text in bodies.values()):
+        bodies["role"] = bodies["role"] + "\n\n" + PLATFORM_NOTE[lg]
     present = [s for s, _ in SECTIONS if s in ALWAYS or s in bodies]
     name = repo.name
     # a source that has no prose files (the documentation hub) gives its tagline and its honesty paragraph itself

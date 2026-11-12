@@ -16,6 +16,7 @@ flowchart TB
     end
     MEM["1 MB SRAM / 2 MB 双区内部闪存<br/>专用 I2C4 接口连接外部 F-RAM（FM24CL64B）"]
     MCU --- MEM
+    MCU -- "MIPI-DSI 显示屏" --> DSIDISP["DSI 触摸屏<br/>由 H757 运行完整界面（设计）"]
 
     MCU -- "FDCAN1 — STACK A 总线" --> ROBOTS["机器人控制板 A1...A8<br/>（最多 8 个从站模块）"]
 ```

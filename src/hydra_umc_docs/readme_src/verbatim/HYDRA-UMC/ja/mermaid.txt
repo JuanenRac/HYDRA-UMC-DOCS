@@ -16,6 +16,7 @@ flowchart TB
     end
     MEM["1 MB SRAM / 2 MB デュアルバンク内蔵フラッシュ<br/>外付け F-RAM（FM24CL64B）への専用 I2C4 インターフェース"]
     MCU --- MEM
+    MCU -- "MIPI-DSI ディスプレイ" --> DSIDISP["DSI タッチディスプレイ<br/>H757 が完全なインターフェースを実行（設計）"]
 
     MCU -- "FDCAN1 — STACK A バス" --> ROBOTS["ロボットコントローラーボード A1...A8<br/>（最大 8 台のスレーブモジュール）"]
 ```
