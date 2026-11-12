@@ -337,7 +337,7 @@
     "HYDRA-UMC-HIL-BRIDGE": {
       "hardware": "simulated",
       "tests": {
-        "count": 217,
+        "count": 241,
         "command": "cargo test"
       },
       "rows": {
@@ -607,7 +607,7 @@
     "HYDRA-UMC-STUDIO": {
       "hardware": "bench",
       "tests": {
-        "count": 1386,
+        "count": 1420,
         "command": "npm test"
       },
       "rows": {
