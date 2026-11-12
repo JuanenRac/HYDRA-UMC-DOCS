@@ -11,7 +11,7 @@
     "HYDRA-UMC-ANDROID-CONTROL": {
       "hardware": "not_run",
       "tests": {
-        "count": 650,
+        "count": 658,
         "command": "./gradlew testDebugUnitTest"
       },
       "target": "android",
@@ -427,7 +427,7 @@
     "HYDRA-UMC-NODE-HEALING": {
       "hardware": "not_run",
       "tests": {
-        "count": 174,
+        "count": 184,
         "command": "go test ./..."
       },
       "rows": {
