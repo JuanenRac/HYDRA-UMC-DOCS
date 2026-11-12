@@ -564,7 +564,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 982,
+        "count": 986,
         "command": "python -m unittest discover -s clients/python/tests"
       },
       "rows": {
