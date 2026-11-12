@@ -177,7 +177,7 @@
     "HYDRA-UMC-CONNECTOR-HUB": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 308,
+        "count": 317,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -269,7 +269,7 @@
     "HYDRA-UMC-DOCS-QA": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 175,
+        "count": 192,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -384,7 +384,7 @@
     "HYDRA-UMC-LOCAL-TECHNICIAN": {
       "hardware": "not_run",
       "tests": {
-        "count": 405,
+        "count": 420,
         "command": "python -m pytest -q tests"
       },
       "rows": {
