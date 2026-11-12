@@ -4,7 +4,7 @@
       "hardware": "not_run",
       "target": "board",
       "tests": {
-        "count": 746,
+        "count": 750,
         "command": "python -m unittest discover -s tests -p 'test_*.py'"
       }
     },
@@ -676,7 +676,7 @@
     "HYDRA-UMC-TELEMETRY-COLLECTOR": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 201,
+        "count": 202,
         "command": "go test ./..."
       },
       "rows": {
