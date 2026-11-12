@@ -5,7 +5,8 @@
 # =============================================================================
 # The Go, Rust and Dart suites compile, so their coverage is not measured on a plain PC. This workflow fetches each listed repository, runs
 # its tests with the coverage of its own toolchain and uploads, per repository, a short text summary (the total and the files with the lowest
-# coverage) as an artifact, so that the real gaps can be read and filled with tests. Manual only; it writes nothing to any repository.
+# coverage) as an artifact, so that the real gaps can be read and filled with tests. Manual only (never on a push); a repository that fails
+# its own tests does not fail the others, and the summary is uploaded anyway. It writes nothing to any repository.
 name: HYDRA-UMC measure the coverage of the compiled repositories
 
 on:
@@ -34,8 +35,10 @@ jobs:
         with:
           go-version: stable
       - name: Run the tests with coverage
+        continue-on-error: true
         shell: bash
         run: |
+          set +e +o pipefail
           set -u
           module_dir=$(dirname "$(find target -maxdepth 2 -name go.mod | head -n 1)")
           cd "$module_dir"
@@ -50,6 +53,7 @@ jobs:
           } > "$GITHUB_WORKSPACE/summary.txt"
           cat "$GITHUB_WORKSPACE/summary.txt"
       - name: Upload the summary
+        if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage-go-${{ matrix.repo }}
@@ -77,9 +81,11 @@ jobs:
       - name: Install the coverage tool
         run: cargo install cargo-llvm-cov --locked --version 0.6.16
       - name: Run the tests with coverage
+        continue-on-error: true
         shell: bash
         working-directory: target
         run: |
+          set +e +o pipefail
           set -u
           cargo llvm-cov --locked --summary-only > "$RUNNER_TEMP/cov.txt" 2>&1 || echo "cargo llvm-cov exited with an error"
           {
@@ -90,6 +96,7 @@ jobs:
           } > "$GITHUB_WORKSPACE/summary.txt"
           cat "$GITHUB_WORKSPACE/summary.txt"
       - name: Upload the summary
+        if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage-rust-${{ matrix.repo }}
@@ -114,9 +121,11 @@ jobs:
           git clone --depth 1 --branch 3.47.9 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
           echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
       - name: Run the tests with coverage
+        continue-on-error: true
         shell: bash
         working-directory: target
         run: |
+          set +e +o pipefail
           set -u
           flutter pub get
           flutter test --coverage > "$RUNNER_TEMP/flutter-test.txt" 2>&1 || echo "flutter test exited with an error"
@@ -141,6 +150,7 @@ jobs:
           PY
           cat "$GITHUB_WORKSPACE/summary.txt"
       - name: Upload the summary
+        if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage-dart-${{ matrix.repo }}
