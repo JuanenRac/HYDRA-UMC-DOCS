@@ -11,12 +11,18 @@ name: HYDRA-UMC measure the coverage of the compiled repositories
 
 on:
   workflow_dispatch:
+    inputs:
+      families:
+        description: "Which families to measure, separated by commas (go, rust, dart, node)"
+        default: "go,rust,dart,node"
+        required: false
 
 permissions:
   contents: read
 
 jobs:
   go:
+    if: ${{ contains(format(',{0},', inputs.families || 'go,rust,dart,node'), ',go,') }}
     name: Go coverage
     runs-on: ubuntu-latest
     strategy:
@@ -60,6 +66,7 @@ jobs:
           path: summary.txt
 
   rust:
+    if: ${{ contains(format(',{0},', inputs.families || 'go,rust,dart,node'), ',rust,') }}
     name: Rust coverage
     runs-on: ubuntu-latest
     strategy:
@@ -103,6 +110,7 @@ jobs:
           path: summary.txt
 
   dart:
+    if: ${{ contains(format(',{0},', inputs.families || 'go,rust,dart,node'), ',dart,') }}
     name: Dart coverage
     runs-on: ubuntu-latest
     strategy:
@@ -157,6 +165,7 @@ jobs:
           path: summary.txt
 
   node:
+    if: ${{ contains(format(',{0},', inputs.families || 'go,rust,dart,node'), ',node,') }}
     name: Node coverage
     runs-on: ubuntu-latest
     strategy:
