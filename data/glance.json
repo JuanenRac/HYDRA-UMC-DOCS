@@ -691,7 +691,7 @@
     "HYDRA-UMC-TOOL-CLI": {
       "hardware": "simulated",
       "tests": {
-        "count": 271,
+        "count": 291,
         "command": "go test ./..."
       },
       "rows": {
