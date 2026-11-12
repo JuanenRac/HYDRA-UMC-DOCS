@@ -4,7 +4,7 @@
       "hardware": "not_run",
       "target": "board",
       "tests": {
-        "count": 491,
+        "count": 662,
         "command": "python -m unittest discover -s tests -p 'test_*.py'"
       }
     },
@@ -218,7 +218,7 @@
     "HYDRA-UMC-DETECTION-HEF": {
       "hardware": "not_run",
       "tests": {
-        "count": 237
+        "count": 357
       },
       "rows": {
         "interface": "documented_tested",
@@ -548,7 +548,7 @@
     "HYDRA-UMC-SAFETY-ZONES": {
       "hardware": "not_run",
       "tests": {
-        "count": 1081,
+        "count": 1107,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -564,7 +564,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 891,
+        "count": 956,
         "command": "python -m unittest discover -s clients/python/tests"
       },
       "rows": {
@@ -702,7 +702,7 @@
     "HYDRA-UMC-TWIN": {
       "hardware": "not_run",
       "tests": {
-        "count": 235,
+        "count": 254,
         "command": "cargo test"
       },
       "rows": {
