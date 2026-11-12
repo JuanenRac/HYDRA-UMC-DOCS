@@ -353,7 +353,7 @@
       "hardware": "not_run",
       "target": "ios",
       "tests": {
-        "count": 544,
+        "count": 546,
         "command": "flutter test"
       },
       "rows": {
