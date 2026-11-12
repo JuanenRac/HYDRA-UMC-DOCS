@@ -284,7 +284,7 @@
     "HYDRA-UMC-DSI": {
       "hardware": "not_run",
       "tests": {
-        "count": 364,
+        "count": 369,
         "command": "flutter test"
       },
       "rows": {
@@ -471,7 +471,7 @@
     "HYDRA-UMC-ORCHESTRATOR": {
       "hardware": "not_run",
       "tests": {
-        "count": 278,
+        "count": 292,
         "command": "cargo test"
       },
       "rows": {
