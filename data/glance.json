@@ -162,7 +162,7 @@
     "HYDRA-UMC-COGNITIVE-NODE": {
       "hardware": "not_run",
       "tests": {
-        "count": 283,
+        "count": 289,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -187,7 +187,7 @@
     "HYDRA-UMC-DASHBOARD-AI": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 261,
+        "count": 272,
         "command": "npm test"
       },
       "rows": {
@@ -232,7 +232,7 @@
     "HYDRA-UMC-DEV-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 620,
+        "count": 636,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -522,7 +522,7 @@
     "HYDRA-UMC-PHYSICS-REPLICA": {
       "hardware": "not_run",
       "tests": {
-        "count": 226,
+        "count": 228,
         "command": "cargo test"
       },
       "rows": {
