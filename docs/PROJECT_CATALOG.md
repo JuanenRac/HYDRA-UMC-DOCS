@@ -56,7 +56,7 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
-| [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) | 0.2.8 | Scaffolding | firmware | firmware-c | mcu | - | Motion-control firmware (STM32H757 and STM32G474, six components with bootloaders) and the SPI-OTA bridge written for the CM5 pilot bench (the production host is an NVIDIA Jetson Orin NX); not yet run on a real board. |
+| [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) | 0.2.8 | Scaffolding | firmware | firmware-c | mcu | - | Motion-control firmware (STM32H757 and STM32G474, six components with bootloaders) and the SPI-OTA bridge written for the CM5 pilot bench (host: Jetson Orin NX); not yet run on a board. |
 
 ### Data & Analytics
 

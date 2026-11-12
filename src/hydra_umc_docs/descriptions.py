@@ -13,7 +13,7 @@ manifest) and the structure check of the nightly run reports it.
 from __future__ import annotations
 
 DESCRIPTIONS: dict[str, str] = {
-    "HYDRA-UMC": "Motion-control firmware (STM32H757 and STM32G474, six components with bootloaders) and the SPI-OTA bridge written for the CM5 pilot bench (the production host is an NVIDIA Jetson Orin NX); not yet run on a real board.",
+    "HYDRA-UMC": "Motion-control firmware (STM32H757 and STM32G474, six components with bootloaders) and the SPI-OTA bridge written for the CM5 pilot bench (host: Jetson Orin NX); not yet run on a board.",
     "HYDRA-UMC-ANDROID-CONTROL": "Native Android control app with biometric login, a client of HYDRA-UMC-SERVER.",
     "HYDRA-UMC-ANOMALY-DETECTOR": "FFT and statistical-baseline anomaly detector over DATALAKE history, with drift monitoring (no machine-learning model).",
     "HYDRA-UMC-BRIDGE-AMR": "Coordination boundary for AGV/AMR fleets: frame transform and a VDA 5050 style order vocabulary behind the shared safety gate.",
