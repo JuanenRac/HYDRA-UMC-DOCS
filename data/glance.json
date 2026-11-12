@@ -533,7 +533,7 @@
     "HYDRA-UMC-PRODUCTION-REPORTS": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 214,
+        "count": 219,
         "command": "python -m pytest -q tests"
       },
       "rows": {
