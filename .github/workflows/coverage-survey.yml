@@ -1,0 +1,147 @@
+# =============================================================================
+# HYDRA-UMC-DOCS - measure the test coverage of the compiled repositories (manual)
+# Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
+# GPL-3.0-or-later - see LICENSE
+# =============================================================================
+# The Go, Rust and Dart suites compile, so their coverage is not measured on a plain PC. This workflow fetches each listed repository, runs
+# its tests with the coverage of its own toolchain and uploads, per repository, a short text summary (the total and the files with the lowest
+# coverage) as an artifact, so that the real gaps can be read and filled with tests. Manual only; it writes nothing to any repository.
+name: HYDRA-UMC measure the coverage of the compiled repositories
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  go:
+    name: Go coverage
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repo: [JOB-DISPATCHER, NODE-HEALING, TOOL-CLI, TELEMETRY-COLLECTOR]
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: JuanenRac/HYDRA-UMC-${{ matrix.repo }}
+          path: target
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: stable
+      - name: Run the tests with coverage
+        shell: bash
+        run: |
+          set -u
+          module_dir=$(dirname "$(find target -maxdepth 2 -name go.mod | head -n 1)")
+          cd "$module_dir"
+          go test -count=1 -coverprofile="$RUNNER_TEMP/cover.out" ./... > "$RUNNER_TEMP/go-test.txt" 2>&1 || echo "go test exited with an error"
+          {
+            echo "repository: HYDRA-UMC-${{ matrix.repo }}"
+            tail -n 40 "$RUNNER_TEMP/go-test.txt"
+            echo "--- per package ---"
+            grep -E "coverage:" "$RUNNER_TEMP/go-test.txt" || true
+            echo "--- functions with the lowest coverage ---"
+            go tool cover -func="$RUNNER_TEMP/cover.out" | awk '{print $NF" "$0}' | sort -n | cut -d' ' -f2- | head -n 40
+          } > "$GITHUB_WORKSPACE/summary.txt"
+          cat "$GITHUB_WORKSPACE/summary.txt"
+      - name: Upload the summary
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: coverage-go-${{ matrix.repo }}
+          path: summary.txt
+
+  rust:
+    name: Rust coverage
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repo: [HIL-BRIDGE, ORCHESTRATOR, PATH-PLANNER-3D, PHYSICS-REPLICA, SWARM-SYNC, TWIN]
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: JuanenRac/HYDRA-UMC-${{ matrix.repo }}
+          path: target
+          persist-credentials: false
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@ccc8c1f930153b792217f06c65a38f23a882993a # 1.85.1
+        with:
+          toolchain: 1.85.1
+          components: llvm-tools-preview
+      - name: Install the coverage tool
+        run: cargo install cargo-llvm-cov --locked --version 0.6.16
+      - name: Run the tests with coverage
+        shell: bash
+        working-directory: target
+        run: |
+          set -u
+          cargo llvm-cov --locked --summary-only > "$RUNNER_TEMP/cov.txt" 2>&1 || echo "cargo llvm-cov exited with an error"
+          {
+            echo "repository: HYDRA-UMC-${{ matrix.repo }}"
+            head -n 3 "$RUNNER_TEMP/cov.txt"
+            echo "--- files ---"
+            cat "$RUNNER_TEMP/cov.txt" | tail -n 80
+          } > "$GITHUB_WORKSPACE/summary.txt"
+          cat "$GITHUB_WORKSPACE/summary.txt"
+      - name: Upload the summary
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: coverage-rust-${{ matrix.repo }}
+          path: summary.txt
+
+  dart:
+    name: Dart coverage
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repo: [DSI, IOS-CONTROL]
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: JuanenRac/HYDRA-UMC-${{ matrix.repo }}
+          path: target
+          persist-credentials: false
+      - name: Set up Flutter 3.47.9
+        run: |
+          git clone --depth 1 --branch 3.47.9 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Run the tests with coverage
+        shell: bash
+        working-directory: target
+        run: |
+          set -u
+          flutter pub get
+          flutter test --coverage > "$RUNNER_TEMP/flutter-test.txt" 2>&1 || echo "flutter test exited with an error"
+          python3 - <<'PY' > "$GITHUB_WORKSPACE/summary.txt"
+          import re
+          files, current, hit, total = [], None, 0, 0
+          for line in open("coverage/lcov.info", encoding="utf-8"):
+              line = line.strip()
+              if line.startswith("SF:"):
+                  current, hit, total = line[3:], 0, 0
+              elif line.startswith("DA:"):
+                  total += 1
+                  hit += 0 if line.endswith(",0") else 1
+              elif line == "end_of_record" and current:
+                  files.append((hit / total if total else 1.0, hit, total, current))
+          all_hit, all_total = sum(f[1] for f in files), sum(f[2] for f in files)
+          print("repository: HYDRA-UMC-${{ matrix.repo }}")
+          print(f"lines: {all_hit}/{all_total} = {100 * all_hit / all_total:.1f}%")
+          print("--- files with the lowest line coverage ---")
+          for ratio, h, t, name in sorted(files)[:40]:
+              print(f"{100 * ratio:5.1f}%  {h}/{t}  {name}")
+          PY
+          cat "$GITHUB_WORKSPACE/summary.txt"
+      - name: Upload the summary
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: coverage-dart-${{ matrix.repo }}
+          path: summary.txt
