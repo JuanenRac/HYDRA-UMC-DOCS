@@ -4,7 +4,7 @@
       "hardware": "not_run",
       "target": "board",
       "tests": {
-        "count": 662,
+        "count": 679,
         "command": "python -m unittest discover -s tests -p 'test_*.py'"
       }
     },
@@ -522,7 +522,7 @@
     "HYDRA-UMC-PHYSICS-REPLICA": {
       "hardware": "not_run",
       "tests": {
-        "count": 187,
+        "count": 226,
         "command": "cargo test"
       },
       "rows": {
@@ -702,7 +702,7 @@
     "HYDRA-UMC-TWIN": {
       "hardware": "not_run",
       "tests": {
-        "count": 254,
+        "count": 288,
         "command": "cargo test"
       },
       "rows": {
@@ -718,7 +718,7 @@
     "HYDRA-UMC-UPDATER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 588,
+        "count": 742,
         "command": "python -m pytest -q tests"
       },
       "rows": {
