@@ -4,7 +4,7 @@
       "hardware": "not_run",
       "target": "board",
       "tests": {
-        "count": 882,
+        "count": 913,
         "command": "python -m unittest discover -s tests -p 'test_*.py'"
       }
     },
@@ -398,7 +398,7 @@
     "HYDRA-UMC-MQTT-BROKER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 187,
+        "count": 192,
         "command": "npm test"
       },
       "rows": {
@@ -607,7 +607,7 @@
     "HYDRA-UMC-STUDIO": {
       "hardware": "bench",
       "tests": {
-        "count": 1546,
+        "count": 1565,
         "command": "npm test"
       },
       "rows": {
