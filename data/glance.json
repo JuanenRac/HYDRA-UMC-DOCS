@@ -11,7 +11,7 @@
     "HYDRA-UMC-ANDROID-CONTROL": {
       "hardware": "not_run",
       "tests": {
-        "count": 565,
+        "count": 571,
         "command": "./gradlew testDebugUnitTest"
       },
       "target": "android",
@@ -43,7 +43,7 @@
     "HYDRA-UMC-BRIDGE-AMR": {
       "hardware": "simulated",
       "tests": {
-        "count": 209,
+        "count": 223,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -56,7 +56,7 @@
     "HYDRA-UMC-BRIDGE-CNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 311,
+        "count": 321,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -72,7 +72,7 @@
     "HYDRA-UMC-BRIDGE-DROIDS": {
       "hardware": "simulated",
       "tests": {
-        "count": 184,
+        "count": 198,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -85,7 +85,7 @@
     "HYDRA-UMC-BRIDGE-LASER": {
       "hardware": "simulated",
       "tests": {
-        "count": 236,
+        "count": 248,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -149,7 +149,7 @@
     "HYDRA-UMC-BRIDGE-UAV": {
       "hardware": "simulated",
       "tests": {
-        "count": 302,
+        "count": 322,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -177,7 +177,7 @@
     "HYDRA-UMC-CONNECTOR-HUB": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 304,
+        "count": 308,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -232,7 +232,7 @@
     "HYDRA-UMC-DEV-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 549,
+        "count": 560,
         "command": "python -m pytest -q tests"
       },
       "rows": {
