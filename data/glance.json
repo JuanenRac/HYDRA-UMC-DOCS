@@ -510,7 +510,7 @@
     "HYDRA-UMC-PATH-PLANNER-3D": {
       "hardware": "not_run",
       "tests": {
-        "count": 93,
+        "count": 99,
         "command": "cargo test"
       },
       "rows": {
