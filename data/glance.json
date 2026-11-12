@@ -11,7 +11,7 @@
     "HYDRA-UMC-ANDROID-CONTROL": {
       "hardware": "not_run",
       "tests": {
-        "count": 590,
+        "count": 603,
         "command": "./gradlew testDebugUnitTest"
       },
       "target": "android",
@@ -232,7 +232,7 @@
     "HYDRA-UMC-DEV-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 596,
+        "count": 620,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -284,7 +284,7 @@
     "HYDRA-UMC-DSI": {
       "hardware": "not_run",
       "tests": {
-        "count": 373,
+        "count": 374,
         "command": "flutter test"
       },
       "rows": {

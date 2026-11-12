@@ -39,8 +39,9 @@ python tools/fake_urtc.py --interface vcan0 --tool 5
 
 **What is tested and what is not.** The responder is tested against the vectors of URTC (read from `URTC-DOCS` when it is next to
 this repository, and written out in the tests otherwise) and against an in-memory bus. The SocketCAN bus is tested against a
-simulated socket module: the layout of the 16-byte frame, the filtering of extended, remote and error frames, and the errors. It was
-not run on a real Linux SocketCAN interface (`vcan` does not exist on Windows), so the first run on Linux is still to be done.
+simulated socket module: the layout of the 16-byte frame, the filtering of extended, remote and error frames, and the errors. It runs on a
+real Linux SocketCAN interface (`vcan0`) in the URTC bench of `HYDRA-UMC-DEV-SERVER` (`python -m hydra_umc_dev_server.urtc_bench`, manual
+workflow `urtc-bench.yml`), which asks it the two queries and compares the answers byte for byte. It has not been run against a real head.
 
 ## The catalogue of tools (`data/urtc_tools.json`)
 

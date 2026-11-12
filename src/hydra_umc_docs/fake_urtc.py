@@ -17,8 +17,8 @@ Every other frame is ignored: this is a responder for the read-only queries, not
 flashing commands. Nothing here ever writes to a real head.
 
 The bus is a small interface so that the same responder runs on a real SocketCAN interface (`vcan0` on Linux) and on the
-in-memory pair the tests use. `SocketCanBus` only works on Linux and was **not** run on a real SocketCAN interface here: it
-is tested against a simulated socket. The parameters of the head live in `data/fake_urtc.json`, not in this code."""
+in-memory pair the tests use. `SocketCanBus` only works on Linux: it is tested against a simulated socket and runs on a real
+`vcan0` interface in the URTC bench of HYDRA-UMC-DEV-SERVER. The parameters of the head live in `data/fake_urtc.json`, not in this code."""
 from __future__ import annotations
 
 import json

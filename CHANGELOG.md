@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The simulated URTC tool head has run on a real SocketCAN interface:** the URTC bench of HYDRA-UMC-DEV-SERVER creates `vcan0` on a CI runner, starts `tools/fake_urtc.py` and checks its answers to the two queries byte for byte; the notes of `docs/BENCH_TOOLS.md` and of the module say so. The test counts of the Android app, the DSI panel and the development server follow their real numbers.
+
 ## [0.1.3] - The test counts of the orchestrator, of the HIL bridge and of the UAV bridge follow their real numbers: the glance data and the badge, table and build notes of their READMEs, in the eight languages. (and 1 more changes)
 
 - **The test counts of the orchestrator, of the HIL bridge and of the UAV bridge follow their real numbers:** the glance data and the badge, table and build notes of their READMEs, in the eight languages.
