@@ -32,6 +32,8 @@ run.bat generate --out dataset\ --count 20 --components 6 --defect-rate 0.3 --se
 `dataset/annotations.json`（COCO 格式）写入磁盘。给定 `--seed` 可使数据
 集实现逐字节可复现。
 
+`--tfrecord` 还会把图像及其边框写成 TensorFlow Object Detection API 的 `tf.train.Example` 记录（`tfrecord/all.tfrecord`，使用 `--layout ultralytics` 时每个分区一个文件；类别 id 从 1 开始）。它只用标准库写出，因此不需要 TensorFlow，且不带该选项时关闭。已通过回读文件并校验每个 CRC 测试；从未被 TensorFlow 本身加载。
+
 参数会做范围检查（`--count` 1..10000、`--width`/`--height` 16..4096、`--components` 1..1000、`--defect-rate` 0..1），整个数据集的图像上限为 4 GiB：预计大小超过该上限的命令会在写入任何内容之前以退出码 2 被拒绝，因此一个笔误不会把运行它的机器的磁盘写满。
 
 每次运行还会写入一个真实的 `dataset/manifest.json`，并验证自身的输出：

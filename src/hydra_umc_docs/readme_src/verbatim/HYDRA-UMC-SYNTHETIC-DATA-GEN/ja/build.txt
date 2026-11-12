@@ -36,6 +36,8 @@ YOLO ラベルを `dataset/labels/` + `dataset/classes.txt` に、および/ま�
 実際の `dataset/annotations.json`（COCO 形式）を書き込みます。特定の
 `--seed` を指定すると、データセットはバイト単位で再現可能になります。
 
+`--tfrecord` を指定すると、画像とそのボックスを TensorFlow Object Detection API の `tf.train.Example` レコードとして追加で書き出します（`tfrecord/all.tfrecord`、`--layout ultralytics` では分割ごとに 1 ファイル。クラス ID は 1 から始まります）。標準ライブラリだけで書き出すため TensorFlow は不要で、オプションを付けない限り無効です。ファイルを読み戻してすべての CRC を確認するテスト済みで、TensorFlow 自体では読み込んでいません。
+
 引数は範囲チェックされ（`--count` 1..10000、`--width`/`--height` 16..4096、`--components` 1..1000、`--defect-rate` 0..1）、データセット全体の画像は 4 GiB に制限されます。推定サイズがこれを超えるコマンドは、何かを書き込む前に終了コード 2 で拒否されるため、入力ミスで実行マシンのディスクがいっぱいになることはありません。
 
 各実行は実際の `dataset/manifest.json` も書き込み、自身の出力を検証します：

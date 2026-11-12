@@ -29,6 +29,8 @@ run.bat generate --out dataset\ --count 20 --components 6 --defect-rate 0.3 --se
 
 Scrive vere immagini BMP in `dataset/images/`, vere etichette YOLO in `dataset/labels/` + `dataset/classes.txt`, e/o un vero `dataset/annotations.json` in formato COCO, a seconda di `--format`. Un `--seed` dato rende il dataset riproducibile byte per byte.
 
+`--tfrecord` scrive anche le immagini e i loro riquadri come record `tf.train.Example` della API di rilevamento oggetti di TensorFlow (`tfrecord/all.tfrecord`, o un file per parte con `--layout ultralytics`; gli id di classe partono da 1). È scritto con la sola libreria standard, quindi non richiede TensorFlow, ed è disattivato senza l'opzione. Provato rileggendo i file e controllando ogni CRC; mai caricato da TensorFlow stesso.
+
 Gli argomenti sono controllati per intervallo (`--count` 1..10000, `--width`/`--height` 16..4096, `--components` 1..1000, `--defect-rate` 0..1) e le immagini dell'intero dataset sono limitate a 4 GiB: un comando la cui dimensione stimata supera quel limite viene rifiutato con codice di uscita 2 prima di scrivere qualsiasi cosa, così un errore di battitura non può riempire il disco della macchina su cui gira.
 
 Ogni esecuzione scrive anche un vero `dataset/manifest.json` e valida il proprio output:

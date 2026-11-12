@@ -29,6 +29,8 @@ run.bat generate --out dataset\ --count 20 --components 6 --defect-rate 0.3 --se
 
 Schreibt echte BMP-Bilder nach `dataset/images/`, echte YOLO-Labels nach `dataset/labels/` + `dataset/classes.txt`, und/oder eine echte `dataset/annotations.json` im COCO-Format, je nach `--format`. Ein gegebener `--seed` macht den Datensatz byte-genau reproduzierbar.
 
+`--tfrecord` schreibt zusätzlich die Bilder und ihre Boxen als `tf.train.Example`-Einträge der TensorFlow Object Detection API (`tfrecord/all.tfrecord`, oder mit `--layout ultralytics` eine Datei je Teil; Klassen-IDs beginnen bei 1). Es wird allein mit der Standardbibliothek geschrieben, braucht also kein TensorFlow, und ist ohne die Option aus. Getestet durch Zurücklesen der Dateien und Prüfen jeder CRC; nie von TensorFlow selbst geladen.
+
 Die Argumente werden auf ihren Bereich geprüft (`--count` 1..10000, `--width`/`--height` 16..4096, `--components` 1..1000, `--defect-rate` 0..1), und die Bilder des gesamten Datensatzes sind auf 4 GiB begrenzt: Ein Befehl, dessen geschätzte Größe darüber liegt, wird mit Exit-Code 2 abgelehnt, bevor etwas geschrieben wird, sodass ein Tippfehler nicht den Datenträger des ausführenden Rechners füllen kann.
 
 Jeder Lauf schreibt außerdem eine echte `dataset/manifest.json` und validiert seine eigene Ausgabe:
