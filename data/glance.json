@@ -522,7 +522,7 @@
     "HYDRA-UMC-PHYSICS-REPLICA": {
       "hardware": "not_run",
       "tests": {
-        "count": 228,
+        "count": 229,
         "command": "cargo test"
       },
       "rows": {
@@ -564,7 +564,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 964,
+        "count": 972,
         "command": "python -m unittest discover -s clients/python/tests"
       },
       "rows": {
