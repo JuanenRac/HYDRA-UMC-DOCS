@@ -806,7 +806,7 @@
     "HYDRA-UMC-WATCH": {
       "hardware": "not_run",
       "tests": {
-        "count": 161,
+        "count": 169,
         "command": "./gradlew testDebugUnitTest"
       },
       "rows": {
