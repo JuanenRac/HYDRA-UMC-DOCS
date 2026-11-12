@@ -28,7 +28,7 @@
     "HYDRA-UMC-ANOMALY-DETECTOR": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 275,
+        "count": 366,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -149,7 +149,7 @@
     "HYDRA-UMC-BRIDGE-UAV": {
       "hardware": "simulated",
       "tests": {
-        "count": 322,
+        "count": 324,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -162,7 +162,7 @@
     "HYDRA-UMC-COGNITIVE-NODE": {
       "hardware": "not_run",
       "tests": {
-        "count": 206,
+        "count": 283,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -729,7 +729,7 @@
     "HYDRA-UMC-VISION-NODE": {
       "hardware": "simulated",
       "tests": {
-        "count": 399,
+        "count": 459,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -758,7 +758,7 @@
     "HYDRA-UMC-VISUAL-SERVOING-API": {
       "hardware": "not_run",
       "tests": {
-        "count": 348,
+        "count": 408,
         "command": "python -m pytest -q tests"
       },
       "rows": {
