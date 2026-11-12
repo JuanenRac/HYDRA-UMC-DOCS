@@ -471,7 +471,7 @@
     "HYDRA-UMC-ORCHESTRATOR": {
       "hardware": "not_run",
       "tests": {
-        "count": 292,
+        "count": 297,
         "command": "cargo test"
       },
       "rows": {
