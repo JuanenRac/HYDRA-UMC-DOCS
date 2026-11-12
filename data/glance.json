@@ -591,7 +591,7 @@
     "HYDRA-UMC-SERVER": {
       "hardware": "bench",
       "tests": {
-        "count": 816,
+        "count": 938,
         "command": "npm run test:unit"
       },
       "rows": {
@@ -607,7 +607,7 @@
     "HYDRA-UMC-STUDIO": {
       "hardware": "bench",
       "tests": {
-        "count": 1247,
+        "count": 1386,
         "command": "npm test"
       },
       "rows": {
@@ -636,7 +636,7 @@
     "HYDRA-UMC-SUITE": {
       "hardware": "not_run",
       "tests": {
-        "count": 69,
+        "count": 70,
         "command": "python tools/run_offline_verifiers.py"
       },
       "rows": {
