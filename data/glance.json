@@ -11,7 +11,7 @@
     "HYDRA-UMC-ANDROID-CONTROL": {
       "hardware": "not_run",
       "tests": {
-        "count": 571,
+        "count": 590,
         "command": "./gradlew testDebugUnitTest"
       },
       "target": "android",
