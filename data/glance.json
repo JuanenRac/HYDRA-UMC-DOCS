@@ -133,7 +133,7 @@
     "HYDRA-UMC-BRIDGE-ROS2": {
       "hardware": "simulated",
       "tests": {
-        "count": 140,
+        "count": 155,
         "command": "python tools/build_test.py"
       },
       "rows": {
