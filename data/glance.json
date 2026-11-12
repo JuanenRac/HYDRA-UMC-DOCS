@@ -564,7 +564,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 972,
+        "count": 982,
         "command": "python -m unittest discover -s clients/python/tests"
       },
       "rows": {
@@ -676,7 +676,7 @@
     "HYDRA-UMC-TELEMETRY-COLLECTOR": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 167,
+        "count": 196,
         "command": "go test ./..."
       },
       "rows": {

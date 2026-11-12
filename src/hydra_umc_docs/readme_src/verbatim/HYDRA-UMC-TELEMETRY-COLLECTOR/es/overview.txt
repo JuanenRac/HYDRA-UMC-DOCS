@@ -3,7 +3,7 @@
 Normaliza y deduplica entradas heterogéneas, de modo que lecturas como un pico de corriente de motor en un bus CAN puedan correlacionarse más adelante con otras series (previsto: correlación con resultados de inferencia de IA de un Vision Node; esa inferencia todavía no existe).
 
 ### Características Clave:
-* 🚀 **Ingesta Multi-Protocolo:** Maneja telemetría CAN y WebSocket hoy, sobre una API de ingesta HTTP simple. *(la ingesta gRPC está planeada)*
+* 🚀 **Ingesta Multi-Protocolo:** Maneja telemetría CAN y WebSocket sobre una API de ingesta HTTP simple y, cuando se activa (`-grpc-addr`, apagado por defecto), por gRPC (`TelemetryIngest` del SDK, con token de portador opcional desde un fichero y TLS o TLS mutuo opcionales). gRPC y Protocol Buffers son las únicas dependencias de terceros del colector; todo lo demás es la biblioteca estándar de Go.
 * ⚡ **Rendimiento:** pensado para la telemetría de la fábrica, no para capturar un bus: con los valores por defecto el collector entrega hasta 250 muestras por segundo (un lote de 500 cada 2 s, en una sola petición por lote hacia HYDRA-UMC-DATALAKE, o una petición por muestra si ese datalake no tiene la ruta de lotes o con `-datalake-batch=false`); más allá, el búfer se llena y la ingesta responde `503`.
 * 🧬 **Normalización de Datos:** Traduce paquetes binarios brutos a un formato JSON estandarizado. *(la salida Protobuf está planeada, no implementada)*
 * 🛡️ **Entrega con búfer:** una muestra que el collector aceptó no se descarta durante una caída de la base de datos o de la red: el lote que se está entregando conserva su sitio, y un búfer lleno rechaza muestras nuevas (`503`) en lugar de tirar las antiguas. El búfer está en memoria, así que reiniciar el collector pierde lo que contiene.

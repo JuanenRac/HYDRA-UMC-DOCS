@@ -3,7 +3,7 @@
 It normalizes and de-duplicates heterogeneous inputs, so that readings such as a motor current spike on a CAN bus could later be correlated with other series (planned: correlation with AI inference results from a Vision Node; no such inference exists yet).
 
 ### Key Features:
-* 🚀 **Multi-Protocol Ingestion:** Handles CAN and WebSocket telemetry today, over a plain HTTP ingest API. *(gRPC ingestion is planned)*
+* 🚀 **Multi-Protocol Ingestion:** Handles CAN and WebSocket telemetry over a plain HTTP ingest API, and, when it is switched on (`-grpc-addr`, off by default), over gRPC (`TelemetryIngest` of the SDK, with an optional bearer token from a file and optional TLS or mutual TLS). gRPC and Protocol Buffers are the only third-party dependencies of the collector; everything else is the Go standard library.
 * ⚡ **Throughput:** built for the factory's telemetry, not for a bus capture: with the defaults the collector delivers up to 250 samples per second (a batch of 500 every 2 s, in one batch request towards HYDRA-UMC-DATALAKE, or one request per sample when that datalake has no batch route or with `-datalake-batch=false`); beyond that the buffer fills up and ingestion answers `503`.
 * 🧬 **Data Normalization:** Translates raw binary packets into a standardized JSON format. *(Protobuf output is planned, not implemented)*
 * 🛡️ **Buffered Delivery:** a sample the collector accepted is not discarded during an outage of the database or the network: the batch being delivered keeps its place, and a full buffer refuses new samples (`503`) instead of dropping old ones. The buffer lives in memory, so restarting the collector loses what it holds.
