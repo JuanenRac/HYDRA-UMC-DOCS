@@ -155,3 +155,45 @@ jobs:
         with:
           name: coverage-dart-${{ matrix.repo }}
           path: summary.txt
+
+  node:
+    name: Node coverage
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repo: [STUDIO, DASHBOARD-AI, GATEWAY-INDUSTRIAL, MQTT-BROKER, MTCONNECT-ADAPTER, OPCUA-SERVER, STUDIO-KIT]
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: JuanenRac/HYDRA-UMC-${{ matrix.repo }}
+          path: target
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - name: Run the tests with coverage
+        continue-on-error: true
+        shell: bash
+        working-directory: target
+        run: |
+          set +e +o pipefail
+          npm ci --ignore-scripts > "$RUNNER_TEMP/npm.txt" 2>&1 || echo "npm ci exited with an error"
+          version=$(node -p "require('vitest/package.json').version" 2>/dev/null)
+          npm install --no-save --ignore-scripts "@vitest/coverage-v8@${version}" >> "$RUNNER_TEMP/npm.txt" 2>&1
+          npx vitest run --coverage --coverage.provider=v8 --coverage.reporter=text > "$RUNNER_TEMP/cov.txt" 2>&1
+          {
+            echo "repository: HYDRA-UMC-${{ matrix.repo }}"
+            grep -E "Tests |Test Files |All files" "$RUNNER_TEMP/cov.txt"
+            echo "--- files ---"
+            awk -F'|' 'NF>4 && $2+0<80 && $1 !~ /File/ {print}' "$RUNNER_TEMP/cov.txt" | head -n 40
+          } > "$GITHUB_WORKSPACE/summary.txt"
+          cat "$GITHUB_WORKSPACE/summary.txt"
+      - name: Upload the summary
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: coverage-node-${{ matrix.repo }}
+          path: summary.txt
