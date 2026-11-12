@@ -23,4 +23,4 @@ Das langfristige Ziel sind massive Missionsausrollungen, parallele Firmware-Upda
 * ✅ **`hydra-cli help` / `--help`** — vollständige Befehlsübersicht. *(implementiert)*
 * 🚧 **`hydra-cli deploy`** — lädt Missionen und Konfigurationen gleichzeitig auf eine Roboterflotte hoch. *(geplant)*
 * 🚧 **`hydra-cli flash-all`** — parallele Firmware-Updates für Controller und URTC-Köpfe. *(geplant)*
-* 🚧 **`hydra-cli audit`** — automatisierte Diagnosesuite für CAN-Bus-Gesundheit und Sensorvalidierung. *(geplant)*
+* 🚧 **Eine Diagnosesuite für CAN und Sensoren (nicht der Befehl `audit` oben, der das Audit-Protokoll liest)** — automatisierte Diagnosesuite für CAN-Bus-Gesundheit und Sensorvalidierung. *(geplant)*

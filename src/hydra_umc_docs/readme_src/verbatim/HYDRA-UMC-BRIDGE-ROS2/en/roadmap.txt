@@ -2,4 +2,4 @@
 
 **Integration boundary:** this bridge is a coordination boundary only — it is not a motor-control node, and it cannot bypass HYDRA-UMC-SERVER, MCU limits, watchdogs or E-STOP; every dispatched job still passes through the same shared gate every sibling bridge uses.
 
-**Still ahead:** no ROS network, robot or physical actuator has been validated yet — the `rclpy` adapter and concrete ROS `.msg`/`.srv`/`.action` contracts will be introduced only after a real ROS 2 environment is selected and tested.
+**Still ahead:** no ROS network, robot or physical actuator has been validated yet — the contracts `.msg`/`.srv`/`.action` are written but no client uses them yet, and the adapter that does will be introduced only after a real ROS 2 environment is selected and tested.

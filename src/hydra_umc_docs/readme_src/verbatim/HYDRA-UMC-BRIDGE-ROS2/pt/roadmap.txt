@@ -2,4 +2,4 @@
 
 **Fronteira de integração:** este bridge é apenas uma fronteira de coordenação: não é um nó de controlo de motores e não pode contornar o HYDRA-UMC-SERVER, os limites do MCU, os watchdogs nem a paragem de emergência (E-STOP); cada trabalho despachado continua a passar pela mesma porta partilhada que usam todos os bridges irmãos.
 
-**Ainda por fazer:** ainda não se validou nenhuma rede ROS, robô ou atuador físico: o adaptador `rclpy` e os contratos ROS `.msg`/`.srv`/`.action` concretos só se introduzirão depois de se escolher e testar um ambiente ROS 2 real.
+**Ainda por fazer:** ainda não se validou nenhuma rede ROS, robô ou atuador físico: os contratos `.msg`/`.srv`/`.action` estão escritos mas ainda nenhum cliente os usa, e o adaptador que o fizer só se introduzirá depois de se escolher e testar um ambiente ROS 2 real.

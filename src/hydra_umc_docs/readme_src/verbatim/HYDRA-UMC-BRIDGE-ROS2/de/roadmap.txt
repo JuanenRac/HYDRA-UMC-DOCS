@@ -2,4 +2,4 @@
 
 **Integrationsgrenze:** diese Brücke ist ausschließlich eine Koordinationsgrenze — sie ist kein Motorsteuerungsknoten und kann HYDRA-UMC-SERVER, MCU-Grenzen, Watchdogs oder den E-STOP nicht umgehen; jeder versendete Auftrag durchläuft weiterhin dasselbe gemeinsame Gatter, das jede Schwesterbrücke verwendet.
 
-**Noch offen:** es wurde noch kein ROS-Netzwerk, Roboter oder physischer Aktor validiert — der `rclpy`-Adapter und konkrete ROS-`.msg`/`.srv`/`.action`-Verträge werden erst eingeführt, nachdem eine echte ROS-2-Umgebung ausgewählt und getestet wurde.
+**Noch offen:** es wurde noch kein ROS-Netzwerk, Roboter oder physischer Aktor validiert — die Verträge `.msg`/`.srv`/`.action` sind geschrieben, aber noch verwendet sie kein Client; der Adapter, der das tut, wird erst eingeführt, nachdem eine echte ROS-2-Umgebung ausgewählt und getestet wurde.

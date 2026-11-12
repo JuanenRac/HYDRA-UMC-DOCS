@@ -6,10 +6,7 @@ This version ships Fase 0, Fase 1, Fase 3 and Fase 4. What remains, in phase ord
   HYDRA-UMC-DOCS-QA's own tested TF-IDF search unchanged and adds
   bounded, allow-listed ingestion for Markdown and JSON sources, wired
   as the tenth OBSERVE-level tool, `knowledge.search`.
-- **Fase 2 - Local inference engine.** A small LLM compatible with
-  Hailo-10H (candidates: Qwen2.5-1.5B-Instruct, Qwen2.5-Coder-1.5B,
-  Qwen3-1.7B-Instruct), chosen only once real Hailo compatibility,
-  latency, language quality, power draw and license are verified.
+- **Fase 2 - Open assistant (started: the connection, not a model).** An optional assistant (`assistant.py`, `assistant ask`) sends a redacted, verified evidence bundle or text file to any OpenAI-compatible chat endpoint and prints advice for a person. The code names and recommends no model: the address, the model name, the key, the limits and the system prompt are settings of the configuration file. It is closed by default, asks only a loopback address unless the owner opens it, never follows a redirect, redacts what it sends and what it gets back, and its text is never a proposal, a step or an approval. Running a small model on the Hailo-10H accelerator stays open until real compatibility is verified on the hardware.
 - **Fase 3 - Tool orchestrator (complete: 9 of 9 Fase 3 tools, plus knowledge.search from Fase 1).**
   Deterministic code wiring every real `OBSERVE`-level tool handler to
   `TOOL_MATRIX`, with policy enforcement on every call. `service.status`,
@@ -34,7 +31,7 @@ This version ships Fase 0, Fase 1, Fase 3 and Fase 4. What remains, in phase ord
   HYDRA-UMC-SERVER-integrated API and voice remain separate, cross-repo
   work for a later delivery.
 
-Fase 2, and the rest of Fase 5, do not exist in this repository yet -
+The rest of Fase 5 does not exist in this repository yet -
 see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for what each remaining
 phase is scoped to include and explicitly exclude, and
 [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) for the security

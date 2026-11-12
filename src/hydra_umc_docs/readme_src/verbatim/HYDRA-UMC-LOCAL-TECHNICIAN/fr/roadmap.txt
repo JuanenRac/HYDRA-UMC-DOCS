@@ -8,11 +8,7 @@ phases :
   HYDRA-UMC-DOCS-QA et ajoute une ingestion bornée et sur liste blanche
   pour les sources Markdown et JSON, connectée comme dixième outil de
   niveau OBSERVE, `knowledge.search`.
-- **Phase 2 - Moteur d'inférence local.** Un petit LLM compatible avec
-  Hailo-10H (candidats : Qwen2.5-1.5B-Instruct, Qwen2.5-Coder-1.5B,
-  Qwen3-1.7B-Instruct), choisi seulement une fois vérifiées la
-  compatibilité Hailo réelle, la latence, la qualité linguistique, la
-  consommation et la licence.
+- **Phase 2 - Assistant ouvert (démarrée : la connexion, pas un modèle).** Un assistant optionnel (`assistant.py`, `assistant ask`) envoie un lot de preuves vérifié et expurgé, ou un fichier texte, à n'importe quel point de terminaison de chat compatible OpenAI et affiche un conseil pour une personne. Le code ne nomme ni ne recommande aucun modèle : l'adresse, le nom du modèle, la clé, les limites et le prompt système sont des réglages du fichier de configuration. Il est fermé par défaut, n'interroge qu'une adresse de bouclage sauf si le propriétaire l'ouvre, ne suit jamais une redirection, expurge ce qu'il envoie et ce qu'il reçoit, et son texte n'est jamais une proposition, une étape ni une approbation. Exécuter un petit modèle sur l'accélérateur Hailo-10H reste ouvert jusqu'à la vérification de la compatibilité réelle sur le matériel.
 - **Phase 3 - Orchestrateur d'outils (complète : 9 sur 9 déclarés).** Code
   déterministe connectant tous les gestionnaires réels d'outils de
   niveau `OBSERVE` à `TOOL_MATRIX`, avec la politique appliquée à chaque
@@ -41,7 +37,7 @@ phases :
 
 - **Phase 5 - API locale en lecture seule et page web (deuxième tranche).** `serve` (`webapi.py`, `webui/`) montre ce que le technicien a déjà produit : le registre des outils, les fichiers ToolResult, EvidenceBundle et MaintenanceProposal d'un répertoire de données, les manifestes des projets et l'index des documents des sources de connaissance autorisées. Elle ne répond qu'à GET (toute autre méthode reçoit 405), écoute sur `127.0.0.1` sauf indication contraire et exige alors un jeton bearer d'au moins 24 caractères, trouve les éléments en listant ses dossiers (jamais en joignant un chemin de la requête), masque chaque réponse comme le fait la CLI et borne toutes les tailles. La page unique n'a besoin de rien d'internet et existe en anglais, espagnol, allemand, français, italien, japonais, chinois et portugais du Portugal. Voir [docs/WEB_API.md](docs/WEB_API.md).
 
-La Phase 2, et le reste de la Phase 5, n'existent pas encore dans ce dépôt - voir
+Le reste de la Phase 5 n'existe pas encore dans ce dépôt - voir
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) pour ce que chaque phase restante
 inclut et exclut explicitement, et
 [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) pour les invariants de

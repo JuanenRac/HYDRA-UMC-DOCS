@@ -7,11 +7,7 @@ Esta versión trae la Fase 0, la Fase 1, la Fase 3 y la Fase 4. Lo que queda, en
   de HYDRA-UMC-DOCS-QA y añade una ingesta acotada y en lista blanca
   para fuentes Markdown y JSON, conectada como la décima herramienta de
   nivel OBSERVE, `knowledge.search`.
-- **Fase 2 - Motor de inferencia local.** Un LLM pequeño compatible con
-  Hailo-10H (candidatos: Qwen2.5-1.5B-Instruct, Qwen2.5-Coder-1.5B,
-  Qwen3-1.7B-Instruct), elegido solo una vez verificadas la
-  compatibilidad Hailo real, la latencia, la calidad de idioma, el
-  consumo y la licencia.
+- **Fase 2 - Asistente abierto (iniciada: la conexión, no un modelo).** Un asistente opcional (`assistant.py`, `assistant ask`) envía un paquete de evidencia verificado y censurado, o un fichero de texto, a cualquier endpoint de chat compatible con OpenAI e imprime un consejo para una persona. El código no nombra ni recomienda ningún modelo: la dirección, el nombre del modelo, la clave, los límites y el prompt del sistema son ajustes del fichero de configuración. Está cerrado por defecto, solo consulta una dirección de loopback salvo que el dueño lo abra, nunca sigue una redirección, censura lo que envía y lo que recibe, y su texto nunca es una propuesta, un paso ni una aprobación. Ejecutar un modelo pequeño en el acelerador Hailo-10H sigue abierto hasta verificar la compatibilidad real en el hardware.
 - **Fase 3 - Orquestador de herramientas (completa: 9 de 9 de la Fase 3, más knowledge.search de la Fase 1).** Código
   determinista que conecta todos los manejadores reales de
   herramienta de nivel `OBSERVE` a `TOOL_MATRIX`, con la política
@@ -39,7 +35,7 @@ Esta versión trae la Fase 0, la Fase 1, la Fase 3 y la Fase 4. Lo que queda, en
 
 - **Fase 5 - API local de solo lectura y página web (segunda parte).** `serve` (`webapi.py`, `webui/`) muestra lo que el técnico ya ha producido: el registro de herramientas, los ficheros ToolResult, EvidenceBundle y MaintenanceProposal de un directorio de datos, los manifiestos de los proyectos y el índice de documentos de las fuentes de conocimiento permitidas. Solo responde a GET (cualquier otro método recibe 405), escucha en `127.0.0.1` salvo que se indique otra cosa y entonces exige un token bearer de al menos 24 caracteres, encuentra los elementos listando sus carpetas (nunca uniendo una ruta de la petición), redacta cada respuesta como lo hace la CLI y acota todos los tamaños. La página única no necesita nada de internet y está disponible en inglés, español, alemán, francés, italiano, japonés, chino y portugués de Portugal. Véase [docs/WEB_API.md](docs/WEB_API.md).
 
-La Fase 2 y el resto de la Fase 5 no existen todavía en este repositorio - ver
+El resto de la Fase 5 no existe todavía en este repositorio - ver
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para lo que cada fase
 restante incluye y excluye explícitamente, y
 [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) para los invariantes de

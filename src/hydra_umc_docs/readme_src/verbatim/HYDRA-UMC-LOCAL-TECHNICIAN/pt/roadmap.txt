@@ -7,11 +7,7 @@ Esta versão traz a Fase 0, a Fase 1, a Fase 3 e a Fase 4. O que falta, por orde
   acrescenta uma ingestão limitada, da lista de permissões, para fontes
   Markdown e JSON, ligada como a décima ferramenta de nível OBSERVE,
   `knowledge.search`.
-- **Fase 2 - Motor de inferência local.** Um LLM pequeno compatível com o
-  Hailo-10H (candidatos: Qwen2.5-1.5B-Instruct, Qwen2.5-Coder-1.5B,
-  Qwen3-1.7B-Instruct), escolhido só depois de verificadas a compatibilidade
-  real com o Hailo, a latência, a qualidade de idiomas, o consumo de energia e
-  a licença.
+- **Fase 2 - Assistente aberto (iniciada: a ligação, não um modelo).** Um assistente opcional (`assistant.py`, `assistant ask`) envia um pacote de evidências verificado e ocultado, ou um ficheiro de texto, a qualquer endpoint de chat compatível com OpenAI e imprime um conselho para uma pessoa. O código não nomeia nem recomenda nenhum modelo: o endereço, o nome do modelo, a chave, os limites e o prompt do sistema são definições do ficheiro de configuração. Está fechado por predefinição, só consulta um endereço de loopback a menos que o dono o abra, nunca segue um redirecionamento, oculta o que envia e o que recebe, e o seu texto nunca é uma proposta, um passo nem uma aprovação. Executar um modelo pequeno no acelerador Hailo-10H continua em aberto até se verificar a compatibilidade real no hardware.
 - **Fase 3 - Orquestrador de ferramentas (concluída: 9 de 9 ferramentas
   declaradas).** Código determinístico que liga cada manipulador real de
   ferramenta de nível `OBSERVE` ao `TOOL_MATRIX`, com aplicação da política em
@@ -39,7 +35,7 @@ Esta versão traz a Fase 0, a Fase 1, a Fase 3 e a Fase 4. O que falta, por orde
 
 - **Fase 5 - API local só de leitura e página web (segunda parte).** `serve` (`webapi.py`, `webui/`) mostra o que o técnico já produziu: o registo de ferramentas, os ficheiros ToolResult, EvidenceBundle e MaintenanceProposal de uma pasta de dados, os manifestos dos projetos e o índice de documentos das fontes de conhecimento permitidas. Só responde a GET (qualquer outro método recebe 405), escuta em `127.0.0.1` salvo indicação em contrário e então exige um token bearer de pelo menos 24 carateres, encontra os itens listando as suas pastas (nunca juntando um caminho do pedido), oculta cada resposta como a CLI faz e limita todos os tamanhos. A página única não precisa de nada da internet e está disponível em inglês, espanhol, alemão, francês, italiano, japonês, chinês e português de Portugal. Veja [docs/WEB_API.md](docs/WEB_API.md).
 
-A Fase 2 e o resto da Fase 5 ainda não existem neste repositório -
+O resto da Fase 5 ainda não existe neste repositório -
 veja [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) para o que cada fase restante
 inclui e exclui explicitamente, e
 [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) para as invariantes de

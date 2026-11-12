@@ -8,11 +8,7 @@ Reihenfolge der Phasen verbleibt:
   TF-IDF-Suche von HYDRA-UMC-DOCS-QA und fügt eine begrenzte, auf der
   Positivliste stehende Aufnahme für Markdown- und JSON-Quellen hinzu,
   verbunden als zehntes OBSERVE-Stufen-Werkzeug, `knowledge.search`.
-- **Phase 2 - Lokale Inferenz-Engine.** Ein kleines, mit Hailo-10H
-  kompatibles LLM (Kandidaten: Qwen2.5-1.5B-Instruct,
-  Qwen2.5-Coder-1.5B, Qwen3-1.7B-Instruct), erst gewählt, nachdem die
-  reale Hailo-Kompatibilität, Latenz, Sprachqualität, Leistungsaufnahme
-  und Lizenz verifiziert sind.
+- **Phase 2 - Offener Assistent (begonnen: die Verbindung, kein Modell).** Ein optionaler Assistent (`assistant.py`, `assistant ask`) sendet ein geschwärztes, geprüftes Evidence-Bundle oder eine Textdatei an einen beliebigen OpenAI-kompatiblen Chat-Endpunkt und gibt einen Rat für einen Menschen aus. Der Code nennt und empfiehlt kein Modell: Adresse, Modellname, Schlüssel, Grenzen und System-Prompt sind Einstellungen der Konfigurationsdatei. Er ist standardmäßig geschlossen, fragt nur eine Loopback-Adresse, solange der Eigentümer ihn nicht öffnet, folgt nie einer Weiterleitung, schwärzt, was er sendet und was er erhält, und sein Text ist nie ein Vorschlag, ein Schritt oder eine Freigabe. Ein kleines Modell auf dem Hailo-10H-Beschleuniger auszuführen bleibt offen, bis die echte Kompatibilität auf der Hardware geprüft ist.
 - **Phase 3 - Werkzeug-Orchestrator (abgeschlossen: 9 von 9 deklarierten).**
   Deterministischer Code, der alle realen `OBSERVE`-Stufen-
   Werkzeug-Handler mit `TOOL_MATRIX` verbindet, mit
@@ -40,7 +36,7 @@ Reihenfolge der Phasen verbleibt:
   HYDRA-UMC-SERVER integrierte API und Sprache bleiben separate,
   repoübergreifende Arbeit für eine spätere Lieferung.
 
-Phase 2, und der Rest von Phase 5, existieren noch nicht in diesem Repository - siehe
+Der Rest von Phase 5 existiert noch nicht in diesem Repository - siehe
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) dafür, was jede verbleibende
 Phase einschließt und explizit ausschließt, und
 [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md) für die

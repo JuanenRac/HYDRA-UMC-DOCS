@@ -23,4 +23,4 @@ L'obiettivo a lungo termine sono deployment massivi di missioni, aggiornamenti f
 * ✅ **`hydra-cli help` / `--help`** — utilizzo completo dei comandi. *(implementato)*
 * 🚧 **`hydra-cli deploy`** — carica missioni e configurazioni su una flotta di robot simultaneamente. *(pianificato)*
 * 🚧 **`hydra-cli flash-all`** — aggiornamenti firmware in parallelo per controller e teste URTC. *(pianificato)*
-* 🚧 **`hydra-cli audit`** — suite diagnostica automatizzata per la salute del bus CAN e la validazione dei sensori. *(pianificato)*
+* 🚧 **Una suite diagnostica per CAN e sensori (non il comando `audit` qui sopra, che legge il registro di audit)** — suite diagnostica automatizzata per la salute del bus CAN e la validazione dei sensori. *(pianificato)*

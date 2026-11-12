@@ -2,4 +2,4 @@
 
 **Confine di integrazione:** questo ponte è solo un confine di coordinamento — non è un nodo di controllo motore, e non può aggirare HYDRA-UMC-SERVER, i limiti dell'MCU, i watchdog o l'E-STOP; ogni lavoro inviato passa comunque attraverso la stessa porta condivisa usata da tutti i ponti fratelli.
 
-**Ancora da fare:** nessuna rete ROS, robot o attuatore fisico è ancora stato validato — l'adattatore `rclpy` e i contratti ROS `.msg`/`.srv`/`.action` concreti saranno introdotti solo dopo la selezione e il test di un ambiente ROS 2 reale.
+**Ancora da fare:** nessuna rete ROS, robot o attuatore fisico è ancora stato validato — i contratti `.msg`/`.srv`/`.action` sono scritti ma nessun client li usa ancora, e l'adattatore che lo farà sarà introdotto solo dopo la selezione e il test di un ambiente ROS 2 reale.

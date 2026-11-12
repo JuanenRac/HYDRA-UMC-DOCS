@@ -5,10 +5,7 @@
   `knowledge/index.py` 未经改动地移植了 HYDRA-UMC-DOCS-QA 自身已测试的
   TF-IDF 搜索，并新增了针对 Markdown 和 JSON 来源的有限、白名单化摄取，
   作为第十个 OBSERVE 级工具 `knowledge.search` 接入。
-- **第 2 阶段 - 本地推理引擎。** 一个与 Hailo-10H 兼容的小型 LLM（候选：
-  Qwen2.5-1.5B-Instruct、Qwen2.5-Coder-1.5B、Qwen3-1.7B-Instruct），只有
-  在验证了真实的 Hailo 兼容性、延迟、语言质量、功耗和许可证之后才会真正
-  选定。
+- **第 2 阶段 - 开放的助手（已启动：只是连接，不含模型）。** 一个可选的助手（`assistant.py`、`assistant ask`）把经过脱敏和校验的证据包或文本文件发送到任意兼容 OpenAI 的聊天端点，并为人输出建议。代码不指定也不推荐任何模型：地址、模型名、密钥、限制和系统提示都是配置文件中的设置。它默认关闭，除非所有者开启，否则只访问回环地址，从不跟随重定向，对发出和收到的内容都进行脱敏，其文本永远不是提案、步骤或批准。在 Hailo-10H 加速器上运行小型模型仍未决定，需先在硬件上验证真实兼容性。
 - **第 3 阶段 - 工具编排器（已完成：已声明的 9 个中的 9 个）。** 确定性代码，将
   全部真实的 `OBSERVE` 级工具处理程序接入 `TOOL_MATRIX`，并在每次调用时
   强制执行策略。`service.status`、`storage.usage`、`network.port_status`、
@@ -29,7 +26,7 @@
   真实部分，刻意将范围限定在这一个仓库内部。与 HYDRA-UMC-SERVER 集成的
   API 以及语音仍是留待未来交付的、独立的跨仓库工作。
 
-第 2 阶段，以及第 5 阶段的其余部分，目前均尚未存在于本仓库中 - 剩余各阶段明确包含与排除的内容
+第 5 阶段的其余部分目前尚未存在于本仓库中 - 剩余各阶段明确包含与排除的内容
 参见
 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)，各阶段必须持续遵守的安全
 不变量参见 [docs/SECURITY_MODEL.md](docs/SECURITY_MODEL.md)。
