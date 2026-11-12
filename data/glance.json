@@ -4,14 +4,14 @@
       "hardware": "not_run",
       "target": "board",
       "tests": {
-        "count": 913,
+        "count": 971,
         "command": "python -m unittest discover -s tests -p 'test_*.py'"
       }
     },
     "HYDRA-UMC-ANDROID-CONTROL": {
       "hardware": "not_run",
       "tests": {
-        "count": 658,
+        "count": 665,
         "command": "./gradlew testDebugUnitTest"
       },
       "target": "android",
