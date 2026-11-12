@@ -28,7 +28,7 @@
     "HYDRA-UMC-ANOMALY-DETECTOR": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 388,
+        "count": 407,
         "command": "python -m pytest -q tests"
       },
       "rows": {
