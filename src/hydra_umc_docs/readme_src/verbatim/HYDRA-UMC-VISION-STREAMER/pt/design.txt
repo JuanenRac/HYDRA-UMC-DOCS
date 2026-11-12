@@ -6,7 +6,7 @@ O diagrama abaixo é o fluxo de dados de destino para que este projeto está a s
 
 ### Porque não há `hardware/`, `firmware/`, `os/` nem `models/` aqui
 
-O CM5 + Hailo-8 é hardware comercial sem placa própria para desenhar, ao contrário das placas STM32H745/STM32G474 à medida dentro do [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) - pelo que não existe pasta `hardware/`/`firmware/` em nenhum dos 5 projetos do Nó de IA de Visão. O `os/` (a imagem HydraOS partilhada) e o `models/` (os ficheiros `.hef` compilados realmente servidos à NPU) vivem apenas no pai de integração, [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE), já que é o processo que detém a imagem do anfitrião CM5 e o identificador do dispositivo Hailo-8 - levar cópias separadas para aqui seria apenas estado extra para manter sincronizado sem qualquer benefício.
+O CM5 + Hailo-8 é hardware comercial sem placa própria para desenhar, ao contrário das placas STM32H757/STM32G474 à medida dentro do [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) - pelo que não existe pasta `hardware/`/`firmware/` em nenhum dos 5 projetos do Nó de IA de Visão. O `os/` (a imagem HydraOS partilhada) e o `models/` (os ficheiros `.hef` compilados realmente servidos à NPU) vivem apenas no pai de integração, [HYDRA-UMC-VISION-NODE](https://github.com/JuanenRac/HYDRA-UMC-VISION-NODE), já que é o processo que detém a imagem do anfitrião CM5 e o identificador do dispositivo Hailo-8 - levar cópias separadas para aqui seria apenas estado extra para manter sincronizado sem qualquer benefício.
 
 ### Forma prevista do pipeline
 

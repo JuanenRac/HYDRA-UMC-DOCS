@@ -17,7 +17,7 @@ Este proyecto es parte del ecosistema de robótica HYDRA-UMC del mismo autor (Ju
 
 **Directamente Relacionados**
 - **[HYDRA-UMC-VOICE-UI](https://github.com/JuanenRac/HYDRA-UMC-VOICE-UI)** — este servidor retransmite turnos de voz autenticados y acotados hacia él por conexión loopback, conservando el token de la puerta de enlace en el servidor para que la voz nunca se convierta en un comando de robot directo.
-- **[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)** — el diseño de la placa madre del brazo robótico (todavía sin placa poblada); el propio servicio `spi_bridge` de este servidor está pensado para hablar con ella por el enlace SPI-OTA CM5↔STM32H745 (probado solo con dobles de prueba).
+- **[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)** — el diseño de la placa madre del brazo robótico (todavía sin placa poblada); el propio servicio `spi_bridge` de este servidor está pensado para hablar con ella por el enlace SPI-OTA CM5↔STM32H757 (probado solo con dobles de prueba).
 
 **También Forma Parte del Ecosistema**
 

@@ -12,7 +12,7 @@ Dei 5 progetti della famiglia Vision AI Node, questo è l'unico che:
 * Contiene una cartella **`models/`** — i modelli `.hef` compilati realmente caricati sulla NPU Hailo-8 a runtime. [HYDRA-UMC-DETECTION-HEF](https://github.com/JuanenRac/HYDRA-UMC-DETECTION-HEF) è dove questi modelli vengono *compilati e versionati*; questo nodo è dove vive la *copia servita in esecuzione*, perché è il processo proprietario dell'handle del dispositivo Hailo-8.
 * Contiene **`docker-compose.yml`** — vedi sotto.
 
-Nessuno dei 5 progetti contiene cartelle `hardware/` o `firmware/`: CM5 + Hailo-8 è hardware già esistente senza una scheda propria da progettare, a differenza (ad esempio) delle schede STM32H745/STM32G474 su misura dentro [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC).
+Nessuno dei 5 progetti contiene cartelle `hardware/` o `firmware/`: CM5 + Hailo-8 è hardware già esistente senza una scheda propria da progettare, a differenza (ad esempio) delle schede STM32H757/STM32G474 su misura dentro [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC).
 
 ### `docker-compose.yml`: la mappa di integrazione, costruita dai Dockerfile dei figli (costruita e avviata in CI)
 

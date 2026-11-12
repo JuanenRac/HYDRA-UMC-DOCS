@@ -4,7 +4,7 @@ flowchart TB
     ORCH <--> JOB["JOB-DISPATCHER (File d'attente de missions)"]
     JOB -.-> PATH["PATH-PLANNER-3D (Contrôle de collision)"]
     PATH -.-> SYNC["SWARM-SYNC (Synchronisation PTP)"]
-    SYNC -.-> NODE1["HydraNode 1 (H745)"]
-    SYNC -.-> NODE2["HydraNode 2 (H745)"]
+    SYNC -.-> NODE1["HydraNode 1 (H757)"]
+    SYNC -.-> NODE2["HydraNode 2 (H757)"]
     HEAL["NODE-HEALING (Failover)"] --> ORCH
 ```

@@ -23,16 +23,18 @@ What each capability is *today*, said the same way for every repository. It is w
 
 The four kinds of evidence are kept apart on purpose (`HYDRA-UMC-SDK/docs/PROJECT_MANIFEST.md`): a unit test, a loopback test against a real running process, an emulation and a physical-bench result are different claims, and a lighter one never stands in for a heavier one.
 
+**Target hardware.** The boards are designed around an STM32H757 and an NVIDIA Jetson Orin NX 16 GB; the Compute Module 5 is the pilot development bench, and the rows below that name the CM5 describe that bench. Nothing is claimed about the Jetson yet.
+
 **The one fact that colours every row:** the custom boards of HYDRA-UMC do not exist as populated hardware yet. The firmware repository, the web client, the desktop client and the operating-system layer all say so. Nothing in the family has been measured on those boards, and no firmware has run on an STM32 of the final design. What has met real devices is stated row by row: real IP cameras (VISION-STREAMER), and the CM5 of the owner for the services that are `established`.
 
 ## Firmware: HYDRA-UMC
 
 | Capability | Level | Evidence and limits |
 |---|---|---|
-| Bootloaders of the G474, the H745 CM7 and the H745 CM4 (CAN-OTA / SPI-OTA, CRC-32 and Ed25519 signature verified into a backup slot before the copy) | Builds | Compile and link clean with the ARM toolchain; not run on real silicon. Helper logic with host tests: flash geometry, the data-length helpers, relay reassembly, source guards |
+| Bootloaders of the G474, the H7 CM7 and the H7 CM4 (CAN-OTA / SPI-OTA, CRC-32 and Ed25519 signature verified into a backup slot before the copy) | Builds | Compile and link clean with the ARM toolchain; not run on real silicon. Helper logic with host tests: flash geometry, the data-length helpers, relay reassembly, source guards |
 | G474 Robot Controller Board application: status responder and the FDCAN2 relay to the tool head | Builds | Real code (`RobotControllerRelay.c`); no board |
-| H745 CM4 application: FDCAN1 "STACK A" master (round-robin status queries over eight slots, watchdog refresh) | Builds | Real code; no board |
-| H745 CM7 application | Absent | Still a FreeRTOS smoke-test stub |
+| H7 CM4 application: FDCAN1 "STACK A" master (round-robin status queries over eight slots, watchdog refresh) | Builds | Real code; no board |
+| H7 CM7 application | Absent | Still a FreeRTOS smoke-test stub |
 | Six-axis motion generation and S-curve profiles | Absent | The README describes the design; "real 6-axis motion generation (both G474 and CM7) is still not written" |
 | E-STOP path, software limits, safety interlocks, power-loss dump to FRAM | Absent | The repository says so in its safety note: nothing may rely on them yet |
 | CAN FD | Absent | The silicon and the transceivers allow it; the protocols in use are classic frames of at most eight bytes |

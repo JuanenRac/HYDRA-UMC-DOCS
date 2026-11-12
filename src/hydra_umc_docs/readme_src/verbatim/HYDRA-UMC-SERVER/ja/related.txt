@@ -17,7 +17,7 @@
 
 **直接関連**
 - **[HYDRA-UMC-VOICE-UI](https://github.com/JuanenRac/HYDRA-UMC-VOICE-UI)** —— 本サーバーは、ゲートウェイトークンをサーバー側に保持したまま、ループバック接続経由で限定的かつ認証済みの発話ターンをこれへ中継する。音声が直接ロボットコマンドになることは決してない。
-- **[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)** —— ロボットアームのマザーボードの設計(実装済みの基板はまだない)。本サーバー自身の `spi_bridge` サービスは、CM5↔STM32H745 の SPI-OTA 接続を介してこれと通信することを想定している(テストは模擬部品に対してのみ)。
+- **[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)** —— ロボットアームのマザーボードの設計(実装済みの基板はまだない)。本サーバー自身の `spi_bridge` サービスは、CM5↔STM32H757 の SPI-OTA 接続を介してこれと通信することを想定している(テストは模擬部品に対してのみ)。
 
 **エコシステムの他のプロジェクト**
 

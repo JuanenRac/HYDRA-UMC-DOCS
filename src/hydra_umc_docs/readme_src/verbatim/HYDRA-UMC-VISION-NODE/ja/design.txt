@@ -16,7 +16,7 @@ Vision AI Node ファミリーの 5 つのプロジェクトの中で、本プ�
 * **`docker-compose.yml`** —— 下記参照。
 
 5 つのプロジェクトのいずれも `hardware/` や `firmware/` フォルダを持って
-いません。CM5 + Hailo-8 は市販のハードウェアであり、[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) 内部のカスタム STM32H745/STM32G474 基板とは異なり、独自に設計する基板はありません。
+いません。CM5 + Hailo-8 は市販のハードウェアであり、[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) 内部のカスタム STM32H757/STM32G474 基板とは異なり、独自に設計する基板はありません。
 
 ### `docker-compose.yml`：統合マップ。子プロジェクト自身の Dockerfile から構築される（CI で構築・起動済み）
 

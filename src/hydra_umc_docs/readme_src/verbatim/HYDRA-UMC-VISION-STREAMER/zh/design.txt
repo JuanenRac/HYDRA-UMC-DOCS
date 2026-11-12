@@ -7,7 +7,7 @@
 ### 为何这里没有 `hardware/`、`firmware/`、`os/` 或 `models/`
 
 与 [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) 内部定制的
-STM32H745/STM32G474 板卡不同，CM5 + Hailo-8 是现成硬件，没有需要自行
+STM32H757/STM32G474 板卡不同，CM5 + Hailo-8 是现成硬件，没有需要自行
 设计的板卡——因此 5 个 Vision AI Node 项目中都不存在
 `hardware/`/`firmware/` 文件夹。`os/`（共享的 HydraOS 镜像）和
 `models/`（实际提供给 NPU 的已编译 `.hef` 文件）仅存在于集成父项目

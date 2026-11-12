@@ -48,7 +48,7 @@ encontrar de verdad archivos `.bin` reales ahí vía
 Ver `docs/COMPILE_STM32G474.md` y `docs/COMPILE_STM32H745.md` para
 exactamente qué hace cada paso y por qué - y el propio `README.md` de cada
 carpeta de firmware para el estado actual. Los **bootloaders** de los 3
-objetivos (G474, H745 CM7, H745 CM4) son implementaciones reales y
+objetivos (G474, H7 CM7, H7 CM4) son implementaciones reales y
 funcionales de CAN-OTA/SPI-OTA (verificación CRC-32 + firma Ed25519,
 verificar-en-el-slot-de-respaldo-antes-de-copiar-al-principal, la misma
 disciplina anti-brickeo que el propio bootloader de URTC) - compilando limpio

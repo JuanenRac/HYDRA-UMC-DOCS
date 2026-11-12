@@ -42,7 +42,7 @@ The scripts of the server that cover the steps are `verify_discovery_contract`, 
 
 ## What it does not prove
 
-* **Motion.** There is no path from this state to a physical output: the H745 application that would act on it does not generate motion yet, and no populated board exists. The slice ends at the server's state.
+* **Motion.** There is no path from this state to a physical output: the H7 application that would act on it does not generate motion yet, and no populated board exists. The slice ends at the server's state.
 * **The stop as a safety function.** `stop-all` changes the server's state. The firmware has no E-STOP path (see the [security baseline](SECURITY_BASELINE.md)).
 * **The bridges, the broker, the cameras, the AI services and the data services.** Each has its own row in the [capability matrix](CAPABILITY_MATRIX.md); none is part of this path.
 * **Several services on one machine.** The compose files and the full topology have not been exercised as one stack.

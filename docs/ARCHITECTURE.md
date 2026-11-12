@@ -10,15 +10,17 @@ CC BY-SA 4.0 - see LICENSE.md
 
 How the repositories of HYDRA-UMC fit together: the layers, the data flows, the ports and the places where one piece stops trusting another. It is written from the READMEs, manifests, changelogs and documents of the repositories (the sources are named in each section), not from running the system. Where a repository says that something is planned, or has never run on hardware, this page says so too.
 
+**Target hardware.** The HYDRA-UMC motherboard is an STM32H757 (the SPI master of the link) together with an NVIDIA Jetson Orin NX 16 GB that runs the services. The Raspberry Pi Compute Module 5 stays as the pilot development bench: everything in this document that names the CM5 describes the bench on which the services and the SPI bridge are built and tested today, not the production host. The master role of the H757 towards the Jetson, the image for the Jetson and the new peripherals of the board are not written yet, and nothing here has run on the board.
+
 **Reading rule.** The words of the repositories are used as they are: *real* means the code exists and has tests; it does not mean that it has run on a machine. The [capability matrix](CAPABILITY_MATRIX.md) says, per project, how far each capability has been proven.
 
 ## The layers
 
 | Layer | Repositories | What it does |
 |---|---|---|
-| Firmware | HYDRA-UMC | Motion-control firmware for the motherboard: an STM32H745 (Cortex-M7 at 480 MHz and Cortex-M4 at 240 MHz, one FreeRTOS instance per core) as the Kinematic Brain, STM32G474 Robot Controller Boards, bootloaders with CAN-OTA / SPI-OTA, and the CM5-side SPI bridge. |
+| Firmware | HYDRA-UMC | Motion-control firmware for the motherboard: an STM32H757 (Cortex-M7 at 480 MHz and Cortex-M4 at 240 MHz, one FreeRTOS instance per core) as the Kinematic Brain, STM32G474 Robot Controller Boards, bootloaders with CAN-OTA / SPI-OTA, and the SPI bridge (written for the CM5 pilot bench, where the board is still the SPI slave). |
 | Tool heads | URTC (outside this family) | The tool-head firmware (STM32F303) reached through the Robot Controller Board. |
-| Platform | HYDRA-UMC-OS, HYDRA-UMC-SDK, HYDRA-UMC-CONNECTOR-HUB | The product layer on Raspberry Pi OS for the CM5 (read-only device agent, preflight, rollback, Wi-Fi provisioning); the versioned contracts, conformance fixtures and shared CI checks; the registry of external-machine adapter manifests. |
+| Platform | HYDRA-UMC-OS, HYDRA-UMC-SDK, HYDRA-UMC-CONNECTOR-HUB | The product layer on Raspberry Pi OS for the CM5 pilot bench (the image for the Jetson is not defined yet; read-only device agent, preflight, rollback, Wi-Fi provisioning); the versioned contracts, conformance fixtures and shared CI checks; the registry of external-machine adapter manifests. |
 | Backend | HYDRA-UMC-SERVER | The one headless backend that every control client talks to: REST and WebSocket on port 3000, authentication, mDNS discovery, ownership of robots, the global stop. |
 | Clients | HYDRA-UMC-STUDIO, -SUITE, -DSI, -ANDROID-CONTROL, -IOS-CONTROL, -WATCH, -EDITOR-URDF, -EDITOR-STL, -TOOL-CLI | Web, desktop, onboard touch display, phones, watch and command line. All of them are clients of the server's API. |
 | Bridges | HYDRA-UMC-BRIDGE-CNC, -LASER, -OPENPNP, -PRINTER3D, -ROS2, -AMR, -DROIDS, -UAV | Coordination boundaries to machines that keep their own controller. Every job goes through the safety gate of the SDK. |
@@ -43,7 +45,7 @@ flowchart LR
     MO["ANDROID / iOS / WATCH"]
     CLI["TOOL-CLI"]
   end
-  subgraph cm5["CM5 (Raspberry Pi OS)"]
+  subgraph cm5["Host (Jetson Orin NX; today the CM5 pilot bench, Raspberry Pi OS)"]
     SV["SERVER :3000<br/>REST + WebSocket"]
     SB["spi_bridge"]
     AI["Vision / Cognitive services<br/>(loopback)"]
@@ -53,7 +55,7 @@ flowchart LR
     DL["DATALAKE / collector"]
   end
   subgraph mcu["Firmware"]
-    H7["STM32H745<br/>Kinematic Brain"]
+    H7["STM32H757<br/>Kinematic Brain"]
     G4["STM32G474<br/>Robot Controller Board x1-8"]
   end
   TH["URTC tool head<br/>(STM32F303)"]
@@ -82,7 +84,7 @@ The dotted line is the least certain one: one passage of the collector README sa
 ## Data flows
 
 1. **Operator to robot.** A client signs in (`POST /api/login`), keeps the Bearer token, reads the full settings tree with `GET /api/settings` and receives `settings` snapshots and `delta` updates on the `/ws` WebSocket. Commands go to `POST /api/robot/:id/command`; the server arbitrates who owns a robot. Source: `HYDRA-UMC-SERVER/docs/REMOTE_API.md`.
-2. **Server to firmware.** The server relays flashing to a local `spi_bridge` service (administrators only, progress over the WebSocket). The bridge speaks SPI to the STM32H745; the H745's Cortex-M4 runs the FDCAN1 master ("STACK A", up to eight slots) and the Robot Controller Boards relay frames to the tool head. This path is code that compiles and is tested against fakes: no populated board exists yet (`HYDRA-UMC/README.md`, `docs/architecture.md`).
+2. **Server to firmware.** The server relays flashing to a local `spi_bridge` service (administrators only, progress over the WebSocket). The bridge speaks SPI to the STM32H757; the H757's Cortex-M4 runs the FDCAN1 master ("STACK A", up to eight slots) and the Robot Controller Boards relay frames to the tool head. This path is code that compiles and is tested against fakes: no populated board exists yet (`HYDRA-UMC/README.md`, `docs/architecture.md`).
 3. **Global stop.** `POST /api/stop-all` stops every robot and switches every valve and pump off through the server, whatever a reservation says. It is a server function; the firmware repository states that it contains no E-STOP path yet. The two are different things, see the [security baseline](SECURITY_BASELINE.md).
 4. **Server to AI services.** `/api/ai/:service/*` is an authenticated pass-through to the local services of the vision and cognitive families (cognitive-node, detection-hef, visual-servoing-api, vla-engine), all documented as loopback systemd units. Voice turns go to the loopback `HYDRA-UMC-VOICE-UI` gateway; the server keeps the gateway token and the voice service cannot actuate a robot by itself.
 5. **Bridges to machines.** A bridge accepts a `BridgeJob` on `hydra/bridges/<name>/cmd/job` over MQTT (or through its Python API), runs it through `evaluate_job()` of the SDK and answers on `.../cmd/job/result`. The state of the cell and the observed state of the external machine decide the answer. A bridge cannot send raw CAN or SPI frames and cannot override the E-STOP of the MCU (`HYDRA-UMC-SDK/docs/BRIDGE_CONTRACT.md`).

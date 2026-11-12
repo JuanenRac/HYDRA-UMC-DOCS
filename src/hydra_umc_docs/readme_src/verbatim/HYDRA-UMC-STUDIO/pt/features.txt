@@ -23,7 +23,7 @@ Os controlos de jog de cada robô incluem um botão rotativo + deslizador para *
 
 ### Etapa do Kinematic Brain
 
-Um painel de controlo dedicado ao subsistema de movimento local da placa-mãe HYDRA-UMC - os eixos acionados diretamente pelo STM32H745, separados dos braços robóticos distribuídos no STACK A:
+Um painel de controlo dedicado ao subsistema de movimento local da placa-mãe HYDRA-UMC - os eixos acionados diretamente pelo STM32H757, separados dos braços robóticos distribuídos no STACK A:
 
 - 📐 Controlo de jog do **pórtico XY** para os eixos X, Y1, Y2 (pórtico de duplo Y) e Z
 - 🔥 Controlo da **cama aquecida** (comutada por SSR, 230 VAC)
@@ -72,7 +72,7 @@ Carregue trajetórias de exemplo prontas, mova e grave os seus próprios pontos 
 Flashe e teste firmware em toda a cadeia CAN-OTA HYDRA-UMC + URTC a partir de um só painel, com duas entradas dedicadas:
 
 - **URTC → Flasher / Tester** - para a placa da cabeça de ferramenta URTC e as suas próprias placas de expansão (corresponde à cobertura de protocolo das ferramentas de ambiente de trabalho [URTC Flasher](https://github.com/JuanenRac/URTC-FLASHER)/[URTC Tester](https://github.com/JuanenRac/URTC-TESTER))
-- **HYDRA-UMC → Flasher / Tester** - para os níveis da placa controladora do robô e do Kinematic Brain, retransmitidos de ponta a ponta de CM5 → SPI → STM32H745 → FDCAN1 → placa controladora do robô → CAN → cabeça de ferramenta URTC, sem sonda JTAG/SWD nem adaptador USB-CAN (veja o [`docs/architecture.md` do próprio HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC/blob/main/docs/architecture.md) para o desenho completo de endereçamento/relay)
+- **HYDRA-UMC → Flasher / Tester** - para os níveis da placa controladora do robô e do Kinematic Brain, retransmitidos de ponta a ponta de CM5 → SPI → STM32H757 → FDCAN1 → placa controladora do robô → CAN → cabeça de ferramenta URTC, sem sonda JTAG/SWD nem adaptador USB-CAN (veja o [`docs/architecture.md` do próprio HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC/blob/main/docs/architecture.md) para o desenho completo de endereçamento/relay)
 
 Ambos podem descarregar versões de firmware reais diretamente do GitHub (com base em `firmware_manifest.json`, verificadas por CRC32) para o repositório `URTC` ou `HYDRA-UMC`. Como indicado acima, o transporte simula-se por defeito (o Flasher mostra um aviso SIMULAÇÃO, não envia nada às placas e nunca altera a versão guardada); mude-o para hardware em Config > CAN-OTA para flashar placas reais.
 

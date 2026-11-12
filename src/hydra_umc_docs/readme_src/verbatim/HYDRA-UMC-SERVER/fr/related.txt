@@ -17,7 +17,7 @@ Ce projet fait partie de l'écosystème robotique HYDRA-UMC du même auteur (Jua
 
 **Directement Liés**
 - **[HYDRA-UMC-VOICE-UI](https://github.com/JuanenRac/HYDRA-UMC-VOICE-UI)** — ce serveur relaie vers lui des tours de parole limités et authentifiés via une connexion loopback, en gardant le jeton de passerelle côté serveur, pour que la voix ne devienne jamais directement une commande robot.
-- **[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)** — la conception de la carte mère du bras robotique (aucune carte assemblée pour l'instant) ; le propre service `spi_bridge` de ce serveur est destiné à lui parler via la liaison SPI-OTA CM5↔STM32H745 (testé uniquement avec des doublures).
+- **[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)** — la conception de la carte mère du bras robotique (aucune carte assemblée pour l'instant) ; le propre service `spi_bridge` de ce serveur est destiné à lui parler via la liaison SPI-OTA CM5↔STM32H757 (testé uniquement avec des doublures).
 
 **Fait Également Partie de l'Écosystème**
 

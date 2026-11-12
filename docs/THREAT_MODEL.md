@@ -23,7 +23,7 @@ The special feature of this ecosystem is that the consequences are physical: a r
 | Accounts, tokens, the JWT secret, MQTT credentials, bridge and gateway tokens | A stolen credential speaks as that person or service |
 | Camera pictures and recordings, the layout of the cell, work files and models | Privacy and the intellectual property of a workshop |
 | Telemetry and production data (OEE, availability, vibration baselines) | Business confidentiality; and the integrity of the baselines that raise alarms |
-| The CM5 that runs the services | It holds all of the above |
+| The host that runs the services (the Jetson Orin NX; today the CM5 pilot bench) | It holds all of the above |
 
 ## Who might attack
 
@@ -40,7 +40,7 @@ Out of scope here: a determined attacker with long physical access (secrets in f
 ## Where the pieces trust each other
 
 ```
- people ──(HTTP/WS, Bearer)──▶ SERVER ──(loopback HTTP)──▶ AI services, spi_bridge ──(SPI)──▶ H745 ──(CAN)──▶ G474 ──▶ tool head
+ people ──(HTTP/WS, Bearer)──▶ SERVER ──(loopback HTTP)──▶ AI services, spi_bridge ──(SPI)──▶ H757 ──(CAN)──▶ G474 ──▶ tool head
                                   ▲
  bridges ──(MQTT, job + gate)─────┘ authorisation stays in the server; the MCU is the last physical authority (not built yet)
 ```

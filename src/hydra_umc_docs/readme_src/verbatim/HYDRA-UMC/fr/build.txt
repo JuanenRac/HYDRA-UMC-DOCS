@@ -48,7 +48,7 @@ HYDRA-UMC-STUDIO puisse réellement y trouver de vrais fichiers `.bin` via
 Voir `docs/COMPILE_STM32G474.md` et `docs/COMPILE_STM32H745.md` pour ce que
 fait exactement chaque étape et pourquoi - et le propre `README.md` de
 chaque dossier firmware pour l'état actuel. Les **bootloaders** pour les 3
-cibles (G474, H745 CM7, H745 CM4) sont des implémentations CAN-OTA/SPI-OTA
+cibles (G474, H7 CM7, H7 CM4) sont des implémentations CAN-OTA/SPI-OTA
 réelles et fonctionnelles (vérification CRC-32 + signature Ed25519,
 vérifier-dans-la-sauvegarde-avant-de-copier-vers-le-principal, même
 discipline anti-brick que le propre bootloader d'URTC) - compilant

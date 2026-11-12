@@ -23,7 +23,7 @@
 
 ### Kinematic Brain ステージ
 
-HYDRA-UMC マザーボード自身のローカル運動サブシステム——STACK A 上の分散ロボットアームとは別の、STM32H745 が直接駆動する軸——専用の制御パネルです：
+HYDRA-UMC マザーボード自身のローカル運動サブシステム——STACK A 上の分散ロボットアームとは別の、STM32H757 が直接駆動する軸——専用の制御パネルです：
 
 - 📐 **XY ガントリー** X、Y1、Y2（デュアル Y ガントリー）、Z 軸のジョグ制御
 - 🔥 **ヒートベッド** 制御（SSR 切替、230VAC）
@@ -72,9 +72,9 @@ JuanenPnP、JuanenCNC、JuanenLaser は独立した STL コピーを使用し、
 HYDRA-UMC + URTC の CAN-OTA チェーン全体を、1 つのダッシュボードから 2 つの専用エントリポイントで書き込み・自己診断します：
 
 - **URTC → Flasher / Tester** —— URTC ツールヘッドボードおよびその自身の拡張ボード向け（独立した [URTC Flasher](https://github.com/JuanenRac/URTC-FLASHER)/[URTC Tester](https://github.com/JuanenRac/URTC-TESTER) デスクトップツール自身のプロトコルカバレッジと一致）
-- **HYDRA-UMC → Flasher / Tester** —— ロボットコントローラーボードと Kinematic Brain の両階層向け。CM5 → SPI → STM32H745 → FDCAN1 → ロボットコントローラーボード → CAN → URTC ツールヘッドまで全経路が中継され、JTAG/SWD プローブも USB-CAN アダプターも不要です（完全なアドレッシング／中継設計は [HYDRA-UMC 自身の `docs/architecture.md`](https://github.com/JuanenRac/HYDRA-UMC/blob/main/docs/architecture.md) を参照）
+- **HYDRA-UMC → Flasher / Tester** —— ロボットコントローラーボードと Kinematic Brain の両階層向け。CM5 → SPI → STM32H757 → FDCAN1 → ロボットコントローラーボード → CAN → URTC ツールヘッドまで全経路が中継され、JTAG/SWD プローブも USB-CAN アダプターも不要です（完全なアドレッシング／中継設計は [HYDRA-UMC 自身の `docs/architecture.md`](https://github.com/JuanenRac/HYDRA-UMC/blob/main/docs/architecture.md) を参照）
 
-いずれも `URTC` または `HYDRA-UMC` リポジトリ向けの実際のファームウェアリリースを、GitHub から直接ダウンロードできます（`firmware_manifest.json` に基づき、CRC32 で検証済み）。上記のとおり、実際の STM32H745 ファームウェアが実機ハードウェア上に存在して通信できるようになるまで、トランスポート自体は完全な内蔵シミュレーションに対して動作します。
+いずれも `URTC` または `HYDRA-UMC` リポジトリ向けの実際のファームウェアリリースを、GitHub から直接ダウンロードできます（`firmware_manifest.json` に基づき、CRC32 で検証済み）。上記のとおり、実際の STM32H757 ファームウェアが実機ハードウェア上に存在して通信できるようになるまで、トランスポート自体は完全な内蔵シミュレーションに対して動作します。
 
 ### ゲームパッド対応
 

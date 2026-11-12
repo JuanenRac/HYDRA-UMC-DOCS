@@ -14,7 +14,7 @@
 * 拥有 **`docker-compose.yml`**——见下文。
 
 5 个项目中没有一个携带 `hardware/` 或 `firmware/` 文件夹：CM5 + Hailo-8 是现
-成硬件，没有需要自行设计的板卡，这与（例如）[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) 内部定制的 STM32H745/STM32G474 板卡不同。
+成硬件，没有需要自行设计的板卡，这与（例如）[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) 内部定制的 STM32H757/STM32G474 板卡不同。
 
 ### `docker-compose.yml`：集成蓝图，由各子项目自己的 Dockerfile 构建（在 CI 中构建并启动）
 

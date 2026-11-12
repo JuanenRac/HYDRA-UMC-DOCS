@@ -7,7 +7,7 @@
 ### なぜ `hardware/`、`firmware/`、`os/`、`models/` がここに存在しないのか
 
 [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) 内部のカスタム
-STM32H745/STM32G474 基板とは異なり、CM5 + Hailo-8 は市販のハードウェア
+STM32H757/STM32G474 基板とは異なり、CM5 + Hailo-8 は市販のハードウェア
 であり、独自に設計する基板はありません——そのため、5 つの Vision AI Node
 プロジェクトのいずれにも `hardware/`/`firmware/` フォルダは存在しません。
 `os/`（共有 HydraOS イメージ）と `models/`（実際に NPU に配信される、

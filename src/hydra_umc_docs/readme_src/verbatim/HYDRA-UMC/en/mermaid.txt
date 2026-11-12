@@ -12,7 +12,7 @@ flowchart TB
 
     CM5 -- "High-Speed SPI bus + DMA + IRQ pin" --> MCU
 
-    subgraph MCU["STM32H745ZIT6 Real-Time Co-Processor (LQFP-144)"]
+    subgraph MCU["STM32H757XIH6 Real-Time Co-Processor (TFBGA240)"]
         direction LR
         CM7["<b>Cortex-M7 @ 480 MHz</b><br/>S-Curve kinematics<br/>Hardware timers<br/>6-axis local stage"]
         CM4["<b>Cortex-M4 @ 240 MHz</b><br/>FDCAN1 controller<br/>Sensor filtering<br/>Inter-core IPC"]
@@ -25,12 +25,12 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    FDCAN1["STM32H745<br/>FDCAN1 Controller"] --> XCVR["TCAN1044<br/>Transceiver"] --> BUS["STACK A Bus<br/>(Robots A1 - A8)"]
+    FDCAN1["STM32H757<br/>FDCAN1 Controller"] --> XCVR["TCAN1044<br/>Transceiver"] --> BUS["STACK A Bus<br/>(Robots A1 - A8)"]
 ```
 
 ```mermaid
 flowchart LR
-    MCU["STM32H745<br/>FDCAN1 (STACK A)"] --> RCB["<b>Robot Controller Board</b><br/>x1 per robot, up to 8<br/>6x STEP/DIR/EN, endstops"]
+    MCU["STM32H757<br/>FDCAN1 (STACK A)"] --> RCB["<b>Robot Controller Board</b><br/>x1 per robot, up to 8<br/>6x STEP/DIR/EN, endstops"]
     RCB -- CAN --> URTC["<b>URTC Tool Head</b><br/>+ optional expansion board"]
     URTC -- CAN --> RCB
 ```

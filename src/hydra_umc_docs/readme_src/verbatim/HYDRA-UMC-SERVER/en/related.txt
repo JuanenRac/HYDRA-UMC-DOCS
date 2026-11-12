@@ -17,7 +17,7 @@ This project is part of the HYDRA-UMC robotics ecosystem by the same author (Jua
 
 **Directly Related**
 - **[HYDRA-UMC-VOICE-UI](https://github.com/JuanenRac/HYDRA-UMC-VOICE-UI)** — this server relays bounded, authenticated voice turns to it over a loopback connection, retaining the gateway token server-side so voice never becomes a direct robot command.
-- **[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)** — the robot-arm motherboard design (no populated board yet); this server's own `spi_bridge` service is meant to talk to it over the CM5↔STM32H745 SPI-OTA link (tested against fakes only).
+- **[HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)** — the robot-arm motherboard design (no populated board yet); this server's own `spi_bridge` service is meant to talk to it over the CM5↔STM32H757 SPI-OTA link (tested against fakes only).
 
 **Also Part of the Ecosystem**
 

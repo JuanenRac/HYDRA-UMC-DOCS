@@ -12,7 +12,7 @@ flowchart TB
 
     CM5 -- "高速 SPI 总线 + DMA + 中断引脚" --> MCU
 
-    subgraph MCU["STM32H745ZIT6 实时协处理器（LQFP-144）"]
+    subgraph MCU["STM32H757XIH6 实时协处理器（TFBGA240）"]
         direction LR
         CM7["<b>Cortex-M7 @ 480 MHz</b><br/>S 曲线运动学<br/>硬件定时器<br/>6 轴本地工作台"]
         CM4["<b>Cortex-M4 @ 240 MHz</b><br/>FDCAN1 控制器<br/>传感器滤波<br/>核间 IPC 通信"]
@@ -25,12 +25,12 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    FDCAN1["STM32H745<br/>FDCAN1 控制器"] --> XCVR["TCAN1044<br/>收发器"] --> BUS["STACK A 总线<br/>（机器人 A1 - A8）"]
+    FDCAN1["STM32H757<br/>FDCAN1 控制器"] --> XCVR["TCAN1044<br/>收发器"] --> BUS["STACK A 总线<br/>（机器人 A1 - A8）"]
 ```
 
 ```mermaid
 flowchart LR
-    MCU["STM32H745<br/>FDCAN1（STACK A）"] --> RCB["<b>机器人控制板</b><br/>每台机器人 1 块，最多 8 块<br/>6 路步进/方向/使能，限位开关"]
+    MCU["STM32H757<br/>FDCAN1（STACK A）"] --> RCB["<b>机器人控制板</b><br/>每台机器人 1 块，最多 8 块<br/>6 路步进/方向/使能，限位开关"]
     RCB -- CAN --> URTC["<b>URTC 工具头</b><br/>+ 可选扩展板"]
     URTC -- CAN --> RCB
 ```

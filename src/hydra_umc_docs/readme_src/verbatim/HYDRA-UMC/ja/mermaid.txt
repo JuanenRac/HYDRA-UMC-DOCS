@@ -12,7 +12,7 @@ flowchart TB
 
     CM5 -- "高速 SPI バス + DMA + IRQ ピン" --> MCU
 
-    subgraph MCU["STM32H745ZIT6 リアルタイムコプロセッサ（LQFP-144）"]
+    subgraph MCU["STM32H757XIH6 リアルタイムコプロセッサ（TFBGA240）"]
         direction LR
         CM7["<b>Cortex-M7 @ 480 MHz</b><br/>S カーブ運動学<br/>ハードウェアタイマー<br/>6 軸ローカルステージ"]
         CM4["<b>Cortex-M4 @ 240 MHz</b><br/>FDCAN1 コントローラー<br/>センサーフィルタリング<br/>コア間 IPC"]
@@ -25,12 +25,12 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    FDCAN1["STM32H745<br/>FDCAN1 コントローラー"] --> XCVR["TCAN1044<br/>トランシーバー"] --> BUS["STACK A バス<br/>（ロボット A1 - A8）"]
+    FDCAN1["STM32H757<br/>FDCAN1 コントローラー"] --> XCVR["TCAN1044<br/>トランシーバー"] --> BUS["STACK A バス<br/>（ロボット A1 - A8）"]
 ```
 
 ```mermaid
 flowchart LR
-    MCU["STM32H745<br/>FDCAN1（STACK A）"] --> RCB["<b>ロボットコントローラーボード</b><br/>ロボット 1 台につき 1 枚、最大 8 枚<br/>6 系統 STEP/DIR/EN、エンドストップ"]
+    MCU["STM32H757<br/>FDCAN1（STACK A）"] --> RCB["<b>ロボットコントローラーボード</b><br/>ロボット 1 台につき 1 枚、最大 8 枚<br/>6 系統 STEP/DIR/EN、エンドストップ"]
     RCB -- CAN --> URTC["<b>URTC ツールヘッド</b><br/>+ 任意の拡張ボード"]
     URTC -- CAN --> RCB
 ```
