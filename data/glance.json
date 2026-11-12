@@ -4,7 +4,7 @@
       "hardware": "not_run",
       "target": "board",
       "tests": {
-        "count": 679,
+        "count": 709,
         "command": "python -m unittest discover -s tests -p 'test_*.py'"
       }
     },
@@ -232,7 +232,7 @@
     "HYDRA-UMC-DEV-SERVER": {
       "hardware": "not_run",
       "tests": {
-        "count": 572,
+        "count": 596,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -591,7 +591,7 @@
     "HYDRA-UMC-SERVER": {
       "hardware": "bench",
       "tests": {
-        "count": 996,
+        "count": 1026,
         "command": "npm run test:unit"
       },
       "rows": {
