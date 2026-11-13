@@ -1,7 +1,7 @@
 {
   "repos": {
     "HYDRA-UMC": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "target": "board",
       "tests": {
         "count": 1056,
@@ -160,7 +160,7 @@
       }
     },
     "HYDRA-UMC-COGNITIVE-NODE": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 289,
         "command": "python -m pytest -q tests"
@@ -216,7 +216,7 @@
       }
     },
     "HYDRA-UMC-DETECTION-HEF": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 379
       },
@@ -230,7 +230,7 @@
       }
     },
     "HYDRA-UMC-DEV-SERVER": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 636,
         "command": "python -m pytest -q tests"
@@ -319,7 +319,7 @@
       }
     },
     "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 294,
         "command": "npm test"
@@ -350,7 +350,7 @@
       }
     },
     "HYDRA-UMC-IOS-CONTROL": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "target": "ios",
       "tests": {
         "count": 554,
@@ -366,7 +366,7 @@
       }
     },
     "HYDRA-UMC-JOB-DISPATCHER": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 356,
         "command": "go test ./..."
@@ -382,7 +382,7 @@
       }
     },
     "HYDRA-UMC-LOCAL-TECHNICIAN": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 420,
         "command": "python -m pytest -q tests"
@@ -425,7 +425,7 @@
       }
     },
     "HYDRA-UMC-NODE-HEALING": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 184,
         "command": "go test ./..."
@@ -469,7 +469,7 @@
       }
     },
     "HYDRA-UMC-ORCHESTRATOR": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 297,
         "command": "cargo test"
@@ -508,7 +508,7 @@
       }
     },
     "HYDRA-UMC-PATH-PLANNER-3D": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 99,
         "command": "cargo test"
@@ -520,7 +520,7 @@
       }
     },
     "HYDRA-UMC-PHYSICS-REPLICA": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 229,
         "command": "cargo test"
@@ -546,7 +546,7 @@
       }
     },
     "HYDRA-UMC-SAFETY-ZONES": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 1166,
         "command": "python -m pytest -q tests"
@@ -636,7 +636,7 @@
     "HYDRA-UMC-SUITE": {
       "hardware": "not_run",
       "tests": {
-        "count": 72,
+        "count": 74,
         "command": "python tools/run_offline_verifiers.py"
       },
       "rows": {
@@ -649,7 +649,7 @@
       }
     },
     "HYDRA-UMC-SWARM-SYNC": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 174,
         "command": "cargo test"
@@ -700,7 +700,7 @@
       }
     },
     "HYDRA-UMC-TWIN": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 288,
         "command": "cargo test"
@@ -756,7 +756,7 @@
       }
     },
     "HYDRA-UMC-VISUAL-SERVOING-API": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 428,
         "command": "python -m pytest -q tests"
@@ -804,7 +804,7 @@
       }
     },
     "HYDRA-UMC-WATCH": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 192,
         "command": "./gradlew testDebugUnitTest"
