@@ -4,14 +4,14 @@
       "hardware": "not_run",
       "target": "board",
       "tests": {
-        "count": 1050,
+        "count": 1056,
         "command": "python -m unittest discover -s tests -p 'test_*.py'"
       }
     },
     "HYDRA-UMC-ANDROID-CONTROL": {
       "hardware": "not_run",
       "tests": {
-        "count": 665,
+        "count": 671,
         "command": "./gradlew testDebugUnitTest"
       },
       "target": "android",
@@ -651,7 +651,7 @@
     "HYDRA-UMC-SWARM-SYNC": {
       "hardware": "not_run",
       "tests": {
-        "count": 169,
+        "count": 174,
         "command": "cargo test"
       },
       "rows": {
