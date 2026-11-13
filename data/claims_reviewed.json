@@ -194,7 +194,6 @@
    "00ef15941846": "Weak access options left on: voice text, recognizer confidence, MAVLink signing, Bluetooth, MQTT, TLS | Every ",
    "026edee922d7": "Then start the production server with:",
    "0f8f5e39b57b": "Only failed logins count towards the login limit above.",
-   "2b426d5a77be": "( ) - switches the request limits per address off (sign-in, renewals, API, code and service routes, global sto",
    "2ec1d884e3ac": "Every route, the WebSocket message contract, authentication, and the per-client remote-access model are docume",
    "436aef625d16": "You own a domain pointing at this server - use Let's Encrypt (e.g. via Certbot) for a real, browser-trusted ce",
    "5ba1506ccd7d": "Prometheus text: uptime, WebSocket clients, write latency, commands by type, authentication failures, host fig",
@@ -220,7 +219,6 @@
    "0d4a51c19b7e": "🏭 Comau - e.DO (BSD-3-Clause meshes, official eDO_description geometry/kinematics)",
    "15c303b8105d": "In production the first administrator comes from the deployment's bootstrap settings and the server refuses ex",
    "33ce905fa741": "Kinematic Brain Stage",
-   "35c7fc6c2609": "Request limits per address in Server Admin (administrators only): a switch ( , on by default) and eight whole ",
    "4625101fecd9": "Connection history in Connected Apps: under the list of live connections, a simple view of who has signed in t",
    "4645cd24dc1d": "🏭 Universal Robots - UR3e, UR5e, UR10e, UR16e, UR20 - official geometry, joint limits, and link kinematics pul",
    "48e043e5be7b": "🏭 UFACTORY - xArm6, Lite 6 (BSD-3-Clause meshes, official xarm_ros2 geometry/kinematics)",
@@ -256,7 +254,6 @@
   "HYDRA-UMC-TWIN": {
    "4121d1ccdb08": "A report of risk written by the one who wants the robot to move | The report travels as a certificate signed w",
    "a90af17558fa": "Jump to: Overview · Architecture · Security & Safety · Configuration · Quick start · Testing · Repository Stru",
-   "b76c0aa76742": "off | switch on (needs , the signing key and the token)",
    "c11063b51718": "the collision prediction route: the switches, the request and the answer, the status codes and the limits.",
    "dc0b43189a0b": "/ | none | Ed25519 key that turns on certificate signing",
    "fdd547e41c01": "none | the configuration of the routes below: URDF, freshness, limits, drift thresholds, log, data lake"
