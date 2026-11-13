@@ -20,11 +20,16 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   go:
     if: ${{ contains(format(',{0},', inputs.families || 'go,rust,dart,node'), ',go,') }}
     name: Go coverage
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -69,6 +74,7 @@ jobs:
     if: ${{ contains(format(',{0},', inputs.families || 'go,rust,dart,node'), ',rust,') }}
     name: Rust coverage
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -113,6 +119,7 @@ jobs:
     if: ${{ contains(format(',{0},', inputs.families || 'go,rust,dart,node'), ',dart,') }}
     name: Dart coverage
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -168,6 +175,7 @@ jobs:
     if: ${{ contains(format(',{0},', inputs.families || 'go,rust,dart,node'), ',node,') }}
     name: Node coverage
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:

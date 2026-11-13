@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A reusable workflow to skip expensive jobs on changes that cannot affect them:** `changed-paths.yml` takes globs (and an optional pull request label that forces the answer) and tells a caller, with `matched` and `reason`, whether a change touches them; it reads two commits with a sparse checkout, asks for `contents: read` only, and answers `true` whenever it cannot find what the change is compared with. `test-changed-paths.yml` tries its rules on throw-away repositories (a pull request that touches the paths and one that does not, the label, a push, a manual run, the patterns) and makes one real call. No workflow of the family calls it yet.
+
+- **The workflows have a time limit and a concurrency group:** the CI baseline, the test count, the four coverage surveys, the dashboard notice, the manifest facts and the nightly comparison gained `timeout-minutes`, and every workflow that lacked one gained a `concurrency` group (a newer run cancels an older one of the same branch except on `main`; scheduled and manual runs and the dashboard notice are never cancelled).
+
 - **Tests of the rules behind the traffic lights, and a coverage floor:** `tests/test_status_lights_rules.py` (52 tests) checks the kind of each row, the highest light every kind of row may hold for every maturity and evidence (a simulator never lifts a hardware row above orange, a young repository is yellow at most, software needs tests, a workflow and a green run), how the table is read and rewritten, what the check says about a throw-away repository and a seeded set of random manifests. The new workflow "Coverage floor" measures the coverage of the generator with a floor that must not go down.
 
 - **Translations read again:** the new platform text reads naturally in Chinese and Portuguese (technical term for a hung machine, one gender for the Jetson, punctuation).
