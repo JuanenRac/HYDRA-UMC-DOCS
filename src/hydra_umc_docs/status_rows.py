@@ -122,7 +122,7 @@ STATES: dict[str, dict[str, tuple[str, dict[str, str]]]] = {
             "保護はまだ実装されていません",
             "尚未实现任何保护措施",
             "Ainda não há qualquer proteção implementada")),
-        "not_applicable": ("green", _l(
+        "not_applicable": ("white", _l(
             "Nothing to protect here: no network access, no secrets and no stored data",
             "Aquí no hay nada que proteger: sin acceso de red, sin secretos y sin datos almacenados",
             "Hier gibt es nichts zu schützen: kein Netzzugriff, keine Geheimnisse und keine gespeicherten Daten",
