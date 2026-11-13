@@ -51,7 +51,22 @@ def test_a_scaffolding_repository_has_no_green_row():
     entry = {"hardware": "not_applicable", "tests": {"count": 3, "command": "pytest"}}
     lights = [light for _, light, _ in status.rows("en", manifest, entry)]
     assert "green" not in lights
-    assert [light for _, light, _ in status.rows("en", MANIFEST, entry)].count("green") == 3
+    assert [light for _, light, _ in status.rows("en", MANIFEST, entry)].count("green") == 2
+    assert [light for area, light, _ in status.rows("en", manifest, entry) if area == "Real hardware"] == ["white"]
+
+
+def test_not_applicable_is_never_green_and_shows_a_white_light_and_its_legend_only_then():
+    entry = {"hardware": "not_applicable", "tests": {"count": 3, "command": "pytest"}}
+    for code in sorted(glance.LANGUAGE_FILES):
+        section = status.render_section(code, MANIFEST, entry)
+        marked = [line for line in section.splitlines() if line.startswith("| ") and "⚪" in line]
+        assert len(marked) == 1, code
+        legend = [line for line in section.splitlines() if " · " in line and "⚪" in line]
+        assert len(legend) == 1, code    # the legend names the white light
+    bound = status.render_section("en", MANIFEST, {"hardware": "not_run", "tests": {"count": 3, "command": "pytest"}})
+    assert "⚪" not in bound
+    assert status.HARDWARE_LIGHT["not_applicable"] == "white"
+    assert status.HARDWARE_LIGHT["in_use"] == "green"
 
 
 def test_extra_lines_come_from_the_data_in_the_fixed_order_and_every_state_has_all_eight_languages():
@@ -83,11 +98,13 @@ def test_an_integration_line_never_goes_above_the_evidence_of_the_manifest():
     assert light(dict(MANIFEST, evidence="none", hardware_bound=False)) == "yellow"
 
 
-def test_a_security_line_is_green_only_when_there_is_nothing_to_protect():
+def test_a_security_line_is_white_when_there_is_nothing_to_protect():
     from hydra_umc_docs import status_rows
 
     for state, (level, _) in status_rows.STATES["security"].items():
-        assert (level == "green") == (state == "not_applicable"), state
+        assert (level == "white") == (state == "not_applicable"), state
+    for key, states in status_rows.STATES.items():
+        assert states.get("not_applicable", ("white",))[0] == "white", key
 
 
 def test_the_data_file_rejects_an_unknown_line_or_state(tmp_path):
