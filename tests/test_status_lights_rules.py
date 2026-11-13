@@ -310,3 +310,30 @@ def test_a_seeded_set_of_random_manifests_never_passes_a_light_above_its_ceiling
         problems = [p for p in sl.problems_of(root, state) if "ceiling" in p]
         above = [i for i in state["items"] if rank(i["light"]) > rank(i["ceiling"])]
         assert len(problems) == len(above)
+
+
+# --- the white light: "does not apply" is never green ---------------------------------------------------------------------------------------
+UNBOUND = {"maturity": "functional", "evidence": "none", "hardware_bound": False}
+
+
+def white_problems(tmp_path: Path, manifest: dict, rows) -> list[str]:
+    tmp_path.mkdir(exist_ok=True)
+    root = make_repo(tmp_path, manifest, rows=rows)
+    return sl.problems_of(root, sl.evaluate(root, "off"))
+
+
+def test_a_repository_with_no_hardware_shows_a_white_hardware_row_and_green_is_a_problem(tmp_path: Path) -> None:
+    assert white_problems(tmp_path / "a", UNBOUND, [("Real hardware", sl.WHITE), ("Software", GREEN), ("Tests", GREEN)]) == []
+    green = white_problems(tmp_path / "b", UNBOUND, [("Real hardware", GREEN), ("Software", GREEN), ("Tests", GREEN)])
+    assert any("never green" in line for line in green)
+
+
+def test_white_is_only_for_a_line_that_does_not_apply(tmp_path: Path) -> None:
+    bound = {"maturity": "functional", "evidence": "field"}
+    assert any("hardware_bound" in line for line in white_problems(tmp_path / "a", bound, [("Real hardware", sl.WHITE), ("Software", GREEN), ("Tests", GREEN)]))
+    assert any("always applies" in line for line in white_problems(tmp_path / "b", UNBOUND, [("Real hardware", sl.WHITE), ("Software", sl.WHITE), ("Tests", GREEN)]))
+
+
+def test_white_has_a_name_and_is_not_a_step_of_the_scale() -> None:
+    assert sl.NAMES["white"] == sl.WHITE and sl.WORDS[sl.WHITE] == "white"
+    assert sl.WHITE not in sl.ORDER

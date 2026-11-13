@@ -17,37 +17,38 @@ import re
 
 from . import glance, status_rows
 
-LIGHTS = {"green": "🟢", "yellow": "🟡", "orange": "🟠", "red": "🔴"}
+LIGHTS = {"green": "🟢", "yellow": "🟡", "orange": "🟠", "red": "🔴", "white": "⚪"}
+# white is not a step of the scale: it says the line does not apply here (a repository with no hardware has no hardware to test), and it is never green
 
 MATURITY_LIGHT = {"scaffolding": "orange", "functional": "yellow", "established": "green", "production": "green"}
 LOW_MATURITY = {"scaffolding"}
-HARDWARE_LIGHT = {"not_applicable": "green", "not_run": "red", "simulated": "orange", "bench": "yellow", "in_use": "green"}
+HARDWARE_LIGHT = {"not_applicable": "white", "not_run": "red", "simulated": "orange", "bench": "yellow", "in_use": "green"}
 
 UI: dict[str, dict[str, str]] = {
     "en": {"heading": "Project status", "intro": "Each line is one part of this repository and the light says how far it is today. It is written from what the repository can show (tests, builds, runs), not from what is planned.",
            "area": "Area", "state": "State", "note": "What it means here", "software": "Software", "tests": "Tests", "hardware": "Real hardware", "docs": "Documentation",
-           "green": "Done and verified", "yellow": "Works, with known limits", "orange": "Partly done or not verified yet", "red": "Not done or not working"},
+           "green": "Done and verified", "yellow": "Works, with known limits", "orange": "Partly done or not verified yet", "red": "Not done or not working", "white": "Not applicable"},
     "es": {"heading": "Estado del proyecto", "intro": "Cada línea es una parte de este repositorio y la luz dice hasta dónde llega hoy. Se escribe con lo que el repositorio puede demostrar (pruebas, compilaciones, ejecuciones), no con lo previsto.",
            "area": "Área", "state": "Estado", "note": "Qué significa aquí", "software": "Software", "tests": "Pruebas", "hardware": "Hardware real", "docs": "Documentación",
-           "green": "Hecho y verificado", "yellow": "Funciona, con límites conocidos", "orange": "Hecho a medias o sin verificar", "red": "Sin hacer o sin funcionar"},
+           "green": "Hecho y verificado", "yellow": "Funciona, con límites conocidos", "orange": "Hecho a medias o sin verificar", "red": "Sin hacer o sin funcionar", "white": "No aplica"},
     "de": {"heading": "Projektstatus", "intro": "Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heute ist. Sie beruht auf dem, was das Repository zeigen kann (Tests, Builds, Läufe), nicht auf dem, was geplant ist.",
            "area": "Bereich", "state": "Stand", "note": "Was das hier bedeutet", "software": "Software", "tests": "Tests", "hardware": "Echte Hardware", "docs": "Dokumentation",
-           "green": "Fertig und überprüft", "yellow": "Funktioniert, mit bekannten Grenzen", "orange": "Teilweise fertig oder noch nicht überprüft", "red": "Nicht gemacht oder funktioniert nicht"},
+           "green": "Fertig und überprüft", "yellow": "Funktioniert, mit bekannten Grenzen", "orange": "Teilweise fertig oder noch nicht überprüft", "red": "Nicht gemacht oder funktioniert nicht", "white": "Nicht zutreffend"},
     "fr": {"heading": "État du projet", "intro": "Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'hui. Elle est écrite d'après ce que le dépôt peut montrer (tests, compilations, exécutions), pas d'après ce qui est prévu.",
            "area": "Domaine", "state": "État", "note": "Ce que cela veut dire ici", "software": "Logiciel", "tests": "Tests", "hardware": "Matériel réel", "docs": "Documentation",
-           "green": "Fait et vérifié", "yellow": "Fonctionne, avec des limites connues", "orange": "À moitié fait ou pas encore vérifié", "red": "Pas fait ou ne fonctionne pas"},
+           "green": "Fait et vérifié", "yellow": "Fonctionne, avec des limites connues", "orange": "À moitié fait ou pas encore vérifié", "red": "Pas fait ou ne fonctionne pas", "white": "Sans objet"},
     "it": {"heading": "Stato del progetto", "intro": "Ogni riga è una parte di questo repository e il semaforo dice a che punto è oggi. È scritta in base a ciò che il repository può mostrare (test, compilazioni, esecuzioni), non a ciò che è previsto.",
            "area": "Area", "state": "Stato", "note": "Cosa significa qui", "software": "Software", "tests": "Test", "hardware": "Hardware reale", "docs": "Documentazione",
-           "green": "Fatto e verificato", "yellow": "Funziona, con limiti noti", "orange": "Fatto a metà o non ancora verificato", "red": "Non fatto o non funzionante"},
+           "green": "Fatto e verificato", "yellow": "Funziona, con limiti noti", "orange": "Fatto a metà o non ancora verificato", "red": "Non fatto o non funzionante", "white": "Non applicabile"},
     "ja": {"heading": "プロジェクトの状況", "intro": "各行はこのリポジトリの一部分で、信号は今日どこまで進んでいるかを示します。計画ではなく、リポジトリが示せるもの（テスト、ビルド、実行）に基づいて書かれています。",
            "area": "領域", "state": "状態", "note": "ここでの意味", "software": "ソフトウェア", "tests": "テスト", "hardware": "実機", "docs": "ドキュメント",
-           "green": "完了・検証済み", "yellow": "動作する（既知の制限あり）", "orange": "一部のみ、または未検証", "red": "未実装または動作しない"},
+           "green": "完了・検証済み", "yellow": "動作する（既知の制限あり）", "orange": "一部のみ、または未検証", "red": "未実装または動作しない", "white": "対象外"},
     "zh": {"heading": "项目状态", "intro": "每一行是本仓库的一个部分，灯号表示它今天做到了哪一步。内容依据仓库能够展示的证据（测试、构建、运行），而不是计划。",
            "area": "领域", "state": "状态", "note": "在这里的含义", "software": "软件", "tests": "测试", "hardware": "真实硬件", "docs": "文档",
-           "green": "已完成并验证", "yellow": "可用，有已知限制", "orange": "部分完成或尚未验证", "red": "未完成或不可用"},
+           "green": "已完成并验证", "yellow": "可用，有已知限制", "orange": "部分完成或尚未验证", "red": "未完成或不可用", "white": "不适用"},
     "pt": {"heading": "Estado do projeto", "intro": "Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É escrita com o que o repositório consegue demonstrar (testes, compilações, execuções), não com o que está previsto.",
            "area": "Área", "state": "Estado", "note": "O que significa aqui", "software": "Software", "tests": "Testes", "hardware": "Hardware real", "docs": "Documentação",
-           "green": "Feito e verificado", "yellow": "Funciona, com limites conhecidos", "orange": "Feito a meio ou ainda por verificar", "red": "Por fazer ou a não funcionar"},
+           "green": "Feito e verificado", "yellow": "Funciona, com limites conhecidos", "orange": "Feito a meio ou ainda por verificar", "red": "Por fazer ou a não funcionar", "white": "Não aplicável"},
 }
 
 # the notes: software by maturity, tests with {n} or without a recorded count, documentation
@@ -152,7 +153,8 @@ def rows(code: str, manifest: dict, entry: dict) -> list[tuple[str, str, str]]:
 def render_section(code: str, manifest: dict, entry: dict) -> str:
     """The section for one language, with LF line endings and a closing blank line."""
     ui = UI[code]
-    legend = " · ".join(f"{LIGHTS[level]} {ui[level]}" for level in LIGHTS)
+    used = {level for _area, level, _note in rows(code, manifest, entry)}
+    legend = " · ".join(f"{LIGHTS[level]} {ui[level]}" for level in LIGHTS if level != "white" or "white" in used)
     lines = [f"## 🚦 {ui['heading']}", "", ui["intro"], "", legend, "", f"| {ui['area']} | {ui['state']} | {ui['note']} |", "|---|---|---|"]
     for area, level, note in rows(code, manifest, entry):
         lines.append(f"| {glance._cell(area)} | {LIGHTS[level]} | {glance._cell(note)} |")

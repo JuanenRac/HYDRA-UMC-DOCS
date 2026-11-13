@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A line that does not apply is white, never green:** a repository with no hardware shows a white light in the hardware line (and in a security line with nothing to protect) and the legend names it only then; the status check refuses green on the hardware line of a repository that declares no hardware, and refuses white on a line that always applies. Tests cover the table, the legend in the eight languages and the check.
+
 - **The shared tools and the CI jobs have time limits:** the project tool, the validators and the build test pass a timeout to every child process (`HYDRA_UMC_GIT_TIMEOUT_S`, 120 s by default, and `HYDRA_UMC_COMMAND_TIMEOUT_S`, 3600 s by default; a value that is not a positive number means the default), and the baseline and notify jobs of the workflows carry `timeout-minutes`, so a stuck step ends with a message instead of holding a runner.
 - **A reusable workflow to skip expensive jobs on changes that cannot affect them:** `changed-paths.yml` takes globs (and an optional pull request label that forces the answer) and tells a caller, with `matched` and `reason`, whether a change touches them; it reads two commits with a sparse checkout, asks for `contents: read` only, and answers `true` whenever it cannot find what the change is compared with. `test-changed-paths.yml` tries its rules on throw-away repositories (a pull request that touches the paths and one that does not, the label, a push, a manual run, the patterns) and makes one real call. No workflow of the family calls it yet.
 
