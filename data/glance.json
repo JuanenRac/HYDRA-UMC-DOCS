@@ -4,14 +4,14 @@
       "hardware": "simulated",
       "target": "board",
       "tests": {
-        "count": 1056,
+        "count": 1132,
         "command": "python -m unittest discover -s tests -p 'test_*.py'"
       }
     },
     "HYDRA-UMC-ANDROID-CONTROL": {
       "hardware": "not_run",
       "tests": {
-        "count": 671,
+        "count": 696,
         "command": "./gradlew testDebugUnitTest"
       },
       "target": "android",
@@ -43,7 +43,7 @@
     "HYDRA-UMC-BRIDGE-AMR": {
       "hardware": "simulated",
       "tests": {
-        "count": 223,
+        "count": 259,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -56,7 +56,7 @@
     "HYDRA-UMC-BRIDGE-CNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 321,
+        "count": 337,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -72,7 +72,7 @@
     "HYDRA-UMC-BRIDGE-DROIDS": {
       "hardware": "simulated",
       "tests": {
-        "count": 198,
+        "count": 285,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -85,7 +85,7 @@
     "HYDRA-UMC-BRIDGE-LASER": {
       "hardware": "simulated",
       "tests": {
-        "count": 248,
+        "count": 301,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -101,7 +101,7 @@
     "HYDRA-UMC-BRIDGE-OPENPNP": {
       "hardware": "simulated",
       "tests": {
-        "count": 280,
+        "count": 286,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -117,7 +117,7 @@
     "HYDRA-UMC-BRIDGE-PRINTER3D": {
       "hardware": "simulated",
       "tests": {
-        "count": 164,
+        "count": 246,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -133,7 +133,7 @@
     "HYDRA-UMC-BRIDGE-ROS2": {
       "hardware": "simulated",
       "tests": {
-        "count": 155,
+        "count": 343,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -149,7 +149,7 @@
     "HYDRA-UMC-BRIDGE-UAV": {
       "hardware": "simulated",
       "tests": {
-        "count": 324,
+        "count": 366,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -337,7 +337,7 @@
     "HYDRA-UMC-HIL-BRIDGE": {
       "hardware": "simulated",
       "tests": {
-        "count": 241,
+        "count": 266,
         "command": "cargo test"
       },
       "rows": {
@@ -368,7 +368,7 @@
     "HYDRA-UMC-JOB-DISPATCHER": {
       "hardware": "simulated",
       "tests": {
-        "count": 356,
+        "count": 367,
         "command": "go test ./..."
       },
       "rows": {
@@ -427,7 +427,7 @@
     "HYDRA-UMC-NODE-HEALING": {
       "hardware": "simulated",
       "tests": {
-        "count": 184,
+        "count": 224,
         "command": "go test ./..."
       },
       "rows": {
@@ -471,7 +471,7 @@
     "HYDRA-UMC-ORCHESTRATOR": {
       "hardware": "simulated",
       "tests": {
-        "count": 297,
+        "count": 315,
         "command": "cargo test"
       },
       "rows": {
@@ -487,7 +487,7 @@
     "HYDRA-UMC-OS": {
       "hardware": "bench",
       "tests": {
-        "count": 73,
+        "count": 168,
         "command": "python -m unittest discover -s agent/tests"
       },
       "rows": {
@@ -510,7 +510,7 @@
     "HYDRA-UMC-PATH-PLANNER-3D": {
       "hardware": "simulated",
       "tests": {
-        "count": 99,
+        "count": 151,
         "command": "cargo test"
       },
       "rows": {
@@ -522,7 +522,7 @@
     "HYDRA-UMC-PHYSICS-REPLICA": {
       "hardware": "simulated",
       "tests": {
-        "count": 229,
+        "count": 240,
         "command": "cargo test"
       },
       "rows": {
@@ -564,7 +564,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 986,
+        "count": 1142,
         "command": "python -m unittest discover -s clients/python/tests"
       },
       "rows": {
@@ -651,7 +651,7 @@
     "HYDRA-UMC-SWARM-SYNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 174,
+        "count": 211,
         "command": "cargo test"
       },
       "rows": {
@@ -702,7 +702,7 @@
     "HYDRA-UMC-TWIN": {
       "hardware": "simulated",
       "tests": {
-        "count": 288,
+        "count": 298,
         "command": "cargo test"
       },
       "rows": {
