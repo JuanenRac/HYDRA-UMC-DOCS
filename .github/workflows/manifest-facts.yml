@@ -23,10 +23,15 @@ permissions:
   pull-requests: write
   issues: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   facts:
     name: Compare every manifest with the computed facts
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Check out this repository
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
