@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Tests of the rules behind the traffic lights, and a coverage floor:** `tests/test_status_lights_rules.py` (52 tests) checks the kind of each row, the highest light every kind of row may hold for every maturity and evidence (a simulator never lifts a hardware row above orange, a young repository is yellow at most, software needs tests, a workflow and a green run), how the table is read and rewritten, what the check says about a throw-away repository and a seeded set of random manifests. The new workflow "Coverage floor" measures the coverage of the generator with a floor that must not go down.
+
 - **Translations read again:** the new platform text reads naturally in Chinese and Portuguese (technical term for a hung machine, one gender for the Jetson, punctuation).
 - **Architecture: the display on the real-time controller:** the architecture document says that, in the target design, the DSI display hangs from the STM32H757, which is meant to run the complete interface so that stop, status and control keep working if the Jetson hangs; it is a design that has not been built or tested.
 - **The READMEs state the new compute platform:** the family hub says that the target platform is an NVIDIA Jetson Orin NX 16 GB on a baseboard with the STM32H757 real-time controller, that the Compute Module 5 stays as the pilot bench and that this platform is still a design (in the eight languages). The README of HYDRA-UMC has the block diagram, the neural-coprocessing bullet and the title redrawn for the Jetson baseboard (Hailo-8, NVMe and Wi-Fi slots, USB 3.0 camera hubs) and a note on the configurable platform profiles; nothing of it has run on a board.

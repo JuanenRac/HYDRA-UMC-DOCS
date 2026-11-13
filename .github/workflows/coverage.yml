@@ -1,0 +1,37 @@
+# =============================================================================
+# HYDRA-UMC-DOCS - Coverage floor
+# Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
+# GPL-3.0-or-later - see LICENSE
+#
+# Measures the coverage of the generator (src/) by the test suite, with a floor that must not go down. It runs on every push and pull request and by hand.
+# =============================================================================
+name: Coverage floor
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  coverage:
+    name: Coverage floor of the generator
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - name: Install the program and its test dependencies
+        run: python -m pip install -e ".[dev]" coverage==7.17.0
+      - name: Measure the coverage
+        run: |
+          python -m coverage run --source=src -m pytest tests -q
+          python -m coverage report --skip-covered --fail-under=65 | tail -30
