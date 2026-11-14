@@ -395,6 +395,13 @@
         "operation": "logs"
       }
     },
+    "HYDRA-UMC-MESHES": {
+      "hardware": "not_applicable",
+      "tests": {
+        "count": 11,
+        "command": "python -m pytest tests -q"
+      }
+    },
     "HYDRA-UMC-MQTT-BROKER": {
       "hardware": "not_applicable",
       "tests": {
