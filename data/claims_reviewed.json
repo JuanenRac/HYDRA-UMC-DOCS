@@ -165,6 +165,9 @@
   "HYDRA-UMC-OS": {
    "d9cdfe793512": "— the real headless backend (REST/WebSocket) every control client actually talks to; the authenticated service"
   },
+  "HYDRA-UMC-PATH-PLANNER-3D": {
+   "ba5c2fdd57f4": "plans a collision-free path for one robot through a scene of sphere and box obstacles (an RRT search; the dang"
+  },
   "HYDRA-UMC-PHYSICS-REPLICA": {
    "289cb4abdebe": "📐 URDF Forward Kinematics & Joint-Limit Validation",
    "7c8640f654b7": "Stack | Rust / roxmltree / URDF forward kinematics / Inverse dynamics (RNEA) / Capsule self-collision"
