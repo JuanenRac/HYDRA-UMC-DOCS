@@ -1,20 +1,20 @@
 ### ENVIRONNEMENT DE DÉVELOPPEMENT
 
 Ce que les machines de développement de ce projet lui-même ont réellement
-installé et vérifié fonctionnel (`build_firmware.sh`/`build_firmware.bat`,
+installé et vérifié fonctionnel (`tools/build_firmware.py`,
 cibles `g474`/`h745`/par défaut, 0 erreur) - pas une liste théorique :
 
 * 🔧 **ARM GNU Toolchain** (`arm-none-eabi-gcc` 10.3+) - compile chaque
   cible firmware MCU. Aucun fichier de projet STM32CubeIDE/CubeMX n'est
-  utilisé ni requis pour la build - `build_firmware.sh`/`build_firmware.bat`
+  utilisé ni requis pour la build - `tools/build_firmware.py`
   récupère les propres sources HAL/CMSIS de ST directement depuis leurs
   repositories GitHub officiels et pilote le compilateur directement, la
   même philosophie déjà établie par le propre
-  `build_firmware.sh`/`build_firmware.bat` du repository jumeau `URTC`.
+  `tools/build_firmware.py` du repository jumeau `URTC`.
 * 🧩 **VS Code + extensions** (`.vscode/extensions.json` les liste toutes) :
   [STM32 VS Code Extension](https://marketplace.visualstudio.com/items?itemName=stmicroelectronics.stm32-vscode-extension)
   (intégration projet/build/debug), **Cortex-Debug** (débogage SWD/JTAG -
-  indépendant de `build_firmware.sh`, utile une fois qu'un matériel réel
+  indépendant de `tools/build_firmware.py`, utile une fois qu'un matériel réel
   existe), **C/C++** (IntelliSense sur chaque fichier
   source firmware/hôte), **Python** (scripts du pipeline `ai_inference/`),
   **Hex Editor** (inspecter la sortie firmware `.bin`), **YAML** (la
@@ -24,5 +24,5 @@ cibles `g474`/`h745`/par défaut, 0 erreur) - pas une liste théorique :
   (`.vscode/tasks.json`).
 * 🗂️ **git** - à la fois pour ce repository lui-même et pour le propre
   vendoring à tag fixe des paquets HAL/CMSIS de ST fait par
-  `build_firmware.sh` (mis en cache sous `build/`, dans gitignore,
+  `tools/build_firmware.py` (mis en cache sous `build/`, dans gitignore,
   re-récupéré avec `--clean`).

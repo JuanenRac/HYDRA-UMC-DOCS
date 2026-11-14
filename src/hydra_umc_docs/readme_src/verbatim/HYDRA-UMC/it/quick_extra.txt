@@ -1,20 +1,20 @@
 ### AMBIENTE DI SVILUPPO
 
 Cosa hanno effettivamente installato e verificato funzionante le macchine di
-sviluppo di questo stesso progetto (`build_firmware.sh`/`build_firmware.bat`,
+sviluppo di questo stesso progetto (`tools/build_firmware.py`,
 target `g474`/`h745`/default, 0 errori) - non un elenco teorico:
 
 * 🔧 **ARM GNU Toolchain** (`arm-none-eabi-gcc` 10.3+) - compila ogni target
   firmware MCU. Nessun file di progetto STM32CubeIDE/CubeMX viene usato o
-  richiesto per la build - `build_firmware.sh`/`build_firmware.bat` recupera
+  richiesto per la build - `tools/build_firmware.py` recupera
   le sorgenti HAL/CMSIS di ST direttamente dai loro repository GitHub
   ufficiali e guida il compilatore direttamente, stessa filosofia già
-  stabilita dal proprio `build_firmware.sh`/`build_firmware.bat` del
+  stabilita dal proprio `tools/build_firmware.py` del
   repository gemello `URTC`.
 * 🧩 **VS Code + estensioni** (`.vscode/extensions.json` le elenca tutte):
   [STM32 VS Code Extension](https://marketplace.visualstudio.com/items?itemName=stmicroelectronics.stm32-vscode-extension)
   (integrazione progetto/build/debug), **Cortex-Debug** (debug SWD/JTAG -
-  indipendente da `build_firmware.sh`, utile una volta che esista hardware
+  indipendente da `tools/build_firmware.py`, utile una volta che esista hardware
   reale), **C/C++** (IntelliSense su ogni file sorgente
   firmware/host), **Python** (script della pipeline `ai_inference/`), **Hex
   Editor** (ispezionare l'output firmware `.bin`), **YAML** (la config
@@ -22,5 +22,5 @@ target `g474`/`h745`/default, 0 errori) - non un elenco teorico:
   prompt delle estensioni consigliate, e usa **Terminal → Run Task** per i
   task di build già preconfigurati (`.vscode/tasks.json`).
 * 🗂️ **git** - sia per questo stesso repository sia per il vendoring a tag
-  fisso dei pacchetti HAL/CMSIS di ST fatto da `build_firmware.sh` (in
+  fisso dei pacchetti HAL/CMSIS di ST fatto da `tools/build_firmware.py` (in
   cache sotto `build/`, in gitignore, ri-scaricato con `--clean`).
