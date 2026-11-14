@@ -9,7 +9,7 @@
       }
     },
     "HYDRA-UMC-ANDROID-CONTROL": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 696,
         "command": "./gradlew testDebugUnitTest"
@@ -232,7 +232,7 @@
     "HYDRA-UMC-DEV-SERVER": {
       "hardware": "simulated",
       "tests": {
-        "count": 828,
+        "count": 869,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -555,7 +555,7 @@
     "HYDRA-UMC-SAFETY-ZONES": {
       "hardware": "simulated",
       "tests": {
-        "count": 1209,
+        "count": 1233,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -571,7 +571,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 1168,
+        "count": 1194,
         "command": "python -m unittest discover -s clients/python/tests"
       },
       "rows": {
@@ -709,7 +709,7 @@
     "HYDRA-UMC-TWIN": {
       "hardware": "simulated",
       "tests": {
-        "count": 298,
+        "count": 305,
         "command": "cargo test"
       },
       "rows": {
