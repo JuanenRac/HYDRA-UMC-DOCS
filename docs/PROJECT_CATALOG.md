@@ -131,7 +131,7 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 |---|---|---|---|---|---|---|---|
 | [HYDRA-UMC-CONNECTOR-HUB](https://github.com/JuanenRac/HYDRA-UMC-CONNECTOR-HUB) | 0.2.0 | Functional | tool | python | user-pc | - | Registry and validator of declarative adapter manifests for external machines. |
 | [HYDRA-UMC-OS](https://github.com/JuanenRac/HYDRA-UMC-OS) | 0.6.1 | Functional | service | python | cm5 | - | Product layer on Raspberry Pi OS for the CM5: read-only device agent, preflight, rollback and Wi-Fi provisioning; not a new distribution. |
-| [HYDRA-UMC-SDK](https://github.com/JuanenRac/HYDRA-UMC-SDK) | 0.6.2 | Established | library | python | user-pc | HYDRA-UMC-OS | Versioned JSON Schema and OpenAPI contracts, conformance fixtures, reference clients (Python, Go, TypeScript, Rust) and the shared CI checks. |
+| [HYDRA-UMC-SDK](https://github.com/JuanenRac/HYDRA-UMC-SDK) | 0.6.3 | Established | library | python | user-pc | HYDRA-UMC-OS | Versioned JSON Schema and OpenAPI contracts, conformance fixtures, reference clients (Python, Go, TypeScript, Rust) and the shared CI checks. |
 
 ### Vision AI Node
 

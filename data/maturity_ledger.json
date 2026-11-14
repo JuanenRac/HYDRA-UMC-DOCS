@@ -115,28 +115,28 @@
     }
   ],
   "summary": {
-    "repositories": 57,
+    "repositories": 59,
     "by_evidence": {
       "bench": 4,
-      "host-test": 1,
-      "none": 42,
-      "simulator": 10
+      "host-test": 14,
+      "none": 2,
+      "simulator": 39
     },
     "by_maturity": {
       "established": 5,
-      "functional": 51,
-      "scaffolding": 1
+      "functional": 52,
+      "scaffolding": 2
     },
-    "with_gaps": 41
+    "with_gaps": 2
   },
   "repos": [
     {
       "name": "HYDRA-UMC",
       "maturity": "scaffolding",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
+      "hardware_statement": "simulated",
       "gaps": []
     },
     {
@@ -153,13 +153,11 @@
     {
       "name": "HYDRA-UMC-ANOMALY-DETECTOR",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-BRIDGE-AMR",
@@ -236,134 +234,119 @@
     {
       "name": "HYDRA-UMC-COGNITIVE-NODE",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-CONNECTOR-HUB",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-DASHBOARD-AI",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "host-test",
+      "colour": "info",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-DATALAKE",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-DETECTION-HEF",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-DEV-SERVER",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
+    },
+    {
+      "name": "HYDRA-UMC-DEVELOPER-NODE",
+      "maturity": "scaffolding",
+      "evidence": "simulator",
+      "colour": "warn",
+      "hardware_bound": false,
+      "hardware_statement": "not_applicable",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-DOCS",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "host-test",
+      "colour": "info",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-DOCS-QA",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "host-test",
+      "colour": "info",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-DSI",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "host-test",
+      "colour": "info",
       "hardware_bound": null,
       "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-EDITOR-STL",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "host-test",
+      "colour": "info",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-EDITOR-URDF",
       "maturity": "established",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "host-test",
+      "colour": "info",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-GATEWAY-INDUSTRIAL",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-HIL-BRIDGE",
@@ -377,35 +360,29 @@
     {
       "name": "HYDRA-UMC-IOS-CONTROL",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-JOB-DISPATCHER",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-LOCAL-TECHNICIAN",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-MESHES",
@@ -413,74 +390,62 @@
       "evidence": "host-test",
       "colour": "info",
       "hardware_bound": false,
-      "hardware_statement": null,
+      "hardware_statement": "not_applicable",
       "gaps": []
     },
     {
       "name": "HYDRA-UMC-MQTT-BROKER",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "host-test",
+      "colour": "info",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-MTCONNECT-ADAPTER",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "host-test",
+      "colour": "info",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-NODE-HEALING",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-OPCUA-SERVER",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "host-test",
+      "colour": "info",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-OPS-AGENT",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-ORCHESTRATOR",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-OS",
@@ -505,68 +470,56 @@
     {
       "name": "HYDRA-UMC-PATH-PLANNER-3D",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-PHYSICS-REPLICA",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-PRODUCTION-REPORTS",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-SAFETY-ZONES",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-SDK",
       "maturity": "established",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-SEMANTIC-PLANNER",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-SERVER",
@@ -587,48 +540,49 @@
       "gaps": []
     },
     {
+      "name": "HYDRA-UMC-STUDIO-KIT",
+      "maturity": "functional",
+      "evidence": "host-test",
+      "colour": "info",
+      "hardware_bound": false,
+      "hardware_statement": "not_applicable",
+      "gaps": []
+    },
+    {
       "name": "HYDRA-UMC-SUITE",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "host-test",
+      "colour": "info",
       "hardware_bound": null,
       "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-SWARM-SYNC",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-SYNTHETIC-DATA-GEN",
       "maturity": "established",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-TELEMETRY-COLLECTOR",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "host-test",
+      "colour": "info",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-TOOL-CLI",
@@ -642,35 +596,29 @@
     {
       "name": "HYDRA-UMC-TWIN",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-UPDATER",
       "maturity": "established",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": false,
       "hardware_statement": "not_applicable",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-VISION-NODE",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-VISION-STREAMER",
@@ -684,46 +632,38 @@
     {
       "name": "HYDRA-UMC-VISUAL-SERVOING-API",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-VLA-ENGINE",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "host-test",
+      "colour": "info",
       "hardware_bound": null,
       "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-VOICE-UI",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     },
     {
       "name": "HYDRA-UMC-WATCH",
       "maturity": "functional",
-      "evidence": "none",
-      "colour": "neutral",
+      "evidence": "simulator",
+      "colour": "warn",
       "hardware_bound": null,
-      "hardware_statement": "not_run",
-      "gaps": [
-        "no-evidence-recorded"
-      ]
+      "hardware_statement": "simulated",
+      "gaps": []
     }
   ]
 }
