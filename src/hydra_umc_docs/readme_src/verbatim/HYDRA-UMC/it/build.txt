@@ -1,35 +1,15 @@
-**Linux/Mac:**
+**Linux, macOS, Windows:**
 ```bash
-./build_firmware.sh          # compila ogni target MCU (Robot Controller Board + Kinematic Brain, entrambi i core)
-./build_firmware.sh g474     # solo Robot Controller Board
-./build_firmware.sh h745     # solo Kinematic Brain (entrambi i core)
-./build_firmware.sh --clean  # cancella prima la cache HAL/CMSIS scaricata
+python3 tools/build_firmware.py          # compila ogni target MCU (Robot Controller Board + Kinematic Brain, entrambi i core)
+python3 tools/build_firmware.py g474     # solo Robot Controller Board
+python3 tools/build_firmware.py h745     # solo Kinematic Brain (entrambi i core)
+python3 tools/build_firmware.py --clean  # cancella prima la cache HAL/CMSIS scaricata
 ```
-
-**Windows:**
-```bat
-build_firmware.bat          :: compila ogni target MCU (Robot Controller Board + Kinematic Brain, entrambi i core)
-build_firmware.bat g474     :: solo Robot Controller Board
-build_firmware.bat h745     :: solo Kinematic Brain (entrambi i core)
-build_firmware.bat --clean  :: cancella prima la cache HAL/CMSIS scaricata
-```
-
-`build_firmware.bat` è la stessa build di `build_firmware.sh` tradotta in
-batch (stessi passi, stesse versioni fisse di HAL/CMSIS, stesso report
-pass/warn/fail) - eseguita end-to-end su una macchina Windows reale con
-l'[Arm GNU
-Toolchain](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads)
-installato e `arm-none-eabi-gcc` nel `PATH`: ogni modulo HAL, entrambi i
-bootloader, e ogni applicazione compilati e linkati puliti, e
-`firmware_manifest.json` rigenerato con CRC32 corrispondenti al proprio
-output della build Linux/Mac. Richiede gli stessi strumenti dello script
-Linux/Mac: l'Arm GNU Toolchain, `git` (per recuperare le sorgenti HAL/CMSIS
-di ST), e `python` per il passo del manifest.
 
 **Build manuale (entrambi i SO, senza lo script):** lo script automatizza
 esattamente i passi di `docs/COMPILE_STM32G474.md` e
 `docs/COMPILE_STM32H745.md` - recupera le sorgenti fisse HAL/CMSIS/FreeRTOS
-elencate all'inizio di `build_firmware.sh`/`build_firmware.bat`, compila i
+elencate all'inizio di `tools/build_firmware.py`, compila i
 moduli HAL e i file startup/system di ogni target con `arm-none-eabi-gcc`
 (flag/elenchi moduli sono elencati in quello stesso script), poi linka ogni
 bootloader e applicazione contro il proprio linker script (`*.ld`, accanto

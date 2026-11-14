@@ -1,21 +1,21 @@
 ### ENTORNO DE DESARROLLO
 
 Lo que las propias máquinas de desarrollo de este proyecto tienen realmente
-instalado y verificado funcionando (`build_firmware.sh`/`build_firmware.bat`,
+instalado y verificado funcionando (`tools/build_firmware.py`,
 objetivos `g474`/`h745`/por defecto, 0 errores) - no una lista teórica:
 
 * 🔧 **ARM GNU Toolchain** (`arm-none-eabi-gcc` 10.3+) - compila cada objetivo
   de firmware MCU. No se usan ni se requieren archivos de proyecto
   STM32CubeIDE/CubeMX para compilar -
-  `build_firmware.sh`/`build_firmware.bat` obtiene las propias fuentes
+  `tools/build_firmware.py` obtiene las propias fuentes
   HAL/CMSIS de ST directamente de sus repositorios oficiales de GitHub y
   ejecuta el compilador directamente, la misma filosofía que ya estableció
-  el propio `build_firmware.sh`/`build_firmware.bat` del repositorio hermano
+  el propio `tools/build_firmware.py` del repositorio hermano
   `URTC`.
 * 🧩 **VS Code + extensiones** (`.vscode/extensions.json` lista todas
   estas): [STM32 VS Code Extension](https://marketplace.visualstudio.com/items?itemName=stmicroelectronics.stm32-vscode-extension)
   (integración de proyecto/compilación/depuración), **Cortex-Debug**
-  (depuración SWD/JTAG - independiente de `build_firmware.sh`, útil cuando
+  (depuración SWD/JTAG - independiente de `tools/build_firmware.py`, útil cuando
   exista hardware real), **C/C++** (IntelliSense en cada archivo fuente de
   firmware/host), **Python** (scripts del pipeline de `ai_inference/`),
   **Hex Editor** (inspeccionar la salida de firmware `.bin`), **YAML**
@@ -25,5 +25,5 @@ objetivos `g474`/`h745`/por defecto, 0 errores) - no una lista teórica:
   (`.vscode/tasks.json`).
 * 🗂️ **git** - tanto para este propio repositorio como para el propio
   vendoring de tags fijos de los paquetes HAL/CMSIS de ST que hace
-  `build_firmware.sh` (cacheado bajo `build/`, en gitignore, vuelto a obtener
+  `tools/build_firmware.py` (cacheado bajo `build/`, en gitignore, vuelto a obtener
   con `--clean`).
