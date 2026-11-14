@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The first sentence of the path planner README is on the reviewed list of the claim check:** it mentions the safety zones only as the source of the danger boxes that the planner avoids (read from a zones file, checked against the code of the planner), and says nothing about the planner being a safety function; the nightly check of the family passes again.
+
 - **The description of the path planner says what it does today, in the eight languages:** spheres and boxes (the danger zones of a zones file of the safety zones read as boxes), several robots planned one after the other in the order of their priority, an arm planned in the space of its joint angles, and the optional `POST /plan` of `serve` (off unless the configuration opens it, token off the loopback, limits of size and time). The sentence that said it plans nothing and for one robot is gone.
 - **A line that does not apply is white, never green:** a repository with no hardware shows a white light in the hardware line (and in a security line with nothing to protect) and the legend names it only then; the status check refuses green on the hardware line of a repository that declares no hardware, and refuses white on a line that always applies. Tests cover the table, the legend in the eight languages and the check.
 
