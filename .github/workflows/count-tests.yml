@@ -61,7 +61,7 @@ jobs:
 
       - name: Install the dependencies of the JavaScript and Dart suites
         run: |
-          for repository in HYDRA-UMC-SERVER HYDRA-UMC-STUDIO HYDRA-UMC-OPCUA-SERVER; do
+          for repository in HYDRA-UMC-SERVER HYDRA-UMC-STUDIO HYDRA-UMC-OPCUA-SERVER HYDRA-UMC-DASHBOARD-AI HYDRA-UMC-GATEWAY-INDUSTRIAL HYDRA-UMC-MQTT-BROKER HYDRA-UMC-MTCONNECT-ADAPTER HYDRA-UMC-STUDIO-KIT; do
             (cd "${repository}" && npm ci --ignore-scripts --no-audit --no-fund) || echo "::warning::npm ci failed in ${repository}"
           done
           export PATH="$RUNNER_TEMP/flutter/bin:$PATH"

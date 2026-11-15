@@ -159,7 +159,8 @@ def run_native(repo: Path, label: str, command: str, timeout: int = 3600) -> tup
 def native_go(repo: Path) -> int | None:
     if not shutil.which("go") or not any(repo.rglob("*_test.go")) or local_build_refusal() is not None:
         return None   # `go test -list` compiles the tests: not on a plain PC (the static count is used)
-    ran = run_native(repo, repo.name, "go test -list . ./...")
+    module = repo if (repo / "go.mod").is_file() else next((path.parent for path in sorted(repo.rglob("go.mod")) if "node_modules" not in path.parts), repo)
+    ran = run_native(module, repo.name, "go test -list . ./...")   # the module may live in a sub-folder (src/)
     if not ran or ran[0] != 0:
         return None
     return len(re.findall(r"(?m)^(?:Test|Fuzz)\w*\s*$", ran[1])) or None
