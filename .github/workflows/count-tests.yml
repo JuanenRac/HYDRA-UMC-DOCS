@@ -49,6 +49,26 @@ jobs:
             git clone --quiet --depth 1 "https://github.com/JuanenRac/${repository}.git" "${repository}" || echo "::warning::could not fetch ${repository}"
           done < family.txt
 
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "22"
+
+      - name: Set up Flutter
+        run: |
+          git clone --quiet --depth 1 --branch 3.47.9 https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+
+      - name: Install the dependencies of the JavaScript and Dart suites
+        run: |
+          for repository in HYDRA-UMC-SERVER HYDRA-UMC-STUDIO HYDRA-UMC-OPCUA-SERVER; do
+            (cd "${repository}" && npm ci --ignore-scripts --no-audit --no-fund) || echo "::warning::npm ci failed in ${repository}"
+          done
+          export PATH="$RUNNER_TEMP/flutter/bin:$PATH"
+          for repository in HYDRA-UMC-IOS-CONTROL HYDRA-UMC-DSI HYDRA-UMC-ANDROID-CONTROL HYDRA-UMC-WATCH; do
+            [ -f "${repository}/pubspec.yaml" ] && (cd "${repository}" && flutter pub get) || echo "::warning::flutter pub get skipped in ${repository}"
+          done
+
       - name: Count the tests
         working-directory: HYDRA-UMC-DOCS
         continue-on-error: true
