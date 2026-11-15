@@ -4,6 +4,9 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+
+## [0.1.4]
+
 - **The README of the SDK states the 100 common words:** the paragraph about `contracts/i18n/common.json` (source of all eight languages) now says 100 words, names SUITE next to STUDIO, Android and ARB, and that the checks cover a SUITE and a Flutter checkout.
 - **The glance data takes the exactly measured test counts of seven repositories that were only estimated:** `data/glance.json` now carries the counts of the runner for DASHBOARD-AI (287), GATEWAY-INDUSTRIAL (295), MQTT-BROKER (270), MTCONNECT-ADAPTER (221), STUDIO-KIT (146), TELEMETRY-COLLECTOR (218) and TOOL-CLI (292).
 - **The glance data takes the exactly measured test counts of seven more repositories:** `data/glance.json` now carries the counts of the runner for BRIDGE-DROIDS (304), BRIDGE-LASER (316), BRIDGE-OPENPNP (300), BRIDGE-PRINTER3D (272), BRIDGE-ROS2 (427), BRIDGE-UAV (401) and PATH-PLANNER-3D (180).
@@ -29,6 +32,8 @@ All notable changes to this project are documented here.
 - **Architecture: the display on the real-time controller:** the architecture document says that, in the target design, the DSI display hangs from the STM32H757, which is meant to run the complete interface so that stop, status and control keep working if the Jetson hangs; it is a design that has not been built or tested.
 - **The READMEs state the new compute platform:** the family hub says that the target platform is an NVIDIA Jetson Orin NX 16 GB on a baseboard with the STM32H757 real-time controller, that the Compute Module 5 stays as the pilot bench and that this platform is still a design (in the eight languages). The README of HYDRA-UMC has the block diagram, the neural-coprocessing bullet and the title redrawn for the Jetson baseboard (Hailo-8, NVMe and Wi-Fi slots, USB 3.0 camera hubs) and a note on the configurable platform profiles; nothing of it has run on a board.
 - **The simulated URTC tool head has run on a real SocketCAN interface:** the URTC bench of HYDRA-UMC-DEV-SERVER creates `vcan0` on a CI runner, starts `tools/fake_urtc.py` and checks its answers to the two queries byte for byte; the notes of `docs/BENCH_TOOLS.md` and of the module say so. The test counts of the Android app, the DSI panel and the development server follow their real numbers.
+
+- Build version synchronized with `hydra-umc.project.json` and the repository-native version source.
 
 ## [0.1.3] - The test counts of the orchestrator, of the HIL bridge and of the UAV bridge follow their real numbers: the glance data and the badge, table and build notes of their READMEs, in the eight languages. (and 1 more changes)
 
