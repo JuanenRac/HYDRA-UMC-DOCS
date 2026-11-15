@@ -43,7 +43,7 @@
     "HYDRA-UMC-BRIDGE-AMR": {
       "hardware": "simulated",
       "tests": {
-        "count": 259,
+        "count": 271,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -56,7 +56,7 @@
     "HYDRA-UMC-BRIDGE-CNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 337,
+        "count": 352,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -284,7 +284,7 @@
     "HYDRA-UMC-DSI": {
       "hardware": "not_run",
       "tests": {
-        "count": 379,
+        "count": 489,
         "command": "flutter test"
       },
       "rows": {
@@ -353,7 +353,7 @@
       "hardware": "simulated",
       "target": "ios",
       "tests": {
-        "count": 554,
+        "count": 661,
         "command": "flutter test"
       },
       "rows": {
@@ -368,7 +368,7 @@
     "HYDRA-UMC-JOB-DISPATCHER": {
       "hardware": "simulated",
       "tests": {
-        "count": 367,
+        "count": 372,
         "command": "go test ./..."
       },
       "rows": {
@@ -448,7 +448,7 @@
     "HYDRA-UMC-OPCUA-SERVER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 256,
+        "count": 291,
         "command": "npm test"
       },
       "rows": {
@@ -598,7 +598,7 @@
     "HYDRA-UMC-SERVER": {
       "hardware": "bench",
       "tests": {
-        "count": 1026,
+        "count": 1144,
         "command": "npm run test:unit"
       },
       "rows": {
@@ -614,7 +614,7 @@
     "HYDRA-UMC-STUDIO": {
       "hardware": "bench",
       "tests": {
-        "count": 1565,
+        "count": 1771,
         "command": "npm test"
       },
       "rows": {
@@ -658,7 +658,7 @@
     "HYDRA-UMC-SWARM-SYNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 211,
+        "count": 224,
         "command": "cargo test"
       },
       "rows": {
@@ -709,7 +709,7 @@
     "HYDRA-UMC-TWIN": {
       "hardware": "simulated",
       "tests": {
-        "count": 305,
+        "count": 307,
         "command": "cargo test"
       },
       "rows": {
