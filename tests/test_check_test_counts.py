@@ -79,6 +79,11 @@ def test_native_listings_are_parsed(tmp_path, monkeypatch):
     (tmp_path / "a_test.go").write_text("package a\n", encoding="utf-8")
     monkeypatch.setattr(tool, "run_native", lambda repo, label, command, timeout=3600: (0, "TestA\nTestB\nok  \tpkg\t0.1s\nBenchmarkC\n"))
     assert tool.native_go(tmp_path) == 2
+    seen = []
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "go.mod").write_text("module x" + chr(10), encoding="utf-8")
+    monkeypatch.setattr(tool, "run_native", lambda repo, label, command, timeout=3600: seen.append(repo) or (0, "TestA" + chr(10)))
+    assert tool.native_go(tmp_path) == 1 and seen == [tmp_path / "src"]
     (tmp_path / "Cargo.toml").write_text("[package]\n", encoding="utf-8")
     monkeypatch.setattr(tool, "run_native", lambda repo, label, command, timeout=3600: (0, "a::b: test\nc: test\n\n2 tests, 0 benchmarks\n"))
     assert tool.native_cargo(tmp_path) == 2
