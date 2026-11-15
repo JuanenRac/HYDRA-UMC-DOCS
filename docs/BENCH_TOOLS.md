@@ -43,6 +43,13 @@ simulated socket module: the layout of the 16-byte frame, the filtering of exten
 real Linux SocketCAN interface (`vcan0`) in the URTC bench of `HYDRA-UMC-DEV-SERVER` (`python -m hydra_umc_dev_server.urtc_bench`, manual
 workflow `urtc-bench.yml`), which asks it the two queries and compares the answers byte for byte. It has not been run against a real head.
 
+**Failure and recovery (simulator).** `FaultyBus` wraps any bus and breaks it on purpose: frames are lost, doubled or have one bit flipped by chances drawn
+from a fixed seed (the same seed breaks the same frames on every run), the interface can be taken down and brought back, and the next sends can be made to
+fail. The tests check that every answer that gets through is exactly an answer of the vectors or one bit away from it, that a head whose interface goes down
+keeps trying, counts the failures in `bus_errors` and answers again as soon as the bus is back, that an answer that cannot be sent is lost and counted without
+stopping the head, and that bytes of any kind from a socket never break the reader. Pending on the real bench: the same faults on a physical CAN bus with a
+real head (a cable pulled, a bus-off, a noisy line).
+
 ## The catalogue of tools (`data/urtc_tools.json`)
 
 `tools/make_urtc_tools.py` reads the `ToolMode_t` enum of the URTC firmware and the headings of its tool document and writes the

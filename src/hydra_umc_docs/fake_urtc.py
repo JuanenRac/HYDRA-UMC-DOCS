@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import json
 import queue
+import random
 import socket
 import struct
 import threading
@@ -93,17 +94,103 @@ class SimulatedBus:
         pass
 
 
+class FaultyBus:
+    """A bus that goes wrong on purpose, around any other bus: the link of a flaky cable or a head that is switched off and on.
+
+    Frames are lost, doubled or have one bit flipped (in the identifier or in the data) by chances drawn from `random.Random(seed)`, so the same seed breaks
+    the same frames on every run; `go_down` makes every call fail with `OSError` (the interface is down) until `come_back`, and `fail_sends` makes the next
+    few sends fail. The counters say what was done. It is a test double: nothing in the responder depends on it."""
+
+    def __init__(self, inner: Bus, *, seed: int, drop: float = 0.0, duplicate: float = 0.0, corrupt: float = 0.0) -> None:
+        for name, chance in (("drop", drop), ("duplicate", duplicate), ("corrupt", corrupt)):
+            if not 0.0 <= chance <= 1.0:
+                raise ValueError(f"{name} must be a chance between 0 and 1")
+        self._inner = inner
+        self._random = random.Random(seed)
+        self._chances = (drop, duplicate, corrupt)
+        self._pending: list[CanFrame] = []
+        self._down = False
+        self._failing_sends = 0
+        self.dropped = 0
+        self.duplicated = 0
+        self.corrupted = 0
+        self.refused = 0
+
+    @property
+    def pending(self) -> int:
+        """How many doubled frames wait to be delivered."""
+        return len(self._pending)
+
+    def go_down(self) -> None:
+        self._down = True
+
+    def come_back(self) -> None:
+        self._down = False
+
+    def fail_sends(self, count: int) -> None:
+        self._failing_sends = count
+
+    def _refuse(self) -> None:
+        self.refused += 1
+        raise OSError("the CAN interface is down")
+
+    def _break(self, frame: CanFrame) -> list[CanFrame]:
+        """The frames that come out of one frame that went through the link: none, one or two, possibly with a bit flipped."""
+        drop, duplicate, corrupt = self._chances
+        if self._random.random() < drop:
+            self.dropped += 1
+            return []
+        if self._random.random() < corrupt:
+            self.corrupted += 1
+            bits = 11 + 8 * len(frame.data)
+            bit = self._random.randrange(bits)
+            if bit < 11:
+                frame = CanFrame(frame.can_id ^ (1 << bit), frame.data)
+            else:
+                data = bytearray(frame.data)
+                data[(bit - 11) // 8] ^= 1 << ((bit - 11) % 8)
+                frame = CanFrame(frame.can_id, bytes(data))
+        if self._random.random() < duplicate:
+            self.duplicated += 1
+            return [frame, frame]
+        return [frame]
+
+    def send(self, frame: CanFrame) -> None:
+        if self._down:
+            self._refuse()
+        if self._failing_sends > 0:
+            self._failing_sends -= 1
+            self._refuse()
+        for out in self._break(frame):
+            self._inner.send(out)
+
+    def recv(self, timeout: float) -> CanFrame | None:
+        if self._down:
+            self._refuse()
+        if self._pending:
+            return self._pending.pop(0)
+        frame = self._inner.recv(timeout)
+        if frame is None:
+            return None
+        out = self._break(frame)
+        self._pending.extend(out[1:])
+        return out[0] if out else None
+
+    def close(self) -> None:
+        self._inner.close()
+
+
 def pack_frame(frame: CanFrame) -> bytes:
     """The 16 bytes Linux expects on a raw CAN socket."""
     return _CAN_FRAME.pack(frame.can_id, len(frame.data), frame.data.ljust(8, b"\0"))
 
 
 def unpack_frame(raw: bytes) -> CanFrame | None:
-    """The standard data frame in `raw`, or None for anything else (too short, extended, remote, error frame, a length over 8)."""
+    """The standard data frame in `raw`, or None for anything else (too short, extended, remote, error frame, an identifier over 11 bits, a length over 8)."""
     if len(raw) < _CAN_FRAME.size:
         return None
     can_id, length, data = _CAN_FRAME.unpack(raw[: _CAN_FRAME.size])
-    if can_id & _NOT_STANDARD or length > 8:
+    if can_id & _NOT_STANDARD or can_id > MAX_STANDARD_ID or length > 8:
         return None
     return CanFrame(can_id, data[:length])
 
@@ -234,6 +321,8 @@ class FakeUrtc:
 
     def __init__(self, config: FakeUrtcConfig | None = None) -> None:
         self.config = config or FakeUrtcConfig()
+        #: how many times the bus failed under `serve` (the interface went down, a send was refused); the responder carries on
+        self.bus_errors = 0
 
     def handle(self, frame: CanFrame) -> list[CanFrame]:
         if frame.can_id == ID_QUERY_ACTIVE_TOOL:
@@ -263,13 +352,25 @@ class FakeUrtc:
         return frames
 
     def serve(self, bus: Bus, stop: threading.Event, *, poll: float = 0.05) -> int:
-        """Answer queries until `stop` is set; returns how many frames were sent."""
+        """Answer queries until `stop` is set; returns how many frames were sent.
+
+        A bus that fails (`OSError`: the interface went down, the send buffer is full) does not stop the responder: the failure is counted in
+        `bus_errors`, the answer that could not be sent is lost, as on a real bus, and the loop keeps trying, so the head answers again as soon as the bus is back."""
         sent = 0
         while not stop.is_set():
-            frame = bus.recv(poll)
+            try:
+                frame = bus.recv(poll)
+            except OSError:
+                self.bus_errors += 1
+                stop.wait(poll)
+                continue
             if frame is None:
                 continue
             for answer in self.handle(frame):
-                bus.send(answer)
+                try:
+                    bus.send(answer)
+                except OSError:
+                    self.bus_errors += 1
+                    continue
                 sent += 1
         return sent
