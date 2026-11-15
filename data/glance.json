@@ -187,7 +187,7 @@
     "HYDRA-UMC-DASHBOARD-AI": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 287,
+        "count": 296,
         "command": "npm test"
       },
       "rows": {
@@ -259,7 +259,7 @@
     "HYDRA-UMC-DOCS": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 281,
+        "count": 287,
         "command": "python -m pytest tests -q"
       },
       "rows": {
@@ -269,7 +269,7 @@
     "HYDRA-UMC-DOCS-QA": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 283,
+        "count": 286,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -284,7 +284,7 @@
     "HYDRA-UMC-DSI": {
       "hardware": "not_run",
       "tests": {
-        "count": 495,
+        "count": 499,
         "command": "flutter test"
       },
       "rows": {
@@ -398,14 +398,14 @@
     "HYDRA-UMC-MESHES": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 28,
+        "count": 34,
         "command": "python -m pytest tests -q"
       }
     },
     "HYDRA-UMC-MQTT-BROKER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 270,
+        "count": 275,
         "command": "npm test"
       },
       "rows": {

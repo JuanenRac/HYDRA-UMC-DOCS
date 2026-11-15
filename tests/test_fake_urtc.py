@@ -7,8 +7,10 @@
 from __future__ import annotations
 
 import json
+import random
 import socket
 import threading
+import time
 from pathlib import Path
 
 import pytest
@@ -191,3 +193,138 @@ def test_the_command_prints_the_setup_and_fails_cleanly_without_socketcan(capsys
     if not hasattr(socket, "AF_CAN"):
         assert cli.run_fake_urtc(["--duration", "0.1"]) == 1
         assert "FAKE_URTC=FAIL" in capsys.readouterr().err
+
+
+# --- failure and recovery: a bus that loses, doubles and breaks frames, and an interface that goes down and comes back (evidence=simulator) -------------------------
+SEED = 20260101
+
+
+def _wait(condition, what: str, timeout: float = 5.0) -> None:  # noqa: ANN001
+    deadline = time.monotonic() + timeout
+    while not condition():
+        assert time.monotonic() < deadline, f"timed out waiting for {what}"
+        time.sleep(0.01)
+
+
+def _settled(condition, what: str) -> None:  # noqa: ANN001
+    """The condition holds twice in a row, a moment apart: the responder is not between taking a frame and counting it."""
+    _wait(condition, what)
+    time.sleep(0.05)
+    _wait(condition, what)
+
+
+def _drain(bus: SimulatedBus) -> list[tuple[int, str]]:
+    out: list[tuple[int, str]] = []
+    while (frame := bus.recv(0.05)) is not None:
+        out.append((frame.can_id, frame.data.hex().upper()))
+    return out
+
+
+def _lossy_run(seed: int) -> tuple[list[tuple[int, str]], fake_urtc.FaultyBus, FakeUrtc]:
+    host, device = SimulatedBus.make_pair()
+    link = fake_urtc.FaultyBus(device, seed=seed, drop=0.2, duplicate=0.1, corrupt=0.15)
+    responder = FakeUrtc(FakeUrtcConfig(tool_id=5, patch=2))
+    stop = threading.Event()
+    thread = threading.Thread(target=responder.serve, args=(link, stop), kwargs={"poll": 0.005})
+    thread.start()
+    for n in range(60):
+        host.send(CanFrame(0x110 if n % 2 else 0x7F8))
+    _settled(lambda: device._inbox.empty() and not link.pending, "the responder to take in every frame")  # noqa: SLF001
+    stop.set()
+    thread.join(5)
+    return _drain(host), link, responder
+
+
+def _bit_distance(a: tuple[int, str], b: tuple[int, str]) -> int | None:
+    if len(a[1]) != len(b[1]):
+        return None
+    return bin(a[0] ^ b[0]).count("1") + bin(int(a[1] or "0", 16) ^ int(b[1] or "0", 16)).count("1")
+
+
+def test_a_lossy_link_breaks_frames_the_same_way_on_every_run_and_every_answer_is_right_or_one_bit_off() -> None:
+    first, link, responder = _lossy_run(SEED)
+    second, _, _ = _lossy_run(SEED)
+    other, _, _ = _lossy_run(SEED + 1)
+    assert first == second and first != other
+    assert link.dropped > 0 and link.duplicated > 0 and link.corrupted > 0
+    assert responder.bus_errors == 0
+    valid = {(f.can_id, f.data.hex().upper()) for request in (0x110, 0x7F8) for f in FakeUrtc(FakeUrtcConfig(tool_id=5, patch=2)).handle(CanFrame(request))}
+    assert first, "some answers must get through"
+    for answer in first:
+        assert answer in valid or any(_bit_distance(answer, good) == 1 for good in valid), answer
+
+
+def test_a_link_that_breaks_nothing_changes_nothing() -> None:
+    host, device = SimulatedBus.make_pair()
+    link = fake_urtc.FaultyBus(device, seed=SEED)
+    stop = threading.Event()
+    thread = threading.Thread(target=FakeUrtc().serve, args=(link, stop), kwargs={"poll": 0.005})
+    thread.start()
+    host.send(CanFrame(0x110))
+    _wait(lambda: host._inbox.qsize() >= 1, "the answer")  # noqa: SLF001
+    stop.set()
+    thread.join(5)
+    assert _drain(host) == [(0x111, "000000000008")]
+    assert (link.dropped, link.duplicated, link.corrupted, link.refused) == (0, 0, 0, 0)
+
+
+def test_a_link_must_be_given_chances_between_zero_and_one() -> None:
+    host, _ = SimulatedBus.make_pair()
+    for name in ("drop", "duplicate", "corrupt"):
+        with pytest.raises(ValueError, match=name):
+            fake_urtc.FaultyBus(host, seed=1, **{name: 1.5})
+
+
+def test_an_interface_that_goes_down_does_not_stop_the_head_and_it_answers_when_the_interface_is_back() -> None:
+    host, device = SimulatedBus.make_pair()
+    link = fake_urtc.FaultyBus(device, seed=SEED)
+    responder = FakeUrtc()
+    stop = threading.Event()
+    thread = threading.Thread(target=responder.serve, args=(link, stop), kwargs={"poll": 0.005})
+    thread.start()
+    link.go_down()
+    _wait(lambda: responder.bus_errors >= 3, "the failures to be counted")  # the responder is now only failing, so it takes in nothing
+    host.send(CanFrame(0x110))
+    time.sleep(0.1)
+    assert host.recv(0.05) is None  # nothing was answered while the interface was down
+    link.come_back()
+    _wait(lambda: host._inbox.qsize() >= 1, "the answer after the interface came back")  # noqa: SLF001
+    stop.set()
+    thread.join(5)
+    assert _drain(host) == [(0x111, "000000000008")]
+    assert not thread.is_alive()
+
+
+def test_answers_that_cannot_be_sent_are_lost_and_counted_and_the_next_one_goes_out() -> None:
+    host, device = SimulatedBus.make_pair()
+    link = fake_urtc.FaultyBus(device, seed=SEED)
+    link.fail_sends(2)
+    responder = FakeUrtc()
+    stop = threading.Event()
+    thread = threading.Thread(target=responder.serve, args=(link, stop), kwargs={"poll": 0.005})
+    thread.start()
+    for _ in range(3):
+        host.send(CanFrame(0x110))
+    _settled(lambda: device._inbox.empty() and link.refused == 2, "the three queries to be taken in")  # noqa: SLF001
+    stop.set()
+    thread.join(5)
+    assert _drain(host) == [(0x111, "000000000008")]
+    assert responder.bus_errors == 2 and link.refused == 2
+
+
+def test_bytes_of_any_kind_from_a_socket_never_break_the_reader() -> None:
+    rng = random.Random(SEED)
+    seen_valid = 0
+    for _ in range(3000):
+        if rng.random() < 0.5:
+            raw = bytes(rng.randrange(256) for _ in range(rng.choice([0, 3, 15, 16, 16, 16, 20])))
+        else:  # a frame of the right size with an identifier, a length and flags of every kind
+            can_id = rng.choice([rng.randrange(0x800), rng.randrange(0x800, 0x1000000), rng.randrange(0x1000000) | 0xE0000000])
+            raw = can_id.to_bytes(4, "little") + bytes([rng.randrange(14)]) + bytes(3) + bytes(rng.randrange(256) for _ in range(8))
+        frame = fake_urtc.unpack_frame(raw)
+        if frame is None:
+            continue
+        seen_valid += 1
+        assert fake_urtc.unpack_frame(fake_urtc.pack_frame(frame)) == frame
+        FakeUrtc().handle(frame)  # any frame that unpacks can be handled
+    assert seen_valid > 0
