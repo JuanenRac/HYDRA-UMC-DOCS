@@ -4,14 +4,14 @@
       "hardware": "simulated",
       "target": "board",
       "tests": {
-        "count": 1457,
+        "count": 1483,
         "command": "python -m unittest discover -s tests -p 'test_*.py'"
       }
     },
     "HYDRA-UMC-ANDROID-CONTROL": {
       "hardware": "simulated",
       "tests": {
-        "count": 725,
+        "count": 731,
         "command": "./gradlew testDebugUnitTest"
       },
       "target": "android",
@@ -571,7 +571,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 1230,
+        "count": 1238,
         "command": "python -m unittest discover -s clients/python/tests"
       },
       "rows": {
@@ -614,7 +614,7 @@
     "HYDRA-UMC-STUDIO": {
       "hardware": "bench",
       "tests": {
-        "count": 1771,
+        "count": 1776,
         "command": "npm test"
       },
       "rows": {
