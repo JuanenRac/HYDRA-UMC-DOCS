@@ -72,7 +72,7 @@
     "HYDRA-UMC-BRIDGE-DROIDS": {
       "hardware": "simulated",
       "tests": {
-        "count": 285,
+        "count": 304,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -85,7 +85,7 @@
     "HYDRA-UMC-BRIDGE-LASER": {
       "hardware": "simulated",
       "tests": {
-        "count": 301,
+        "count": 316,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -101,7 +101,7 @@
     "HYDRA-UMC-BRIDGE-OPENPNP": {
       "hardware": "simulated",
       "tests": {
-        "count": 286,
+        "count": 300,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -117,7 +117,7 @@
     "HYDRA-UMC-BRIDGE-PRINTER3D": {
       "hardware": "simulated",
       "tests": {
-        "count": 246,
+        "count": 272,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -133,7 +133,7 @@
     "HYDRA-UMC-BRIDGE-ROS2": {
       "hardware": "simulated",
       "tests": {
-        "count": 367,
+        "count": 427,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -149,7 +149,7 @@
     "HYDRA-UMC-BRIDGE-UAV": {
       "hardware": "simulated",
       "tests": {
-        "count": 366,
+        "count": 401,
         "command": "python tools/build_test.py"
       },
       "rows": {
@@ -517,7 +517,7 @@
     "HYDRA-UMC-PATH-PLANNER-3D": {
       "hardware": "simulated",
       "tests": {
-        "count": 151,
+        "count": 180,
         "command": "cargo test"
       },
       "rows": {
