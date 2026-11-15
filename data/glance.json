@@ -187,7 +187,7 @@
     "HYDRA-UMC-DASHBOARD-AI": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 272,
+        "count": 287,
         "command": "npm test"
       },
       "rows": {
@@ -321,7 +321,7 @@
     "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
       "hardware": "simulated",
       "tests": {
-        "count": 294,
+        "count": 295,
         "command": "npm test"
       },
       "rows": {
@@ -405,7 +405,7 @@
     "HYDRA-UMC-MQTT-BROKER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 260,
+        "count": 270,
         "command": "npm test"
       },
       "rows": {
@@ -419,7 +419,7 @@
     "HYDRA-UMC-MTCONNECT-ADAPTER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 189,
+        "count": 221,
         "command": "npm test"
       },
       "rows": {
@@ -630,7 +630,7 @@
       "hardware": "not_applicable",
       "target": "browser",
       "tests": {
-        "count": 87,
+        "count": 146,
         "command": "npm test"
       },
       "rows": {
@@ -683,7 +683,7 @@
     "HYDRA-UMC-TELEMETRY-COLLECTOR": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 202,
+        "count": 218,
         "command": "go test ./..."
       },
       "rows": {
@@ -698,7 +698,7 @@
     "HYDRA-UMC-TOOL-CLI": {
       "hardware": "simulated",
       "tests": {
-        "count": 291,
+        "count": 292,
         "command": "go test ./..."
       },
       "rows": {
