@@ -419,7 +419,7 @@
     "HYDRA-UMC-MTCONNECT-ADAPTER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 221,
+        "count": 237,
         "command": "npm test"
       },
       "rows": {
@@ -448,7 +448,7 @@
     "HYDRA-UMC-OPCUA-SERVER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 291,
+        "count": 296,
         "command": "npm test"
       },
       "rows": {
@@ -505,9 +505,9 @@
       }
     },
     "HYDRA-UMC-OS-REBUILDER": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
-        "count": 345,
+        "count": 373,
         "command": "python -m pytest -q tests"
       },
       "rows": {
@@ -630,7 +630,7 @@
       "hardware": "not_applicable",
       "target": "browser",
       "tests": {
-        "count": 146,
+        "count": 150,
         "command": "npm test"
       },
       "rows": {
@@ -641,7 +641,7 @@
       }
     },
     "HYDRA-UMC-SUITE": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 77,
         "command": "python tools/run_offline_verifiers.py"
@@ -683,7 +683,7 @@
     "HYDRA-UMC-TELEMETRY-COLLECTOR": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 218,
+        "count": 222,
         "command": "go test ./..."
       },
       "rows": {
