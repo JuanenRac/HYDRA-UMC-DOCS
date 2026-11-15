@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The README of the SDK states the 100 common words:** the paragraph about `contracts/i18n/common.json` (source of all eight languages) now says 100 words, names SUITE next to STUDIO, Android and ARB, and that the checks cover a SUITE and a Flutter checkout.
 - **The glance data takes the exactly measured test counts of seven repositories that were only estimated:** `data/glance.json` now carries the counts of the runner for DASHBOARD-AI (287), GATEWAY-INDUSTRIAL (295), MQTT-BROKER (270), MTCONNECT-ADAPTER (221), STUDIO-KIT (146), TELEMETRY-COLLECTOR (218) and TOOL-CLI (292).
 - **The glance data takes the exactly measured test counts of seven more repositories:** `data/glance.json` now carries the counts of the runner for BRIDGE-DROIDS (304), BRIDGE-LASER (316), BRIDGE-OPENPNP (300), BRIDGE-PRINTER3D (272), BRIDGE-ROS2 (427), BRIDGE-UAV (401) and PATH-PLANNER-3D (180).
 - **The test-count workflow also counts the Vitest suites of five more repositories and the Go modules that live in a sub-folder:** `count-tests` installs the dependencies of DASHBOARD-AI, GATEWAY-INDUSTRIAL, MQTT-BROKER, MTCONNECT-ADAPTER and STUDIO-KIT, and `check_test_counts.py` lists the Go tests from the folder that holds `go.mod` (the TELEMETRY-COLLECTOR and TOOL-CLI modules are in `src/`), so those counts are exact and not a scan of the source.
