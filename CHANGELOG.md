@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The README sources of the CNC bridge, the laser bridge and the DSI panel name the configuration directory of the service:** the paragraph on running as a service (CNC, laser) and the settings-file lines (DSI) give `/etc/hydra-umc-bridge-cnc/bridge-cnc.toml`, `/etc/hydra-umc-bridge-laser/bridge-laser.toml` and `/etc/hydra-umc-dsi/dsi.conf` in the eight languages, as the units of those repositories now read them.
+
 - **The simulated tool head can be tried on a bus that goes wrong:** `FaultyBus` wraps a bus and loses, doubles or flips one bit of frames by chances drawn from a fixed seed, takes the interface down and brings it back, and refuses the next sends. The responder now carries on when the bus fails (`bus_errors` counts the failures, the answer that could not be sent is lost, as on a real bus) instead of stopping, and a frame whose identifier is over eleven bits without a flag is ignored instead of raising. Six new tests; the evidence level of the repository is `simulator`; the same faults on a physical CAN bus stay pending.
 
 
