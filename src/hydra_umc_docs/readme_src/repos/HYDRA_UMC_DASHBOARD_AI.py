@@ -118,6 +118,29 @@ _CONFIG_ROWS["rows"].extend([
             "pt": "o cartão avisa quando o dia plausível mais próximo cai dentro destes dias e passa a crítico dentro do segundo número (nunca acima do primeiro); o limite de tempo do pedido em milissegundos",
         },
     ],
+    [
+        _same("`--allowed-host HOST:PORT` (`scripts/serve_static.py`, repeatable)"),
+        {
+            "en": "off (no Host check)",
+            "es": "desactivado (sin comprobación del Host)",
+            "de": "aus (keine Host-Prüfung)",
+            "fr": "désactivé (aucun contrôle du Host)",
+            "it": "disattivato (nessun controllo dell'Host)",
+            "ja": "オフ（Host の確認なし）",
+            "zh": "关闭（不检查 Host）",
+            "pt": "desligado (sem verificação do Host)",
+        },
+        {
+            "en": "with it, a forwarded call is answered only when its `Host` header is one of the values given (`host:port`, as the browser sends it), so a page that reached the port through DNS rebinding is refused; give every name the browser uses to open the dashboard.",
+            "es": "con ella, una llamada reenviada solo se atiende si su cabecera `Host` es uno de los valores dados (`host:puerto`, como lo envía el navegador), de modo que se rechaza una página que llegó al puerto por reenlace de DNS; indique todos los nombres con los que el navegador abre el panel.",
+            "de": "damit wird ein weitergeleiteter Aufruf nur beantwortet, wenn sein `Host`-Header einer der angegebenen Werte ist (`host:port`, wie der Browser ihn sendet); eine Seite, die den Port per DNS-Rebinding erreicht hat, wird abgewiesen. Geben Sie jeden Namen an, mit dem der Browser das Dashboard öffnet.",
+            "fr": "avec elle, un appel relayé n'est traité que si son en-tête `Host` est l'une des valeurs données (`hôte:port`, comme l'envoie le navigateur) ; une page qui a atteint le port par DNS rebinding est refusée. Indiquez chaque nom avec lequel le navigateur ouvre le tableau de bord.",
+            "it": "con essa, una chiamata inoltrata riceve risposta solo se l'intestazione `Host` è uno dei valori indicati (`host:porta`, come lo invia il browser); una pagina arrivata alla porta tramite DNS rebinding viene rifiutata. Indicare ogni nome con cui il browser apre la dashboard.",
+            "ja": "指定すると、転送される呼び出しは `Host` ヘッダーが指定値（ブラウザーが送る `host:port`）のいずれかである場合にのみ応答され、DNS リバインディングでポートに到達したページは拒否されます。ブラウザーがダッシュボードを開くときに使うすべての名前を指定してください。",
+            "zh": "启用后，只有 `Host` 头属于所给值（浏览器发送的 `host:port`）时才会应答转发的调用，通过 DNS 重绑定访问该端口的页面会被拒绝；请列出浏览器打开仪表板所用的每个名称。",
+            "pt": "com ela, uma chamada reencaminhada só é respondida se o cabeçalho `Host` for um dos valores indicados (`host:porta`, como o navegador o envia), pelo que uma página que chegou à porta por DNS rebinding é recusada; indique todos os nomes com que o navegador abre o painel.",
+        },
+    ],
 ])
 
 _INTERFACE_ROWS: Any = EXTRAS["interfaces"]
