@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The glance data of the DSI panel says that its hardware is simulated, as its manifest does:** the panel was listed as never run on hardware while its manifest declares simulator evidence, so the check of the repository refused its README. The status row now reads "Simulated only" in the eight READMEs.
 - **The shared safety notice and the status lines of every README are corrected at their source, and the bridges and the safety zones tell where the cell state file comes from:** the notice no longer says that the URTC bootloaders behind the relay take a shared-key HMAC-SHA256 (eight languages, every repository source, and the security baseline and threat model), the status and hardware lines say "the honesty check of this README" instead of "above", the VISION-STREAMER entry of the glance data is `simulated`, and the README sources of the laser, CNC and 3D-printer bridges and of the safety zones describe the `[cell_state]` file and its producer. The reviewed line of the claims list moves with its text.
 - **The README sources of the CNC bridge, the laser bridge and the DSI panel name the configuration directory of the service:** the paragraph on running as a service (CNC, laser) and the settings-file lines (DSI) give `/etc/hydra-umc-bridge-cnc/bridge-cnc.toml`, `/etc/hydra-umc-bridge-laser/bridge-laser.toml` and `/etc/hydra-umc-dsi/dsi.conf` in the eight languages, as the units of those repositories now read them.
 
