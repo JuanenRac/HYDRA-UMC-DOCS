@@ -108,3 +108,14 @@ def BODY(lg, ctx):
     out["roadmap"] = LIMITS[lg] + "\n\n" + ctx.v(lg, "roadmap")
     out["related"] = ctx.v(lg, "related")
     return out
+
+
+# The cell state file: who writes it (section -> language -> paragraph).
+from ... import readme_kit as _K2
+from .. import bridge_kit as _B2
+
+_BODY_CELL = BODY
+
+
+def BODY(lg, ctx):  # type: ignore[no-redef]
+    return _K2.apply_addenda(_BODY_CELL(lg, ctx), {'configuration': _B2.CELL_STATE_NOTE}, lg)
