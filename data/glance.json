@@ -282,7 +282,7 @@
       }
     },
     "HYDRA-UMC-DSI": {
-      "hardware": "not_run",
+      "hardware": "simulated",
       "tests": {
         "count": 499,
         "command": "flutter test"
