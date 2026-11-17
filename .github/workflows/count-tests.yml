@@ -27,7 +27,7 @@ jobs:
   count:
     name: Count the tests of every repository
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 120
     steps:
       - name: Check out this repository
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -85,16 +85,12 @@ jobs:
             fi
           done
 
-      - name: Count the tests
-        working-directory: HYDRA-UMC-DOCS
-        continue-on-error: true
-        run: python tools/check_test_counts.py
-
       - name: Write the counts that were collected into the glance data and open one pull request
         working-directory: HYDRA-UMC-DOCS
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # one pass: it prints what it measured and writes the exact counts
           python tools/check_test_counts.py --apply || true
           python tools/make_glance.py --apply --repo HYDRA-UMC-DOCS --workspace .. || true
           if git diff --quiet -- data/glance.json; then echo "No count changed."; exit 0; fi
