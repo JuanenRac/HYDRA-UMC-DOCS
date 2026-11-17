@@ -58,48 +58,56 @@ NOTES: dict[str, dict[str, str]] = {
            "established": "Complete for its purpose and stable; the honesty check of this README lists the known limits",
            "production": "In production use; the honesty check of this README lists the known limits",
            "tests": "{n} automated tests, run on every change", "tests_none": "No test count is recorded for this repository yet",
+           "tests_unconfirmed": "{n} automated tests recorded; the exact count, or a workflow that runs them on every change, is not confirmed yet",
            "docs": "README in eight languages, checked against the manifest on every change"},
     "es": {"scaffolding": "Solo estructura y primeras piezas; falta la mayor parte del trabajo",
            "functional": "Funciona para su propósito principal; la comprobación de honestidad de este README lista lo que aún falta",
            "established": "Completo para su propósito y estable; la comprobación de honestidad de este README lista los límites conocidos",
            "production": "En uso en producción; la comprobación de honestidad de este README lista los límites conocidos",
            "tests": "{n} pruebas automáticas, ejecutadas en cada cambio", "tests_none": "Todavía no consta el número de pruebas de este repositorio",
+           "tests_unconfirmed": "{n} pruebas automáticas registradas; aún no se ha confirmado el número exacto ni un flujo de trabajo que las ejecute en cada cambio",
            "docs": "README en ocho idiomas, comprobado contra el manifiesto en cada cambio"},
     "de": {"scaffolding": "Nur Struktur und erste Teile; der größte Teil der Arbeit steht noch aus",
            "functional": "Funktioniert für seinen Hauptzweck; die Ehrlichkeitsprüfung in diesem README nennt, was noch fehlt",
            "established": "Für seinen Zweck vollständig und stabil; die Ehrlichkeitsprüfung in diesem README nennt die bekannten Grenzen",
            "production": "Im produktiven Einsatz; die Ehrlichkeitsprüfung in diesem README nennt die bekannten Grenzen",
            "tests": "{n} automatische Tests, bei jeder Änderung ausgeführt", "tests_none": "Für dieses Repository ist noch keine Testanzahl vermerkt",
+           "tests_unconfirmed": "{n} automatische Tests vermerkt; die genaue Anzahl oder ein Workflow, der sie bei jeder Änderung ausführt, ist noch nicht bestätigt",
            "docs": "README in acht Sprachen, bei jeder Änderung gegen das Manifest geprüft"},
     "fr": {"scaffolding": "Seulement la structure et les premières pièces ; l'essentiel du travail reste à faire",
            "functional": "Fonctionne pour son usage principal ; la vérification d'honnêteté de ce README liste ce qui manque encore",
            "established": "Complet pour son usage et stable ; la vérification d'honnêteté de ce README liste les limites connues",
            "production": "En usage en production ; la vérification d'honnêteté de ce README liste les limites connues",
            "tests": "{n} tests automatiques, exécutés à chaque modification", "tests_none": "Aucun nombre de tests n'est encore consigné pour ce dépôt",
+           "tests_unconfirmed": "{n} tests automatiques consignés ; le nombre exact, ou un workflow qui les exécute à chaque modification, n'est pas encore confirmé",
            "docs": "README en huit langues, vérifié par rapport au manifeste à chaque modification"},
     "it": {"scaffolding": "Solo struttura e primi pezzi; gran parte del lavoro è ancora da fare",
            "functional": "Funziona per il suo scopo principale; la verifica di onestà di questo README elenca ciò che manca ancora",
            "established": "Completo per il suo scopo e stabile; la verifica di onestà di questo README elenca i limiti noti",
            "production": "In uso in produzione; la verifica di onestà di questo README elenca i limiti noti",
            "tests": "{n} test automatici, eseguiti a ogni modifica", "tests_none": "Per questo repository non è ancora registrato il numero di test",
+           "tests_unconfirmed": "{n} test automatici registrati; il numero esatto, o un workflow che li esegue a ogni modifica, non è ancora confermato",
            "docs": "README in otto lingue, verificato rispetto al manifesto a ogni modifica"},
     "ja": {"scaffolding": "構造と最初の部品のみで、作業の大部分はこれからです",
            "functional": "主な目的では動作します。足りない点はこの README の正直さの確認に書かれています",
            "established": "目的に対して完成していて安定しています。既知の制限はこの README の正直さの確認に書かれています",
            "production": "本番で使用中です。既知の制限はこの README の正直さの確認に書かれています",
            "tests": "自動テスト {n} 件。変更のたびに実行されます", "tests_none": "このリポジトリのテスト件数はまだ記録されていません",
+           "tests_unconfirmed": "自動テスト {n} 件を記録済み。正確な件数、または変更のたびに実行するワークフローはまだ確認されていません",
            "docs": "8 言語の README。変更のたびにマニフェストと照合されます"},
     "zh": {"scaffolding": "目前只有结构和最初的部分，大部分工作尚未完成",
            "functional": "主要用途可用；本 README 中的诚实性检查列出了仍然缺少的内容",
            "established": "就其用途而言已完整且稳定；本 README 中的诚实性检查列出了已知限制",
            "production": "已投入生产使用；本 README 中的诚实性检查列出了已知限制",
            "tests": "{n} 项自动测试，每次变更都会运行", "tests_none": "此仓库尚未记录测试数量",
+           "tests_unconfirmed": "已记录 {n} 项自动测试；确切数量，或每次变更都运行它们的工作流，尚未确认",
            "docs": "八种语言的 README，每次变更都会与清单核对"},
     "pt": {"scaffolding": "Só estrutura e as primeiras peças; falta a maior parte do trabalho",
            "functional": "Funciona para o seu propósito principal; a verificação de honestidade deste README lista o que ainda falta",
            "established": "Completo para o seu propósito e estável; a verificação de honestidade deste README lista os limites conhecidos",
            "production": "Em uso em produção; a verificação de honestidade deste README lista os limites conhecidos",
            "tests": "{n} testes automáticos, executados a cada alteração", "tests_none": "Ainda não há registo do número de testes deste repositório",
+           "tests_unconfirmed": "{n} testes automáticos registados; o número exato, ou um fluxo de trabalho que os execute a cada alteração, ainda não está confirmado",
            "docs": "README em oito idiomas, verificado contra o manifesto a cada alteração"},
 }
 
@@ -127,19 +135,61 @@ def extra_rows(code: str, manifest: dict, entry: dict) -> list[tuple[str, str, s
         level, notes = status_rows.STATES[key][state]
         if key == "integration" and manifest.get("hardware_bound") is not False:
             # the same ceiling tools/status_lights.py checks: an integration line is limited by the evidence of the manifest
-            level = _cap(level, EVIDENCE_CEILING.get(str(manifest.get("evidence", "none")), "orange"))
+            capped = _cap(level, EVIDENCE_CEILING.get(str(manifest.get("evidence", "none")), "orange"))
+            if capped != level and state == "bench" and "contract" in status_rows.STATES[key]:
+                # a "runs on the bench" sentence under a lower light would claim what the evidence does not show
+                notes = status_rows.STATES[key]["contract"][1]
+            level = capped
         made.append((status_rows.LABELS[key][code], level, notes[code]))
     return made
+
+
+def tests_confirmed(entry: dict) -> bool:
+    """A count turns the Tests line green only when it was counted exactly and a workflow runs the tests."""
+    tests = entry.get("tests") or {}
+    return bool(tests) and tests.get("method") == "exact" and entry.get("runs_tests") is True
+
+
+def _tests_row(ui: dict, notes: dict, entry: dict) -> tuple[str, str, str]:
+    tests = entry.get("tests")
+    if not tests:
+        return (ui["tests"], "orange", notes["tests_none"])
+    if tests_confirmed(entry):
+        return (ui["tests"], "green", notes["tests"].format(n=tests["count"]))
+    return (ui["tests"], "yellow", notes["tests_unconfirmed"].format(n=tests["count"]))
+
+
+TEST_COMMANDS = ("pytest", "unittest", "cargo test", "cargo nextest", "go test", "gradlew", "gradle ", "npm test", "npm run test",
+                 "vitest", "flutter test", "node --test", "ctest", "build_test", "ci_validate", "run_host_tests", "make test")
+
+
+def workflow_runs_tests(repo) -> bool:
+    """True when a workflow of the repository runs a test command."""
+    folder = repo / ".github" / "workflows"
+    if not folder.is_dir():
+        return False
+    for path in sorted(folder.glob("*.y*ml")):
+        try:
+            text = path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        if any(word in text for word in TEST_COMMANDS):
+            return True
+    return False
+
+
+def prepare(repo, entry: dict) -> dict:
+    """The entry of the data file plus what only the repository can tell (whether a workflow runs its tests)."""
+    return dict(entry, runs_tests=workflow_runs_tests(repo))
 
 
 def rows(code: str, manifest: dict, entry: dict) -> list[tuple[str, str, str]]:
     """(area, light, note) for the common areas of one repository in one language."""
     ui, notes = UI[code], NOTES[code]
     maturity = str(manifest["maturity"])
-    tests = entry.get("tests")
     made = [
         (ui["software"], MATURITY_LIGHT.get(maturity, "orange"), notes.get(maturity, notes["functional"])),
-        (ui["tests"], "green" if tests else "orange", notes["tests"].format(n=tests["count"]) if tests else notes["tests_none"]),
+        _tests_row(ui, notes, entry),
         (ui["hardware"], HARDWARE_LIGHT[entry["hardware"]], glance.HARDWARE[code][entry["hardware"]]),
         (ui["docs"], "green", notes["docs"]),
     ]
@@ -217,7 +267,7 @@ def apply_repo(repo, entry: dict) -> list[str]:
     for code in glance.LANGUAGE_FILES:
         path = glance.readme_path(repo, code)
         original = path.read_bytes().decode("utf-8")
-        updated = apply_to_text(original, render_section(code, manifest, entry))
+        updated = apply_to_text(original, render_section(code, manifest, prepare(repo, entry)))
         if updated != original:
             path.write_bytes(updated.encode("utf-8"))
             changed.append(path.name)
@@ -229,10 +279,13 @@ def check_repo(repo, entry: dict) -> list[str]:
         return []
     problems = []
     manifest = glance.load_manifest(repo)
+    backing = entry.get("stop_test")
+    if backing and (entry.get("rows") or {}).get("stop") in ("simulated", "partial") and not (repo / backing).is_file():
+        problems.append(f"{repo.name}: stop_test {backing!r} is not a file of the repository")
     for code in glance.LANGUAGE_FILES:
         path = glance.readme_path(repo, code)
         if not path.is_file():
             continue
-        for problem in check_text(path.read_bytes().decode("utf-8"), render_section(code, manifest, entry)):
+        for problem in check_text(path.read_bytes().decode("utf-8"), render_section(code, manifest, prepare(repo, entry))):
             problems.append(f"{repo.name}/{path.name}: {problem}")
     return problems

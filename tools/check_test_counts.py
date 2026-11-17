@@ -338,8 +338,12 @@ def main(argv: list[str] | None = None) -> int:
         blocking = real is not None and bool(problems) and (method == "exact" or args.strict_approx)
         failures += blocking
         rows.append({"repo": name, "real": real, "method": method, "glance": recorded, "readme": shown, "problems": problems, "blocking": blocking})
-        if args.apply and method == "exact" and real is not None and recorded != real and isinstance(entry.get("tests"), dict):
-            entry["tests"]["count"] = real
+        if args.apply and method == "exact" and real is not None and isinstance(entry.get("tests"), dict):
+            if recorded == real:
+                entry["tests"]["method"] = "exact"  # counted by collecting the tests, and it agrees with the recorded number
+            else:
+                entry["tests"]["count"] = real
+                entry["tests"].pop("method", None)  # the new number is written; run the check again to confirm it
 
     if args.json:
         print(json.dumps(rows, indent=2))
