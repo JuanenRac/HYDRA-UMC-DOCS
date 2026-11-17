@@ -5,14 +5,19 @@
 # =============================================================================
 # `check_test_counts.py` lists the tests of the Go and Rust suites with the native listing of their runner, which compiles them and is
 # therefore not run on a plain PC. This workflow fetches every repository next to this one, runs the check there and prints what it
-# measured, so that data/glance.json can be updated with the numbers of the toolchains. Manual only; it writes nothing.
+# measured. Every Monday (and by hand) it also writes the numbers of the toolchains into data/glance.json (`tests.method: "exact"` is what
+# turns the Tests line of a README green) and opens one pull request here when the file changed; the READMEs of the other repositories are then
+# regenerated from it.
 name: HYDRA-UMC count the tests of the family
 
 on:
+  schedule:
+    - cron: "23 5 * * 1"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -69,7 +74,37 @@ jobs:
             [ -f "${repository}/pubspec.yaml" ] && (cd "${repository}" && flutter pub get) || echo "::warning::flutter pub get skipped in ${repository}"
           done
 
+      - name: Install the Python dependencies of the suites (best effort)
+        run: |
+          python -m pip install --quiet pytest || true
+          for directory in HYDRA-UMC-*/; do
+            repository="${directory%/}"
+            [ "$repository" = "HYDRA-UMC-DOCS" ] && continue
+            if [ -f "${repository}/pyproject.toml" ]; then
+              python -m pip install --quiet -e "./${repository}[dev]" 2>/dev/null || python -m pip install --quiet -e "./${repository}" 2>/dev/null || echo "::warning::pip install skipped in ${repository}"
+            fi
+          done
+
       - name: Count the tests
         working-directory: HYDRA-UMC-DOCS
         continue-on-error: true
         run: python tools/check_test_counts.py
+
+      - name: Write the counts that were collected into the glance data and open one pull request
+        working-directory: HYDRA-UMC-DOCS
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python tools/check_test_counts.py --apply || true
+          python tools/make_glance.py --apply --repo HYDRA-UMC-DOCS --workspace .. || true
+          if git diff --quiet -- data/glance.json; then echo "No count changed."; exit 0; fi
+          branch="test-counts"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add data/glance.json README.md README_deu.md README_fra.md README_ita.md README_jpn.md README_por.md README_spa.md README_zho.md
+          git commit -m "Record the test counts collected by the toolchains"
+          git push --force "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" "$branch"
+          if [ -z "$(gh pr list --repo "${{ github.repository }}" --head "$branch" --json number --jq '.[0].number')" ]; then
+            gh pr create --repo "${{ github.repository }}" --head "$branch" --base main --title "Record the test counts collected by the toolchains"               --body "The weekly count of the tests of the family changed data/glance.json: the numbers come from the listings of the runners of each suite, and tests.method exact marks the ones that were collected. The READMEs of the other repositories are regenerated from this file afterwards."               || echo "::warning::the pull request could not be opened; the branch ${branch} holds the change"
+          fi
