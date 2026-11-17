@@ -55,7 +55,7 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 | Área | Estado | O que significa aqui |
 |---|---|---|
 | Software | 🟡 | Funciona para o seu propósito principal; a verificação de honestidade deste README lista o que ainda falta |
-| Testes | 🟢 | 287 testes automáticos, executados a cada alteração |
+| Testes | 🟡 | 287 testes automáticos registados; o número exato, ou um fluxo de trabalho que os execute a cada alteração, ainda não está confirmado |
 | Hardware real | ⚪ | Não aplicável: nada aqui corre em hardware |
 | Implantação | 🟠 | Publicado como release; instalá-lo numa máquina limpa está documentado mas não registado |
 | Documentação | 🟢 | README em oito idiomas, verificado contra o manifesto a cada alteração |

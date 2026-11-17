@@ -23,7 +23,8 @@
         "updates": "apk",
         "stop": "simulated",
         "access": "languages"
-      }
+      },
+      "stop_test": "app/src/test/java/com/hydraumc/control/network/StopAllRunnerTest.kt"
     },
     "HYDRA-UMC-ANOMALY-DETECTOR": {
       "hardware": "not_applicable",
@@ -44,12 +45,13 @@
       "hardware": "simulated",
       "tests": {
         "count": 271,
-        "command": "python tools/build_test.py"
+        "command": "python tools/build_test.py",
+        "method": "exact"
       },
       "rows": {
         "integration": "contract",
         "deployment": "release",
-        "stop": "simulated",
+        "stop": "not_wired",
         "protocol": "mock"
       }
     },
@@ -65,7 +67,7 @@
         "security": "host_tested",
         "deployment": "release",
         "operation": "logs",
-        "stop": "simulated",
+        "stop": "not_wired",
         "protocol": "mock"
       }
     },
@@ -73,12 +75,13 @@
       "hardware": "simulated",
       "tests": {
         "count": 304,
-        "command": "python tools/build_test.py"
+        "command": "python tools/build_test.py",
+        "method": "exact"
       },
       "rows": {
         "integration": "contract",
         "deployment": "release",
-        "stop": "simulated",
+        "stop": "not_wired",
         "protocol": "mock"
       }
     },
@@ -94,7 +97,7 @@
         "security": "host_tested",
         "deployment": "release",
         "operation": "logs",
-        "stop": "simulated",
+        "stop": "not_wired",
         "protocol": "mock"
       }
     },
@@ -102,7 +105,8 @@
       "hardware": "simulated",
       "tests": {
         "count": 300,
-        "command": "python tools/build_test.py"
+        "command": "python tools/build_test.py",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -110,7 +114,7 @@
         "security": "host_tested",
         "deployment": "release",
         "operation": "logs",
-        "stop": "simulated",
+        "stop": "not_wired",
         "protocol": "mock"
       }
     },
@@ -126,7 +130,7 @@
         "security": "host_tested",
         "deployment": "release",
         "operation": "logs",
-        "stop": "simulated",
+        "stop": "not_wired",
         "protocol": "mock"
       }
     },
@@ -142,7 +146,7 @@
         "security": "host_tested",
         "deployment": "release",
         "operation": "logs",
-        "stop": "simulated",
+        "stop": "not_wired",
         "protocol": "mock"
       }
     },
@@ -150,12 +154,13 @@
       "hardware": "simulated",
       "tests": {
         "count": 401,
-        "command": "python tools/build_test.py"
+        "command": "python tools/build_test.py",
+        "method": "exact"
       },
       "rows": {
         "integration": "contract",
         "deployment": "release",
-        "stop": "simulated",
+        "stop": "not_wired",
         "protocol": "mock"
       }
     },
@@ -163,7 +168,8 @@
       "hardware": "simulated",
       "tests": {
         "count": 395,
-        "command": "python -m pytest -q tests"
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -178,7 +184,8 @@
       "hardware": "not_applicable",
       "tests": {
         "count": 378,
-        "command": "python -m pytest -q tests"
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "deployment": "release"
@@ -203,7 +210,8 @@
       "hardware": "not_applicable",
       "tests": {
         "count": 424,
-        "command": "python -m pytest -q tests"
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -218,7 +226,8 @@
     "HYDRA-UMC-DETECTION-HEF": {
       "hardware": "simulated",
       "tests": {
-        "count": 405
+        "count": 405,
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -294,7 +303,8 @@
         "deployment": "release",
         "stop": "simulated",
         "access": "languages"
-      }
+      },
+      "stop_test": "test/stop_long_press_test.dart"
     },
     "HYDRA-UMC-EDITOR-STL": {
       "hardware": "not_applicable",
@@ -330,9 +340,10 @@
         "security": "host_tested",
         "deployment": "release",
         "operation": "metrics",
-        "stop": "simulated",
+        "stop": "partial",
         "protocol": "mock"
-      }
+      },
+      "stop_test": "tests/writeGate.test.ts"
     },
     "HYDRA-UMC-HIL-BRIDGE": {
       "hardware": "simulated",
@@ -346,7 +357,7 @@
         "deployment": "cm5_service",
         "operation": "metrics",
         "updates": "trains",
-        "stop": "simulated"
+        "stop": "not_wired"
       }
     },
     "HYDRA-UMC-IOS-CONTROL": {
@@ -363,7 +374,8 @@
         "deployment": "release",
         "stop": "simulated",
         "access": "languages"
-      }
+      },
+      "stop_test": "test/robot_view_model_stop_all_test.dart"
     },
     "HYDRA-UMC-JOB-DISPATCHER": {
       "hardware": "simulated",
@@ -379,7 +391,8 @@
         "operation": "metrics",
         "updates": "trains",
         "stop": "simulated"
-      }
+      },
+      "stop_test": "src/dispatcher/stopconfirm_test.go"
     },
     "HYDRA-UMC-LOCAL-TECHNICIAN": {
       "hardware": "simulated",
@@ -464,7 +477,8 @@
       "hardware": "not_applicable",
       "tests": {
         "count": 521,
-        "command": "python -m pytest -q tests"
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -488,14 +502,15 @@
         "deployment": "cm5_service",
         "operation": "metrics_optin",
         "updates": "trains",
-        "stop": "simulated"
+        "stop": "not_wired"
       }
     },
     "HYDRA-UMC-OS": {
       "hardware": "bench",
       "tests": {
         "count": 168,
-        "command": "python -m unittest discover -s agent/tests"
+        "command": "python -m unittest discover -s agent/tests",
+        "method": "exact"
       },
       "rows": {
         "integration": "contract",
@@ -508,7 +523,8 @@
       "hardware": "simulated",
       "tests": {
         "count": 373,
-        "command": "python -m pytest -q tests"
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "deployment": "release"
@@ -541,7 +557,8 @@
       "hardware": "not_applicable",
       "tests": {
         "count": 327,
-        "command": "python -m pytest -q tests"
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -566,7 +583,8 @@
         "operation": "metrics",
         "updates": "trains",
         "stop": "simulated"
-      }
+      },
+      "stop_test": "tests/test_can_estop_edges.py"
     },
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
@@ -583,7 +601,8 @@
       "hardware": "not_applicable",
       "tests": {
         "count": 475,
-        "command": "python -m pytest -q tests"
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -609,7 +628,8 @@
         "operation": "metrics",
         "updates": "trains",
         "stop": "simulated"
-      }
+      },
+      "stop_test": "tests/healthAndStopOptions.test.ts"
     },
     "HYDRA-UMC-STUDIO": {
       "hardware": "bench",
@@ -624,7 +644,8 @@
         "deployment": "release",
         "stop": "simulated",
         "access": "languages"
-      }
+      },
+      "stop_test": "tests/droidEstop.test.tsx"
     },
     "HYDRA-UMC-STUDIO-KIT": {
       "hardware": "not_applicable",
@@ -653,7 +674,8 @@
         "deployment": "release",
         "stop": "simulated",
         "access": "languages"
-      }
+      },
+      "stop_test": "tests/verify_stop_all.py"
     },
     "HYDRA-UMC-SWARM-SYNC": {
       "hardware": "simulated",
@@ -674,7 +696,8 @@
       "hardware": "not_applicable",
       "tests": {
         "count": 286,
-        "command": "python -m pytest -q tests"
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "deployment": "release"
@@ -719,7 +742,7 @@
         "deployment": "cm5_service",
         "operation": "metrics",
         "updates": "trains",
-        "stop": "simulated"
+        "stop": "not_wired"
       }
     },
     "HYDRA-UMC-UPDATER": {
@@ -737,7 +760,8 @@
       "hardware": "simulated",
       "tests": {
         "count": 657,
-        "command": "python -m pytest -q tests"
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -776,7 +800,8 @@
         "operation": "metrics",
         "updates": "trains",
         "stop": "simulated"
-      }
+      },
+      "stop_test": "tests/test_safety_state_age.py"
     },
     "HYDRA-UMC-VLA-ENGINE": {
       "hardware": "simulated",
@@ -791,14 +816,16 @@
         "deployment": "cm5_service",
         "operation": "metrics",
         "updates": "trains",
-        "stop": "simulated"
-      }
+        "stop": "partial"
+      },
+      "stop_test": "tests/test_guard.py"
     },
     "HYDRA-UMC-VOICE-UI": {
       "hardware": "simulated",
       "tests": {
         "count": 464,
-        "command": "python -m pytest -q tests"
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -824,7 +851,8 @@
         "updates": "apk",
         "stop": "simulated",
         "access": "languages"
-      }
+      },
+      "stop_test": "app/src/test/java/com/hydraumc/watch/ServicesTest.kt"
     },
     "ELECTRO-HOBBY-3D-UPDATER": {
       "hardware": "not_applicable",

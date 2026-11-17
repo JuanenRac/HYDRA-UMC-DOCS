@@ -238,6 +238,24 @@ STATES: dict[str, dict[str, tuple[str, dict[str, str]]]] = {
             "停止経路とその制限は実装されシミュレーターで試験済みですが、実機で動かしたことはなく、認証された安全システムではありません",
             "停止路径及其限制已实现并用模拟器测试；从未在真实机器上运行，这也不是经过认证的安全系统",
             "O caminho de paragem e os seus limites estão implementados e testados com simuladores; nunca funcionaram numa máquina real, e isto não é um sistema de segurança certificado")),
+        "partial": ("orange", _l(
+            "Part of the stop path is implemented and tested against simulators; the rest is not connected yet, so this program cannot be relied on to stop the equipment on its own",
+            "Una parte del camino de parada está implementada y probada con simuladores; el resto aún no está conectado, así que no se puede confiar en que este programa detenga el equipo por sí solo",
+            "Ein Teil des Stoppwegs ist umgesetzt und gegen Simulatoren getestet; der Rest ist noch nicht angeschlossen, daher darf man sich nicht darauf verlassen, dass dieses Programm die Anlage allein anhält",
+            "Une partie du chemin d'arrêt est implémentée et testée avec des simulateurs ; le reste n'est pas encore raccordé, on ne peut donc pas compter sur ce programme pour arrêter seul l'équipement",
+            "Una parte del percorso di arresto è implementata e provata con simulatori; il resto non è ancora collegato, quindi non ci si può affidare a questo programma per fermare da solo l'apparecchiatura",
+            "停止経路の一部は実装されシミュレーターで試験済みですが、残りはまだ接続されておらず、このプログラム単独で機器が停止するとは期待できません",
+            "停止路径的一部分已实现并用模拟器测试；其余部分尚未接通，因此不能依赖本程序自行停止设备",
+            "Uma parte do caminho de paragem está implementada e testada com simuladores; o resto ainda não está ligado, pelo que não se pode contar com este programa para parar sozinho o equipamento")),
+        "not_wired": ("red", _l(
+            "The stop command exists, but nothing connects it to the equipment or to its source of status yet; a stop has to come from another part of the system",
+            "La orden de parada existe, pero todavía nada la conecta con el equipo ni con su fuente de estado; la parada debe venir de otra parte del sistema",
+            "Der Stoppbefehl ist vorhanden, aber noch verbindet ihn nichts mit der Anlage oder ihrer Statusquelle; der Stopp muss von einem anderen Teil des Systems kommen",
+            "La commande d'arrêt existe, mais rien ne la relie encore à l'équipement ni à sa source d'état ; l'arrêt doit venir d'une autre partie du système",
+            "Il comando di arresto esiste, ma nulla lo collega ancora all'apparecchiatura o alla sua fonte di stato; l'arresto deve arrivare da un'altra parte del sistema",
+            "停止コマンドはありますが、機器や状態の取得元にはまだ何も接続されていません。停止はシステムの別の部分から行う必要があります",
+            "停止命令已存在，但尚未与设备或其状态来源连接；停止必须来自系统的其他部分",
+            "O comando de paragem existe, mas ainda nada o liga ao equipamento nem à sua fonte de estado; a paragem tem de vir de outra parte do sistema")),
     },
     "access": {
         "languages": ("yellow", _l(

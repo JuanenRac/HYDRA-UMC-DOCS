@@ -194,7 +194,7 @@ GPL-3.0-or-later - see LICENSE
             text = glance.render_section(lg, manifest, entry).rstrip("\n")
             parts.append(text + "\n\n" + jump_line(lg, present) + "\n")
         elif section == "status":
-            parts.append(status.render_section(lg, manifest, entry).rstrip("\n") + "\n")
+            parts.append(status.render_section(lg, manifest, status.prepare(repo, entry)).rstrip("\n") + "\n")
         elif section == "structure":
             tree = ctx.tree(lg)
             spec_svg = f'<p align="center">\n  <img src="images/repository-structure.svg" alt="Repository structure of {name}" width="100%">\n</p>'

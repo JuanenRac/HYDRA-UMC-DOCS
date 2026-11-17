@@ -51,7 +51,8 @@ def test_a_scaffolding_repository_has_no_green_row():
     entry = {"hardware": "not_applicable", "tests": {"count": 3, "command": "pytest"}}
     lights = [light for _, light, _ in status.rows("en", manifest, entry)]
     assert "green" not in lights
-    assert [light for _, light, _ in status.rows("en", MANIFEST, entry)].count("green") == 2
+    confirmed = dict(entry, runs_tests=True, tests={"count": 3, "command": "pytest", "method": "exact"})
+    assert [light for _, light, _ in status.rows("en", MANIFEST, confirmed)].count("green") == 2
     assert [light for area, light, _ in status.rows("en", manifest, entry) if area == "Real hardware"] == ["white"]
 
 
@@ -114,3 +115,61 @@ def test_the_data_file_rejects_an_unknown_line_or_state(tmp_path):
     path.write_text(json.dumps({"repos": {"X": {"hardware": "not_run", "rows": {"security": "perfect"}}}}), encoding="utf-8")
     with pytest.raises(glance.GlanceError):
         glance.load_data(path)
+
+
+def _tests_light(entry):
+    return [light for area, light, _ in status.rows("en", MANIFEST, entry) if area == "Tests"][0]
+
+
+def test_a_count_is_green_only_when_it_was_collected_and_a_workflow_runs_the_tests():
+    exact = {"count": 12, "command": "pytest", "method": "exact"}
+    assert _tests_light({"hardware": "simulated", "tests": exact, "runs_tests": True}) == "green"
+    assert _tests_light({"hardware": "simulated", "tests": exact, "runs_tests": False}) == "yellow"
+    assert _tests_light({"hardware": "simulated", "tests": {"count": 12, "command": "pytest"}, "runs_tests": True}) == "yellow"
+    unconfirmed = [note for area, _, note in status.rows("en", MANIFEST, {"hardware": "simulated", "tests": {"count": 12}}) if area == "Tests"][0]
+    assert "run on every change" not in unconfirmed and "12" in unconfirmed
+
+
+def test_a_workflow_that_runs_a_test_command_is_found(tmp_path):
+    assert status.workflow_runs_tests(tmp_path) is False
+    folder = tmp_path / ".github" / "workflows"
+    folder.mkdir(parents=True)
+    (folder / "ci.yml").write_text("steps:\n  - run: echo hello\n", encoding="utf-8")
+    assert status.workflow_runs_tests(tmp_path) is False
+    (folder / "ci.yml").write_text("steps:\n  - run: python -m pytest tests\n", encoding="utf-8")
+    assert status.workflow_runs_tests(tmp_path) is True
+    assert status.prepare(tmp_path, {"hardware": "simulated"})["runs_tests"] is True
+
+
+@pytest.mark.parametrize("code", sorted(glance.LANGUAGE_FILES))
+def test_the_stop_line_can_say_partial_and_not_wired_in_every_language(code):
+    from hydra_umc_docs import status_rows
+    lights = {state: level for state, (level, _notes) in status_rows.STATES["stop"].items()}
+    assert lights == {"simulated": "orange", "partial": "orange", "not_wired": "red"}
+    notes = {state: notes[code] for state, (_level, notes) in status_rows.STATES["stop"].items()}
+    assert len(set(notes.values())) == 3
+
+
+def test_a_tested_stop_line_needs_the_test_that_backs_it(tmp_path):
+    base = {"hardware": "simulated", "rows": {"stop": "partial"}}
+    path = tmp_path / "glance.json"
+    path.write_text('{"repos": {"X": %s}}' % __import__("json").dumps(base), encoding="utf-8")
+    with pytest.raises(glance.GlanceError, match="stop_test"):
+        glance.load_data(path)
+    path.write_text('{"repos": {"X": %s}}' % __import__("json").dumps(dict(base, stop_test="tests/test_stop.py")), encoding="utf-8")
+    assert "X" in glance.load_data(path)
+    path.write_text('{"repos": {"X": %s}}' % __import__("json").dumps({"hardware": "simulated", "rows": {"stop": "not_wired"}}), encoding="utf-8")
+    assert "X" in glance.load_data(path)
+
+
+def test_the_integration_line_does_not_claim_the_bench_when_the_evidence_is_lower():
+    from hydra_umc_docs import status_rows
+    entry = {"hardware": "simulated", "rows": {"integration": "bench"}}
+    on_bench = status_rows.STATES["integration"]["bench"][1]["en"]
+    contract = status_rows.STATES["integration"]["contract"][1]["en"]
+    lowered = dict(MANIFEST, evidence="simulator", hardware_bound=True)
+    row = [(light, note) for area, light, note in status.rows("en", lowered, entry) if area == "Integration"][0]
+    assert row == ("orange", contract)
+    proven = dict(MANIFEST, evidence="bench", hardware_bound=True)
+    row = [(light, note) for area, light, note in status.rows("en", proven, entry) if area == "Integration"][0]
+    assert row == ("yellow", on_bench)

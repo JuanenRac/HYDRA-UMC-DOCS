@@ -249,6 +249,10 @@ def load_data(path: Path) -> dict[str, dict]:
         tests = entry.get("tests")
         if tests is not None and not (isinstance(tests, dict) and isinstance(tests.get("count"), int) and tests["count"] > 0):
             raise GlanceError(f"{name}: 'tests' must be null or an object with a positive integer 'count'")
+        if isinstance(tests, dict) and tests.get("method") not in (None, "exact"):
+            raise GlanceError(f"{name}: tests.method must be absent or 'exact' (the count was collected, not scanned)")
+        if rows and rows.get("stop") in ("simulated", "partial") and not (isinstance(entry.get("stop_test"), str) and entry["stop_test"]):
+            raise GlanceError(f"{name}: a stop line that says the stop path is tested needs 'stop_test', the path of the test that backs it")
     return repos
 
 
