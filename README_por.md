@@ -120,6 +120,10 @@ python -m pytest tests -q                        # os testes unitários das ferr
 
 A CI executa `HYDRA_UMC_CI=1 python tools/ci_validate.py`, que verifica o manifesto, os documentos, os oito README e as imagens.
 
+### Operação e ferramentas
+
+* **Contagem semanal dos testes:** o workflow `count-tests.yml` corre todas as segundas-feiras (e a pedido com `workflow_dispatch`): obtém ao lado deste todos os repositórios da família, conta os testes com a cadeia de ferramentas de cada bateria, escreve os números em `data/glance.json` (`tests.method: "exact"` é o que põe a verde a linha dos testes de um README) e abre um único pull request aqui se o ficheiro mudou. Os README dos outros repositórios são depois regenerados a partir dele.
+
 ## 🏗️ Compilação e publicação
 
 `build.sh` / `build.bat` instalam o pacote e executam os testes; nunca mudam a versão. `build-test.sh` / `build-test.bat` verificam sem alterar nada.

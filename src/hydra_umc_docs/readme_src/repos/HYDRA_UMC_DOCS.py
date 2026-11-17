@@ -106,6 +106,18 @@ def DOCS(lg, ctx):
     return [f"[{label}]({path})" for label, path in TEXT[lg]["docs_links"] if path not in ("CHANGELOG.md", "LICENSE")]
 
 
+OPERATION = T(
+    '### Operation and tools\n\n* **Weekly count of the tests:** the workflow `count-tests.yml` runs every Monday (and on request with `workflow_dispatch`): it fetches every repository of the family next to this one, counts the tests with the toolchain of each suite, writes the numbers into `data/glance.json` (`tests.method: "exact"` is what turns the Tests line of a README green) and opens one pull request here when the file changed. The READMEs of the other repositories are then regenerated from it.',
+    '### Operación y herramientas\n\n* **Recuento semanal de pruebas:** el workflow `count-tests.yml` se ejecuta cada lunes (y a petición con `workflow_dispatch`): descarga junto a este todos los repositorios de la familia, cuenta las pruebas con la cadena de herramientas de cada batería, escribe las cifras en `data/glance.json` (`tests.method: "exact"` es lo que pone en verde la línea de pruebas de un README) y abre un único pull request aquí si el fichero cambió. Después los README de los demás repositorios se regeneran a partir de él.',
+    '### Betrieb und Werkzeuge\n\n* **Wöchentliche Testzählung:** der Workflow `count-tests.yml` läuft jeden Montag (und auf Anfrage mit `workflow_dispatch`): er holt alle Repositories der Familie neben dieses, zählt die Tests mit der Toolchain jeder Suite, schreibt die Zahlen in `data/glance.json` (`tests.method: "exact"` färbt die Testzeile eines README grün) und eröffnet einen einzigen Pull Request hier, wenn sich die Datei geändert hat. Die README der anderen Repositories werden danach daraus neu erzeugt.',
+    '### Exploitation et outils\n\n* **Comptage hebdomadaire des tests :** le workflow `count-tests.yml` s\'exécute chaque lundi (et à la demande avec `workflow_dispatch`) : il récupère à côté de celui-ci tous les dépôts de la famille, compte les tests avec la chaîne d\'outils de chaque suite, écrit les chiffres dans `data/glance.json` (`tests.method: "exact"` fait passer la ligne des tests d\'un README au vert) et ouvre une seule pull request ici si le fichier a changé. Les README des autres dépôts sont ensuite régénérés à partir de lui.',
+    '### Operatività e strumenti\n\n* **Conteggio settimanale dei test:** il workflow `count-tests.yml` gira ogni lunedì (e su richiesta con `workflow_dispatch`): scarica accanto a questo tutti i repository della famiglia, conta i test con la toolchain di ogni suite, scrive i numeri in `data/glance.json` (`tests.method: "exact"` rende verde la riga dei test di un README) e apre una sola pull request qui se il file è cambiato. I README degli altri repository vengono poi rigenerati da esso.',
+    '### 運用とツール\n\n* **テスト数の週次集計：** ワークフロー `count-tests.yml` は毎週月曜日（と `workflow_dispatch` による手動実行）に動き、ファミリーの全リポジトリをこのリポジトリの隣に取得し、各スイートのツールチェーンでテストを数え、その数を `data/glance.json` に書き込み（`tests.method: "exact"` が README のテスト行を緑にします）、ファイルが変わったときはここに pull request を 1 つ開きます。ほかのリポジトリの README はその後これを元に再生成されます。',
+    '### 运维与工具\n\n* **每周统计测试数：** 工作流 `count-tests.yml` 每周一运行（也可用 `workflow_dispatch` 手动运行）：它把家族中的所有仓库拉取到本仓库旁边，用各测试套件自己的工具链统计测试，把数字写入 `data/glance.json`（`tests.method: "exact"` 会让 README 的测试行变绿），文件有变化时在此打开唯一一个 pull request。其他仓库的 README 随后据此重新生成。',
+    '### Operação e ferramentas\n\n* **Contagem semanal dos testes:** o workflow `count-tests.yml` corre todas as segundas-feiras (e a pedido com `workflow_dispatch`): obtém ao lado deste todos os repositórios da família, conta os testes com a cadeia de ferramentas de cada bateria, escreve os números em `data/glance.json` (`tests.method: "exact"` é o que põe a verde a linha dos testes de um README) e abre um único pull request aqui se o ficheiro mudou. Os README dos outros repositórios são depois regenerados a partir dele.',
+)
+
+
 def BODY(lg, ctx):
     text = TEXT[lg]
     comments = list(text["dev_comments"])
@@ -118,7 +130,7 @@ def BODY(lg, ctx):
         "architecture": K.pick(ARCH_NOTE, lg) + '\n\n<p align="center">\n  <img src="images/architecture.svg" alt="HYDRA-UMC-DOCS architecture" width="100%">\n</p>',
         "security": K.table(lg, "threat", SECURITY_ROWS),
         "quickstart": str(text["dev_requirements"]) + "\n\n" + K.code(lg, quick, "bash"),
-        "testing": S.testing(lg, ctx.tests, "python -m pytest tests -q"),
+        "testing": S.testing(lg, ctx.tests, "python -m pytest tests -q") + "\n\n" + K.pick(OPERATION, lg),
         "build": str(text["dev_note"]),
         "roadmap": K.LIMITS[lg] + "\n\n" + K.pick(ROADMAP, lg),
         "related": _related(lg),
