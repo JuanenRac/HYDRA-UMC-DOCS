@@ -87,3 +87,16 @@ def test_native_listings_are_parsed(tmp_path, monkeypatch):
     (tmp_path / "Cargo.toml").write_text("[package]\n", encoding="utf-8")
     monkeypatch.setattr(tool, "run_native", lambda repo, label, command, timeout=3600: (0, "a::b: test\nc: test\n\n2 tests, 0 benchmarks\n"))
     assert tool.native_cargo(tmp_path) == 2
+
+
+def test_the_last_line_counts_what_was_measured_and_can_require_all_of_it(tmp_path, monkeypatch, capsys):
+    tool = load_tool()
+    glance = tmp_path / "glance.json"
+    glance.write_text('{"repos": {"HYDRA-UMC-X": {"tests": {"count": 3}}}}', encoding="utf-8")
+    monkeypatch.setattr(tool, "GLANCE", glance)
+    monkeypatch.setattr(tool, "measure", lambda name, entry: (None, "unmeasured"))
+    monkeypatch.setattr(tool, "readme_count", lambda name: None)
+    assert tool.main([]) == 0
+    assert "TEST_COUNTS=PASS repositories=1 failing=0 exact=0 approx=0 unmeasured=1" in capsys.readouterr().out
+    assert tool.main(["--require-measured"]) == 1
+    assert "TEST_COUNTS=FAIL" in capsys.readouterr().out
