@@ -122,7 +122,7 @@ def count_static(repo: Path, kind: str) -> int | None:
     if kind == "go":
         for path in walk(repo, (".go",)):
             if path.name.endswith("_test.go"):
-                total += len(re.findall(r"(?m)^func (?:\([^)]*\) )?Test\w*\(", read(path)))
+                total += len(re.findall(r"(?m)^func (?!TestMain\()Test\w*\(", read(path)))
     elif kind == "cargo":
         for path in walk(repo, (".rs",)):
             total += len(re.findall(r"#\[(?:tokio::)?test(?:\([^)]*\))?\]", read(path)))
@@ -309,6 +309,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--apply", action="store_true", help="write the exactly counted numbers into data/glance.json")
     parser.add_argument("--repo", action="append", default=[], help="only this repository (repeatable)")
     parser.add_argument("--strict-approx", action="store_true", help="also fail when an approximate count disagrees")
+    parser.add_argument("--require-measured", action="store_true", help="also fail when a repository could not be measured at all")
     parser.add_argument("--no-native", action="store_true", help="do not run the native test listings of Go, Rust, JavaScript, Dart and Kotlin (scan the source instead)")
     parser.add_argument("--json", action="store_true", help="print the report as JSON")
     args = parser.parse_args(argv)
@@ -346,7 +347,12 @@ def main(argv: list[str] | None = None) -> int:
         for row in rows:
             flag = "OK  " if not row["problems"] else ("FAIL" if row["blocking"] else "warn")
             print(f"{flag} {row['repo']:<34} real={row['real']} ({row['method']}) glance={row['glance']} readme={row['readme']} {'; '.join(row['problems'])}")
-        print(f"TEST_COUNTS={'FAIL' if failures else 'PASS'} repositories={len(rows)} failing={failures}")
+        exact = sum(row["method"] == "exact" and row["real"] is not None for row in rows)
+        unmeasured = sum(row["real"] is None for row in rows)
+        approx = len(rows) - exact - unmeasured
+        if args.require_measured and unmeasured:
+            failures += 1
+        print(f"TEST_COUNTS={'FAIL' if failures else 'PASS'} repositories={len(rows)} failing={failures} exact={exact} approx={approx} unmeasured={unmeasured}")
     if args.apply:
         GLANCE.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         print("TEST_COUNTS=APPLIED data/glance.json updated for the exactly counted repositories")

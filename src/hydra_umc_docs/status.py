@@ -127,7 +127,11 @@ def extra_rows(code: str, manifest: dict, entry: dict) -> list[tuple[str, str, s
         level, notes = status_rows.STATES[key][state]
         if key == "integration" and manifest.get("hardware_bound") is not False:
             # the same ceiling tools/status_lights.py checks: an integration line is limited by the evidence of the manifest
-            level = _cap(level, EVIDENCE_CEILING.get(str(manifest.get("evidence", "none")), "orange"))
+            capped = _cap(level, EVIDENCE_CEILING.get(str(manifest.get("evidence", "none")), "orange"))
+            if capped != level and state == "bench":
+                # the evidence does not reach the bench: do not keep the sentence that says it ran on the bench
+                notes = status_rows.STATES[key]["contract"][1]
+            level = capped
         made.append((status_rows.LABELS[key][code], level, notes[code]))
     return made
 

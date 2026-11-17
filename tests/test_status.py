@@ -114,3 +114,15 @@ def test_the_data_file_rejects_an_unknown_line_or_state(tmp_path):
     path.write_text(json.dumps({"repos": {"X": {"hardware": "not_run", "rows": {"security": "perfect"}}}}), encoding="utf-8")
     with pytest.raises(glance.GlanceError):
         glance.load_data(path)
+
+
+def test_a_lowered_integration_line_does_not_keep_the_sentence_about_the_bench():
+    entry = {"hardware": "not_run", "rows": {"integration": "bench"}}
+
+    def note(manifest, code="en"):
+        return status.rows(code, manifest, entry)[3][2]  # the extra lines come right after the three first areas
+
+    assert "test bench" not in note(dict(MANIFEST, evidence="simulator"))
+    assert "test bench" in note(dict(MANIFEST, evidence="bench"))
+    for code in glance.LANGUAGE_FILES:
+        assert note(dict(MANIFEST, evidence="simulator"), code) != note(dict(MANIFEST, evidence="bench"), code)
