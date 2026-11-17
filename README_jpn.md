@@ -120,6 +120,10 @@ python -m pytest tests -q                        # ツールの単体テスト
 
 CI は `HYDRA_UMC_CI=1 python tools/ci_validate.py` を実行し、マニフェスト、文書、8 つの README、図を検査します。
 
+### 運用とツール
+
+* **テスト数の週次集計：** ワークフロー `count-tests.yml` は毎週月曜日（と `workflow_dispatch` による手動実行）に動き、ファミリーの全リポジトリをこのリポジトリの隣に取得し、各スイートのツールチェーンでテストを数え、その数を `data/glance.json` に書き込み（`tests.method: "exact"` が README のテスト行を緑にします）、ファイルが変わったときはここに pull request を 1 つ開きます。ほかのリポジトリの README はその後これを元に再生成されます。
+
 ## 🏗️ ビルドとリリース
 
 `build.sh` / `build.bat` はパッケージをインストールしてテストを実行します。バージョンは変更しません。`build-test.sh` / `build-test.bat` は何も変更せずに検査します。

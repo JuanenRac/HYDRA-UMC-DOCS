@@ -120,6 +120,10 @@ python -m pytest tests -q                        # the unit tests of the tools
 
 The CI runs `HYDRA_UMC_CI=1 python tools/ci_validate.py`, which checks the manifest, the documents, the eight READMEs and the pictures.
 
+### Operation and tools
+
+* **Weekly count of the tests:** the workflow `count-tests.yml` runs every Monday (and on request with `workflow_dispatch`): it fetches every repository of the family next to this one, counts the tests with the toolchain of each suite, writes the numbers into `data/glance.json` (`tests.method: "exact"` is what turns the Tests line of a README green) and opens one pull request here when the file changed. The READMEs of the other repositories are then regenerated from it.
+
 ## 🏗️ Build & Release
 
 `build.sh` / `build.bat` install the package and run the tests; they never change the version. `build-test.sh` / `build-test.bat` check without changing anything.

@@ -120,6 +120,10 @@ python -m pytest tests -q                        # 工具的单元测试
 
 CI 运行 `HYDRA_UMC_CI=1 python tools/ci_validate.py`，检查清单、文档、八个 README 和图片。
 
+### 运维与工具
+
+* **每周统计测试数：** 工作流 `count-tests.yml` 每周一运行（也可用 `workflow_dispatch` 手动运行）：它把家族中的所有仓库拉取到本仓库旁边，用各测试套件自己的工具链统计测试，把数字写入 `data/glance.json`（`tests.method: "exact"` 会让 README 的测试行变绿），文件有变化时在此打开唯一一个 pull request。其他仓库的 README 随后据此重新生成。
+
 ## 🏗️ 构建与发布
 
 `build.sh` / `build.bat` 安装软件包并运行测试；它们从不改变版本。`build-test.sh` / `build-test.bat` 只检查，不改动任何内容。
