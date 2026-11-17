@@ -4,8 +4,9 @@
       "hardware": "simulated",
       "target": "board",
       "tests": {
-        "count": 1483,
-        "command": "python -m unittest discover -s tests -p 'test_*.py'"
+        "count": 1491,
+        "command": "python -m unittest discover -s tests -p 'test_*.py'",
+        "method": "exact"
       }
     },
     "HYDRA-UMC-ANDROID-CONTROL": {
@@ -29,8 +30,9 @@
     "HYDRA-UMC-ANOMALY-DETECTOR": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 459,
-        "command": "python -m pytest -q tests"
+        "count": 472,
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -44,7 +46,7 @@
     "HYDRA-UMC-BRIDGE-AMR": {
       "hardware": "simulated",
       "tests": {
-        "count": 271,
+        "count": 277,
         "command": "python tools/build_test.py",
         "method": "exact"
       },
@@ -58,8 +60,9 @@
     "HYDRA-UMC-BRIDGE-CNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 352,
-        "command": "python tools/build_test.py"
+        "count": 378,
+        "command": "python tools/build_test.py",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -88,8 +91,9 @@
     "HYDRA-UMC-BRIDGE-LASER": {
       "hardware": "simulated",
       "tests": {
-        "count": 316,
-        "command": "python tools/build_test.py"
+        "count": 339,
+        "command": "python tools/build_test.py",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -121,8 +125,9 @@
     "HYDRA-UMC-BRIDGE-PRINTER3D": {
       "hardware": "simulated",
       "tests": {
-        "count": 272,
-        "command": "python tools/build_test.py"
+        "count": 299,
+        "command": "python tools/build_test.py",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -137,8 +142,9 @@
     "HYDRA-UMC-BRIDGE-ROS2": {
       "hardware": "simulated",
       "tests": {
-        "count": 427,
-        "command": "python tools/build_test.py"
+        "count": 451,
+        "command": "python tools/build_test.py",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -184,8 +190,7 @@
       "hardware": "not_applicable",
       "tests": {
         "count": 378,
-        "command": "python -m pytest -q tests",
-        "method": "exact"
+        "command": "python -m pytest -q tests"
       },
       "rows": {
         "deployment": "release"
@@ -210,8 +215,7 @@
       "hardware": "not_applicable",
       "tests": {
         "count": 424,
-        "command": "python -m pytest -q tests",
-        "method": "exact"
+        "command": "python -m pytest -q tests"
       },
       "rows": {
         "interface": "documented_tested",
@@ -241,8 +245,9 @@
     "HYDRA-UMC-DEV-SERVER": {
       "hardware": "simulated",
       "tests": {
-        "count": 869,
-        "command": "python -m pytest -q tests"
+        "count": 934,
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -255,8 +260,9 @@
     "HYDRA-UMC-DEVELOPER-NODE": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 140,
-        "command": "python -m pytest -q tests"
+        "count": 142,
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -268,8 +274,9 @@
     "HYDRA-UMC-DOCS": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 287,
-        "command": "python -m pytest tests -q"
+        "count": 300,
+        "command": "python -m pytest tests -q",
+        "method": "exact"
       },
       "rows": {
         "deployment": "release"
@@ -278,8 +285,9 @@
     "HYDRA-UMC-DOCS-QA": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 286,
-        "command": "python -m pytest -q tests"
+        "count": 288,
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -309,8 +317,9 @@
     "HYDRA-UMC-EDITOR-STL": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 329,
-        "command": "python -m pytest tests -q"
+        "count": 352,
+        "command": "python -m pytest tests -q",
+        "method": "exact"
       },
       "rows": {
         "deployment": "release",
@@ -320,8 +329,9 @@
     "HYDRA-UMC-EDITOR-URDF": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 652,
-        "command": "python -m pytest tests -q"
+        "count": 691,
+        "command": "python -m pytest tests -q",
+        "method": "exact"
       },
       "rows": {
         "deployment": "release",
@@ -397,8 +407,9 @@
     "HYDRA-UMC-LOCAL-TECHNICIAN": {
       "hardware": "simulated",
       "tests": {
-        "count": 485,
-        "command": "python -m pytest -q tests"
+        "count": 489,
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -411,8 +422,9 @@
     "HYDRA-UMC-MESHES": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 34,
-        "command": "python -m pytest tests -q"
+        "count": 59,
+        "command": "python -m pytest tests -q",
+        "method": "exact"
       }
     },
     "HYDRA-UMC-MQTT-BROKER": {
@@ -477,8 +489,7 @@
       "hardware": "not_applicable",
       "tests": {
         "count": 521,
-        "command": "python -m pytest -q tests",
-        "method": "exact"
+        "command": "python -m pytest -q tests"
       },
       "rows": {
         "interface": "documented_tested",
@@ -509,8 +520,7 @@
       "hardware": "bench",
       "tests": {
         "count": 168,
-        "command": "python -m unittest discover -s agent/tests",
-        "method": "exact"
+        "command": "python -m unittest discover -s agent/tests"
       },
       "rows": {
         "integration": "contract",
@@ -523,8 +533,7 @@
       "hardware": "simulated",
       "tests": {
         "count": 373,
-        "command": "python -m pytest -q tests",
-        "method": "exact"
+        "command": "python -m pytest -q tests"
       },
       "rows": {
         "deployment": "release"
@@ -557,8 +566,7 @@
       "hardware": "not_applicable",
       "tests": {
         "count": 327,
-        "command": "python -m pytest -q tests",
-        "method": "exact"
+        "command": "python -m pytest -q tests"
       },
       "rows": {
         "interface": "documented_tested",
@@ -572,8 +580,9 @@
     "HYDRA-UMC-SAFETY-ZONES": {
       "hardware": "simulated",
       "tests": {
-        "count": 1233,
-        "command": "python -m pytest -q tests"
+        "count": 1329,
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -589,8 +598,9 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 1238,
-        "command": "python -m unittest discover -s clients/python/tests"
+        "count": 1259,
+        "command": "python -m unittest discover -s clients/python/tests",
+        "method": "exact"
       },
       "rows": {
         "contracts": "verified",
@@ -601,8 +611,7 @@
       "hardware": "not_applicable",
       "tests": {
         "count": 475,
-        "command": "python -m pytest -q tests",
-        "method": "exact"
+        "command": "python -m pytest -q tests"
       },
       "rows": {
         "interface": "documented_tested",
@@ -696,8 +705,7 @@
       "hardware": "not_applicable",
       "tests": {
         "count": 286,
-        "command": "python -m pytest -q tests",
-        "method": "exact"
+        "command": "python -m pytest -q tests"
       },
       "rows": {
         "deployment": "release"
@@ -748,8 +756,9 @@
     "HYDRA-UMC-UPDATER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 780,
-        "command": "python -m pytest -q tests"
+        "count": 830,
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "security": "host_tested",
@@ -759,7 +768,7 @@
     "HYDRA-UMC-VISION-NODE": {
       "hardware": "simulated",
       "tests": {
-        "count": 657,
+        "count": 658,
         "command": "python -m pytest -q tests",
         "method": "exact"
       },
@@ -775,8 +784,9 @@
     "HYDRA-UMC-VISION-STREAMER": {
       "hardware": "simulated",
       "tests": {
-        "count": 337,
-        "command": "python -m pytest -q tests"
+        "count": 339,
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -790,7 +800,8 @@
       "hardware": "simulated",
       "tests": {
         "count": 446,
-        "command": "python -m pytest -q tests"
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -806,8 +817,9 @@
     "HYDRA-UMC-VLA-ENGINE": {
       "hardware": "simulated",
       "tests": {
-        "count": 299,
-        "command": "python -m pytest -q tests"
+        "count": 458,
+        "command": "python -m pytest -q tests",
+        "method": "exact"
       },
       "rows": {
         "interface": "documented_tested",
@@ -823,7 +835,7 @@
     "HYDRA-UMC-VOICE-UI": {
       "hardware": "simulated",
       "tests": {
-        "count": 464,
+        "count": 471,
         "command": "python -m pytest -q tests",
         "method": "exact"
       },
