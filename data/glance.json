@@ -45,7 +45,7 @@
     "HYDRA-UMC-BRIDGE-AMR": {
       "hardware": "simulated",
       "tests": {
-        "count": 277,
+        "count": 280,
         "command": "python tools/build_test.py",
         "method": "exact"
       },
@@ -59,7 +59,7 @@
     "HYDRA-UMC-BRIDGE-CNC": {
       "hardware": "simulated",
       "tests": {
-        "count": 378,
+        "count": 387,
         "command": "python tools/build_test.py",
         "method": "exact"
       },
@@ -76,7 +76,7 @@
     "HYDRA-UMC-BRIDGE-DROIDS": {
       "hardware": "simulated",
       "tests": {
-        "count": 304,
+        "count": 317,
         "command": "python tools/build_test.py",
         "method": "exact"
       },
@@ -124,7 +124,7 @@
     "HYDRA-UMC-BRIDGE-PRINTER3D": {
       "hardware": "simulated",
       "tests": {
-        "count": 299,
+        "count": 319,
         "command": "python tools/build_test.py",
         "method": "exact"
       },
@@ -141,7 +141,7 @@
     "HYDRA-UMC-BRIDGE-ROS2": {
       "hardware": "simulated",
       "tests": {
-        "count": 451,
+        "count": 463,
         "command": "python tools/build_test.py",
         "method": "exact"
       },
@@ -158,7 +158,7 @@
     "HYDRA-UMC-BRIDGE-UAV": {
       "hardware": "simulated",
       "tests": {
-        "count": 401,
+        "count": 419,
         "command": "python tools/build_test.py",
         "method": "exact"
       },
@@ -601,7 +601,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 1270,
+        "count": 1292,
         "command": "python -m unittest discover -s clients/python/tests",
         "method": "exact"
       },

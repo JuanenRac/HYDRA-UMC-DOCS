@@ -95,3 +95,45 @@ def BODY(lg, ctx):
     out["roadmap"] = LIMITS[lg] + "\n\n" + ctx.v(lg, "roadmap")
     out["related"] = ctx.v(lg, "related")
     return out
+
+
+# The settings of the Spot session that the README did not list.
+from ... import readme_kit as _K2
+
+_BODY_SESSION = BODY
+
+
+def BODY(lg, ctx):  # type: ignore[no-redef]
+    body = _BODY_SESSION(lg, ctx)
+    _K2.insert_rows(body, "configuration", lg, [
+        ["`cut_on_broker_loss_s` (`config/spot_session.json`)", "`0`", P(
+            "seconds the connection to the MQTT broker may stay down before the session cuts the e-stop endpoint, because the bridge no longer hears `cmd/estop` or the global stop meanwhile; it happens once per outage, with the reason `broker lost`. `0` changes nothing. A value shorter than the usual drops of the network of the site would cut the robot for a short loss of it",
+            "segundos que la conexión con el broker MQTT puede seguir caída antes de que la sesión corte el endpoint del e-stop, porque entretanto el bridge no oye `cmd/estop` ni la parada global; ocurre una vez por caída, con el motivo `broker lost`. `0` no cambia nada. Un valor menor que las caídas habituales de la red del sitio cortaría el robot por una pérdida breve de ella",
+            "Sekunden, die die Verbindung zum MQTT-Broker unterbrochen sein darf, bevor die Sitzung den E-Stopp-Endpunkt trennt, weil der Bridge währenddessen weder `cmd/estop` noch den globalen Stopp hört; das geschieht einmal pro Ausfall, mit dem Grund `broker lost`. `0` ändert nichts. Ein Wert unter den üblichen Netzaussetzern des Standorts würde den Roboter bei kurzem Netzverlust abschalten",
+            "secondes pendant lesquelles la connexion au broker MQTT peut rester coupée avant que la session coupe le point d'arrêt d'urgence, car le bridge n'entend alors ni `cmd/estop` ni l'arrêt global ; cela arrive une fois par coupure, avec le motif `broker lost`. `0` ne change rien. Une valeur plus courte que les coupures habituelles du réseau du site couperait le robot pour une brève perte de réseau",
+            "secondi in cui la connessione al broker MQTT può restare interrotta prima che la sessione tagli l'endpoint dell'arresto di emergenza, perché nel frattempo il bridge non sente né `cmd/estop` né l'arresto globale; avviene una volta per interruzione, con il motivo `broker lost`. `0` non cambia nulla. Un valore più breve delle cadute abituali della rete del sito taglierebbe il robot per una breve perdita di rete",
+            "MQTT ブローカーへの接続が切れたままでもよい秒数。これを超えると、その間ブリッジは `cmd/estop` もグローバル停止も受け取れないため、セッションは e-stop エンドポイントを遮断します。遮断は 1 回の断につき 1 度で、理由は `broker lost` です。`0` なら何も変わりません。現場のネットワークの通常の瞬断より短い値にすると、短い断でもロボットを遮断します",
+            "与 MQTT 代理的连接可持续中断的秒数；超过后会话会切断急停端点，因为这期间桥接听不到 `cmd/estop` 和全局停止；每次中断只切断一次，原因为 `broker lost`。`0` 表示不变。若该值短于现场网络的常见中断时长，网络短暂丢失就会切断机器人",
+            "segundos em que a ligação ao broker MQTT pode ficar em baixo antes de a sessão cortar o ponto de paragem de emergência, porque entretanto o bridge não ouve `cmd/estop` nem a paragem global; acontece uma vez por falha, com o motivo `broker lost`. `0` não muda nada. Um valor mais curto do que as quedas habituais da rede do local cortaria o robô por uma perda breve dela")],
+        ["`moving_speed_mps`, `unknown_motion_is_idle` (`config/spot_session.json`)", "`0.05`, `true`", P(
+            "how the state the gate trusts is read from the `RobotState`: an e-stop reported as engaged is STOPPED, a body that moves faster than `moving_speed_mps` is RUNNING even when the posture does not say so, and a state with neither posture nor velocity is read as IDLE unless `unknown_motion_is_idle` is `false`, in which case it is not trusted. A forbidden zone may also be given in the fixed frame (`frame` of `ForbiddenZone`: `body`, or `odom`); `walk_to` then takes the pose of the robot (`pose_in_odom`) and refuses the walk without it",
+            "cómo se lee el estado en el que confía la puerta a partir del `RobotState`: un e-stop notificado como activo es STOPPED, un cuerpo que se mueve más deprisa que `moving_speed_mps` es RUNNING aunque la postura no lo diga, y un estado sin postura ni velocidad se lee como IDLE salvo que `unknown_motion_is_idle` sea `false`, y entonces no se confía en él. Una zona prohibida también puede darse en el marco fijo (`frame` de `ForbiddenZone`: `body` u `odom`); `walk_to` toma entonces la pose del robot (`pose_in_odom`) y rechaza el paseo sin ella",
+            "wie der Zustand, dem das Tor vertraut, aus dem `RobotState` gelesen wird: ein als aktiv gemeldeter E-Stopp ist STOPPED, ein Körper, der sich schneller als `moving_speed_mps` bewegt, ist RUNNING, auch wenn die Haltung es nicht sagt, und ein Zustand ohne Haltung und Geschwindigkeit wird als IDLE gelesen, außer `unknown_motion_is_idle` ist `false`; dann wird ihm nicht vertraut. Eine Sperrzone kann auch im festen Bezugssystem angegeben werden (`frame` von `ForbiddenZone`: `body` oder `odom`); `walk_to` nimmt dann die Pose des Roboters (`pose_in_odom`) und lehnt den Gang ohne sie ab",
+            "comment l'état auquel la porte se fie est lu dans le `RobotState` : un arrêt d'urgence signalé comme engagé donne STOPPED, un corps qui bouge plus vite que `moving_speed_mps` donne RUNNING même si la posture ne le dit pas, et un état sans posture ni vitesse est lu comme IDLE sauf si `unknown_motion_is_idle` vaut `false`, auquel cas on ne s'y fie pas. Une zone interdite peut aussi être donnée dans le repère fixe (`frame` de `ForbiddenZone` : `body` ou `odom`) ; `walk_to` prend alors la pose du robot (`pose_in_odom`) et refuse la marche sans elle",
+            "come lo stato di cui la porta si fida è letto dal `RobotState`: un arresto di emergenza segnalato come inserito dà STOPPED, un corpo che si muove più veloce di `moving_speed_mps` dà RUNNING anche se la postura non lo dice, e uno stato senza postura né velocità è letto come IDLE salvo che `unknown_motion_is_idle` sia `false`, nel qual caso non ci si fida. Una zona vietata può anche essere data nel riferimento fisso (`frame` di `ForbiddenZone`: `body` oppure `odom`); `walk_to` prende allora la posa del robot (`pose_in_odom`) e rifiuta la camminata senza di essa",
+            "ゲートが信頼する状態を `RobotState` からどう読むか。作動中と報告された e-stop は STOPPED、`moving_speed_mps` より速く動く機体は姿勢が示していなくても RUNNING、姿勢も速度もない状態は IDLE として読みますが、`unknown_motion_is_idle` が `false` のときは信頼しません。禁止ゾーンは固定フレームでも指定でき（`ForbiddenZone` の `frame`：`body` または `odom`）、その場合 `walk_to` はロボットの姿勢（`pose_in_odom`）を受け取り、姿勢がなければ歩行を拒否します",
+            "闸门所信任的状态如何从 `RobotState` 读取：报告为已按下的急停为 STOPPED，移动速度超过 `moving_speed_mps` 的机体即使姿态未说明也是 RUNNING，既无姿态也无速度的状态按 IDLE 读取，除非 `unknown_motion_is_idle` 为 `false`，此时不予信任。禁区也可以按固定坐标系给出（`ForbiddenZone` 的 `frame`：`body` 或 `odom`）；`walk_to` 随后取机器人的位姿（`pose_in_odom`），没有位姿就拒绝行走",
+            "como o estado em que a porta confia é lido do `RobotState`: uma paragem de emergência indicada como acionada dá STOPPED, um corpo que se move mais depressa do que `moving_speed_mps` dá RUNNING mesmo que a postura não o diga, e um estado sem postura nem velocidade é lido como IDLE a menos que `unknown_motion_is_idle` seja `false`, caso em que não se confia nele. Uma zona proibida também pode ser dada no referencial fixo (`frame` de `ForbiddenZone`: `body` ou `odom`); `walk_to` toma então a pose do robô (`pose_in_odom`) e recusa o andar sem ela")],
+    ])
+    _K2.insert_rows(body, "testing", lg, [
+        B.trow("`test_robot_state_fixtures.py`, `test_walk_limits.py`", P(
+            "fixtures shaped like the state message of the robot (speed, e-stops, no motion data), the speed threshold and the forbidden zones in a fixed frame; hand-made, not recorded from a robot",
+            "fixtures con la forma del mensaje de estado del robot (velocidad, e-stops, sin datos de movimiento), el umbral de velocidad y las zonas prohibidas en marco fijo; hechos a mano, no grabados de un robot",
+            "Fixtures in der Form der Zustandsnachricht des Roboters (Geschwindigkeit, E-Stopps, keine Bewegungsdaten), die Geschwindigkeitsschwelle und die Sperrzonen im festen Bezugssystem; von Hand gemacht, nicht von einem Roboter aufgezeichnet",
+            "fixtures à la forme du message d'état du robot (vitesse, arrêts d'urgence, sans données de mouvement), le seuil de vitesse et les zones interdites dans un repère fixe ; faits à la main, non enregistrés sur un robot",
+            "fixture con la forma del messaggio di stato del robot (velocità, arresti di emergenza, senza dati di moto), la soglia di velocità e le zone vietate in un riferimento fisso; fatte a mano, non registrate da un robot",
+            "ロボットの状態メッセージの形をしたフィクスチャ（速度、e-stop、動作データなし）、速度のしきい値、固定フレームの禁止ゾーン。手作りで、実機から記録したものではありません",
+            "形如机器人状态消息的固定数据（速度、急停、无运动数据）、速度阈值以及固定坐标系中的禁区；手工制作，并非从机器人录制",
+            "fixtures com a forma da mensagem de estado do robô (velocidade, paragens de emergência, sem dados de movimento), o limiar de velocidade e as zonas proibidas num referencial fixo; feitas à mão, não gravadas de um robô")),
+    ])
+    return body

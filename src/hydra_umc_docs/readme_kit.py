@@ -193,3 +193,34 @@ def h3_split(text: str):
     pieces = re.split(r"(?m)^### (.*)\n", text)
     pre = pieces[0].strip("\n")
     return pre, [(pieces[i].strip(), pieces[i + 1].strip("\n")) for i in range(1, len(pieces) - 1, 2)]
+
+# --------------------------------------------------------------------------- additions to a section already made
+def insert_rows(body: dict, key: str, lg: str, rows) -> dict:
+    """Puts the rows (cells as for `table`) at the end of the first Markdown table of the section `key`; makes the paragraph's table when there is none."""
+    text = body.get(key) or ""
+    lines = text.split("\n")
+    start = next((i for i, line in enumerate(lines) if line.startswith("|")), None)
+    new = ["| " + " | ".join(str(pick(cell, lg)).replace("\n", " ").replace("|", "\\|") for cell in row) + " |" for row in rows]
+    if start is None:
+        raise ValueError(f"no table in the section {key!r} to add rows to")
+    end = start
+    while end < len(lines) and lines[end].startswith("|"):
+        end += 1
+    body[key] = "\n".join(lines[:end] + new + lines[end:])
+    return body
+
+
+def insert_bullets(body: dict, key: str, lg: str, items) -> dict:
+    """Adds the bullets (one text per language each) after the last line of the first bullet list of the section `key`."""
+    text = body.get(key) or ""
+    lines = text.split("\n")
+    first = next((i for i, line in enumerate(lines) if line.startswith("* ") or line.startswith("- ")), None)
+    if first is None:
+        raise ValueError(f"no bullet list in the section {key!r}")
+    end = first
+    while end < len(lines) and lines[end].strip() and not lines[end].startswith("#"):
+        end += 1
+    marker = lines[first][:2]
+    new = [marker + str(pick(item, lg)) for item in items]
+    body[key] = "\n".join(lines[:end] + new + lines[end:])
+    return body
