@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.5]
+
 - **The README source of the dashboard carries the proxy log switch, and the test count of the SDK is current:** the row of `--log-proxy` was only in the generated README, so the generator would have removed it, and the glance data held an older SDK test count than its README.
 - **The count of the tests of the family runs every week and writes what it collected:** the workflow that counts the tests with the toolchains of every suite now also runs on a schedule, writes the numbers of the exact listings into `data/glance.json` (`tests.method: "exact"`, which turns the Tests line green) and opens one pull request when the file changed.
 - **The Tests line is green only for a count that was collected and that a workflow runs:** `data/glance.json` records `tests.method: "exact"` for a repository whose tests were collected by `check_test_counts.py --apply` (which now writes it), and the status table also looks for a workflow of the repository that runs a test command; otherwise the line is yellow and its sentence no longer claims that the tests run on every change.
@@ -19,6 +21,7 @@ All notable changes to this project are documented here.
 
 - **The simulated tool head can be tried on a bus that goes wrong:** `FaultyBus` wraps a bus and loses, doubles or flips one bit of frames by chances drawn from a fixed seed, takes the interface down and brings it back, and refuses the next sends. The responder now carries on when the bus fails (`bus_errors` counts the failures, the answer that could not be sent is lost, as on a real bus) instead of stopping, and a frame whose identifier is over eleven bits without a flag is ignored instead of raising. Six new tests; the evidence level of the repository is `simulator`; the same faults on a physical CAN bus stay pending.
 
+- Build version synchronized with `hydra-umc.project.json` and the repository-native version source.
 
 ## [0.1.4]
 
