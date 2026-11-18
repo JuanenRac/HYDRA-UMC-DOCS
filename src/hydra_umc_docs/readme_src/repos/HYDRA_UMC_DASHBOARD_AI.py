@@ -141,6 +141,29 @@ _CONFIG_ROWS["rows"].extend([
             "pt": "com ela, uma chamada reencaminhada só é respondida se o cabeçalho `Host` for um dos valores indicados (`host:porta`, como o navegador o envia), pelo que uma página que chegou à porta por DNS rebinding é recusada; indique todos os nomes com que o navegador abre o painel.",
         },
     ],
+    [
+        _same("`--log-proxy` (`scripts/serve_static.py`)"),
+        {
+            "en": "off",
+            "es": "desactivado",
+            "de": "aus",
+            "fr": "désactivé",
+            "it": "disattivato",
+            "ja": "オフ",
+            "zh": "关闭",
+            "pt": "desligado",
+        },
+        {
+            "en": "writes one line on stderr for every forwarded call: method, path without the query, status and milliseconds, never the token or the body",
+            "es": "escribe una línea por stderr de cada llamada reenviada: método, ruta sin la consulta, estado y milisegundos, nunca el token ni el cuerpo",
+            "de": "schreibt für jeden weitergeleiteten Aufruf eine Zeile auf stderr: Methode, Pfad ohne Abfrage, Status und Millisekunden, nie das Token oder den Inhalt",
+            "fr": "écrit une ligne sur stderr pour chaque appel relayé : méthode, chemin sans la requête, état et millisecondes, jamais le jeton ni le corps",
+            "it": "scrive una riga su stderr per ogni chiamata inoltrata: metodo, percorso senza la query, stato e millisecondi, mai il token né il corpo",
+            "ja": "中継した呼び出しごとに stderr へ 1 行（メソッド、クエリを除いたパス、ステータス、ミリ秒）を書き出します。トークンと本文は書きません",
+            "zh": "为每个转发的调用在 stderr 写一行：方法、不含查询的路径、状态和毫秒数，绝不写入令牌或正文",
+            "pt": "escreve uma linha no stderr por cada chamada reencaminhada: método, caminho sem a consulta, estado e milissegundos, nunca o token nem o corpo",
+        },
+    ],
 ])
 
 _INTERFACE_ROWS: Any = EXTRAS["interfaces"]
