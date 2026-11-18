@@ -85,3 +85,34 @@ _BODY_CELL = BODY
 
 def BODY(lg, ctx):  # type: ignore[no-redef]
     return _K2.apply_addenda(_BODY_CELL(lg, ctx), {'configuration': _B2.CELL_STATE_NOTE}, lg)
+
+
+# The file facts of a start that names a sha256 or a profile.
+_BODY_FACTS = BODY
+
+
+def BODY(lg, ctx):  # type: ignore[no-redef]
+    body = _BODY_FACTS(lg, ctx)
+    _K2.insert_rows(body, "configuration", lg, [
+        ["`[file_facts] max_bytes`", "`268435456`", P(
+            "the largest G-code file the bridge downloads from Moonraker to compute its `sha256` when a start names one (the result is kept by file name and modification time); the profile is read from a header comment `; hydra_profile: <id>`, and a file without it has no profile; `0` turns the download off, so a start that names a `sha256` or a profile is refused. Set only in the configuration file and used only with `HYDRA_UMC_PRINTER3D_COMMAND_CORRELATION=1`",
+            "el mayor fichero de G-code que el bridge descarga de Moonraker para calcular su `sha256` cuando un inicio lo nombra (el resultado se guarda por nombre de fichero y fecha de modificación); el perfil se lee de un comentario de cabecera `; hydra_profile: <id>`, y un fichero sin él no tiene perfil; `0` apaga la descarga, así que se rechaza un inicio que nombre un `sha256` o un perfil. Solo se fija en el fichero de configuración y solo se usa con `HYDRA_UMC_PRINTER3D_COMMAND_CORRELATION=1`",
+            "die größte G-Code-Datei, die der Bridge von Moonraker herunterlädt, um ihren `sha256` zu berechnen, wenn ein Start einen nennt (das Ergebnis wird nach Dateiname und Änderungszeit gemerkt); das Profil wird aus einem Kopfkommentar `; hydra_profile: <id>` gelesen, und eine Datei ohne ihn hat kein Profil; `0` schaltet den Download ab, ein Start, der einen `sha256` oder ein Profil nennt, wird dann abgelehnt. Nur in der Konfigurationsdatei einstellbar und nur mit `HYDRA_UMC_PRINTER3D_COMMAND_CORRELATION=1` wirksam",
+            "le plus gros fichier G-code que le bridge télécharge depuis Moonraker pour calculer son `sha256` quand un démarrage en nomme un (le résultat est retenu par nom de fichier et date de modification) ; le profil est lu dans un commentaire d'en-tête `; hydra_profile: <id>`, et un fichier sans lui n'a pas de profil ; `0` désactive le téléchargement : un démarrage qui nomme un `sha256` ou un profil est alors refusé. Réglé uniquement dans le fichier de configuration et utilisé seulement avec `HYDRA_UMC_PRINTER3D_COMMAND_CORRELATION=1`",
+            "il file G-code più grande che il bridge scarica da Moonraker per calcolarne lo `sha256` quando un avvio ne indica uno (il risultato è ricordato per nome del file e data di modifica); il profilo si legge da un commento di intestazione `; hydra_profile: <id>`, e un file senza di esso non ha profilo; `0` disattiva il download: un avvio che indica uno `sha256` o un profilo viene allora rifiutato. Si imposta solo nel file di configurazione e si usa solo con `HYDRA_UMC_PRINTER3D_COMMAND_CORRELATION=1`",
+            "開始コマンドが `sha256` を指定したとき、その計算のためにブリッジが Moonraker からダウンロードする G-code ファイルの最大サイズ（結果はファイル名と更新時刻で記憶されます）。プロファイルはヘッダーコメント `; hydra_profile: <id>` から読み取り、これが無いファイルにはプロファイルがありません。`0` ならダウンロードを行わず、`sha256` またはプロファイルを指定した開始は拒否されます。設定ファイルでのみ指定でき、`HYDRA_UMC_PRINTER3D_COMMAND_CORRELATION=1` のときだけ使われます",
+            "当启动命令指明 `sha256` 时，桥接为计算它而从 Moonraker 下载的 G-code 文件的最大大小（结果按文件名和修改时间记住）；配置文件（profile）从头部注释 `; hydra_profile: <id>` 读取，没有该注释的文件没有配置；`0` 关闭下载，此时指明 `sha256` 或配置的启动会被拒绝。仅可在配置文件中设置，且仅在 `HYDRA_UMC_PRINTER3D_COMMAND_CORRELATION=1` 时使用",
+            "o maior ficheiro G-code que o bridge descarrega do Moonraker para calcular o seu `sha256` quando um arranque indica um (o resultado é guardado por nome de ficheiro e data de modificação); o perfil é lido de um comentário de cabeçalho `; hydra_profile: <id>`, e um ficheiro sem ele não tem perfil; `0` desliga a descarga, pelo que um arranque que indique um `sha256` ou um perfil é recusado. Só se define no ficheiro de configuração e só é usado com `HYDRA_UMC_PRINTER3D_COMMAND_CORRELATION=1`")],
+    ])
+    _K2.insert_rows(body, "testing", lg, [
+        B.trow("`test_file_facts.py`", P(
+            "the download of a file to compute its `sha256`, the size ceiling, the cache by name and modification time, the `; hydra_profile:` header comment and the setting",
+            "la descarga de un fichero para calcular su `sha256`, el tope de tamaño, la caché por nombre y fecha de modificación, el comentario de cabecera `; hydra_profile:` y el ajuste",
+            "der Download einer Datei zur Berechnung ihres `sha256`, die Größenobergrenze, der Zwischenspeicher nach Name und Änderungszeit, der Kopfkommentar `; hydra_profile:` und die Einstellung",
+            "le téléchargement d'un fichier pour calculer son `sha256`, le plafond de taille, le cache par nom et date de modification, le commentaire d'en-tête `; hydra_profile:` et le réglage",
+            "il download di un file per calcolarne lo `sha256`, il tetto di dimensione, la cache per nome e data di modifica, il commento di intestazione `; hydra_profile:` e l'impostazione",
+            "`sha256` を計算するためのファイルのダウンロード、サイズ上限、ファイル名と更新時刻によるキャッシュ、ヘッダーコメント `; hydra_profile:`、および設定",
+            "为计算 `sha256` 而下载文件、大小上限、按文件名和修改时间的缓存、头部注释 `; hydra_profile:` 以及该设置",
+            "a descarga de um ficheiro para calcular o seu `sha256`, o limite de tamanho, a cache por nome e data de modificação, o comentário de cabeçalho `; hydra_profile:` e a definição")),
+    ])
+    return body

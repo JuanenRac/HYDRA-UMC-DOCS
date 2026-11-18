@@ -39,6 +39,7 @@
   "HYDRA-UMC-ANDROID-CONTROL": {
    "064f22f53f09": ", , , , | the state of the robots, the family, the compute module, the safety limits and the reservations",
    "10859347df2c": "A token stolen from the phone | The sign-in token and the refresh token are kept with EncryptedSharedPreferenc",
+   "447690b5357e": "Two-step sign-in ( , , , , ) - Settings → Security turns the second factor on for the signed-in account (the p",
    "4c02b8991167": "Every control command (Jog, Play and the server's global stop) is validated by the server using signed tokens,",
    "87e72ccd6be2": "— iOS/iPadOS control app (Flutter) with real-time WebSocket sync; this app's direct iOS/iPadOS counterpart, sa",
    "902c960672f0": "— web control dashboard with real-time multi-robot 3D visualization; its own 3D viewport is embedded directly ",
@@ -58,9 +59,12 @@
   },
   "HYDRA-UMC-BRIDGE-CNC": {
    "0bcbf52c8dd7": "Stopping or moving the machine by a remote order | Only , and reach CNCjs, only pause, abort and resume reach ",
+   "0d114bbf5ed3": "✅ Real shared safety gate: every observed job is re-evaluated through from 's , the same gate every sibling br",
    "31bcfcd5fa8f": "docs/CONTROLLER_EVIDENCE_BOUNDARY.md - what counts as real safety evidence and what the bridge refuses to infe",
    "8d34836e3024": "The controller always keeps trajectory, spindle and limit authority; the bridge only reports what the controll",
    "d3567bdd0683": "✅ Real fail-safe cell snapshot: 's checks E-STOP and door state *before* looking at anything the controller re",
+   "eb6e3ad347b8": ", | - | the hold of the sender ( for its lines, the real-time bytes always passing, the count of held lines) a",
+   "ecae9a3d3ac3": "answers the lines of a G-code sender with while the E-STOP is pressed, the door is open, the cell is or , or t",
    "ef864466b3de": "✅ Real GRBL serial transport: 's opens a real serial connection and queries GRBL's real-time status byte ( ); "
   },
   "HYDRA-UMC-BRIDGE-DROIDS": {
@@ -78,6 +82,7 @@
    "dc29c82c031f": "✅ Real shared safety gate: every valid job is evaluated through from 's , the same gate every sibling bridge u"
   },
   "HYDRA-UMC-BRIDGE-PRINTER3D": {
+   "0d114bbf5ed3": "✅ Real shared safety gate: every observed job is re-evaluated through from 's , the same gate every sibling br",
    "2bbf5338c7ad": "Keeping the dependency surface to the Python standard library keeps the safety-relevant parsing minimal, audit"
   },
   "HYDRA-UMC-BRIDGE-ROS2": {
@@ -139,6 +144,7 @@
   },
   "HYDRA-UMC-IOS-CONTROL": {
    "47a046fc3f5b": ", , , | the state of the robots, the compute module (every 5 s), the safety limits of each model and the reser",
+   "5c07d00df153": "Two-step sign-in ( , , , ) - Settings → Two-step sign-in turns the second factor on for the signed-in account ",
    "902c960672f0": "— web control dashboard with real-time multi-robot 3D visualization; its own 3D viewport is embedded directly "
   },
   "HYDRA-UMC-JOB-DISPATCHER": {
@@ -183,12 +189,15 @@
   },
   "HYDRA-UMC-SDK": {
    "1ac4d0d4c921": "— the documentation and tooling hub of the ecosystem: architecture, interfaces, security baseline, capability ",
+   "1e05ddfc65bd": "Software | 🟢 | Complete for its purpose and stable; the honesty check of this README lists the known limits",
    "20ee4d7a4604": "— reproducible Raspberry Pi OS product layer for the CM5: read-only agent, validated config/profiles, WiFi fir",
    "2181f78316fe": "an authenticated API producer and consumer governed by this SDK's own contracts.",
-   "3dc2af6647e5": "forty JSON Schema v1 contracts: capability, device descriptor, event envelope, health report, operation, proje",
    "6072d4fb855d": "Broker credentials in a configuration file, or an unverified broker | User and password come from the environm",
    "614031a46b82": ", | - | the client certificate and key for a broker that demands mutual TLS; both are needed and they turn TLS",
-   "77dca1b25dca": "Messaging contracts: carries a (0, 1 or 2) and describes one finished cycle ( , , , ), which the production re"
+   "69381d120c8a": "Maturity | Established",
+   "77dca1b25dca": "Messaging contracts: carries a (0, 1 or 2) and describes one finished cycle ( , , , ), which the production re",
+   "8447085d4ad7": "forty-one JSON Schema v1 contracts: capability, device descriptor, event envelope, health report, operation, p",
+   "b761ff15474b": "Maturity Maturity established 2EA44F.svg"
   },
   "HYDRA-UMC-SEMANTIC-PLANNER": {
    "a90af17558fa": "Jump to: Overview · Architecture · Security & Safety · Configuration · Quick start · Testing · Repository Stru"

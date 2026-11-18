@@ -90,3 +90,36 @@ def BODY(lg, ctx):
     out["roadmap"] = LIMITS[lg] + "\n\n" + ctx.v(lg, "roadmap")
     out["related"] = ctx.v(lg, "related")
     return out
+
+
+# The heartbeat that stops with the broker.
+from ... import readme_kit as _K2
+
+_BODY_BROKER = BODY
+
+
+def BODY(lg, ctx):  # type: ignore[no-redef]
+    body = _BODY_BROKER(lg, ctx)
+    _K2.insert_rows(body, "configuration", lg, [
+        ["`job_entry.broker_loss_stops_heartbeat_s`", "`0`", P(
+            "seconds the MQTT broker may stay unreachable before the bridge withholds its ground-station heartbeat, so the autopilot's own failsafe can react; the beats withheld are counted as `withheld` in the status line, and the heartbeat resumes by itself when the broker is back; `0` keeps the heartbeat running whatever the broker does. Set only in `config/uav.json`; switching it on can make a vehicle return home because of a network fault on the ground",
+            "segundos que el broker MQTT puede seguir inalcanzable antes de que el bridge retenga su latido de estación de tierra, para que el modo seguro propio del piloto automático pueda reaccionar; los latidos retenidos se cuentan como `withheld` en la línea de estado, y el latido se reanuda solo cuando vuelve el broker; `0` mantiene el latido pase lo que pase con el broker. Solo se fija en `config/uav.json`; activarlo puede hacer que un vehículo vuelva a casa por un fallo de la red en tierra",
+            "Sekunden, die der MQTT-Broker unerreichbar sein darf, bevor der Bridge seinen Bodenstation-Heartbeat zurückhält, damit der eigene Rückfall des Autopiloten reagieren kann; die zurückgehaltenen Schläge werden in der Statuszeile als `withheld` gezählt, und der Heartbeat läuft von selbst weiter, sobald der Broker wieder da ist; `0` lässt den Heartbeat laufen, was der Broker auch tut. Nur in `config/uav.json` einstellbar; eingeschaltet kann es ein Fahrzeug wegen einer Netzstörung am Boden zur Rückkehr bringen",
+            "secondes pendant lesquelles le broker MQTT peut rester injoignable avant que le bridge retienne son HEARTBEAT de station sol, afin que le failsafe propre du pilote automatique puisse réagir ; les battements retenus sont comptés comme `withheld` dans la ligne d'état, et le HEARTBEAT reprend seul quand le broker revient ; `0` garde le HEARTBEAT en marche quoi que fasse le broker. Réglé uniquement dans `config/uav.json` ; l'activer peut faire rentrer un véhicule à cause d'une panne du réseau au sol",
+            "secondi in cui il broker MQTT può restare irraggiungibile prima che il bridge trattenga l'HEARTBEAT di stazione a terra, così che il failsafe proprio dell'autopilota possa reagire; i battiti trattenuti sono contati come `withheld` nella riga di stato, e l'HEARTBEAT riprende da solo quando il broker torna; `0` lascia l'HEARTBEAT attivo qualunque cosa faccia il broker. Si imposta solo in `config/uav.json`; attivarlo può far tornare a casa un veicolo per un guasto della rete a terra",
+            "MQTT ブローカーに届かない状態が続いてもよい秒数。これを超えるとブリッジは地上局のハートビートを止め、オートパイロット自身のフェイルセーフが働けるようにします。止めた拍は状態行に `withheld` として数えられ、ブローカーが戻ればハートビートは自動で再開します。`0` ならブローカーの状態にかかわらずハートビートを続けます。`config/uav.json` でのみ指定でき、有効にすると地上のネットワーク障害で機体が帰還することがあります",
+            "MQTT 代理可持续无法连接的秒数；超过后桥接会停发地面站心跳，让自动驾驶仪自己的故障保护得以动作；被停发的心跳在状态行中计为 `withheld`，代理恢复后心跳会自动继续；`0` 表示无论代理如何都保持心跳。仅可在 `config/uav.json` 中设置；开启后，地面网络故障可能使飞行器返航",
+            "segundos em que o broker MQTT pode ficar inalcançável antes de o bridge reter o seu HEARTBEAT de estação de terra, para que o modo de segurança do próprio piloto automático possa reagir; os batimentos retidos são contados como `withheld` na linha de estado, e o HEARTBEAT retoma-se sozinho quando o broker volta; `0` mantém o HEARTBEAT a funcionar faça o broker o que fizer. Só se define em `config/uav.json`; ativá-lo pode fazer um veículo regressar a casa por uma falha da rede em terra")],
+    ])
+    _K2.insert_rows(body, "testing", lg, [
+        B.trow("`test_broker_loss_heartbeat.py`", P(
+            "the heartbeat withheld and counted once the broker has been gone too long, resumed when it is back, the check of the setting and its wiring in `run` and the MQTT transport",
+            "el latido retenido y contado cuando el broker lleva demasiado ausente, reanudado cuando vuelve, la comprobación del ajuste y su conexión en `run` y en el transporte MQTT",
+            "der zurückgehaltene und gezählte Heartbeat, wenn der Broker zu lange fehlt, seine Wiederaufnahme bei Rückkehr, die Prüfung der Einstellung und ihre Verdrahtung in `run` und im MQTT-Transport",
+            "le HEARTBEAT retenu et compté quand le broker est absent depuis trop longtemps, repris à son retour, la vérification du réglage et son câblage dans `run` et le transport MQTT",
+            "l'HEARTBEAT trattenuto e contato quando il broker manca da troppo tempo, ripreso al suo ritorno, la verifica dell'impostazione e il suo collegamento in `run` e nel trasporto MQTT",
+            "ブローカーが長く不在のときにハートビートを止めて数えること、戻ったときの再開、設定の検査、`run` と MQTT 転送への接続",
+            "代理缺席过久时停发并计数心跳、代理恢复后继续、设置检查，以及它在 `run` 和 MQTT 传输中的接线",
+            "o HEARTBEAT retido e contado quando o broker está ausente há demasiado tempo, retomado quando volta, a verificação da definição e a sua ligação em `run` e no transporte MQTT")),
+    ])
+    return body

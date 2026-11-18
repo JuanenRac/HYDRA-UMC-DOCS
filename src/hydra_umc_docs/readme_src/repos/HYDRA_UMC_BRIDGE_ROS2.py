@@ -71,3 +71,34 @@ def BODY(lg, ctx):
     out["roadmap"] = LIMITS[lg] + "\n\n" + ctx.v(lg, "roadmap")
     out["related"] = ctx.v(lg, "related")
     return out
+
+
+# The settings of the motion extension that stop a running goal.
+from ... import readme_kit as _K2
+
+_BODY_MOTION = BODY
+
+
+def BODY(lg, ctx):  # type: ignore[no-redef]
+    body = _BODY_MOTION(lg, ctx)
+    _K2.insert_rows(body, "configuration", lg, [
+        ["`extensions.motion.unsigned_cancel`", "`true`", P(
+            "the motion extension (off by default; see `docs/MOTION_ADAPTERS.md`) answers `cmd/motion_cancel`, which cancels the running goal without a signature: it only ever stops things, runs on the lane of the stop commands, passes during a global stop and ignores a retained copy; `false` refuses it and leaves the cancel to the signed abort. Set only in the configuration file",
+            "la extensión de movimiento (desactivada por defecto; véase `docs/MOTION_ADAPTERS.md`) responde a `cmd/motion_cancel`, que cancela el objetivo en curso sin firma: solo detiene cosas, corre en el carril de los comandos de parada, pasa durante una parada global e ignora una copia retenida; `false` la rechaza y deja la cancelación al aborto firmado. Solo se fija en el fichero de configuración",
+            "die Bewegungserweiterung (standardmäßig aus; siehe `docs/MOTION_ADAPTERS.md`) beantwortet `cmd/motion_cancel`, das das laufende Ziel ohne Signatur abbricht: es stoppt nur, läuft auf der Spur der Stopp-Befehle, geht bei einem globalen Stopp durch und ignoriert eine gehaltene Kopie; `false` lehnt es ab und überlässt den Abbruch dem signierten Abort. Nur in der Konfigurationsdatei einstellbar",
+            "l'extension de mouvement (désactivée par défaut ; voir `docs/MOTION_ADAPTERS.md`) répond à `cmd/motion_cancel`, qui annule l'objectif en cours sans signature : il ne fait qu'arrêter, passe sur la voie des commandes d'arrêt, passe pendant un arrêt global et ignore une copie retenue ; `false` le refuse et laisse l'annulation à l'abandon signé. Réglé uniquement dans le fichier de configuration",
+            "l'estensione di movimento (disattivata per impostazione predefinita; vedi `docs/MOTION_ADAPTERS.md`) risponde a `cmd/motion_cancel`, che annulla l'obiettivo in corso senza firma: serve solo a fermare, gira sulla corsia dei comandi di arresto, passa durante un arresto globale e ignora una copia trattenuta; `false` lo rifiuta e lascia l'annullamento all'abort firmato. Si imposta solo nel file di configurazione",
+            "モーション拡張（既定はオフ。`docs/MOTION_ADAPTERS.md` を参照）は `cmd/motion_cancel` に応答し、実行中のゴールを署名なしで取り消します。止めるだけの操作で、停止コマンドのレーンで動き、グローバル停止中も通り、保持された複製は無視します。`false` なら拒否し、取り消しは署名付きの中止に任せます。設定ファイルでのみ指定できます",
+            "运动扩展（默认关闭；见 `docs/MOTION_ADAPTERS.md`）响应 `cmd/motion_cancel`，无需签名即可取消正在运行的目标：它只会停止，运行在停止命令的通道上，全局停止期间照常通过，并忽略保留的副本；`false` 则拒绝它，取消交给带签名的中止。仅可在配置文件中设置",
+            "a extensão de movimento (desligada por predefinição; ver `docs/MOTION_ADAPTERS.md`) responde a `cmd/motion_cancel`, que cancela o objetivo em curso sem assinatura: só serve para parar, corre na via dos comandos de paragem, passa durante uma paragem global e ignora uma cópia retida; `false` recusa-o e deixa o cancelamento ao aborto assinado. Só se define no ficheiro de configuração")],
+        ["`extensions.motion.supervise_s`", "`0`", P(
+            "while a goal of the motion extension runs, a cell that stops being READY, or a machine state that is not heard, for this many seconds cancels the goal, and the result says `canceled` with the reason; `0` does not supervise, so the goal only has its time limit. Set only in the configuration file",
+            "mientras corre un objetivo de la extensión de movimiento, una celda que deja de estar READY, o un estado de máquina que no se oye, durante estos segundos cancela el objetivo, y el resultado dice `canceled` con el motivo; `0` no supervisa, así que el objetivo solo tiene su límite de tiempo. Solo se fija en el fichero de configuración",
+            "solange ein Ziel der Bewegungserweiterung läuft, bricht eine Zelle, die so viele Sekunden nicht mehr READY ist, oder ein nicht gehörter Maschinenzustand das Ziel ab, und das Ergebnis sagt `canceled` mit dem Grund; `0` überwacht nicht, das Ziel hat dann nur sein Zeitlimit. Nur in der Konfigurationsdatei einstellbar",
+            "pendant qu'un objectif de l'extension de mouvement tourne, une cellule qui cesse d'être READY, ou un état de machine qu'on n'entend pas, pendant ce nombre de secondes annule l'objectif, et le résultat dit `canceled` avec le motif ; `0` ne surveille pas, l'objectif n'a alors que sa limite de temps. Réglé uniquement dans le fichier de configuration",
+            "mentre un obiettivo dell'estensione di movimento è in corso, una cella che smette di essere READY, o uno stato di macchina che non si sente, per questi secondi annulla l'obiettivo, e il risultato dice `canceled` con il motivo; `0` non sorveglia, l'obiettivo ha allora solo il suo limite di tempo. Si imposta solo nel file di configurazione",
+            "モーション拡張のゴールが実行中に、セルが READY でなくなる、またはマシンの状態が届かない状態がこの秒数続くと、ゴールを取り消し、結果は理由付きで `canceled` と返します。`0` なら監督せず、ゴールには時間制限だけがあります。設定ファイルでのみ指定できます",
+            "运动扩展的目标运行期间，若单元不再是 READY，或听不到机器状态，持续这么多秒，就会取消目标，结果会带原因说明 `canceled`；`0` 表示不监督，目标只有其时间限制。仅可在配置文件中设置",
+            "enquanto um objetivo da extensão de movimento corre, uma célula que deixe de estar READY, ou um estado de máquina que não se ouve, durante estes segundos cancela o objetivo, e o resultado diz `canceled` com o motivo; `0` não supervisiona, pelo que o objetivo só tem o seu limite de tempo. Só se define no ficheiro de configuração")],
+    ])
+    return body

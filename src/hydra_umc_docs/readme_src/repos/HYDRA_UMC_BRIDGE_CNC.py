@@ -250,3 +250,52 @@ _BODY_CELL = BODY
 
 def BODY(lg, ctx):  # type: ignore[no-redef]
     return _K2.apply_addenda(_BODY_CELL(lg, ctx), {'configuration': _B2.CELL_STATE_NOTE}, lg)
+
+
+# The two gates that hold the sender and the reset.
+_BODY_GATES = BODY
+
+
+def BODY(lg, ctx):  # type: ignore[no-redef]
+    body = _BODY_GATES(lg, ctx)
+    _K2.insert_rows(body, "configuration", lg, [
+        ["`[port_sharing] hold_sender_when`", "`never`", P(
+            "`unsafe` answers the lines of a G-code sender with `error:9` while the E-STOP is pressed, the door is open, the cell is `SAFE_STOP` or `FAULT`, or the global stop is active; the real-time bytes always pass, and `cmd/status` then carries `held_sender_lines`, the number of lines held since the service started. Set only in the configuration file",
+            "`unsafe` responde a las líneas de un emisor de G-code con `error:9` mientras el E-STOP está pulsado, la puerta está abierta, la celda está en `SAFE_STOP` o `FAULT`, o la parada global está activa; los bytes de tiempo real pasan siempre, y `cmd/status` lleva entonces `held_sender_lines`, el número de líneas retenidas desde que arrancó el servicio. Solo se fija en el fichero de configuración",
+            "`unsafe` beantwortet die Zeilen eines G-Code-Senders mit `error:9`, solange der NOT-HALT gedrückt ist, die Tür offen ist, die Zelle `SAFE_STOP` oder `FAULT` ist oder der globale Stopp aktiv ist; die Echtzeit-Bytes passieren immer, und `cmd/status` trägt dann `held_sender_lines`, die Zahl der seit dem Dienststart zurückgehaltenen Zeilen. Nur in der Konfigurationsdatei einstellbar",
+            "`unsafe` répond aux lignes d'un émetteur de G-code par `error:9` tant que l'arrêt d'urgence est enfoncé, que la porte est ouverte, que la cellule est en `SAFE_STOP` ou `FAULT`, ou que l'arrêt global est actif ; les octets temps réel passent toujours, et `cmd/status` porte alors `held_sender_lines`, le nombre de lignes retenues depuis le démarrage du service. Réglé uniquement dans le fichier de configuration",
+            "`unsafe` risponde alle righe di un mittente G-code con `error:9` finché l'arresto di emergenza è premuto, la porta è aperta, la cella è in `SAFE_STOP` o `FAULT`, o l'arresto globale è attivo; i byte in tempo reale passano sempre, e `cmd/status` porta allora `held_sender_lines`, il numero di righe trattenute dall'avvio del servizio. Si imposta solo nel file di configurazione",
+            "`unsafe` にすると、非常停止が押されている、ドアが開いている、セルが `SAFE_STOP` または `FAULT`、またはグローバル停止が有効な間、G-code 送信側の行に `error:9` を返します。リアルタイムバイトは常に通り、`cmd/status` には保留した行数 `held_sender_lines`（サービス開始以降）が付きます。設定ファイルでのみ指定できます",
+            "`unsafe` 时，只要急停被按下、门打开、单元处于 `SAFE_STOP` 或 `FAULT`，或全局停止生效，就对 G-code 发送端的行回答 `error:9`；实时字节始终放行，此时 `cmd/status` 带有 `held_sender_lines`，即服务启动以来被扣下的行数。仅可在配置文件中设置",
+            "`unsafe` responde às linhas de um emissor de G-code com `error:9` enquanto a paragem de emergência está premida, a porta está aberta, a célula está em `SAFE_STOP` ou `FAULT`, ou a paragem global está ativa; os bytes em tempo real passam sempre, e `cmd/status` leva então `held_sender_lines`, o número de linhas retidas desde que o serviço arrancou. Só se define no ficheiro de configuração")],
+        ["`[gate] reset_in_alarm`", "`allow`", P(
+            "`gated` sends a soft reset of an alarm only with the cell READY and no global stop, and the answer says why it was held; a reset while the machine runs or holds is still a stop and is never held back, and a status that cannot be read in time does not delay it. Which alarms Ctrl-X clears on the real board is not tried. Set only in the configuration file",
+            "`gated` envía el reinicio suave de una alarma solo con la celda en READY y sin parada global, y la respuesta dice por qué se retuvo; un reinicio con la máquina en marcha o en retención sigue siendo una parada y nunca se retiene, y un estado que no se puede leer a tiempo no lo retrasa. Qué alarmas limpia Ctrl-X en la placa real no está probado. Solo se fija en el fichero de configuración",
+            "`gated` sendet den Soft-Reset eines Alarms nur bei Zelle READY und ohne globalen Stopp, und die Antwort nennt den Grund der Zurückhaltung; ein Reset bei laufender oder haltender Maschine bleibt ein Stopp und wird nie zurückgehalten, und ein nicht rechtzeitig lesbarer Status verzögert ihn nicht. Welche Alarme Strg-X auf der echten Platine löscht, ist nicht erprobt. Nur in der Konfigurationsdatei einstellbar",
+            "`gated` n'envoie la réinitialisation logicielle d'une alarme qu'avec la cellule READY et sans arrêt global, et la réponse dit pourquoi elle a été retenue ; une réinitialisation machine en marche ou en maintien reste un arrêt et n'est jamais retenue, et un état illisible à temps ne la retarde pas. Les alarmes que Ctrl-X efface sur la vraie carte ne sont pas essayées. Réglé uniquement dans le fichier de configuration",
+            "`gated` invia il reset software di un allarme solo con la cella READY e senza arresto globale, e la risposta dice perché è stato trattenuto; un reset con la macchina in marcia o in attesa resta un arresto e non viene mai trattenuto, e uno stato non leggibile in tempo non lo ritarda. Quali allarmi cancelli Ctrl-X sulla scheda reale non è provato. Si imposta solo nel file di configurazione",
+            "`gated` にすると、アラーム中のソフトリセットはセルが READY でグローバル停止がないときだけ送られ、保留した場合は応答に理由が付きます。機械が動作中または保持中のリセットは停止であり、保留されません。時間内に読めない状態でも遅延しません。実機のボードで Ctrl-X がどのアラームを解除するかは試していません。設定ファイルでのみ指定できます",
+            "`gated` 时，报警状态下的软复位仅在单元为 READY 且无全局停止时才发送，被扣下时应答会说明原因；机器运行或保持时的复位仍是停止，绝不扣下，来不及读取的状态也不会延迟它。Ctrl-X 在真实板上会清除哪些报警尚未试验。仅可在配置文件中设置",
+            "`gated` envia o reinício por software de um alarme só com a célula READY e sem paragem global, e a resposta diz porque foi retido; um reinício com a máquina em marcha ou em retenção continua a ser uma paragem e nunca é retido, e um estado que não se consegue ler a tempo não o atrasa. Que alarmes o Ctrl-X limpa na placa real não está testado. Só se define no ficheiro de configuração")],
+    ])
+    _K2.insert_rows(body, "testing", lg, [
+        ["`test_reset_in_alarm.py`", "7", P(
+            "the reset of an alarm held while the cell is not ready or during a global stop, let through when it is ready, never held while the machine runs, and the check of the setting",
+            "el reinicio de una alarma retenido mientras la celda no está lista o durante una parada global, dejado pasar cuando está lista, nunca retenido con la máquina en marcha, y la comprobación del ajuste",
+            "der Reset eines Alarms, zurückgehalten bei nicht bereiter Zelle oder globalem Stopp, durchgelassen bei bereiter Zelle, nie bei laufender Maschine, und die Prüfung der Einstellung",
+            "la réinitialisation d'une alarme retenue tant que la cellule n'est pas prête ou pendant un arrêt global, laissée passer quand elle est prête, jamais retenue machine en marche, et la vérification du réglage",
+            "il reset di un allarme trattenuto finché la cella non è pronta o durante un arresto globale, lasciato passare quando è pronta, mai trattenuto con la macchina in marcia, e la verifica dell'impostazione",
+            "セルが未準備またはグローバル停止中はアラームのリセットを保留し、準備ができれば通し、機械の動作中は保留しないこと、および設定の検査",
+            "单元未就绪或全局停止期间扣下报警复位、就绪时放行、机器运行时绝不扣下，以及设置检查",
+            "o reinício de um alarme retido enquanto a célula não está pronta ou durante uma paragem global, deixado passar quando está pronta, nunca retido com a máquina em marcha, e a verificação da definição")],
+        B.trow("`test_multiplexer.py`, `test_service.py`", P(
+            "the hold of the sender (`error:9` for its lines, the real-time bytes always passing, the count of held lines) and the checks of the new settings",
+            "la retención del emisor (`error:9` para sus líneas, los bytes de tiempo real siempre pasan, el recuento de líneas retenidas) y las comprobaciones de los ajustes nuevos",
+            "das Zurückhalten des Senders (`error:9` für seine Zeilen, Echtzeit-Bytes passieren immer, die Zahl der zurückgehaltenen Zeilen) und die Prüfungen der neuen Einstellungen",
+            "la retenue de l'émetteur (`error:9` pour ses lignes, les octets temps réel passent toujours, le compte des lignes retenues) et les vérifications des nouveaux réglages",
+            "il blocco del mittente (`error:9` per le sue righe, i byte in tempo reale passano sempre, il conteggio delle righe trattenute) e le verifiche delle nuove impostazioni",
+            "送信側の保留（その行には `error:9`、リアルタイムバイトは常に通過、保留した行数の計数）と、新しい設定の検査",
+            "扣下发送端（其行回答 `error:9`、实时字节始终放行、被扣行数计数）以及新设置的检查",
+            "a retenção do emissor (`error:9` para as suas linhas, os bytes em tempo real passam sempre, a contagem das linhas retidas) e as verificações das novas definições")),
+    ])
+    return body
