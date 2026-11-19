@@ -1,5 +1,5 @@
 ### Voraussetzungen
-- [Python](https://www.python.org/) 3.11 oder höher
+- [Python](https://www.python.org/) 3.12 oder höher
 - pip
 
 ### Installation
