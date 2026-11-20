@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The README source of the URDF editor says Python 3.12:** the badge, the requirements sentence in the eight languages and the build list name the version the workflows of that repository run on, instead of 3.11.
 - **The README sources name the newest options of nine repositories and the two-step sign-in of the control apps:** the configuration rows of the printer, UAV, CNC, droid and ROS 2 bridges (file facts, broker loss and the heartbeat, the held sender and the gated reset, the session settings of the observed state, the motion cancel and its supervision), the three shared pieces of the SDK (the cell state reader, the occupancy reader and the TLS fingerprint of each server), the two-step sign-in of the Android and iOS apps, and the count of forty-one contracts; the counts of tests are refreshed and the eight READMEs of each are regenerated.
 
 ## [0.1.5]
