@@ -1,7 +1,7 @@
 {
   "repos": {
     "HYDRA-UMC": {
-      "hardware": "simulated",
+      "hardware": "in_use",
       "target": "board",
       "tests": {
         "count": 1500,
@@ -9,7 +9,7 @@
       }
     },
     "HYDRA-UMC-ANDROID-CONTROL": {
-      "hardware": "simulated",
+      "hardware": "in_use",
       "tests": {
         "count": 767,
         "command": "./gradlew testDebugUnitTest"
