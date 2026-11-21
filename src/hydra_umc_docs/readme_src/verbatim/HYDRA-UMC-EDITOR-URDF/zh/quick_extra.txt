@@ -1,5 +1,5 @@
 ### 系统要求
-- [Python](https://www.python.org/) 3.11 或更高版本
+- [Python](https://www.python.org/) 3.12 或更高版本
 - pip
 
 ### 安装

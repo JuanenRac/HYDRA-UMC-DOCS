@@ -7,12 +7,12 @@ from .. import service_kit as S
 
 ICON = '🖌️'
 COMMENT = 'Desktop URDF creator and editor for the model catalogue of HYDRA-UMC-STUDIO'
-BADGES = [('Language', 'Python%203.11', '3776AB'), ('Framework', 'PySide6', '41CD52'), ('Format', 'URDF', 'red')]
+BADGES = [('Language', 'Python%203.12', '3776AB'), ('Framework', 'PySide6', '41CD52'), ('Format', 'URDF', 'red')]
 NO_UI = False
 
 SPEC = {
     "stack": "python",
-    "req": "3.11",
+    "req": "3.12",
     "quick": [
         [
             "pip install -r requirements.txt",
@@ -44,14 +44,14 @@ SPEC = {
         "pt": "A **HYDRA-UMC-EDITOR-URDF** é a ferramenta de ambiente de trabalho que transforma a portabilidade de um robô novo para o catálogo de modelos do HYDRA-UMC-STUDIO de uma investigação manual num fluxo repetível. Carrega um URDF de um repositório do GitHub ou de uma pasta local, diz se o robô cabe nos 3 a 6 graus de liberdade que o STUDIO suporta, mostra-o numa vista 3D em direto onde os elos podem ser recoloridos, redimensionados e receber novos limites de junta, e exporta o URDF ou envia-o para um HYDRA-UMC-SERVER."
     },
     "quick_intro": {
-        "en": "Requires Python 3.11 or newer and a graphics driver with OpenGL 3.3. The packages are pinned in `requirements.txt` and no `git` install is needed: the GitHub sources are downloaded as a zip.",
-        "es": "Requiere Python 3.11 o superior y un controlador gráfico con OpenGL 3.3. Los paquetes están fijados en `requirements.txt` y no hace falta instalar `git`: las fuentes de GitHub se descargan como zip.",
-        "de": "Benötigt Python 3.11 oder neuer und einen Grafiktreiber mit OpenGL 3.3. Die Pakete sind in `requirements.txt` festgelegt und es ist kein `git` nötig: Die GitHub-Quellen werden als Zip geladen.",
-        "fr": "Nécessite Python 3.11 ou plus récent et un pilote graphique avec OpenGL 3.3. Les paquets sont fixés dans `requirements.txt` et aucun `git` n'est nécessaire : les sources GitHub sont téléchargées en zip.",
-        "it": "Richiede Python 3.11 o successivo e un driver grafico con OpenGL 3.3. I pacchetti sono fissati in `requirements.txt` e non serve `git`: le sorgenti GitHub si scaricano come zip.",
-        "ja": "Python 3.11 以降と OpenGL 3.3 対応のグラフィックスドライバーが必要です。パッケージは `requirements.txt` で固定されており、`git` は不要です。GitHub のソースは zip としてダウンロードされます。",
-        "zh": "需要 Python 3.11 或更高版本以及支持 OpenGL 3.3 的显卡驱动。依赖包在 `requirements.txt` 中固定，不需要安装 `git`：GitHub 源以 zip 形式下载。",
-        "pt": "Requer Python 3.11 ou superior e um controlador gráfico com OpenGL 3.3. Os pacotes estão fixados em `requirements.txt` e não é preciso `git`: as fontes do GitHub são descarregadas como zip."
+        "en": "Requires Python 3.12 or newer and a graphics driver with OpenGL 3.3. The packages are pinned in `requirements.txt` and no `git` install is needed: the GitHub sources are downloaded as a zip.",
+        "es": "Requiere Python 3.12 o superior y un controlador gráfico con OpenGL 3.3. Los paquetes están fijados en `requirements.txt` y no hace falta instalar `git`: las fuentes de GitHub se descargan como zip.",
+        "de": "Benötigt Python 3.12 oder neuer und einen Grafiktreiber mit OpenGL 3.3. Die Pakete sind in `requirements.txt` festgelegt und es ist kein `git` nötig: Die GitHub-Quellen werden als Zip geladen.",
+        "fr": "Nécessite Python 3.12 ou plus récent et un pilote graphique avec OpenGL 3.3. Les paquets sont fixés dans `requirements.txt` et aucun `git` n'est nécessaire : les sources GitHub sont téléchargées en zip.",
+        "it": "Richiede Python 3.12 o successivo e un driver grafico con OpenGL 3.3. I pacchetti sono fissati in `requirements.txt` e non serve `git`: le sorgenti GitHub si scaricano come zip.",
+        "ja": "Python 3.12 以降と OpenGL 3.3 対応のグラフィックスドライバーが必要です。パッケージは `requirements.txt` で固定されており、`git` は不要です。GitHub のソースは zip としてダウンロードされます。",
+        "zh": "需要 Python 3.12 或更高版本以及支持 OpenGL 3.3 的显卡驱动。依赖包在 `requirements.txt` 中固定，不需要安装 `git`：GitHub 源以 zip 形式下载。",
+        "pt": "Requer Python 3.12 ou superior e um controlador gráfico com OpenGL 3.3. Os pacotes estão fixados em `requirements.txt` e não é preciso `git`: as fontes do GitHub são descarregadas como zip."
     }
 }
 
