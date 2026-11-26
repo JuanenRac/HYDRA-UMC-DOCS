@@ -20,11 +20,10 @@ convertit avec `arm-none-eabi-objcopy` en `.bin`/`.hex`. Ces deux fichiers
 vous préférez ne pas exécuter l'un des deux scripts - les scripts existent
 pour les automatiser, pas pour les remplacer comme source de vérité.
 
-La sortie atterrit dans `firmware/`, qui est commitée et poussée vers ce
-repository (même convention que le propre dossier de sortie `firmware/`
-d'URTC) afin que la fonctionnalité de téléchargement depuis GitHub de
-HYDRA-UMC-STUDIO puisse réellement y trouver de vrais fichiers `.bin` via
-`firmware_manifest.json` - ce n'est PAS dans gitignore.
+La sortie atterrit dans `firmware/`, qui n'est pas conservé dans git (il figure
+dans `.gitignore`) : les images officielles sont construites par le workflow
+manuel de compilation du firmware et publiées comme fichiers d'une release,
+d'où HYDRA-UMC-STUDIO et HYDRA-UMC-SUITE les téléchargent.
 Voir `docs/COMPILE_STM32G474.md` et `docs/COMPILE_STM32H745.md` pour ce que
 fait exactement chaque étape et pourquoi - et le propre `README.md` de
 chaque dossier firmware pour l'état actuel. Les **bootloaders** pour les 3
