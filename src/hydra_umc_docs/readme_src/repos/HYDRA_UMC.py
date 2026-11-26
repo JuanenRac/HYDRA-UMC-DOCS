@@ -231,24 +231,24 @@ EXTRAS = {'build_extra': {'en': 'All six firmware components (three bootloaders 
                          'zh': '引导程序写入元数据时断电',
                          'pt': 'Um corte de energia enquanto o bootloader escreve os seus metadados'},
                         {'en': 'With `HYDRA_META_AB=1` the metadata log is kept in two sectors that take turns, so a cut at the change of sector keeps the rollback '
-                               'counter (the longest application is then 256 KB); off in a build as it ships, and no board has run it yet',
+                               'counter (the longest application is then 256 KB); on in a build as it ships (off only in the long slot variant), and no board has run it yet',
                          'es': 'Con `HYDRA_META_AB=1` el registro de metadatos se guarda en dos sectores que se turnan, así que un corte en el cambio de sector conserva '
-                               'el contador de retroceso (la aplicación más larga pasa a ser de 256 KB); apagado en una compilación tal como sale, y ninguna placa lo ha '
+                               'el contador de retroceso (la aplicación más larga pasa a ser de 256 KB); encendido en una compilación tal como sale (apagado solo en la variante de slot largo), y ninguna placa lo ha '
                                'ejecutado aún',
                          'de': 'Mit `HYDRA_META_AB=1` wird das Metadatenprotokoll in zwei abwechselnd genutzten Sektoren gehalten, sodass ein Ausfall beim Sektorwechsel '
-                               'den Rollback-Zähler bewahrt (die längste Anwendung ist dann 256 KB); in einem ausgelieferten Build aus, und noch keine Platine hat es '
+                               'den Rollback-Zähler bewahrt (die längste Anwendung ist dann 256 KB); in einem ausgelieferten Build an (nur in der Variante mit langem Slot aus), und noch keine Platine hat es '
                                'ausgeführt',
                          'fr': "Avec `HYDRA_META_AB=1` le journal des métadonnées est gardé dans deux secteurs qui alternent, de sorte qu'une coupure au changement de "
-                               "secteur conserve le compteur de retour arrière (l'application la plus longue fait alors 256 Ko) ; éteint dans un build tel qu'il sort, "
+                               "secteur conserve le compteur de retour arrière (l'application la plus longue fait alors 256 Ko) ; allumé dans un build tel qu'il sort (éteint seulement dans la variante à long emplacement), "
                                "et aucune carte ne l'a encore exécuté",
                          'it': "Con `HYDRA_META_AB=1` il registro dei metadati è tenuto in due settori che si alternano, così un'interruzione al cambio di settore "
-                               "conserva il contatore di rollback (l'applicazione più lunga è allora di 256 KB); spento in una build così come esce, e nessuna scheda "
+                               "conserva il contatore di rollback (l'applicazione più lunga è allora di 256 KB); acceso in una build così come esce (spento solo nella variante a slot lungo), e nessuna scheda "
                                "l'ha ancora eseguito",
                          'ja': '`HYDRA_META_AB=1` にすると、メタデータのログを交互に使う 2 つのセクターに保持し、セクター切り替え時の断でもロールバックカウンターが保たれます（最長のアプリケーションは 256 KB '
-                               'になります）。出荷時のビルドではオフで、まだどの基板でも実行されていません',
-                         'zh': '设置 `HYDRA_META_AB=1` 后，元数据日志保存在轮流使用的两个扇区中，因此在换扇区时断电也能保住回滚计数器（此时最长的应用程序为 256 KB）；出厂构建中关闭，还没有任何板子运行过',
+                               'になります）。出荷時のビルドではオン（ロングスロット版のみオフ）で、まだどの基板でも実行されていません',
+                         'zh': '设置 `HYDRA_META_AB=1` 后，元数据日志保存在轮流使用的两个扇区中，因此在换扇区时断电也能保住回滚计数器（此时最长的应用程序为 256 KB）；出厂构建中默认开启（仅长插槽变体关闭），还没有任何板子运行过',
                          'pt': 'Com `HYDRA_META_AB=1` o registo de metadados é guardado em dois setores que se alternam, pelo que um corte na mudança de setor conserva '
-                               'o contador de retrocesso (a aplicação mais longa passa a ser de 256 KB); desligado numa compilação tal como sai, e nenhuma placa o '
+                               'o contador de retrocesso (a aplicação mais longa passa a ser de 256 KB); ligado numa compilação tal como sai (desligado só na variante de slot longo), e nenhuma placa o '
                                'executou ainda'},
                         '`docs/FIRMWARE_SWITCHES.md`'],
                        [{'en': 'A board that hangs',
