@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+- **The README source of the Android control app names the in-app QR reader, the several saved servers and the server fault record and board health** (eight languages).
+
 ## [0.1.6] - Strict risky claims, family test counts and current README sources
 
 - **A loose word no longer clears a risky claim of a README:** `check_claims.py` took any "not", "no", "test", "tested", "classic" or "would" in the sentence or next to it as its status. Now a negation counts only in the same clause and next to the risk word; status words such as planned, simulated or never tested still count. `--explain` shows what cleared each sentence. The sentences that passed under the older rule and that nobody has read are listed in `data/claims_pending.json`, are counted on every run and can only leave that list; `--update-reviewed` writes new lines only with `--confirm --reviewer`.
