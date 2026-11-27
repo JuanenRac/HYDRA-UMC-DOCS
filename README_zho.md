@@ -18,7 +18,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-Markdown-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-303%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-326%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.5-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-functional-0F6CBD.svg" alt="Maturity">
 </p>
@@ -39,7 +39,7 @@ GPL-3.0-or-later - see LICENSE
 |---|---|
 | 版本 | `0.1.5` |
 | 成熟度 | 可用 |
-| 测试 | 303 (`python -m pytest tests -q`) |
+| 测试 | 326 (`python -m pytest tests -q`) |
 | 技术栈 | Markdown / Mermaid / Python / SVG |
 | 目标 | 使用者的电脑 |
 | 真实硬件 | 不适用：这里的内容不在硬件上运行 |
@@ -55,7 +55,7 @@ GPL-3.0-or-later - see LICENSE
 | 领域 | 状态 | 在这里的含义 |
 |---|---|---|
 | 软件 | 🟡 | 主要用途可用；本 README 中的诚实性检查列出了仍然缺少的内容 |
-| 测试 | 🟢 | 303 项自动测试，每次变更都会运行 |
+| 测试 | 🟢 | 326 项自动测试，每次变更都会运行 |
 | 真实硬件 | ⚪ | 不适用：这里的内容不在硬件上运行 |
 | 部署 | 🟠 | 已作为发布版本公开；在干净机器上安装有文档，但没有记录 |
 | 文档 | 🟢 | 八种语言的 README，每次变更都会与清单核对 |
@@ -76,7 +76,7 @@ GPL-3.0-or-later - see LICENSE
 * [安全基线](docs/SECURITY_BASELINE.md): 代码已强制执行的内容和仍然缺少的内容；以及[威胁模型](docs/THREAT_MODEL.md)。
 * [第一个垂直切片](docs/FIRST_VERTICAL_SLICE.md): 今天已存在的最小端到端路径。
 * [项目目录](docs/PROJECT_CATALOG.md): 家族中的每个仓库，依据其自身清单生成。
-* **工具：** `make_catalog.py` 生成目录，`make_brand.py` 生成横幅、图标和家族图，`make_readmes.py` 生成本仓库的八份 README，`publication_check.py` 在发布前查找任何私有内容，`check_all.sh` 运行家族中每个仓库自己的检查，并为每个仓库输出一行 PASS、FAIL 或 SKIP。`make_glance.py` 根据每个仓库的清单和 `data/glance.json` 生成其“速览”表（`--check` 比较，`--apply` 写入）；提升版本后，运行 `python tools/make_glance.py --apply --repo NAME` 即可刷新该仓库的表。 `check_test_counts.py` 统计相邻各仓库的实际测试数，并与 `data/glance.json` 及各 README 的测试行比较（`--apply` 写回精确数字；Go、Rust、JavaScript、Dart 和 Kotlin 套件使用各自运行器的原生列表统计，缺少工具链时才从源码统计并仅作报告）。`i18n_cross_check.py` 把 STUDIO、SUITE、ANDROID-CONTROL 和 WATCH 的语言文件读成统一形式，只要某个客户端在八种语言之一缺少键就会失败，并列出各客户端之间读法不同的文本（`--lang`、`--list`、`--json`）。`check_claims.py` 读取该系列每个仓库的英文 README,当某个句子含有风险词(E-STOP、联锁、实时、已签名、mTLS、FDCAN、YOLO、AI 驱动、自主、已认证等)而旁边没有状态标记(计划中、未实现、可选、默认关闭、模拟、已测试等),且不在人工对照代码读过并登记于 `data/claims_reviewed.json` 的行中时,检查失败。
+* **工具：** `make_catalog.py` 生成目录，`make_brand.py` 生成横幅、图标和家族图，`make_readmes.py` 生成本仓库的八份 README，`publication_check.py` 在发布前查找任何私有内容，`check_all.sh` 运行家族中每个仓库自己的检查，并为每个仓库输出一行 PASS、FAIL 或 SKIP。`make_glance.py` 根据每个仓库的清单和 `data/glance.json` 生成其“速览”表（`--check` 比较，`--apply` 写入）；提升版本后，运行 `python tools/make_glance.py --apply --repo NAME` 即可刷新该仓库的表。 `check_test_counts.py` 统计相邻各仓库的实际测试数，并与 `data/glance.json` 及各 README 的测试行比较（`--apply` 写回精确数字；Go、Rust、JavaScript、Dart 和 Kotlin 套件使用各自运行器的原生列表统计，缺少工具链时才从源码统计并仅作报告）。`i18n_cross_check.py` 把 STUDIO、SUITE、ANDROID-CONTROL 和 WATCH 的语言文件读成统一形式，只要某个客户端在八种语言之一缺少键就会失败，并列出各客户端之间读法不同的文本（`--lang`、`--list`、`--json`）。`check_claims.py` 读取该系列每个仓库的英文 README,当某个句子含有风险词(E-STOP、联锁、实时、已签名、mTLS、FDCAN、YOLO、AI 驱动、自主、已认证等)而旁边没有状态标记、同一分句内风险词附近也没有明确否定词(not、no、never、without 等)(计划中、未实现、可选、默认关闭、模拟、未测试等),且不在人工对照代码读过并登记于 `data/claims_reviewed.json` 的行中时,检查失败。仅有 test、tested、classic、would 这些词已不能使句子通过，`--explain` 会显示每个句子因何通过。按以前较宽松规则通过、尚无人读过的行列在 `data/claims_pending.json` 中：每次运行都会计数，没有任何命令会向该列表添加内容，`--update-reviewed` 只有在带 `--confirm --reviewer 姓名` 时才写入新行。
 
 ## 🧩 在 HYDRA-UMC 中的角色
 
@@ -116,7 +116,7 @@ python -m pytest tests -q                        # 工具的单元测试
 
 ## 🧪 测试
 
-运行 `python -m pytest tests -q` 会执行 303 个自动测试。 不需要硬件，也不需要这台机器以外的任何东西。
+运行 `python -m pytest tests -q` 会执行 326 个自动测试。 不需要硬件，也不需要这台机器以外的任何东西。
 
 CI 运行 `HYDRA_UMC_CI=1 python tools/ci_validate.py`，检查清单、文档、八个 README 和图片。
 
