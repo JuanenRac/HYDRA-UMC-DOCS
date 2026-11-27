@@ -1,0 +1,409 @@
+{
+ "about": "Sentences that passed under the older markers and that no person has read next to the code yet. This list only gets shorter.",
+ "pending": {
+  "*": {
+   "0a3578cacda0": "the limits of the MQTT transport (a bounded queue that drops the oldest waiting command, a payload cap that ne",
+   "16bc6036551e": "Security | 🟡 | Access control, input limits or signatures are implemented and tested on a computer; nobody out",
+   "44c1e4580a91": "Updates | 🟡 | Updated through (signed trains, backups and rollback tested on a computer)",
+   "70c63233eb57": "Security | 🟠 | Some protections exist (a token, limits on what it accepts) but they are not all covered by tes",
+   "7acd16268d29": "The user name, the password and the TLS files come from the variables (see Configuration); the code above need",
+   "84459b3dd825": "Every bridge speaks the shared safety contract of : a job is accepted only after the shared gate says so, and ",
+   "aa73bb6e08db": "It belongs to the External Automation Bridges family: a set of sibling repositories (CNC, LASER, OPENPNP, PRIN",
+   "d75af3afa7e0": "Stop and safety | 🔴 | The stop command exists, but nothing connects it to the equipment or to its source of st"
+  },
+  "ELECTRO-HOBBY-3D-UPDATER": {
+   "702578eeb89b": "Report a vulnerability privately (see SECURITY.md).",
+   "8bd9dd9a9947": "Security | 🟡 | Each sub-updater is pinned to a reviewed commit, never to a moving branch; every run is its own",
+   "ad3f0e8d6f05": "A commit of unknown origin | left to each updater: unsigned revisions are installed with a warning unless that"
+  },
+  "HYDRA-UMC": {
+   "1cbeb725def9": "the host reference of the signed image header: it makes the signatures and downgrade tokens that the bootloade",
+   "23875734b51d": "FDCAN PERIPHERAL IN CLASSIC MODE)",
+   "265793e0a9b4": "What exists today is the three bootloaders (signed images, anti-rollback), the communication applications of t",
+   "274284a3ec11": "Target hardware: the production board is an STM32H757 (the SPI master of the link) with an NVIDIA Jetson Orin ",
+   "2de6a4751f37": "Stack | STM32H757 (dual-core) / STM32G474 / FreeRTOS (AMP) / CMSIS-DSP / FDCAN (classic CAN mode)",
+   "5b60ecbad144": "An old signed image sent again (rollback) | A new image must be strictly newer than the installed one (major, ",
+   "63518a3bb173": "Read the safety box at the top before relying on anything here.",
+   "70de4eb372ec": "Images built with the development keys | By default the bootloaders trust a development image key whose privat",
+   "759a14a2931e": "They are 187 tests of the CM5 SPI bridge plus 522 of the firmware sources, the signed image header and the CAN",
+   "9805c5d90079": "CAN, FDCAN1 in classic mode | one bus (STACK A) from the STM32H757 to up to eight Robot Controller Boards; the",
+   "9d7a913008f4": "Secure Boot and read-out protection of the flash are not claimed.",
+   "aaf7a2d8704c": "docs/DSI_EN_H757.md - the display on the STM32H757: the interface that keeps showing the state and stopping th",
+   "d5255d41abfa": "\"bootloaders accept updates signed with the DEVELOPMENT seed, which is public\" | The build was made without | ",
+   "e9c57a9ad23d": "No STM32CubeIDE/CubeMX project files are used or required to build - fetches ST's own HAL/CMSIS sources fresh ",
+   "eb4da43e5910": "What it never does today: provide an emergency stop, software limits, interlocks, the power-loss dump to FRAM "
+  },
+  "HYDRA-UMC-ANDROID-CONTROL": {
+   "1075bd8de608": "Settings > Security > Allow plain traffic outside the local network | off | lets the app talk plain HTTP and W",
+   "3d5b05386da9": "Defaults and limits come from the code.",
+   "3f7af78c62e8": "Includes \"Remember me\" functionality, a secure Logout mechanism, and fully localized in 8 languages.",
+   "4598eedb110e": "3D View ( ) - Embeds HYDRA-UMC STUDIO's own real-time 3D viewport in a WebView ( ), rather than a native rende",
+   "47dd431d927f": "Seamlessly integrated with Biometric Authentication (Fingerprint/Face) for secure token renewal.",
+   "4f9c19da13ed": "Access options of the server in the security screen (administrators only): below the connection security of th",
+   "508d57fb5f3c": "Differentiated haptic signatures (Success, Error, and Emergency pulses) provide physical confirmation to the o",
+   "75840c5e16d0": "Paired Wear OS Companion & Voice Relay ( , ) - Relays an already-recognized, user-initiated voice turn from th",
+   "776d7b2551e0": "Updates | 🟠 | Updated by installing the signed APK of the release; the update of an installed app is not recor",
+   "7d25ace9cbe4": "It shows the result - which robots stopped, which did not, which are reserved by someone else, and a warning w",
+   "85a872f4d584": "Reservations and safety limits ( , , , ) - The Control screen shows who holds the selected robot (nobody, this",
+   "95aab6960b61": "Swap for for a release build - it signs with the private release key when (or the release signing environment ",
+   "9a3062cf5995": "Honesty check - what actually runs today: the core business logic - Parol6 kinematics ( ), the settings-tree s",
+   "9dd31cd91856": "Clean build output with zero warnings, optimized R8 production variants, and advanced Roborazzi screenshot tes",
+   "a3cd3426536b": "Deployment | 🟠 | A signed APK is published with each release; no installation on a phone or watch is recorded ",
+   "c04906e6501e": "No Biometrics | Hardware not set | Ensure you have a Fingerprint/Face registered in your Android System Securi",
+   "c0f77fdffa0f": "The cached username/password/token ( ) live in Keystore-backed EncryptedSharedPreferences (AES256-GCM), not pl",
+   "d08fdd1547b5": "Tested with real handshakes against a local server; never tried against a real HYDRA-UMC server with TLS.",
+   "d7241d4f1680": "The WebView approach gets the real, currently-shipping STUDIO 3D scene (every real robot mesh/kinematics) for ",
+   "e16585a02836": "What it never does: replace a physical emergency stop."
+  },
+  "HYDRA-UMC-ANOMALY-DETECTOR": {
+   "2f710dd6dad3": "A fixed threshold ('motor temp > 80C') misses gradual drift and false-alarms on legitimate load spikes - compa",
+   "bac96e08de7e": "The README calls this \"AI-driven\" - what's real and shipping in this first pass is a legitimate, real signal-p",
+   "e109781ada1d": "It works, it's tested against real synthetic fault signatures, and it's the right foundation a learned model g"
+  },
+  "HYDRA-UMC-BRIDGE-AMR": {
+   "1cb5b1301e80": "BRIDGE-AMR sits between a real AMR fleet and → → MCU safety - it is a coordination boundary, never a navigatio",
+   "4d1218d5a53e": "It belongs to the Mobile & Autonomous Bridges family alongside and , and shares the same job-and-safety contra",
+   "581c9279b3ca": "It has no navigation, localization or obstacle-avoidance logic of its own, and it cannot bypass , MCU limits, ",
+   "96676447c38f": "See \"Roadmap & Known limits\" below, which already states this plainly, and for exactly what has shipped so far"
+  },
+  "HYDRA-UMC-BRIDGE-CNC": {
+   "36c53c162423": "BRIDGE-CNC sits between the CNC controller and → → MCU/cell safety",
+   "4d8881ade6f4": "an asserted E-STOP or an open door always resolves to , regardless of what says.",
+   "5bbc47822ab2": "Running as a service. starts the bridge from one TOML file: the controller (a GRBL board on a serial port, CNC",
+   "72ce11bdcbab": "it coordinates auxiliary robot work around the CNC, it does not replace or override the controller's own safet",
+   "8e2974caef67": "✅ Read-only controller evidence: strictly normalizes local mapping evidence and supplied GRBL status lines; om",
+   "9f60be276c6e": "E-STOP and the door are read before anything the controller reports, and an open door or an E-STOP is always |",
+   "a5bd639d388c": "the CNC controller (GRBL, LinuxCNC or the one behind CNCjs) keeps trajectory, spindle and machine-limit author",
+   "b8cb04e5b544": "Why E-STOP and door state are checked before the controller's own reported state. short-circuits to on or a no",
+   "e269d4df395e": "The shared gate or a guard refused the order | Read : door open, E-STOP, machine not idle, spindle turning, or",
+   "f2db201e0cad": "GRBL | serial port | status query and the real-time bytes (feed hold, cycle resume, soft reset); never a G-cod",
+   "f366ab062d03": "The controller keeps trajectory, spindle and limit authority, and the program belongs to whoever runs it (CNCj"
+  },
+  "HYDRA-UMC-BRIDGE-DROIDS": {
+   "288c79a52962": ", ( ) | , | how the state the gate trusts is read from the : an e-stop reported as engaged is STOPPED, a body ",
+   "4d1218d5a53e": "It belongs to the Mobile & Autonomous Bridges family alongside and , and shares the same job-and-safety contra",
+   "54503edc48f2": "( ) | | seconds the connection to the MQTT broker may stay down before the session cuts the e-stop endpoint, b",
+   "55abfbf2fb83": "It shares the safety contract of with every bridge: a job is accepted only after the shared gate says so, and ",
+   "6c547e73552d": "BRIDGE-DROIDS sits between a real droid and → → MCU safety - it is a coordination boundary, never a motor-cont",
+   "96676447c38f": "See \"Roadmap & Known limits\" below, which already states this plainly, and for exactly what has shipped so far",
+   "a58ef76b1885": ", | - | fixtures shaped like the state message of the robot (speed, e-stops, no motion data), the speed thresh"
+  },
+  "HYDRA-UMC-BRIDGE-LASER": {
+   "171d68a0e7f4": "✅ Read-only safety evidence: accepts only genuine Boolean key, enclosure and interlock signals; missing, numer",
+   "5b2f7305e692": "those conditions are observations of the controller's own certified interlocks, never a substitute for them.",
+   "79d1bc746e8a": "It reads three independent safeguards (key switch, enclosure, interlock) over GPIO and the state of a GRBL las",
+   "bff3814fd5b8": "real laser safety needs every physical safeguard to be independently true; collapsing them into one flag would",
+   "cad5d65ec513": "✅ Hardened MQTT loop and fail-closed reads: a payload that is too large (over 16 KiB) or cannot be read, deepl",
+   "e6d78bf689b7": "✅ Four-signal safety snapshot (software logic, tested without a laser): 's requires the key switch enabled, th",
+   "e7d1ad15b3ac": "BRIDGE-LASER sits between the laser controller and → → independent safety"
+  },
+  "HYDRA-UMC-BRIDGE-OPENPNP": {
+   "9a752ec1c1af": "BRIDGE-OPENPNP sits between an OpenPnP job and → → cell safety"
+  },
+  "HYDRA-UMC-BRIDGE-PRINTER3D": {
+   "006b635f7f74": "Moonraker's endpoints only ever reference an already-uploaded, already-sliced file by name - the same safety e",
+   "20fc92101ff5": "that requires a tested profile, authentication and physical safety review.",
+   "2783b3040d93": "Native printer firmware remains responsible for motion, heaters, thermal protection and machine interlocks at ",
+   "6b38598f413f": "BRIDGE-PRINTER3D sits between Moonraker/Klipper and → → cell safety",
+   "8af51393faf2": "Honesty check - what actually runs today: the Moonraker readiness probe and safety gate ( 's / , funneling eve",
+   "afd503894236": "The safety-relevant logic lives in the part that never needs a live printer to test.",
+   "b8a3ec9038f5": "It also recognizes local slicer artifacts read-only, and can send SDK-gated job commands (start/pause/resume/c"
+  },
+  "HYDRA-UMC-BRIDGE-ROS2": {
+   "422d6bc3740c": "It is not a motor-control node, and it cannot bypass , MCU limits, watchdogs or E-STOP.",
+   "4f29131e10e9": "it is a coordination boundary, never a motor-control node, and it cannot bypass , MCU limits, watchdogs or E-S",
+   "a3e612eda8e5": "while a goal of the motion extension runs, a cell that stops being READY, or a machine state that is not heard",
+   "ab76e3625d80": "BRIDGE-ROS2 sits between ROS 2 nodes and → → MCU safety",
+   "ad56fe6984e9": "off | makes the bridge show a client certificate to the server (mutual TLS) and check the server certificate a",
+   "f404861e5cc6": "Only the state topic and the safe-stop service are connected today; the inspection service and the job action "
+  },
+  "HYDRA-UMC-BRIDGE-UAV": {
+   "55abfbf2fb83": "It shares the safety contract of with every bridge: a job is accepted only after the shared gate says so, and ",
+   "67cfea1b5265": ", | off | MAVLink 2 signing key file; accept unsigned messages from a vehicle that does not sign yet",
+   "7231a6ebdd77": "A forged MAVLink message | MAVLink 2 signing with a 32-byte key (a raw file or 64 hexadecimal characters) from",
+   "a8512c9a7dd7": "It never computes flight control or stabilization, and it cannot bypass , MCU limits, watchdogs or E-STOP.",
+   "aefdaabf0096": "BRIDGE-UAV sits between a real UAV and → → MCU safety - it is a coordination boundary, never a flight-control ",
+   "af339011c6c1": "A normal mission and an emergency both resolve to the same real request. is real and genuinely distinct - MAVL",
+   "da7309f3d558": "Pixhawk/PX4 and DJI's own firmware already implement a real, certified-adjacent link-loss failsafe at the radi",
+   "fa95fdffd089": "A finished mission and an emergency abort have the same real correct outcome for a UAV: come home."
+  },
+  "HYDRA-UMC-CONNECTOR-HUB": {
+   "50e5e7ef03e4": "An adapter says in a manifest what it is, what it can do (read, write, abort) and how it authenticates; the hu",
+   "8b39bd9201a7": "The write/abort safety rule is enforced in code, not documentation. in is that explicit rule turned into a rea",
+   "8d6111e59a75": "The safety gate reuses 's own real logic, never a second implementation of it.",
+   "e455bdb893f3": "A real safety-gate integration ( ) - a / capability call is gated by the SDK's own real , never a second imple"
+  },
+  "HYDRA-UMC-DASHBOARD-AI": {
+   "252ffd5e03ec": "A page loading scripts or calling hosts it should not | A Content-Security-Policy on every answer: scripts onl",
+   "5619ecef7839": "only with the build allowing the Remaining useful life card: read once when the page opens, with the session o",
+   "b82bb0c5f8c9": "sends a Content-Security-Policy with every answer: scripts only from the page itself (no inline scripts, no pl",
+   "bf169830c1b7": "Read before configuring those browser-visible URLs or connecting a real AI provider; it defines the response v",
+   "d6515a403e65": ", , | , , | the card warns when the earliest plausible day is within this many days, and turns critical within"
+  },
+  "HYDRA-UMC-DATALAKE": {
+   "baab96513cdb": "is where the telemetry of the ecosystem is kept: the collector writes into it and the anomaly detector, the pr"
+  },
+  "HYDRA-UMC-DEV-SERVER": {
+   "001a717a7ed9": "Since then the task runner wraps the command in a bubblewrap or systemd-run sandbox when the host has one (no ",
+   "32f6a42915de": "A host that verifies candidates, approvals and backup manifests keeps a trust store ( , ): public keys under a",
+   "5e48d5c2df14": "A collector reports a real, honest failure - it never guesses. returning a for a present-but-broken manifest, ",
+   "a7b9a263b425": "Two more commands, and , cover the plugin lifecycle and an authenticated local HTTP API (loopback only, bearer",
+   "da6fb01c5afd": "A plugin stays inert until it is enabled against the approved SHA-256 of its files and can only add named chec"
+  },
+  "HYDRA-UMC-DEVELOPER-NODE": {
+   "36fb72147d1f": "Evidence intake ( ) - checks a bundle or a signed message (signature, receiver, age, nonce, shape, checksum, n",
+   "8c88adcdebe7": "In the complete mode (closed by default) it can also run the heavy test each repository declares, as one batch"
+  },
+  "HYDRA-UMC-DSI": {
+   "0d254b509974": "The safety panel reads the verdict of ( , read only): only a current READY is drawn green, a stale, missing or",
+   "2018f8dd0585": "Reservations and safety limits ( , , , ) - The Control screen shows who holds the selected robot (nobody, this",
+   "3fb2cd4a6d6f": "For administrators, a second button opens nine switches read from the server configuration (the health route w",
+   "6e86168432e8": "Login ( , ) - server IP/port fields pre-filled with a sane LAN default, username/password fields sized for tou",
+   "71f9599993be": "The panel shows what it read and asks before it keeps anything; accepting requires TLS and pins that certifica",
+   "dca983e0d220": "With set to a file that holds the signed token an administrator of the server issued for this screen, the pane",
+   "f653587955c6": "The session token is kept in the platform's secure storage (libsecret on Linux, which needs a running keyring "
+  },
+  "HYDRA-UMC-EDITOR-STL": {
+   "2e656c4bbe80": "Limits of the push and of the transform: only parts are uploaded (the others are reported), the whole upload m"
+  },
+  "HYDRA-UMC-EDITOR-URDF": {
+   "0fc8c5a3bb20": "Pushing a model to a server that did not ask for it | The server decides: it must have \"Accept model submissio",
+   "4a90632fe994": "Forward kinematics ( ) is generic over whatever tree was just imported - unlike HYDRA-UMC SUITE's own kinemati",
+   "6509bf36061f": "The DOF panel says the robot is not feasible | The robot has fewer than 3 or more than 6 degrees of freedom, a",
+   "86316b67ebd4": "Note: this app's own pure logic (URDF parsing/export, DOF feasibility, forward kinematics, inertia estimation,",
+   "96ed60681752": "Honesty check - what actually runs today: the pure-logic core - URDF parsing/export ( , ), DOF feasibility val",
+   "b7004ddccdde": "A panel of its own for those warnings, only with the switch on: a \"Physical validation\" panel (a dock tabbed w",
+   "c02c510f7dcd": "A robot that STUDIO cannot run, or a model saved with impossible values | The feasibility check accepts 3 to 6",
+   "c86387eae9c2": "GitHub's own rate limit of 60 requests an hour per address applies",
+   "dd8d5f241790": "It mirrors the classic dockable workspace's own real layout (Source and DOF tabbed on the left, Viewport and P",
+   "ec3399edb182": "The automated version of the same judgment call this ecosystem's own past sessions made by hand for every robo"
+  },
+  "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
+   "133df095b8c6": "🔏 The audit chain of the write gate is signed and can be kept on disk: with writes on, every record carries an",
+   "1849b7370c43": "The compose file publishes the MQTT broker over TLS only ( ).",
+   "2a19038c3604": "🧱 Production Policy and Honest Outcomes: The gateway refuses to start, in any environment (the compose file se"
+  },
+  "HYDRA-UMC-HIL-BRIDGE": {
+   "0d28d6395c6b": "exits (sent), (blocked by the safety interlock - a real, meaningful outcome, not an error), (bad input), or (t",
+   "3e868e53a6f0": "🔏 Real commands are certified by the twin, and every order is accounted for: in mode the report that gates a c",
+   "431363a138f8": "A real transport can fail to deliver (timeout, disconnect) independently of whether the interlock allowed the ",
+   "8122c126d100": "The request carries , a risk report signed with the Ed25519 key of for exactly that joint and position; the br",
+   "96d4f07f826a": "Why the interlock trusts the twin's own flag, and still adds a minimum clearance and fails closed.",
+   "d21d5f6fab45": "Honesty check - what actually runs today: makes a real routing decision - mode always sends, mode is gated by "
+  },
+  "HYDRA-UMC-IOS-CONTROL": {
+   "2018f8dd0585": "Reservations and safety limits ( , , , ) - The Control screen shows who holds the selected robot (nobody, this",
+   "2aa24e42fc2a": "What it never does: replace a physical emergency stop, or encrypt the traffic by itself: the app tries HTTPS o",
+   "2f4e6a353610": "Command pipeline and reservation upkeep ( , , ) - the same split as : one repository outside the view model ke",
+   "69d722ab5560": "\"STOP not confirmed by the server\" | Nothing answered the global STOP within its short time limit, or the serv",
+   "782de8be10af": "A production server requires explicitly configured bootstrap credentials for its first administrator, and addi",
+   "a13afe1b1900": "Access options of the server in Settings (administrators only): an entry of Settings opens nine switches read ",
+   "caa56f81515e": "\"Jog refused: the step is above the limit\" | The step is above the limit that the server sets for this robot m"
+  },
+  "HYDRA-UMC-JOB-DISPATCHER": {
+   "f6aa29a863bd": "With the key file (the signing key of , never printed) every carries a short-lived token signed with it (role "
+  },
+  "HYDRA-UMC-LOCAL-TECHNICIAN": {
+   "0a6fd72e10fe": "A now names the that made it and, when a local key is configured ( , or naming a file, 16 characters or more, "
+  },
+  "HYDRA-UMC-MQTT-BROKER": {
+   "114aeba98eb9": "Why ACL/payload-limit config lives in env vars ( / ), not a config file.",
+   "1bcab809fb94": "🛡️ Production Policy: A production start ( , which the Dockerfile sets) refuses to run without and , with pass",
+   "1e43669646c5": "Honesty check - what actually runs today: the broker transport ( ), the topic ACL ( ), and the CONNECT authent",
+   "844bd6bde596": "The ACL/payload-limit design here works with that, not around it: a client that keeps getting disconnected for",
+   "86b15c2a1a10": "🔐 Topic Security: Real, verifiable per-client-ID-prefix ACL for reading and writing specific robot topics - a "
+  },
+  "HYDRA-UMC-MTCONNECT-ADAPTER": {
+   "37c948c14c9f": "Why 's polling limit is generic, not hardcoded to ."
+  },
+  "HYDRA-UMC-NODE-HEALING": {
+   "4b3307920bb9": "A real production fleet would want jitter to avoid a thundering herd of simultaneous reconnects, but this watc",
+   "a72a55f71e78": "( ) is the real implementation used in production: it calls 's own on a transition into an unhealthy state, re"
+  },
+  "HYDRA-UMC-OPCUA-SERVER": {
+   "34886badb848": "🛡️ Encryption: every real session requires Signed or Signed+Encrypted (Basic256Sha256, Aes128_Sha256_RsaOaep, ",
+   "52e3a12097e4": "🔐 Per-Session Write Authorization: A real, dynamic check distinguishing an anonymous session from an authentic"
+  },
+  "HYDRA-UMC-OPS-AGENT": {
+   "3299f4a8fa1a": "An approval is a signature, not a field. signs, with the approver's own Ed25519 private key, a statement of ex",
+   "54a45dc041f3": "It owns one real lifecycle - evidence → diagnosis → human-approved change → canary deploy via → verification -",
+   "6a91566fe1a4": "A proposal approved by editing the file, or before approvals were signed, is never accepted.",
+   "a02c2deb6543": "Redaction is the single most safety-critical piece of code here. is pure, dependency-free text transformation,"
+  },
+  "HYDRA-UMC-ORCHESTRATOR": {
+   "0e831f0f4461": "and compile-time memory/type safety, since a crash or a data race here does not stay local: it can leave the w",
+   "25da25cff362": "no garbage collector pauses that could delay a safety-critical stop",
+   "50ce2b8f897a": "consumes NODE-HEALING's per-node signals into a single fleet-wide view and calls (already real) once each sign",
+   "6faf5514d1ce": "Why Rust for this specific service This process is the one with the most authority over the fleet: it is what "
+  },
+  "HYDRA-UMC-OS-REBUILDER": {
+   "1b3c9d62745c": "The passwords never travel as arguments. and still work, but a command line is visible to every user of the ma",
+   "88a4826efce9": "42 -> 9 -> 0), even after restarting the app - a real, previously unreported bug: resolving each project's rea",
+   "a135af0e4cc1": "Fixed to report this honestly instead of silently listing fewer projects: the amber banner under the project l"
+  },
+  "HYDRA-UMC-PATH-PLANNER-3D": {
+   "01525d2bf400": "A second real subcommand re-checks an already-computed path (a bare JSON array of waypoints) for safety agains",
+   "080e06a0ebcf": "A bounding-volume hierarchy over the spheres ( ) already keeps the checks fast on a crowded scene, so an octre",
+   "797316ecf7fe": "A planner call sitting in a real-time control loop needs an actual time budget, not a proxy for one.",
+   "b20eb183568b": "Honesty check - what actually runs today: 's single-agent RRT search (with its real wall-clock deadline, indep",
+   "c71b1269d3af": "Same pattern used across the ecosystem: a new, safety-gated entry point added alongside an unchanged low-level"
+  },
+  "HYDRA-UMC-PHYSICS-REPLICA": {
+   "04c1324b9fd3": "The Jacobian is tested against finite differences of forward kinematics; a goal out of reach is an error, not ",
+   "5fa97e47bb66": "🚧 Collision prediction by forward kinematics (real, pure kinematics, over-estimates by construction): says whe",
+   "79807151746c": "Honesty check - what actually runs today: computes real per-joint world-frame positions by chaining URDF joint",
+   "7ba3d1af6d2c": "Why is a new subcommand instead of changing in place. is the existing low-level pure-math utility - some calle",
+   "a2354776fd40": "Why the joint-limits corpus ( ) is test-only.",
+   "a64a5ece7aa4": "All three are pure kinematics - no rigid-body dynamics, no contact forces, no MuJoCo/PhysX solver is wired in ",
+   "a85873b01d2e": "A UR5e and a Franka Emika Panda, built from the published Denavit-Hartenberg parameters, check the forward kin",
+   "b9ab6cef701c": "The tests build the URDF of a UR5e and of a Franka Emika Panda from the Denavit-Hartenberg parameters that the",
+   "bca470051d69": "🧮 Jacobian and inverse kinematics (real, pure kinematics): prints the 6 x N geometric Jacobian of the frame of",
+   "c5154ffab4c8": "exits on success, on a bad / value. exits (real pose), (limit violation), or (bad input). exits (no violations"
+  },
+  "HYDRA-UMC-PRODUCTION-REPORTS": {
+   "598d0a096a0a": "Real HTTP integration, not a shared library. talks to a running instance over plain HTTP ( ), and deliberately"
+  },
+  "HYDRA-UMC-SAFETY-ZONES": {
+   "49c285bef935": "A critical design boundary, already decided and now enforced in code: this project only ever detects and reque",
+   "50fe0944569b": "Exits (Danger, E-STOP requested), (Warning-only breach), (no breach, calibration valid, observer active and fr",
+   "92b3300bbf8b": "For a safety perimeter, that is the conservative direction to be wrong in: it can only cause an earlier breach",
+   "c614523b20ad": "exits non-zero - that is real, working behavior, not a failure: means a Warning-only breach was found, means a",
+   "dc9831096c85": "See for exactly what has shipped so far, and \"Roadmap & Known limits\" below for what remains open."
+  },
+  "HYDRA-UMC-SDK": {
+   "60215806fa47": "What it never does: act as a certified safety function.",
+   "bd02e516381e": "HMAC-SHA256 with a shared key, or Ed25519 with the public key; a fresh timestamp and a counter that never goes",
+   "bfea8cd925dc": "One shared reader of the state of a cell ( ): a bridge reads , , or from a fixed word, from a small file that "
+  },
+  "HYDRA-UMC-SEMANTIC-PLANNER": {
+   "37c6d0e7f727": "The approval is also made by a person who is signed in: with the identity of ( ), needs the signed token of an",
+   "4f36238d6483": "Deployment profile versus development (safety gate): the general file keeps at , so a planner started by hand ",
+   "6ee0d7096156": "Approvals are signed by default: needs and (or ) and makes require , , and an HMAC-SHA256 (or, with set to , a",
+   "d14d10fcb147": "The profile , which the systemd unit selects through , turns the gate ON: a plan is released only while answer"
+  },
+  "HYDRA-UMC-SERVER": {
+   "3912b5c74933": "(500 to 60000; or unset: off) - the server reads the emergency stop of the kinematic brain from the SPI bridge",
+   "399a3d82e346": "Never served as a static file (explicitly 404'd) - only reachable through the authenticated route.",
+   "43909fa21d65": "( ) - issues a signed token for one device (the screen of a Compute Module); exchanges it for a short sign-in ",
+   "60215806fa47": "What it never does: act as a certified safety function.",
+   "6581c0567edf": "Local testing, no domain - a self-signed certificate is enough to exercise the HTTPS/WSS code path (browsers a",
+   "69bf7faa2a07": "If the web UI hangs, this server keeps answering emergency-stop commands from any other connected client.",
+   "72f47257e3f1": "Health of the ecosystem: (operator or administrator; until an administrator turns on ) lists the services that",
+   "8a94149b566d": "On top of them runs the OpenAPI check and 29 end-to-end contract scripts under against a live instance of this",
+   "941f0858ff55": "— this server relays bounded, authenticated voice turns to it over a loopback connection, retaining the gatewa",
+   "944fad2d01d3": "(or ) - the key signs a confirmed voice result with (16 characters or more, the same value it holds). relays a",
+   "a9301342c7bf": "Frees up RAM/CPU on constrained hardware (a Raspberry Pi CM5) for the part of the job that actually matters: k",
+   "bdbcd355c57a": "HYDRA-UMC SERVER *(this repository)* - the engine: robot/controller state, the REST + WebSocket API, authentic",
+   "c13c3ee94ac1": "The browser app is blocked by CORS | In production an unset denies every cross-origin browser request (curl, S",
+   "d128c9c854e2": "Oversized or hostile requests, and open cross-origin access | JSON bodies are capped at 1 MB (50 MB only on th",
+   "d282f94a5dac": "The server stops at start-up in production | demands a real (at least 32 characters, not an example) and a boo",
+   "da5073683344": "Example: NODE_ENV != production NODE_ENV = production` instead denies every cross-origin browser request until",
+   "e2d9dd1f48e4": "( ) - issues a signed ticket ( in the address) that opens the read-only information routes ( , the system metr",
+   "e91ac94af043": "Unset, it stays wide open outside (today's zero-config behavior for local dev); in production it denies every ",
+   "eb336bfa8ffd": "Tokens signed with a known key | With the server refuses to start with an empty, example or short and without ",
+   "f3bff7d22f51": "the camera pictures (live streams, saved photos and recordings) demand a short-lived ( hands one to a signed-i",
+   "f52f762c942b": "Defaults to 5 attempts per 15 minutes per IP if either is unset; a tripped limit responds with a clear JSON er",
+   "fb273e66203a": "Two clients moving the same robot, or a command that the robot should not get | A robot is reserved for one ac"
+  },
+  "HYDRA-UMC-STUDIO": {
+   "21e87e6940a1": "Nine access switches in Server Admin (administrators only): (the health route without a sign-in), (announce th",
+   "32c86118de43": "🏭 The Robot Studio - SO-ARM100, a 5-DOF (not 6) low-cost arm (Apache-2.0 meshes, official SO-ARM100 geometry/k",
+   "6fda35281e5a": "The app protects itself against two different classes of runtime failure, both born from a real production inc",
+   "75361548ad00": "Ecosystem health: under Ecosystem, a view with one card per service (state, reason, reported and expected vers",
+   "7b7315f0416e": "A sign-in token read back from storage | A login typed here lives in (it survives a reload, not closing the ta",
+   "7d50c5a45a5b": "HYDRA-UMC → Flasher / Tester - for the Robot Controller Board and Kinematic Brain tiers, relayed the whole way",
+   "9492a399a962": "The Help window has a Step-by-step guides tab: one guide per task (add a controller, move a robot, record a tr",
+   "968189043cba": "is the web control dashboard of the cell: it draws every robot in 3D from its real kinematics, jogs and record",
+   "b26be4008225": "HYDRA-UMC STUDIO is the browser-based control dashboard for HYDRA-UMC - the multi-robot micro-factory motherbo",
+   "baa4df97f666": "Universal Robots' 5 e-Series models additionally share one common FK/IK engine ( ) and one common 3D rig rende",
+   "bb9e817acd70": "Real-time actions (joint/table jog, E-STOP, START/STOP, playback speed) fire the same atomic path the jog butt",
+   "d6484ed412ba": "Settings tabs for the care of an installation (Config): Updates (the installed version of this Studio, of the ",
+   "e960a0ec09be": "The answer is listed robot by robot (a warning when a robot did not stop or the server could not save the stop",
+   "f3c7b092d643": "Injected scripts running in the page | The build puts a Content-Security-Policy in the page: scripts only from",
+   "f935971e8b8e": "Server Admin has a Two-step sign-in card for the account you are logged in with (off until its owner turns it "
+  },
+  "HYDRA-UMC-SUITE": {
+   "2b2744fb0ce7": "If the server rate limits the call, the robots are stopped one by one.",
+   "4579f5af8a52": "As of this pass, every real robot model this ecosystem supports has real STL geometry and numerically-verified",
+   "75361548ad00": "🩺 Ecosystem health: under Ecosystem, a view with one card per service (state, reason, reported and expected ve",
+   "a3a6fc5a64b1": "A stop that waits or is lost | STOP is always in the header (and on F12), asks nothing and calls on every conn",
+   "b4ea07de0ceb": "🛠️ Tool-attachment config, all 11 of 11 panels - CNC, Laser, Heated Bed, Vacuum Table, ATC (Automatic Tool Cha",
+   "b9d57baafbc7": "Check them before running it: compare the checksum with (or ), and verify the signature with from , using the ",
+   "d04deb8baec3": "Instead, a SHA-256 checksum ( ) and an Ed25519 signature ( ) of the installer are published next to it in the ",
+   "da86a8107c43": "Honesty check - what actually runs today: network discovery (concurrent subnet scan + real mDNS/Bonjour, ), th",
+   "dec43b8f90cc": "🔐 Reservations, safety limits and Live / Sim - the Robot Control panel has an access bar: reserve or release t",
+   "e30e69c3154a": "🧰 Setup screens: under Ecosystem, six screens that follow the configuration tabs of STUDIO: the installed vers",
+   "e595f46cd26b": "Passwords sitting in a settings file | Credentials go to the secure store of the system (Windows Credential Ma"
+  },
+  "HYDRA-UMC-SWARM-SYNC": {
+   "8d56421dabde": "Multiple HYDRA-UMC cells can run semi-autonomously and reconnect later - a CRDT merge strategy converges witho"
+  },
+  "HYDRA-UMC-SYNTHETIC-DATA-GEN": {
+   "7c0a925a357c": "✂️ Train, validation and test split: also writes , and , a for YOLO trainers and .",
+   "9581d57276cb": "( ) adds stylised people in and out of rectangular zones and writes with the zones, the boxes and the action a"
+  },
+  "HYDRA-UMC-TELEMETRY-COLLECTOR": {
+   "67e2b940cc66": "'s counts every sample discarded this way, separate from (flush attempts, not samples) and from (a full-buffer"
+  },
+  "HYDRA-UMC-TOOL-CLI": {
+   "344b788db4f3": "It reports only HTTP/JSON/count consistency; it neither commands equipment nor claims CAN, actuator, sensor, c",
+   "3ca7cca971b6": "reads one robot with its revision; moves the XY table in one atomic request (checked against the limits of the",
+   "5f6a877abff8": "sends one signed image to the boards of slots 0 to 7, one by one, with , a confirmation and a stop at the firs",
+   "7d6cd243a18f": "🔏 Signed release binaries ( ). writes (the format) and (Ed25519 over the contents of the file, base64); checks",
+   "c998d413c0a4": "shows what the device needs through the updater ( ) and, with , deploys it there; the updater checks signature",
+   "cfbeec6f9d8a": "What it never does: act as an emergency stop. and are software commands that need the server, the network and ",
+   "dadaedc8b883": "That endpoint already carries the full controller/robot roster and is already a real read that needs a logged-",
+   "ee9e33130cd1": "reads the safety limits the server holds, arms or disarms the jog (needed only when the server requires it) an",
+   "ef0e1f3b10c9": "is , one Go binary with no shared-library dependencies that talks to : status, robots, limits, a doctor that c"
+  },
+  "HYDRA-UMC-TWIN": {
+   "467b3678c002": "Anyone asking the twin to sign | exists only when the twin starts with a signing key and a certify token; its ",
+   "729a038c400d": "The route exists only when the server starts with and (or ): without the token nobody can ask for a signature,",
+   "f84582b541d8": "🔏 Interlock certificates: signs a risk report (joint, position, , ) with the Ed25519 key of the twin and retur"
+  },
+  "HYDRA-UMC-UPDATER": {
+   "260e42784ceb": "The previous registry and signature are kept as .",
+   "49a7aafa3d50": "Checking a signed image release (reads only): checks the Ed25519 signature of the release of an operating-syst",
+   "8ed63479b42a": "A real HTTP status GitHub actually returned - 404, 403, 500 - is never retried: GitHub already answered, and h",
+   "b7e9cf87e4d6": "The GUI may also offer Install all missing or Update all outdated; each is a separately confirmed, sequential ",
+   "d688b2c89ce5": "More safety nets: one install or update at a time per workspace (lock file); a time limit on every git command",
+   "fd76aaac61c3": "The desktop GUI can also run Install all missing or Update all outdated, but only after a separate confirmatio"
+  },
+  "HYDRA-UMC-VISION-NODE": {
+   "558cc2534923": "Running it on CM5 + Hailo-8, physically next to the robot, keeps the detect → correct → (if needed) E-STOP loo",
+   "a6cdaacc2ebc": "See for exactly what has shipped so far, and the \"Roadmap & Known limits\" section below for what is still open"
+  },
+  "HYDRA-UMC-VISION-STREAMER": {
+   "06588de41793": "🧩 Why it exists as its own project: capture/ISP tuning is a different skill and a different failure domain tha",
+   "b7a7df9ce119": "See for exactly what has shipped so far, and \"Roadmap & Known limits\" below for what remains open. also drops "
+  },
+  "HYDRA-UMC-VISUAL-SERVOING-API": {
+   "0c4ce02045c1": "The systemd unit sets --safety-zones-url safety_state INHIBITED /etc/hydra-umc/visual-servoing-api.env HYDRA_U",
+   "29b690202cc7": "Pose correction runs as its own process/deployable so a crash or slow inference cycle here can't stall the par",
+   "830b5717271f": "Safety verdict by default in the deployed unit (not deployed yet).",
+   "a555a2eea602": "A request is only answered when its data is fresh enough, its confidence high enough and the safety state allo",
+   "ac98a688c556": "(or , which goes through the same safety gate as ) steps it, reports a lost detection and closes it."
+  },
+  "HYDRA-UMC-VLA-ENGINE": {
+   "07217182b778": "The goal is to let the robot understand commands such as \"pick the blue component and place it on the red tray",
+   "2feeaf6cab64": "holds the parts of a vision-language-action engine that do not need a model: turning actions into discrete tok",
+   "f2970958f6b5": "🚧 Trajectory guard: checks a trajectory against the limits of the cell before anyone is asked to approve it: a"
+  },
+  "HYDRA-UMC-VOICE-UI": {
+   "958a212c9128": "Why the Watch gateway uses , not the legacy . stays first-match-wins (unchanged, still tested as-is) for exist",
+   "d768a1ef2575": "Limits: the rules understand English only, and the of a turn is checked but not used."
+  },
+  "HYDRA-UMC-WATCH": {
+   "067dc1eb1757": "When the SERVER reports that a physical E-STOP was pressed, the watch shows it as a Critical alert with its ow",
+   "1951fcd556bb": "*(implemented - ; voice can never actuate a robot directly, see Architecture below and docs/VOICE_AI_PROTOCOL.",
+   "4850070f515f": "🛑 Physical E-STOP: the watch only confirms and warns (decided)",
+   "776d7b2551e0": "Updates | 🟠 | Updated by installing the signed APK of the release; the update of an installed app is not recor",
+   "8309c49e4e8f": "*(the watch side is implemented; the relay on the phone and the rule of the server are not written yet and nee",
+   "840cb6f4d7c8": "📊 The security status of the server, read only: the paired phone can send what the server's security options a",
+   "95b4aa413881": "See docs/GITHUB_ADB_UPDATES.md for the full procedure, release-APK naming requirement, and release-signing set",
+   "a0baf98f7eef": "Another app or a stranger's phone sending messages to the watch | The relay uses the Wear OS Data Layer, which",
+   "a3cd3426536b": "Deployment | 🟠 | A signed APK is published with each release; no installation on a phone or watch is recorded ",
+   "cc4592adbf23": "A stolen or lost watch giving access to the server | The watch never holds a server credential: the paired pho"
+  }
+ }
+}

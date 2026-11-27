@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A loose word no longer clears a risky claim of a README:** `check_claims.py` took any "not", "no", "test", "tested", "classic" or "would" in the sentence or next to it as its status. Now a negation counts only in the same clause and next to the risk word; status words such as planned, simulated or never tested still count. `--explain` shows what cleared each sentence. The sentences that passed under the older rule and that nobody has read are listed in `data/claims_pending.json`, are counted on every run and can only leave that list; `--update-reviewed` writes new lines only with `--confirm --reviewer`.
+
 - **The manifest facts tool is the same text as in the other families:** it reads `gh` as UTF-8 and has the opt-in `--strict-evidence` check (off by default).
 - **The count of the tests of the family collects the window tests and confirms what it wrote:** the Python suites are installed with their `gui` extra next to `dev`, with the system libraries a headless window needs, so a number no longer drops because the window tests were skipped at collection, and the counter runs twice so a changed number is also marked as collected.
 

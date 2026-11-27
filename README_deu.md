@@ -18,7 +18,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-Markdown-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-303%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-326%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.5-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-functional-0F6CBD.svg" alt="Maturity">
 </p>
@@ -39,7 +39,7 @@ GPL-3.0-or-later - see LICENSE
 |---|---|
 | Version | `0.1.5` |
 | Reifegrad | Funktionsfähig |
-| Tests | 303 (`python -m pytest tests -q`) |
+| Tests | 326 (`python -m pytest tests -q`) |
 | Technik | Markdown / Mermaid / Python / SVG |
 | Ziel | Der PC der Person, die es benutzt |
 | Auf echter Hardware | Nicht zutreffend: nichts hiervon läuft auf Hardware |
@@ -55,7 +55,7 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
 | Software | 🟡 | Funktioniert für seinen Hauptzweck; die Ehrlichkeitsprüfung in diesem README nennt, was noch fehlt |
-| Tests | 🟢 | 303 automatische Tests, bei jeder Änderung ausgeführt |
+| Tests | 🟢 | 326 automatische Tests, bei jeder Änderung ausgeführt |
 | Echte Hardware | ⚪ | Nicht zutreffend: nichts hiervon läuft auf Hardware |
 | Bereitstellung | 🟠 | Als Release veröffentlicht; die Installation auf einem frischen Rechner ist dokumentiert, aber nicht vermerkt |
 | Dokumentation | 🟢 | README in acht Sprachen, bei jeder Änderung gegen das Manifest geprüft |
@@ -76,7 +76,7 @@ Das Bild unten zeigt die Familien von Repositories und die Datenflüsse, die ihr
 * [Sicherheitsbasis](docs/SECURITY_BASELINE.md): was der Code durchsetzt und was noch fehlt; und das [Bedrohungsmodell](docs/THREAT_MODEL.md).
 * [Erster vertikaler Schnitt](docs/FIRST_VERTICAL_SLICE.md): der kleinste durchgehende Pfad, den es heute gibt.
 * [Projektkatalog](docs/PROJECT_CATALOG.md): jedes Repository der Familie, aus seinem eigenen Manifest geschrieben.
-* **Werkzeuge:** `make_catalog.py` schreibt den Katalog, `make_brand.py` das Banner, das Symbol und die Familienkarte, `make_readmes.py` die acht READMEs dieses Repositorys, `publication_check.py` sucht vor einer Veröffentlichung nach allem Privaten, und `check_all.sh` führt die eigenen Prüfungen jedes Repositorys der Familie aus und gibt je eine Zeile PASS, FAIL oder SKIP aus. `make_glance.py` schreibt die Tabelle Auf einen Blick jedes Repositorys aus dessen Manifest und aus `data/glance.json` (`--check` vergleicht, `--apply` schreibt); nach einer Versionserhöhung aktualisiert `python tools/make_glance.py --apply --repo NAME` die Tabelle dieses Repositorys. `check_test_counts.py` zählt die echten Tests jedes danebenliegenden Repositorys und vergleicht sie mit `data/glance.json` und der Tests-Zeile jedes README (`--apply` schreibt die genauen Zahlen zurück; Go-, Rust-, JavaScript-, Dart- und Kotlin-Suiten werden mit der nativen Auflistung ihres eigenen Runners gezählt und, wenn dessen Toolchain fehlt, aus dem Quelltext gezählt und nur gemeldet). `i18n_cross_check.py` liest die Sprachdateien von STUDIO, SUITE, ANDROID-CONTROL und WATCH in eine gemeinsame Form, schlägt fehl, wenn einem Client in einer der acht Sprachen ein Schlüssel fehlt, und listet Texte, die sich zwischen den Clients unterschiedlich lesen (`--lang`, `--list`, `--json`). `check_claims.py` liest das englische README jedes Repositorys der Familie und schlägt fehl, wenn ein Satz ein Risikowort enthält (E-STOP, Verriegelung, Echtzeit, signiert, mTLS, FDCAN, YOLO, KI-gesteuert, autonom, zertifiziert, ...) und daneben keine Statusmarkierung steht (geplant, nicht implementiert, optional, standardmäßig aus, simuliert, getestet, ...), es sei denn, eine Person hat diese Zeile neben dem Code gelesen und in `data/claims_reviewed.json` eingetragen.
+* **Werkzeuge:** `make_catalog.py` schreibt den Katalog, `make_brand.py` das Banner, das Symbol und die Familienkarte, `make_readmes.py` die acht READMEs dieses Repositorys, `publication_check.py` sucht vor einer Veröffentlichung nach allem Privaten, und `check_all.sh` führt die eigenen Prüfungen jedes Repositorys der Familie aus und gibt je eine Zeile PASS, FAIL oder SKIP aus. `make_glance.py` schreibt die Tabelle Auf einen Blick jedes Repositorys aus dessen Manifest und aus `data/glance.json` (`--check` vergleicht, `--apply` schreibt); nach einer Versionserhöhung aktualisiert `python tools/make_glance.py --apply --repo NAME` die Tabelle dieses Repositorys. `check_test_counts.py` zählt die echten Tests jedes danebenliegenden Repositorys und vergleicht sie mit `data/glance.json` und der Tests-Zeile jedes README (`--apply` schreibt die genauen Zahlen zurück; Go-, Rust-, JavaScript-, Dart- und Kotlin-Suiten werden mit der nativen Auflistung ihres eigenen Runners gezählt und, wenn dessen Toolchain fehlt, aus dem Quelltext gezählt und nur gemeldet). `i18n_cross_check.py` liest die Sprachdateien von STUDIO, SUITE, ANDROID-CONTROL und WATCH in eine gemeinsame Form, schlägt fehl, wenn einem Client in einer der acht Sprachen ein Schlüssel fehlt, und listet Texte, die sich zwischen den Clients unterschiedlich lesen (`--lang`, `--list`, `--json`). `check_claims.py` liest das englische README jedes Repositorys der Familie und schlägt fehl, wenn ein Satz ein Risikowort enthält (E-STOP, Verriegelung, Echtzeit, signiert, mTLS, FDCAN, YOLO, KI-gesteuert, autonom, zertifiziert, ...) und daneben keine Statusmarkierung steht (geplant, nicht implementiert, optional, standardmäßig aus, simuliert, nicht getestet, ...) und keine ausdrückliche Verneinung (not, no, never, without, ...) im selben Satzteil neben dem Risikowort steht, es sei denn, eine Person hat diese Zeile neben dem Code gelesen und in `data/claims_reviewed.json` eingetragen. Die Wörter test, tested, classic und would genügen nicht mehr, und `--explain` zeigt, was jeden Satz entlastet hat. Die Zeilen, die nach der früheren, lockereren Regel durchgingen und noch von niemandem gelesen wurden, stehen in `data/claims_pending.json`: Sie werden bei jedem Lauf gezählt, kein Befehl ergänzt diese Liste, und `--update-reviewed` schreibt eine neue Zeile nur mit `--confirm --reviewer NAME`.
 
 ## 🧩 Rolle in HYDRA-UMC
 
@@ -116,7 +116,7 @@ python -m pytest tests -q                        # die Unit-Tests der Werkzeuge
 
 ## 🧪 Tests
 
-303 automatische Tests laufen mit `python -m pytest tests -q`. Sie brauchen weder Hardware noch etwas außerhalb dieses Rechners.
+326 automatische Tests laufen mit `python -m pytest tests -q`. Sie brauchen weder Hardware noch etwas außerhalb dieses Rechners.
 
 Die CI führt `HYDRA_UMC_CI=1 python tools/ci_validate.py` aus; das prüft das Manifest, die Dokumente, die acht READMEs und die Bilder.
 

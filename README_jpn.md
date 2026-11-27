@@ -18,7 +18,7 @@ GPL-3.0-or-later - see LICENSE
   <img src="https://img.shields.io/badge/License-GPL%203.0--or--later-blue.svg" alt="GPL 3.0 or later">
   <img src="https://img.shields.io/badge/Format-Markdown-083fa1.svg" alt="Format">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
-  <img src="https://img.shields.io/badge/Tests-303%20passing-2ea44f.svg" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-326%20passing-2ea44f.svg" alt="Tests">
   <img src="https://img.shields.io/badge/Version-0.1.5-0f6cbd.svg" alt="Version">
   <img src="https://img.shields.io/badge/Maturity-functional-0F6CBD.svg" alt="Maturity">
 </p>
@@ -39,7 +39,7 @@ GPL-3.0-or-later - see LICENSE
 |---|---|
 | バージョン | `0.1.5` |
 | 成熟度 | 機能する |
-| テスト | 303 (`python -m pytest tests -q`) |
+| テスト | 326 (`python -m pytest tests -q`) |
 | 技術 | Markdown / Mermaid / Python / SVG |
 | 対象 | 利用者の PC |
 | 実機での確認 | 対象外：ここにあるものはハードウェア上では動きません |
@@ -55,7 +55,7 @@ GPL-3.0-or-later - see LICENSE
 | 領域 | 状態 | ここでの意味 |
 |---|---|---|
 | ソフトウェア | 🟡 | 主な目的では動作します。足りない点はこの README の正直さの確認に書かれています |
-| テスト | 🟢 | 自動テスト 303 件。変更のたびに実行されます |
+| テスト | 🟢 | 自動テスト 326 件。変更のたびに実行されます |
 | 実機 | ⚪ | 対象外：ここにあるものはハードウェア上では動きません |
 | デプロイ | 🟠 | リリースとして公開されています。新しい環境へのインストールは文書化されていますが記録はありません |
 | ドキュメント | 🟢 | 8 言語の README。変更のたびにマニフェストと照合されます |
@@ -76,7 +76,7 @@ GPL-3.0-or-later - see LICENSE
 * [セキュリティ基準](docs/SECURITY_BASELINE.md): コードが強制していることとまだ足りないこと。および[脅威モデル](docs/THREAT_MODEL.md)。
 * [最初の垂直スライス](docs/FIRST_VERTICAL_SLICE.md): 今日存在する最小のエンドツーエンド経路。
 * [プロジェクトカタログ](docs/PROJECT_CATALOG.md): ファミリーの全リポジトリを、それぞれのマニフェストから生成。
-* **ツール：** `make_catalog.py` はカタログを、`make_brand.py` はバナー・アイコン・ファミリーマップを、`make_readmes.py` はこのリポジトリの 8 つの README を書きます。`publication_check.py` は公開前に非公開のものを探し、`check_all.sh` はファミリーの各リポジトリ自身のチェックを実行して、1 件ごとに PASS、FAIL、SKIP の 1 行を出力します。 `make_glance.py` は各リポジトリのマニフェストと `data/glance.json` から「ひと目で」の表を書きます（`--check` は比較、`--apply` は書き込み）。バージョンを上げた後は `python tools/make_glance.py --apply --repo NAME` でそのリポジトリの表を更新します。 `check_test_counts.py` は隣にある各リポジトリの実際のテスト数を数え、`data/glance.json` と各 README のテスト行と比べます（`--apply` で正確な数を書き戻します。Go、Rust、JavaScript、Dart、Kotlin のスイートはそれぞれのランナーのネイティブな一覧で数え、ツールチェーンがない場合のみソースから数えて報告のみです）。`i18n_cross_check.py` は STUDIO、SUITE、ANDROID-CONTROL、WATCH の言語ファイルを 1 つの形に読み込み、8 言語のいずれかでクライアントにキーが欠けていれば失敗し、クライアント間で読み方が違う文言を一覧します（`--lang`、`--list`、`--json`）。`check_claims.py` は、ファミリーの各リポジトリの英語 README を読み、リスクのある語(E-STOP、インターロック、リアルタイム、署名済み、mTLS、FDCAN、YOLO、AI 駆動、自律、認証済みなど)を含む文の隣に状態の印(計画中、未実装、任意、既定で無効、シミュレーション、テスト済みなど)がなく、かつ担当者がコードと突き合わせて読み `data/claims_reviewed.json` に登録した行でもない場合に失敗します。
+* **ツール：** `make_catalog.py` はカタログを、`make_brand.py` はバナー・アイコン・ファミリーマップを、`make_readmes.py` はこのリポジトリの 8 つの README を書きます。`publication_check.py` は公開前に非公開のものを探し、`check_all.sh` はファミリーの各リポジトリ自身のチェックを実行して、1 件ごとに PASS、FAIL、SKIP の 1 行を出力します。 `make_glance.py` は各リポジトリのマニフェストと `data/glance.json` から「ひと目で」の表を書きます（`--check` は比較、`--apply` は書き込み）。バージョンを上げた後は `python tools/make_glance.py --apply --repo NAME` でそのリポジトリの表を更新します。 `check_test_counts.py` は隣にある各リポジトリの実際のテスト数を数え、`data/glance.json` と各 README のテスト行と比べます（`--apply` で正確な数を書き戻します。Go、Rust、JavaScript、Dart、Kotlin のスイートはそれぞれのランナーのネイティブな一覧で数え、ツールチェーンがない場合のみソースから数えて報告のみです）。`i18n_cross_check.py` は STUDIO、SUITE、ANDROID-CONTROL、WATCH の言語ファイルを 1 つの形に読み込み、8 言語のいずれかでクライアントにキーが欠けていれば失敗し、クライアント間で読み方が違う文言を一覧します（`--lang`、`--list`、`--json`）。`check_claims.py` は、ファミリーの各リポジトリの英語 README を読み、リスクのある語(E-STOP、インターロック、リアルタイム、署名済み、mTLS、FDCAN、YOLO、AI 駆動、自律、認証済みなど)を含む文の隣に状態の印(計画中、未実装、任意、既定で無効、シミュレーション、未テストなど)も、同じ節内でリスク語の近くにある明示的な否定(not、no、never、without など)もなく、かつ担当者がコードと突き合わせて読み `data/claims_reviewed.json` に登録した行でもない場合に失敗します。test、tested、classic、would という語だけでは通らず、`--explain` は各文が何によって通ったかを表示します。以前の緩い規則で通り、まだ誰も読んでいない行は `data/claims_pending.json` にあります。実行のたびに件数が示され、この一覧に追加するコマンドはなく、`--update-reviewed` が新しい行を書くのは `--confirm --reviewer 名前` を付けた場合だけです。
 
 ## 🧩 HYDRA-UMC での役割
 
@@ -116,7 +116,7 @@ python -m pytest tests -q                        # ツールの単体テスト
 
 ## 🧪 テスト
 
-`python -m pytest tests -q` で自動テスト 303 件を実行します。 ハードウェアも、このマシンの外にあるものも必要ありません。
+`python -m pytest tests -q` で自動テスト 326 件を実行します。 ハードウェアも、このマシンの外にあるものも必要ありません。
 
 CI は `HYDRA_UMC_CI=1 python tools/ci_validate.py` を実行し、マニフェスト、文書、8 つの README、図を検査します。
 
