@@ -47,7 +47,7 @@
     "HYDRA-UMC-BRIDGE-AMR": {
       "hardware": "simulated",
       "tests": {
-        "count": 288,
+        "count": 294,
         "command": "python tools/build_test.py",
         "method": "exact"
       },
@@ -190,7 +190,7 @@
     "HYDRA-UMC-CONNECTOR-HUB": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 383,
+        "count": 387,
         "command": "python -m pytest -q tests",
         "method": "exact"
       },
@@ -264,7 +264,7 @@
     "HYDRA-UMC-DEVELOPER-NODE": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 154,
+        "count": 158,
         "command": "python -m pytest -q tests",
         "method": "exact"
       },
@@ -322,7 +322,7 @@
     "HYDRA-UMC-EDITOR-STL": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 352,
+        "count": 359,
         "command": "python -m pytest tests -q",
         "method": "exact"
       },
@@ -334,7 +334,7 @@
     "HYDRA-UMC-EDITOR-URDF": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 695,
+        "count": 706,
         "command": "python -m pytest tests -q",
         "method": "exact"
       },
@@ -431,7 +431,7 @@
     "HYDRA-UMC-MESHES": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 59,
+        "count": 70,
         "command": "python -m pytest tests -q",
         "method": "exact"
       }
@@ -501,7 +501,7 @@
     "HYDRA-UMC-OPS-AGENT": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 526,
+        "count": 533,
         "command": "python -m pytest -q tests",
         "method": "exact"
       },
@@ -600,7 +600,7 @@
     "HYDRA-UMC-SAFETY-ZONES": {
       "hardware": "simulated",
       "tests": {
-        "count": 1338,
+        "count": 1347,
         "command": "python -m pytest -q tests",
         "method": "exact"
       },
@@ -828,7 +828,7 @@
     "HYDRA-UMC-VISUAL-SERVOING-API": {
       "hardware": "simulated",
       "tests": {
-        "count": 453,
+        "count": 456,
         "command": "python -m pytest -q tests",
         "method": "exact"
       },
