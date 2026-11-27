@@ -81,7 +81,8 @@ jobs:
             repository="${directory%/}"
             [ "$repository" = "HYDRA-UMC-DOCS" ] && continue
             if [ -f "${repository}/pyproject.toml" ]; then
-              python -m pip install --quiet -e "./${repository}[dev]" 2>/dev/null || python -m pip install --quiet -e "./${repository}" 2>/dev/null || echo "::warning::pip install skipped in ${repository}"
+              # the window tests of a suite are only collected with its "gui" extra (a repository without that extra just ignores it)
+              python -m pip install --quiet -e "./${repository}[dev,gui]" 2>/dev/null || python -m pip install --quiet -e "./${repository}" 2>/dev/null || echo "::warning::pip install skipped in ${repository}"
             fi
           done
 
@@ -90,7 +91,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # one pass: it prints what it measured and writes the exact counts
+          # first pass: it prints what it measured and writes the new numbers; second pass: it confirms them and marks them exact
+          python tools/check_test_counts.py --apply || true
           python tools/check_test_counts.py --apply || true
           python tools/make_glance.py --apply --repo HYDRA-UMC-DOCS --workspace .. || true
           if git diff --quiet -- data/glance.json; then echo "No count changed."; exit 0; fi
