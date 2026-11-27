@@ -56,14 +56,14 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
-| [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) | 0.3.1 | Scaffolding | firmware | firmware-c | mcu | - | Motion-control firmware (STM32H757 and STM32G474, six components with bootloaders) and the SPI-OTA bridge written for the CM5 pilot bench (host: Jetson Orin NX); not yet run on a board. |
+| [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC) | 0.3.2 | Scaffolding | firmware | firmware-c | mcu | - | Motion-control firmware (STM32H757 and STM32G474, six components with bootloaders) and the SPI-OTA bridge written for the CM5 pilot bench (host: Jetson Orin NX); not yet run on a board. |
 
 ### Data & Analytics
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
 | [HYDRA-UMC-DATALAKE](https://github.com/JuanenRac/HYDRA-UMC-DATALAKE) | 0.2.7 | Functional | api | python | cm5 | - | SQLite time-series store with an HTTP ingest and query API. |
-| [HYDRA-UMC-ANOMALY-DETECTOR](https://github.com/JuanenRac/HYDRA-UMC-ANOMALY-DETECTOR) | 0.2.5 | Functional | api | python | cm5 | HYDRA-UMC-DATALAKE | FFT and statistical-baseline anomaly detector over DATALAKE history, with drift monitoring (no machine-learning model). |
+| [HYDRA-UMC-ANOMALY-DETECTOR](https://github.com/JuanenRac/HYDRA-UMC-ANOMALY-DETECTOR) | 0.2.6 | Functional | api | python | cm5 | HYDRA-UMC-DATALAKE | FFT and statistical-baseline anomaly detector over DATALAKE history, with drift monitoring (no machine-learning model). |
 | [HYDRA-UMC-PRODUCTION-REPORTS](https://github.com/JuanenRac/HYDRA-UMC-PRODUCTION-REPORTS) | 0.2.2 | Functional | api | python | cm5 | HYDRA-UMC-DATALAKE | OEE and availability reports over DATALAKE history, with reproducible CSV export. |
 | [HYDRA-UMC-TELEMETRY-COLLECTOR](https://github.com/JuanenRac/HYDRA-UMC-TELEMETRY-COLLECTOR) | 0.2.3 | Functional | api | go | cm5 | HYDRA-UMC-DATALAKE | CAN and WebSocket ingestion with a bounded buffer, retry on outage and a DATALAKE sink. |
 
