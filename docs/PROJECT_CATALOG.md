@@ -44,7 +44,7 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
 | [HYDRA-UMC-SERVER](https://github.com/JuanenRac/HYDRA-UMC-SERVER) | 0.8.3.4 | Functional | api | node | cm5 | - | Headless Node.js/TypeScript backend: REST and WebSocket API, authentication, mDNS discovery and the global stop. |
-| [HYDRA-UMC-ANDROID-CONTROL](https://github.com/JuanenRac/HYDRA-UMC-ANDROID-CONTROL) | 0.8.0.6 | Functional | ui | android | mobile | HYDRA-UMC-SERVER | Native Android control app with biometric login, a client of HYDRA-UMC-SERVER. |
+| [HYDRA-UMC-ANDROID-CONTROL](https://github.com/JuanenRac/HYDRA-UMC-ANDROID-CONTROL) | 0.8.0.7 | Functional | ui | android | mobile | HYDRA-UMC-SERVER | Native Android control app with biometric login, a client of HYDRA-UMC-SERVER. |
 | [HYDRA-UMC-DSI](https://github.com/JuanenRac/HYDRA-UMC-DSI) | 0.3.9 | Functional | ui | flutter | cm5 | HYDRA-UMC-SERVER | Flutter touch interface for the onboard 7 inch DSI display of the CM5. |
 | [HYDRA-UMC-EDITOR-STL](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-STL) | 0.2.1 | Functional | tool | python | user-pc | HYDRA-UMC-STUDIO | Desktop STL editor for the model libraries shared by STUDIO and SUITE. |
 | [HYDRA-UMC-EDITOR-URDF](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-URDF) | 0.2.1 | Established | tool | python | user-pc | HYDRA-UMC-STUDIO | Desktop URDF creator and editor that pushes finished models into the shared model catalogue. |
@@ -71,7 +71,7 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
-| [HYDRA-UMC-TWIN](https://github.com/JuanenRac/HYDRA-UMC-TWIN) | 0.2.0 | Functional | service | rust | cm5 | - | Integration hub of the digital-twin family with a version-compatibility check of its children. |
+| [HYDRA-UMC-TWIN](https://github.com/JuanenRac/HYDRA-UMC-TWIN) | 0.2.1 | Functional | service | rust | cm5 | - | Integration hub of the digital-twin family with a version-compatibility check of its children. |
 | [HYDRA-UMC-HIL-BRIDGE](https://github.com/JuanenRac/HYDRA-UMC-HIL-BRIDGE) | 0.1.8 | Functional | service | rust | cm5 | HYDRA-UMC-TWIN | Hardware-in-the-loop routing with an interlock that blocks commands to real hardware in the wrong mode. |
 | [HYDRA-UMC-PHYSICS-REPLICA](https://github.com/JuanenRac/HYDRA-UMC-PHYSICS-REPLICA) | 0.1.5 | Functional | library | rust | cm5 | HYDRA-UMC-TWIN | Forward kinematics and joint-limit validation over a documented URDF subset. |
 | [HYDRA-UMC-SYNTHETIC-DATA-GEN](https://github.com/JuanenRac/HYDRA-UMC-SYNTHETIC-DATA-GEN) | 0.1.6 | Established | tool | python | user-pc | HYDRA-UMC-TWIN | Procedural 2D scene generator with YOLO and COCO annotation export. |
@@ -119,7 +119,7 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
-| [HYDRA-UMC-ORCHESTRATOR](https://github.com/JuanenRac/HYDRA-UMC-ORCHESTRATOR) | 0.2.8 | Functional | service | rust | cm5 | - | Mission state machine with persistence and an outbox, an HTTP client to JOB-DISPATCHER and its own JSON/HTTP server. |
+| [HYDRA-UMC-ORCHESTRATOR](https://github.com/JuanenRac/HYDRA-UMC-ORCHESTRATOR) | 0.2.9 | Functional | service | rust | cm5 | - | Mission state machine with persistence and an outbox, an HTTP client to JOB-DISPATCHER and its own JSON/HTTP server. |
 | [HYDRA-UMC-JOB-DISPATCHER](https://github.com/JuanenRac/HYDRA-UMC-JOB-DISPATCHER) | 0.3.1 | Functional | api | go | cm5 | HYDRA-UMC-ORCHESTRATOR | Priority job queue with tool-aware routing, dependencies and de-duplication, over an HTTP API; optional SQLite persistence. |
 | [HYDRA-UMC-NODE-HEALING](https://github.com/JuanenRac/HYDRA-UMC-NODE-HEALING) | 0.2.6 | Functional | service | go | cm5 | HYDRA-UMC-ORCHESTRATOR | Health watchdog (gRPC or HTTP) with guarded recovery and identity-mismatch detection. |
 | [HYDRA-UMC-PATH-PLANNER-3D](https://github.com/JuanenRac/HYDRA-UMC-PATH-PLANNER-3D) | 0.1.5 | Functional | library | rust | cm5 | HYDRA-UMC-ORCHESTRATOR | RRT 3D path planner with obstacle and workspace collision validation. |
