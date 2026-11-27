@@ -4,7 +4,7 @@
       "hardware": "in_use",
       "target": "board",
       "tests": {
-        "count": 1524,
+        "count": 1525,
         "command": "python -m unittest discover -s tests -p 'test_*.py'",
         "method": "exact"
       }
@@ -109,7 +109,7 @@
     "HYDRA-UMC-BRIDGE-OPENPNP": {
       "hardware": "simulated",
       "tests": {
-        "count": 314,
+        "count": 319,
         "command": "python tools/build_test.py",
         "method": "exact"
       },
@@ -305,7 +305,7 @@
     "HYDRA-UMC-DSI": {
       "hardware": "simulated",
       "tests": {
-        "count": 513,
+        "count": 524,
         "command": "flutter test",
         "method": "exact"
       },
@@ -322,7 +322,7 @@
     "HYDRA-UMC-EDITOR-STL": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 359,
+        "count": 361,
         "command": "python -m pytest tests -q",
         "method": "exact"
       },
@@ -334,7 +334,7 @@
     "HYDRA-UMC-EDITOR-URDF": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 706,
+        "count": 708,
         "command": "python -m pytest tests -q",
         "method": "exact"
       },
@@ -346,7 +346,7 @@
     "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
       "hardware": "simulated",
       "tests": {
-        "count": 296,
+        "count": 301,
         "command": "npm test",
         "method": "exact"
       },
@@ -364,7 +364,7 @@
     "HYDRA-UMC-HIL-BRIDGE": {
       "hardware": "simulated",
       "tests": {
-        "count": 272,
+        "count": 277,
         "command": "cargo test",
         "method": "exact"
       },
@@ -381,7 +381,7 @@
       "hardware": "simulated",
       "target": "ios",
       "tests": {
-        "count": 708,
+        "count": 720,
         "command": "flutter test",
         "method": "exact"
       },
@@ -398,7 +398,7 @@
     "HYDRA-UMC-JOB-DISPATCHER": {
       "hardware": "simulated",
       "tests": {
-        "count": 375,
+        "count": 381,
         "command": "go test ./...",
         "method": "exact"
       },
@@ -454,7 +454,7 @@
     "HYDRA-UMC-MTCONNECT-ADAPTER": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 237,
+        "count": 239,
         "command": "npm test",
         "method": "exact"
       },
@@ -470,7 +470,7 @@
     "HYDRA-UMC-NODE-HEALING": {
       "hardware": "simulated",
       "tests": {
-        "count": 226,
+        "count": 228,
         "command": "go test ./...",
         "method": "exact"
       },
@@ -559,7 +559,7 @@
     "HYDRA-UMC-PATH-PLANNER-3D": {
       "hardware": "simulated",
       "tests": {
-        "count": 188,
+        "count": 189,
         "command": "cargo test",
         "method": "exact"
       },
@@ -572,7 +572,7 @@
     "HYDRA-UMC-PHYSICS-REPLICA": {
       "hardware": "simulated",
       "tests": {
-        "count": 242,
+        "count": 246,
         "command": "cargo test",
         "method": "exact"
       },
@@ -618,7 +618,7 @@
     "HYDRA-UMC-SDK": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 1328,
+        "count": 1329,
         "command": "python -m unittest discover -s clients/python/tests",
         "method": "exact"
       },
@@ -647,7 +647,7 @@
     "HYDRA-UMC-SERVER": {
       "hardware": "bench",
       "tests": {
-        "count": 1257,
+        "count": 1271,
         "command": "npm run test:unit",
         "method": "exact"
       },
@@ -665,7 +665,7 @@
     "HYDRA-UMC-STUDIO": {
       "hardware": "bench",
       "tests": {
-        "count": 1831,
+        "count": 1839,
         "command": "npm test",
         "method": "exact"
       },
@@ -683,7 +683,7 @@
       "hardware": "not_applicable",
       "target": "browser",
       "tests": {
-        "count": 151,
+        "count": 153,
         "command": "npm test",
         "method": "exact"
       },
@@ -729,7 +729,7 @@
     "HYDRA-UMC-SYNTHETIC-DATA-GEN": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 287,
+        "count": 289,
         "command": "python -m pytest -q tests",
         "method": "exact"
       },
@@ -740,7 +740,7 @@
     "HYDRA-UMC-TELEMETRY-COLLECTOR": {
       "hardware": "not_applicable",
       "tests": {
-        "count": 228,
+        "count": 231,
         "command": "go test ./...",
         "method": "exact"
       },
@@ -756,7 +756,7 @@
     "HYDRA-UMC-TOOL-CLI": {
       "hardware": "simulated",
       "tests": {
-        "count": 298,
+        "count": 300,
         "command": "go test ./...",
         "method": "exact"
       },
