@@ -64,7 +64,7 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 |---|---|---|---|---|---|---|---|
 | [HYDRA-UMC-DATALAKE](https://github.com/JuanenRac/HYDRA-UMC-DATALAKE) | 0.2.7 | Functional | api | python | cm5 | - | SQLite time-series store with an HTTP ingest and query API. |
 | [HYDRA-UMC-ANOMALY-DETECTOR](https://github.com/JuanenRac/HYDRA-UMC-ANOMALY-DETECTOR) | 0.2.6 | Functional | api | python | cm5 | HYDRA-UMC-DATALAKE | FFT and statistical-baseline anomaly detector over DATALAKE history, with drift monitoring (no machine-learning model). |
-| [HYDRA-UMC-PRODUCTION-REPORTS](https://github.com/JuanenRac/HYDRA-UMC-PRODUCTION-REPORTS) | 0.2.2 | Functional | api | python | cm5 | HYDRA-UMC-DATALAKE | OEE and availability reports over DATALAKE history, with reproducible CSV export. |
+| [HYDRA-UMC-PRODUCTION-REPORTS](https://github.com/JuanenRac/HYDRA-UMC-PRODUCTION-REPORTS) | 0.2.3 | Functional | api | python | cm5 | HYDRA-UMC-DATALAKE | OEE and availability reports over DATALAKE history, with reproducible CSV export. |
 | [HYDRA-UMC-TELEMETRY-COLLECTOR](https://github.com/JuanenRac/HYDRA-UMC-TELEMETRY-COLLECTOR) | 0.2.3 | Functional | api | go | cm5 | HYDRA-UMC-DATALAKE | CAN and WebSocket ingestion with a bounded buffer, retry on outage and a DATALAKE sink. |
 
 ### Digital Twin & Simulation
@@ -96,7 +96,7 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 | [HYDRA-UMC-BRIDGE-LASER](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-LASER) | 0.2.7 | Functional | service | python | cm5 | HYDRA-UMC-SERVER | Laser cell coordinator that reads three safeguards (key, enclosure, interlock) and cannot arm or fire. |
 | [HYDRA-UMC-BRIDGE-OPENPNP](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-OPENPNP) | 0.2.7 | Functional | service | python | cm5 | HYDRA-UMC-SERVER | Board hand-off coordinator for OpenPnP; its results are tagged simulation-only. |
 | [HYDRA-UMC-BRIDGE-PRINTER3D](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-PRINTER3D) | 0.2.6 | Functional | service | python | cm5 | HYDRA-UMC-SERVER | Coordination boundary for Moonraker/Klipper 3D printers: readiness, start, pause, resume and cancel of an uploaded file. |
-| [HYDRA-UMC-BRIDGE-ROS2](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-ROS2) | 0.2.0 | Functional | service | python | cm5 | HYDRA-UMC-SERVER | ROS 2 coordination boundary with a plan-only dispatch and an optional rclpy transport. |
+| [HYDRA-UMC-BRIDGE-ROS2](https://github.com/JuanenRac/HYDRA-UMC-BRIDGE-ROS2) | 0.2.1 | Functional | service | python | cm5 | HYDRA-UMC-SERVER | ROS 2 coordination boundary with a plan-only dispatch and an optional rclpy transport. |
 
 ### Industrial Gateway
 
@@ -119,7 +119,7 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 
 | Repository | Version | Maturity | Role | Stack | Target | Parent | What it is |
 |---|---|---|---|---|---|---|---|
-| [HYDRA-UMC-ORCHESTRATOR](https://github.com/JuanenRac/HYDRA-UMC-ORCHESTRATOR) | 0.2.7 | Functional | service | rust | cm5 | - | Mission state machine with persistence and an outbox, an HTTP client to JOB-DISPATCHER and its own JSON/HTTP server. |
+| [HYDRA-UMC-ORCHESTRATOR](https://github.com/JuanenRac/HYDRA-UMC-ORCHESTRATOR) | 0.2.8 | Functional | service | rust | cm5 | - | Mission state machine with persistence and an outbox, an HTTP client to JOB-DISPATCHER and its own JSON/HTTP server. |
 | [HYDRA-UMC-JOB-DISPATCHER](https://github.com/JuanenRac/HYDRA-UMC-JOB-DISPATCHER) | 0.3.1 | Functional | api | go | cm5 | HYDRA-UMC-ORCHESTRATOR | Priority job queue with tool-aware routing, dependencies and de-duplication, over an HTTP API; optional SQLite persistence. |
 | [HYDRA-UMC-NODE-HEALING](https://github.com/JuanenRac/HYDRA-UMC-NODE-HEALING) | 0.2.6 | Functional | service | go | cm5 | HYDRA-UMC-ORCHESTRATOR | Health watchdog (gRPC or HTTP) with guarded recovery and identity-mismatch detection. |
 | [HYDRA-UMC-PATH-PLANNER-3D](https://github.com/JuanenRac/HYDRA-UMC-PATH-PLANNER-3D) | 0.1.5 | Functional | library | rust | cm5 | HYDRA-UMC-ORCHESTRATOR | RRT 3D path planner with obstacle and workspace collision validation. |
