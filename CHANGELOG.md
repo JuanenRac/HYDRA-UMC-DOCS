@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The README sources follow the redesigned Android control app and two honesty notes:** the overview, the home screen and the server health lines of the Android app (eight languages) come from its current README, and the notes of the URDF editor and of the 3D path planner now say that nothing there has been checked on a physical robot. Four reviewed claim lines that no README says any more are removed from the allow-list.
 - **The README source of the Android control app names the in-app QR reader, the several saved servers and the server fault record and board health** (eight languages).
 
 ## [0.1.6] - Strict risky claims, family test counts and current README sources
