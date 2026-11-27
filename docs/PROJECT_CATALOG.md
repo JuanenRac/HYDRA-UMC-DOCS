@@ -49,8 +49,8 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 | [HYDRA-UMC-EDITOR-STL](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-STL) | 0.2.1 | Functional | tool | python | user-pc | HYDRA-UMC-STUDIO | Desktop STL editor for the model libraries shared by STUDIO and SUITE. |
 | [HYDRA-UMC-EDITOR-URDF](https://github.com/JuanenRac/HYDRA-UMC-EDITOR-URDF) | 0.2.1 | Established | tool | python | user-pc | HYDRA-UMC-STUDIO | Desktop URDF creator and editor that pushes finished models into the shared model catalogue. |
 | [HYDRA-UMC-IOS-CONTROL](https://github.com/JuanenRac/HYDRA-UMC-IOS-CONTROL) | 0.3.7 | Functional | ui | flutter | mobile | HYDRA-UMC-SERVER | Flutter control app for iOS and iPadOS with a real-time WebSocket link to HYDRA-UMC-SERVER. |
-| [HYDRA-UMC-STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO) | 0.8.2.4 | Functional | ui | node | cm5 | HYDRA-UMC-SERVER | Web control dashboard (React) with 3D multi-robot visualisation, a client of HYDRA-UMC-SERVER. |
-| [HYDRA-UMC-SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE) | 0.8.0.9 | Functional | ui | python | user-pc | HYDRA-UMC-SERVER | Desktop (PySide6) command centre for several servers at once. |
+| [HYDRA-UMC-STUDIO](https://github.com/JuanenRac/HYDRA-UMC-STUDIO) | 0.8.2.5 | Functional | ui | node | cm5 | HYDRA-UMC-SERVER | Web control dashboard (React) with 3D multi-robot visualisation, a client of HYDRA-UMC-SERVER. |
+| [HYDRA-UMC-SUITE](https://github.com/JuanenRac/HYDRA-UMC-SUITE) | 0.8.1.0 | Functional | ui | python | user-pc | HYDRA-UMC-SERVER | Desktop (PySide6) command centre for several servers at once. |
 
 ### Core Hardware
 
@@ -82,7 +82,7 @@ Every repository of the family, written by `tools/make_catalog.py` from the `hyd
 |---|---|---|---|---|---|---|---|
 | [HYDRA-UMC-DEV-SERVER](https://github.com/JuanenRac/HYDRA-UMC-DEV-SERVER) | 0.2.8 | Functional | service | python | dev-server | - | Reproducible development host: policy-gated configuration and manifest inventory; no task has deploy permission. |
 | [HYDRA-UMC-DEVELOPER-NODE](https://github.com/JuanenRac/HYDRA-UMC-DEVELOPER-NODE) | 0.0.4 | Scaffolding | service | python | dev-server | - | Developer node: reads evidence bundles, caches checkouts by revision and runs repro cases and the shared CI; closed by default, approved by a person. |
-| [HYDRA-UMC-DOCS](https://github.com/JuanenRac/HYDRA-UMC-DOCS) | 0.1.5 | Functional | tool | python | user-pc | - | This repository: architecture, interfaces, security baseline, capability matrix and cross-repository tooling. |
+| [HYDRA-UMC-DOCS](https://github.com/JuanenRac/HYDRA-UMC-DOCS) | 0.1.6 | Functional | tool | python | user-pc | - | This repository: architecture, interfaces, security baseline, capability matrix and cross-repository tooling. |
 | [HYDRA-UMC-LOCAL-TECHNICIAN](https://github.com/JuanenRac/HYDRA-UMC-LOCAL-TECHNICIAN) | 0.2.3 | Functional | service | python | cm5 | - | Read-only diagnostic assistant with a fixed risk-level policy and tool allowlist; a retrieved document can never trigger a tool call. |
 | [HYDRA-UMC-OPS-AGENT](https://github.com/JuanenRac/HYDRA-UMC-OPS-AGENT) | 0.2.4 | Functional | service | python | cm5 | - | Maintenance-incident coordinator: a sanitised snapshot, a read-only control plane and an AI-provider diagnosis proposal. |
 | [HYDRA-UMC-UPDATER](https://github.com/JuanenRac/HYDRA-UMC-UPDATER) | 0.5.9 | Established | tool | python | user-pc | - | Detects, installs and updates the ecosystem's repositories from their manifests (clone, stage, verify, promote). |
