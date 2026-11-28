@@ -35,6 +35,7 @@
   },
   "HYDRA-UMC-ANDROID-CONTROL": {
    "1075bd8de608": "Settings > Security > Allow plain traffic outside the local network | off | lets the app talk plain HTTP and W",
+   "1ce79be857aa": "Honesty check - what actually runs today: the core business logic - Parol6 kinematics ( ), the settings-tree s",
    "3d5b05386da9": "Defaults and limits come from the code.",
    "3f7af78c62e8": "Includes \"Remember me\" functionality, a secure Logout mechanism, and fully localized in 8 languages.",
    "4598eedb110e": "3D View ( ) - Embeds HYDRA-UMC STUDIO's own real-time 3D viewport in a WebView ( ), rather than a native rende",
@@ -46,7 +47,6 @@
    "7d25ace9cbe4": "It shows the result - which robots stopped, which did not, which are reserved by someone else, and a warning w",
    "85a872f4d584": "Reservations and safety limits ( , , , ) - The Control screen shows who holds the selected robot (nobody, this",
    "95aab6960b61": "Swap for for a release build - it signs with the private release key when (or the release signing environment ",
-   "9a3062cf5995": "Honesty check - what actually runs today: the core business logic - Parol6 kinematics ( ), the settings-tree s",
    "9dd31cd91856": "Clean build output with zero warnings, optimized R8 production variants, and advanced Roborazzi screenshot tes",
    "a3cd3426536b": "Deployment | 🟠 | A signed APK is published with each release; no installation on a phone or watch is recorded ",
    "c04906e6501e": "No Biometrics | Hardware not set | Ensure you have a Fingerprint/Face registered in your Android System Securi",
