@@ -381,7 +381,7 @@
       "hardware": "simulated",
       "target": "ios",
       "tests": {
-        "count": 720,
+        "count": 721,
         "command": "flutter test",
         "method": "exact"
       },
