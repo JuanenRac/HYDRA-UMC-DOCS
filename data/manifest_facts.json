@@ -12,18 +12,18 @@
     "src/mcu_stm32g474/boot/bootloader_common.h": "0.3.2.0"
    },
    "tests_present": true,
-   "unreleased_entries": 1
+   "unreleased_entries": 3
   },
   "HYDRA-UMC-ANDROID-CONTROL": {
-   "changelog_head": "0.8.0.8",
+   "changelog_head": "0.8.0.9",
    "ci_simulation": true,
    "evidence": "field",
    "hardware_bound": true,
-   "latest_release": "v0.8.0.8",
-   "manifest_version": "0.8.0.8",
+   "latest_release": "v0.8.0.9",
+   "manifest_version": "0.8.0.9",
    "maturity": "functional",
    "native": {
-    "app/version.properties": "0.8.0.8"
+    "app/version.properties": "0.8.0.9"
    },
    "tests_present": true,
    "unreleased_entries": 0
@@ -43,18 +43,18 @@
    "unreleased_entries": 1
   },
   "HYDRA-UMC-BRIDGE-AMR": {
-   "changelog_head": "0.2.2",
+   "changelog_head": "0.2.3",
    "ci_simulation": true,
    "evidence": "simulator",
    "hardware_bound": true,
-   "latest_release": "v0.2.2",
-   "manifest_version": "0.2.2",
+   "latest_release": "v0.2.3",
+   "manifest_version": "0.2.3",
    "maturity": "functional",
    "native": {
-    "pyproject.toml": "0.2.2"
+    "pyproject.toml": "0.2.3"
    },
    "tests_present": true,
-   "unreleased_entries": 5
+   "unreleased_entries": 0
   },
   "HYDRA-UMC-BRIDGE-CNC": {
    "changelog_head": "0.3.0",
@@ -110,7 +110,7 @@
     "pyproject.toml": "0.2.7"
    },
    "tests_present": true,
-   "unreleased_entries": 0
+   "unreleased_entries": 1
   },
   "HYDRA-UMC-BRIDGE-PRINTER3D": {
    "changelog_head": "0.2.6",
@@ -169,18 +169,18 @@
    "unreleased_entries": 4
   },
   "HYDRA-UMC-CONNECTOR-HUB": {
-   "changelog_head": "0.2.1",
+   "changelog_head": "0.2.2",
    "ci_simulation": true,
    "evidence": "simulator",
    "hardware_bound": false,
-   "latest_release": "v0.2.1",
-   "manifest_version": "0.2.1",
+   "latest_release": "v0.2.2",
+   "manifest_version": "0.2.2",
    "maturity": "functional",
    "native": {
-    "pyproject.toml": "0.2.1"
+    "pyproject.toml": "0.2.2"
    },
    "tests_present": true,
-   "unreleased_entries": 6
+   "unreleased_entries": 0
   },
   "HYDRA-UMC-DASHBOARD-AI": {
    "changelog_head": "0.2.6",
@@ -239,18 +239,18 @@
    "unreleased_entries": 2
   },
   "HYDRA-UMC-DEVELOPER-NODE": {
-   "changelog_head": "0.0.4",
+   "changelog_head": "0.0.5",
    "ci_simulation": true,
    "evidence": "simulator",
    "hardware_bound": false,
-   "latest_release": "v0.0.4",
-   "manifest_version": "0.0.4",
+   "latest_release": "v0.0.5",
+   "manifest_version": "0.0.5",
    "maturity": "scaffolding",
    "native": {
-    "pyproject.toml": "0.0.4"
+    "pyproject.toml": "0.0.5"
    },
    "tests_present": true,
-   "unreleased_entries": 5
+   "unreleased_entries": 0
   },
   "HYDRA-UMC-DOCS": {
    "changelog_head": "0.1.6",
@@ -264,7 +264,7 @@
     "pyproject.toml": "0.1.6"
    },
    "tests_present": true,
-   "unreleased_entries": 0
+   "unreleased_entries": 3
   },
   "HYDRA-UMC-DOCS-QA": {
    "changelog_head": "0.2.1",
@@ -281,46 +281,46 @@
    "unreleased_entries": 3
   },
   "HYDRA-UMC-DSI": {
-   "changelog_head": "0.3.9",
+   "changelog_head": "0.4.0",
    "ci_simulation": true,
    "evidence": "simulator",
    "hardware_bound": true,
-   "latest_release": "v0.3.9",
-   "manifest_version": "0.3.9",
+   "latest_release": "v0.4.0",
+   "manifest_version": "0.4.0",
    "maturity": "functional",
    "native": {
-    "pubspec.yaml": "0.3.9"
+    "pubspec.yaml": "0.4.0"
    },
    "tests_present": true,
-   "unreleased_entries": 5
+   "unreleased_entries": 0
   },
   "HYDRA-UMC-EDITOR-STL": {
-   "changelog_head": "0.2.1",
+   "changelog_head": "0.2.2",
    "ci_simulation": true,
    "evidence": "simulator",
    "hardware_bound": false,
-   "latest_release": "v0.2.1",
-   "manifest_version": "0.2.1",
+   "latest_release": "v0.2.2",
+   "manifest_version": "0.2.2",
    "maturity": "functional",
    "native": {
-    "src/hydra_umc_editor_stl/__init__.py": "0.2.1"
+    "src/hydra_umc_editor_stl/__init__.py": "0.2.2"
    },
    "tests_present": true,
-   "unreleased_entries": 4
+   "unreleased_entries": 0
   },
   "HYDRA-UMC-EDITOR-URDF": {
-   "changelog_head": "0.2.1",
+   "changelog_head": "0.2.2",
    "ci_simulation": true,
    "evidence": "simulator",
    "hardware_bound": false,
-   "latest_release": "v0.2.1",
-   "manifest_version": "0.2.1",
+   "latest_release": "v0.2.2",
+   "manifest_version": "0.2.2",
    "maturity": "established",
    "native": {
-    "hydra_editor_urdf/__init__.py": "0.2.1"
+    "hydra_editor_urdf/__init__.py": "0.2.2"
    },
    "tests_present": true,
-   "unreleased_entries": 4
+   "unreleased_entries": 0
   },
   "HYDRA-UMC-GATEWAY-INDUSTRIAL": {
    "changelog_head": "0.2.1",
@@ -337,18 +337,18 @@
    "unreleased_entries": 3
   },
   "HYDRA-UMC-HIL-BRIDGE": {
-   "changelog_head": "0.1.8",
+   "changelog_head": "0.1.9",
    "ci_simulation": true,
    "evidence": "simulator",
    "hardware_bound": true,
-   "latest_release": "v0.1.8",
-   "manifest_version": "0.1.8",
+   "latest_release": "v0.1.9",
+   "manifest_version": "0.1.9",
    "maturity": "functional",
    "native": {
-    "Cargo.toml": "0.1.8"
+    "Cargo.toml": "0.1.9"
    },
    "tests_present": true,
-   "unreleased_entries": 3
+   "unreleased_entries": 0
   },
   "HYDRA-UMC-IOS-CONTROL": {
    "changelog_head": "0.3.7",
@@ -362,7 +362,7 @@
     "pubspec.yaml": "0.3.7"
    },
    "tests_present": true,
-   "unreleased_entries": 3
+   "unreleased_entries": 8
   },
   "HYDRA-UMC-JOB-DISPATCHER": {
    "changelog_head": "0.3.1",
@@ -376,7 +376,7 @@
     "version.go": "0.3.1"
    },
    "tests_present": true,
-   "unreleased_entries": 2
+   "unreleased_entries": 4
   },
   "HYDRA-UMC-LOCAL-TECHNICIAN": {
    "changelog_head": "0.2.3",
@@ -446,7 +446,7 @@
     "version.go": "0.2.6"
    },
    "tests_present": true,
-   "unreleased_entries": 1
+   "unreleased_entries": 2
   },
   "HYDRA-UMC-OPCUA-SERVER": {
    "changelog_head": "0.2.9",
@@ -491,18 +491,18 @@
    "unreleased_entries": 0
   },
   "HYDRA-UMC-OS": {
-   "changelog_head": "0.6.4",
+   "changelog_head": "0.6.5",
    "ci_simulation": true,
    "evidence": "bench",
    "hardware_bound": true,
-   "latest_release": "v0.6.4",
-   "manifest_version": "0.6.4",
+   "latest_release": "v0.6.5",
+   "manifest_version": "0.6.5",
    "maturity": "functional",
    "native": {
-    "agent/pyproject.toml": "0.6.4"
+    "agent/pyproject.toml": "0.6.5"
    },
    "tests_present": true,
-   "unreleased_entries": 7
+   "unreleased_entries": 0
   },
   "HYDRA-UMC-OS-REBUILDER": {
    "changelog_head": "0.3.9",
@@ -519,32 +519,32 @@
    "unreleased_entries": 3
   },
   "HYDRA-UMC-PATH-PLANNER-3D": {
-   "changelog_head": "0.1.5",
+   "changelog_head": "0.1.6",
    "ci_simulation": true,
    "evidence": "simulator",
    "hardware_bound": true,
-   "latest_release": "v0.1.5",
-   "manifest_version": "0.1.5",
+   "latest_release": "v0.1.6",
+   "manifest_version": "0.1.6",
    "maturity": "functional",
    "native": {
-    "Cargo.toml": "0.1.5"
+    "Cargo.toml": "0.1.6"
    },
    "tests_present": true,
-   "unreleased_entries": 4
+   "unreleased_entries": 0
   },
   "HYDRA-UMC-PHYSICS-REPLICA": {
-   "changelog_head": "0.1.5",
+   "changelog_head": "0.1.6",
    "ci_simulation": true,
    "evidence": "simulator",
    "hardware_bound": true,
-   "latest_release": "v0.1.5",
-   "manifest_version": "0.1.5",
+   "latest_release": "v0.1.6",
+   "manifest_version": "0.1.6",
    "maturity": "functional",
    "native": {
-    "Cargo.toml": "0.1.5"
+    "Cargo.toml": "0.1.6"
    },
    "tests_present": true,
-   "unreleased_entries": 4
+   "unreleased_entries": 0
   },
   "HYDRA-UMC-PRODUCTION-REPORTS": {
    "changelog_head": "0.2.3",
@@ -575,18 +575,18 @@
    "unreleased_entries": 3
   },
   "HYDRA-UMC-SDK": {
-   "changelog_head": "0.7.6",
+   "changelog_head": "0.7.7",
    "ci_simulation": true,
    "evidence": "simulator",
    "hardware_bound": false,
-   "latest_release": "v0.7.6",
-   "manifest_version": "0.7.6",
+   "latest_release": "v0.7.7",
+   "manifest_version": "0.7.7",
    "maturity": "established",
    "native": {
-    "clients/python/pyproject.toml": "0.7.6"
+    "clients/python/pyproject.toml": "0.7.7"
    },
    "tests_present": true,
-   "unreleased_entries": 4
+   "unreleased_entries": 2
   },
   "HYDRA-UMC-SEMANTIC-PLANNER": {
    "changelog_head": "0.2.1",
@@ -603,26 +603,26 @@
    "unreleased_entries": 3
   },
   "HYDRA-UMC-SERVER": {
-   "changelog_head": "0.8.3.4",
+   "changelog_head": "0.8.3.5",
    "ci_simulation": true,
    "evidence": "bench",
    "hardware_bound": true,
-   "latest_release": "v0.8.3.4",
-   "manifest_version": "0.8.3.4",
+   "latest_release": "v0.8.3.5",
+   "manifest_version": "0.8.3.5",
    "maturity": "functional",
    "native": {
     "package.json": "0.8.3"
    },
    "tests_present": true,
-   "unreleased_entries": 5
+   "unreleased_entries": 0
   },
   "HYDRA-UMC-STUDIO": {
-   "changelog_head": "0.8.2.5",
+   "changelog_head": "0.8.2.6",
    "ci_simulation": false,
    "evidence": "bench",
    "hardware_bound": true,
-   "latest_release": "v0.8.2.5",
-   "manifest_version": "0.8.2.5",
+   "latest_release": "v0.8.2.6",
+   "manifest_version": "0.8.2.6",
    "maturity": "functional",
    "native": {
     "package.json": "0.8.2"
@@ -642,7 +642,7 @@
     "package.json": "0.0.5"
    },
    "tests_present": true,
-   "unreleased_entries": 0
+   "unreleased_entries": 1
   },
   "HYDRA-UMC-SUITE": {
    "changelog_head": "0.8.1.0",
@@ -684,21 +684,21 @@
     "pyproject.toml": "0.1.6"
    },
    "tests_present": true,
-   "unreleased_entries": 1
+   "unreleased_entries": 3
   },
   "HYDRA-UMC-TELEMETRY-COLLECTOR": {
-   "changelog_head": "0.2.3",
+   "changelog_head": "0.2.4",
    "ci_simulation": true,
    "evidence": "simulator",
    "hardware_bound": false,
-   "latest_release": "v0.2.3",
-   "manifest_version": "0.2.3",
+   "latest_release": "v0.2.4",
+   "manifest_version": "0.2.4",
    "maturity": "functional",
    "native": {
-    "src/version.go": "0.2.3"
+    "src/version.go": "0.2.4"
    },
    "tests_present": true,
-   "unreleased_entries": 4
+   "unreleased_entries": 0
   },
   "HYDRA-UMC-TOOL-CLI": {
    "changelog_head": "0.2.2",

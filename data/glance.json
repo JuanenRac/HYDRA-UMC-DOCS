@@ -12,7 +12,7 @@
     "HYDRA-UMC-ANDROID-CONTROL": {
       "hardware": "in_use",
       "tests": {
-        "count": 811,
+        "count": 875,
         "command": "./gradlew testDebugUnitTest",
         "method": "exact"
       },
@@ -381,7 +381,7 @@
       "hardware": "simulated",
       "target": "ios",
       "tests": {
-        "count": 720,
+        "count": 721,
         "command": "flutter test",
         "method": "exact"
       },
