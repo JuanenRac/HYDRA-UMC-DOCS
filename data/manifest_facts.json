@@ -19,7 +19,7 @@
    "ci_simulation": true,
    "evidence": "field",
    "hardware_bound": true,
-   "latest_release": "v0.8.0.8",
+   "latest_release": "v0.8.0.9",
    "manifest_version": "0.8.0.9",
    "maturity": "functional",
    "native": {
