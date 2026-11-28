@@ -29,11 +29,9 @@
 * 🪪 **HYDRA-UMC-SERVER 的身份（默认关闭）：** `serve --identity-key-file 文件`（或 `HYDRA_UMC_SAFETY_ZONES_IDENTITY_KEY_FILE=文件`）会让服务在自己的令牌之外，也接受服务器在登录时签发的已签名令牌：查看者只能读取而不能更改，没有凭据的请求即使在环回地址上也会被拒绝。不开启该开关时一切照旧。
 
 **一项已确定、且现已在代码中落实的关键设计边界：** 本项目**仅负责检测和请求** E-STOP——它自身
-从不发出物理停止信号。`estop.py` 中唯一真实的请求者 `NullEStopRequester`
-只会记录本应发送的内容，而不会向任何地方发送任何东西——本仓库目前故意
-没有任何真实的 CAN 传输实现。真正通过 CAN 切断电机电源是 [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)（固件）的职责，运行在为此角色专门构建的硬件上。将边界保持在此处意味着，本
+从不发出物理停止信号。默认的请求者是 `estop.py` 中的 `NullEStopRequester`，它只记录本应发送的内容而不发送任何东西；可选的 CAN 配置（`--can-estop-config`，默认关闭）则改用会发送停止帧的请求者，尚未在真实总线上运行过。真正通过 CAN 切断电机电源是 [HYDRA-UMC](https://github.com/JuanenRac/HYDRA-UMC)（固件）的职责，运行在为此角色专门构建的硬件上。将边界保持在此处意味着，本
 Python 服务中的一个漏洞可能导致*未能请求*停止，但绝不可能*阻止*固件独立
-执行停止。 目前固件没有可接收的 E-STOP 帧，`NullEStopRequester` 也不发送任何内容：这种纵深防御只是设计，另一端尚不存在。
+执行停止。 固件一侧的该帧已编写，但只在 PC 上测试过：这种纵深防御从未在板卡上运行。
 
 **诚实说明——今天实际运行的内容：** 无参数调用时，真正的入口点
 （`src/hydra_umc_safety_zones/main.py`）仍会打印项目名称、已安装的版本号
