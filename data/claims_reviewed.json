@@ -250,7 +250,6 @@
   },
   "HYDRA-UMC-SYNTHETIC-DATA-GEN": {
    "1a01b3374cb8": "Format Format YOLO %2F COCO FF6F00.svg",
-   "2874329958dc": "Renders training datasets (with automatic YOLO/COCO annotation) through 's own engine, for and to train agains",
    "52518243e90e": "Stack | Python / procedural scene generation / YOLO/COCO annotation export",
    "6495e31cf2b5": "The manifest now records the class list ( ) and its hash ( , the sha256 of ) so whoever registers a model trai",
    "a3b8e9396578": "🗂️ Ultralytics layout: writes , , and a that names the folders, the structure a YOLO trainer expects; the scen",

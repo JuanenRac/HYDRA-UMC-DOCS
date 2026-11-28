@@ -3,7 +3,7 @@
 """What is specific to the README of HYDRA-UMC-BRIDGE-OPENPNP."""
 from __future__ import annotations
 
-from ...readme_kit import P, arch, table, LIMITS, WHY
+from ...readme_kit import P, arch, code, table, LIMITS, WHY
 from .. import bridge_kit as B
 
 ICON = "🔩"
@@ -62,10 +62,23 @@ def BODY(lg, ctx):
             B.global_stop_row("HYDRA_UMC_OPENPNP_GLOBAL_STOP", "`1` follows the global stop of the server: while the last announcement on the retained topic `hydra/swarm/safety/estop` says `SAFE_STOP` (or cannot be read), the bridge refuses with a reason: a job (an abort passes), a hand-off and asserting an SMEMA line; only `READY` ends it. `HYDRA_UMC_OPENPNP_GLOBAL_STOP_TOPIC` changes the topic and `HYDRA_UMC_OPENPNP_GLOBAL_STOP_STRICT=1` also refuses until the first announcement arrives", "`1` sigue la parada global del servidor: mientras el último anuncio del tema retenido `hydra/swarm/safety/estop` diga `SAFE_STOP` (o no se pueda leer), el bridge rechaza con un motivo: un trabajo (un aborto pasa), un traspaso y activar una línea SMEMA; solo `READY` lo termina. `HYDRA_UMC_OPENPNP_GLOBAL_STOP_TOPIC` cambia el tema y `HYDRA_UMC_OPENPNP_GLOBAL_STOP_STRICT=1` rechaza también hasta que llegue el primer anuncio", "`1` folgt dem globalen Stopp des Servers: Solange die letzte Meldung auf dem retained Topic `hydra/swarm/safety/estop` `SAFE_STOP` lautet (oder nicht lesbar ist), lehnt der Bridge mit Begründung ab: ein Auftrag (ein Abbruch geht durch), eine Übergabe und das Setzen einer SMEMA-Leitung; nur `READY` beendet das. `HYDRA_UMC_OPENPNP_GLOBAL_STOP_TOPIC` ändert das Topic, `HYDRA_UMC_OPENPNP_GLOBAL_STOP_STRICT=1` lehnt zusätzlich ab, bis die erste Meldung eintrifft", "`1` suit l'arrêt global du serveur : tant que la dernière annonce du sujet retenu `hydra/swarm/safety/estop` dit `SAFE_STOP` (ou est illisible), le bridge refuse avec un motif : un travail (un abandon passe), un transfert et l'activation d'une ligne SMEMA ; seul `READY` y met fin. `HYDRA_UMC_OPENPNP_GLOBAL_STOP_TOPIC` change le sujet et `HYDRA_UMC_OPENPNP_GLOBAL_STOP_STRICT=1` refuse aussi tant que la première annonce n'est pas arrivée", "`1` segue l'arresto globale del server: finché l'ultimo annuncio sul topic retained `hydra/swarm/safety/estop` dice `SAFE_STOP` (o non è leggibile), il bridge rifiuta con un motivo: un lavoro (un abort passa), un passaggio di consegna e l'attivazione di una linea SMEMA; solo `READY` lo termina. `HYDRA_UMC_OPENPNP_GLOBAL_STOP_TOPIC` cambia il topic e `HYDRA_UMC_OPENPNP_GLOBAL_STOP_STRICT=1` rifiuta anche finché non arriva il primo annuncio", "`1` でサーバーのグローバル停止に従います。保持トピック `hydra/swarm/safety/estop` の最新の通知が `SAFE_STOP`（または読み取れない）の間、ブリッジは理由を付けて次を拒否します：ジョブ（中止は通す）、受け渡しとSMEMA ラインのアサート。解除は `READY` のみです。`HYDRA_UMC_OPENPNP_GLOBAL_STOP_TOPIC` でトピックを変更でき、`HYDRA_UMC_OPENPNP_GLOBAL_STOP_STRICT=1` は最初の通知が届くまでも拒否します", "`1` 跟随服务器的全局停止：只要保留主题 `hydra/swarm/safety/estop` 上最新的通知是 `SAFE_STOP`（或无法读取），桥接就会带原因拒绝：任务（中止放行）、交接和置位 SMEMA 线；只有 `READY` 才能解除。`HYDRA_UMC_OPENPNP_GLOBAL_STOP_TOPIC` 可更改主题，`HYDRA_UMC_OPENPNP_GLOBAL_STOP_STRICT=1` 会在收到第一条通知之前也拒绝", "`1` segue a paragem global do servidor: enquanto o último anúncio no tópico retido `hydra/swarm/safety/estop` disser `SAFE_STOP` (ou não puder ser lido), o bridge recusa com um motivo: um trabalho (um aborto passa), uma passagem e ativar uma linha SMEMA; só `READY` lhe põe fim. `HYDRA_UMC_OPENPNP_GLOBAL_STOP_TOPIC` muda o tópico e `HYDRA_UMC_OPENPNP_GLOBAL_STOP_STRICT=1` recusa também até chegar o primeiro anúncio"),
         ] + B.MQTT_ENV_ROWS),
     ])
-    out["quickstart"] = B.quickstart(lg, [
-        "from hydra_umc_bridge_openpnp.mqtt_transport import OpenPnpMqttBridge, run_forever",
-        "bridge = OpenPnpMqttBridge(cell_state=lambda: cell_state)   # state_source, smema_*, trace_recorder are optional",
-        "run_forever(bridge, host=\"192.168.0.180\")                  # serves cmd/# forever",
+    out["quickstart"] = "\n\n".join([
+        B.quickstart(lg, [], service=False),
+        P(
+            'Start the service with one configuration file (example: `docs/deploy/bridge-openpnp.example.toml`); `--check` only reads and validates it. The systemd unit next to it has not been tried on a machine:',
+            'Arranca el servicio con un solo fichero de configuración (ejemplo: `docs/deploy/bridge-openpnp.example.toml`); `--check` solo lo lee y lo valida. La unidad systemd que lo acompaña no se ha probado en ninguna máquina:',
+            'Den Dienst mit einer Konfigurationsdatei starten (Beispiel: `docs/deploy/bridge-openpnp.example.toml`); `--check` liest und prüft sie nur. Die systemd-Unit daneben wurde noch auf keiner Maschine erprobt:',
+            "Démarrer le service avec un seul fichier de configuration (exemple : `docs/deploy/bridge-openpnp.example.toml`) ; `--check` se contente de le lire et de le valider. L'unité systemd fournie à côté n'a été essayée sur aucune machine :",
+            "Avviare il servizio con un solo file di configurazione (esempio: `docs/deploy/bridge-openpnp.example.toml`); `--check` si limita a leggerlo e convalidarlo. L'unità systemd accanto non è stata provata su nessuna macchina:",
+            '設定ファイル 1 つでサービスを起動します（例：`docs/deploy/bridge-openpnp.example.toml`）。`--check` は読み込んで検証するだけです。併せて置いた systemd ユニットは実機で試していません：',
+            '用一个配置文件启动服务（示例：`docs/deploy/bridge-openpnp.example.toml`）；`--check` 只读取并校验它。旁边的 systemd 单元尚未在任何机器上试过：',
+            'Arrancar o serviço com um único ficheiro de configuração (exemplo: `docs/deploy/bridge-openpnp.example.toml`); `--check` apenas o lê e valida. A unidade systemd ao lado não foi experimentada em nenhuma máquina:',
+        )[lg],
+        code(lg, [
+            "PYTHONPATH=src python3 -m hydra_umc_bridge_openpnp --config bridge-openpnp.toml --check",
+            "PYTHONPATH=src python3 -m hydra_umc_bridge_openpnp --config bridge-openpnp.toml",
+        ], "bash"),
+        B.CREDENTIALS_NOTE[lg],
     ])
     out["testing"] = B.testing(lg, ctx.tests, [
         B.GLOBAL_STOP_ROW, B.LIMITS_ROW, B.BROKER_ROW,
